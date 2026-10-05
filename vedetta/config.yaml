@@ -2,7 +2,7 @@ name: Vedetta
 version: "0.3.0"
 slug: vedetta
 description: Dashboard di rete locale: trova e riconosce i dispositivi, li mostra in HA e condivide a scelta con Home Assistant
-url: https://example.invalid/vedetta
+url: https://github.com/Sived80/vedetta
 arch:
   - amd64
   - aarch64

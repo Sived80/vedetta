@@ -217,7 +217,7 @@ Pick **one** of the two ways below. Both end the same way: Vedetta appears in yo
 
    [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
 
-   *No button? Do it by hand:* **Settings → Apps → App store** (bottom right) → **⋮** (top right) → **Repositories**, paste the address below, press **Add**, then **Close**:
+   *The button only opens the App store and nothing else happens? Do it by hand, it takes four clicks:* **Settings → Apps → App store** (bottom right) → **⋮** (top right) → **Repositories**, paste the address below, press **Add**, then **Close**:
 
    ```text
    https://github.com/Sived80/vedetta
@@ -251,7 +251,8 @@ You copy the app folder into Home Assistant's `addons` folder, using the **Samba
    |---|---|
    | The Vedetta page | [`http://homeassistant.local:8123/hassio/ingress/local_vedetta`](http://homeassistant.local:8123/hassio/ingress/local_vedetta) |
    | The app's settings page (Start, Stop, Log) | [`http://homeassistant.local:8123/hassio/addon/local_vedetta/info`](http://homeassistant.local:8123/hassio/addon/local_vedetta/info) |
-   | The same, through My Home Assistant (asks for your address once) | [open the app page](https://my.home-assistant.io/redirect/supervisor_addon/?addon=local_vedetta) |
+   | The Vedetta page, through My Home Assistant (asks for your address once) | [open Vedetta](https://my.home-assistant.io/redirect/supervisor_ingress/?addon=local_vedetta) |
+   | The app's settings page, through My Home Assistant | [open the app page](https://my.home-assistant.io/redirect/supervisor_app/?app=local_vedetta) |
 
    > [!TIP]
    > Bookmark the first link. These links are for **Option B**: with Option A the app name contains a short code that depends on the repository, so open Vedetta from the sidebar instead.

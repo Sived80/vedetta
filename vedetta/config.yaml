@@ -1,7 +1,7 @@
 name: Vedetta
 version: "0.3.0"
 slug: vedetta
-description: Dashboard di rete locale: trova e riconosce i dispositivi, li mostra in HA e condivide a scelta con Home Assistant
+description: "Local network dashboard: finds and recognizes the devices on your network, shows them in Home Assistant and shares what you choose"
 url: https://github.com/Sived80/vedetta
 arch:
   - amd64

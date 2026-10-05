@@ -1,0 +1,9 @@
+{
+  "extra.brand": "Marca",
+  "extra.mdns_model": "Modello mDNS",
+  "battery.yes": "A batteria",
+  "battery.src.api": "dato dal dispositivo",
+  "battery.src.scan": "dall'ultima scansione",
+  "battery.src.hint": "dedotto dal modello",
+  "battery.src.model": "dal modello"
+}

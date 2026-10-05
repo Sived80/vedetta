@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "version": "2026.10.05",
+  "_comment": "Firme dei prodotti: vedi app/signatures.py. fixture real = letta da un dispositivo vero; simulated = dai dati noti del produttore, da confermare.",
+  "signatures": [
+    {
+      "id": "google-home-speaker",
+      "group": "audio",
+      "kind": "speaker",
+      "weight": 14,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "google home|home mini|nest mini|nest audio|home max"
+        }
+      ]
+    },
+    {
+      "id": "google-nest-display",
+      "group": "audio",
+      "kind": "smartdisplay",
+      "weight": 14,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "nest hub|home hub"
+        }
+      ]
+    },
+    {
+      "id": "chromecast",
+      "group": "media",
+      "kind": "streaming",
+      "weight": 10,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "^chromecast"
+        },
+        {
+          "field": "mdns_services",
+          "has": "_googlecast._tcp"
+        }
+      ]
+    },
+    {
+      "id": "amazon-echo",
+      "group": "audio",
+      "kind": "voice",
+      "weight": 14,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "^echo( dot| pop| studio| spot| plus| flex)"
+        }
+      ]
+    },
+    {
+      "id": "amazon-echo-show",
+      "group": "audio",
+      "kind": "smartdisplay",
+      "weight": 14,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "^echo show"
+        }
+      ]
+    },
+    {
+      "id": "amazon-fire-tv",
+      "group": "media",
+      "kind": "streaming",
+      "weight": 10,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "mdns_services",
+          "has": "_amzn-wplay._tcp"
+        },
+        {
+          "field": "port_labels",
+          "re": "fire ?tv"
+        }
+      ]
+    },
+    {
+      "id": "sony-playstation",
+      "group": "media",
+      "kind": "console",
+      "weight": 10,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "dhcp_class",
+          "re": "^ps[2345]$"
+        }
+      ]
+    },
+    {
+      "id": "apple-tv",
+      "group": "media",
+      "kind": "streaming",
+      "weight": 10,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "^appletv"
+        }
+      ]
+    },
+    {
+      "id": "apple-homepod",
+      "group": "audio",
+      "kind": "speaker",
+      "weight": 14,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "mdns_model",
+          "re": "^audioaccessory"
+        }
+      ]
+    },
+    {
+      "id": "proxmox-ve",
+      "group": "server",
+      "kind": "server",
+      "weight": 10,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "http_server",
+          "re": "pve-api-daemon"
+        }
+      ]
+    },
+    {
+      "id": "home-assistant",
+      "group": "server",
+      "kind": "homeassistant",
+      "weight": 10,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "title",
+          "re": "^home assistant$"
+        },
+        {
+          "field": "ports",
+          "has": 8123
+        }
+      ]
+    },
+    {
+      "id": "node-red",
+      "group": "server",
+      "kind": "server",
+      "weight": 8,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "title",
+          "re": "^node-red$"
+        },
+        {
+          "field": "ports",
+          "has": 1880
+        }
+      ]
+    },
+    {
+      "id": "grafana",
+      "group": "server",
+      "kind": "server",
+      "weight": 8,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "title",
+          "re": "grafana"
+        },
+        {
+          "field": "ports",
+          "has": 3000
+        }
+      ]
+    },
+    {
+      "id": "synology-nas",
+      "group": "server",
+      "kind": "nas",
+      "weight": 10,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "title",
+          "re": "synology|diskstation"
+        }
+      ]
+    }
+  ]
+}

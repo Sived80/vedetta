@@ -1,0 +1,7 @@
+{
+  "alert.new_device": "New device on the network: {label} ({ip})",
+  "error.no_mac": "No MAC address known for this device",
+  "alert.ip_changed": "{label} changed address: {old} → {new}",
+  "alert.dhcp_multiple": "More than one DHCP server on the network: {servers}. One may be unwanted.",
+  "alert.ip_conflict": "Duplicate IP: {ip} answers from more than one device ({macs})"
+}

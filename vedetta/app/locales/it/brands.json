@@ -1,0 +1,13 @@
+{
+  "brands.error.invalid_body": "Richiesta non valida",
+  "brands.error.invalid_kind": "Tipo di regola non valido",
+  "brands.error.invalid_text": "Il testo da cercare deve avere da 2 a 80 caratteri",
+  "brands.error.invalid_brand": "La marca deve avere da 1 a 60 caratteri",
+  "brands.error.rule_not_found": "Regola non trovata",
+  "brands.error.save_failed": "Salvataggio della regola non riuscito",
+  "brands.error.update_running": "Un aggiornamento e' gia' in corso",
+  "brands.error.update_network": "Download non riuscito, controlla la connessione a internet ({detail})",
+  "brands.error.update_invalid": "Il file scaricato non e' un elenco di prefissi MAC valido",
+  "brands.error.update_too_small": "L'elenco scaricato sembra incompleto ({detail} voci), aggiornamento annullato",
+  "brands.error.update_write": "Impossibile salvare l'elenco aggiornato {detail}"
+}

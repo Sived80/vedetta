@@ -1,0 +1,9 @@
+{
+  "extra.brand": "Brand",
+  "extra.mdns_model": "mDNS model",
+  "battery.yes": "Battery powered",
+  "battery.src.api": "reported by the device",
+  "battery.src.scan": "from the last scan",
+  "battery.src.hint": "inferred from the model",
+  "battery.src.model": "from the model"
+}

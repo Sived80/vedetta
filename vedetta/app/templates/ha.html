@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="{{ lang }}" data-theme="{{ theme }}"{% if transparent %} data-bg="transparent"{% endif %}{% if compact %} data-compact="1"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Vedetta</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 9 5 15 M12 9 19 15' stroke='%2303a9f4' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='6' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='5' cy='18' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='19' cy='18' r='3.2' fill='%2303a9f4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{{ base }}/static/ha/ha.css?v={{ static_version('ha/ha.css') }}">
+  <script>
+    // Tema prima del primo disegno (niente lampo): vale il parametro ?theme=
+    // gia' scritto dal server; senza parametro si usa l'ultima scelta fatta
+    // dal menu, se c'e'.
+    (function () {
+      try {
+        if (!new URLSearchParams(location.search).has("theme")) {
+          var s = localStorage.getItem("vedetta-ha-theme");
+          if (s === "light" || s === "dark") document.documentElement.setAttribute("data-theme", s);
+        }
+        if (localStorage.getItem("vedetta-ha-view") === "list") document.documentElement.setAttribute("data-view", "list");
+      } catch (err) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="ha-root" id="root" data-limit="{{ limit }}">
+    <div class="banner" id="banner" role="alert" hidden></div>
+
+    <header class="toolbar" id="toolbar" hidden>
+      <div class="search" id="search-box">
+        <span class="search-icon" id="search-icon"></span>
+        <input type="search" id="search" autocomplete="off" spellcheck="false" enterkeyhint="search">
+        <button type="button" class="icon-btn small touch" id="search-clear" hidden></button>
+      </div>
+      <button type="button" class="live" id="live" aria-haspopup="true" aria-expanded="false"><span class="live-dot"></span><span class="live-text" id="live-text" role="status"></span></button>
+      <div class="menu-wrap">
+        <button type="button" class="icon-btn touch" id="btn-menu" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="menu" id="menu" role="menu" hidden></div>
+        <div class="menu" id="pause-menu" role="menu" hidden></div>
+        <div class="menu" id="deep-menu" role="menu" hidden></div>
+        <div class="menu" id="log-menu" role="menu" hidden></div>
+      </div>
+    </header>
+
+    <main class="view" id="view">
+      <div class="col-side">
+        <div class="ha-card" id="card-network">
+          <!-- Scheletro mostrato finche' non arrivano i dati -->
+          <div class="skel-network" aria-hidden="true">
+            <div class="skeleton sk-title"></div>
+            <div class="skel-row"><div class="skeleton sk-ring"></div><div class="skel-col"><div class="skeleton sk-line"></div><div class="skeleton sk-line short"></div></div></div>
+            <div class="skel-row"><div class="skeleton sk-pill"></div><div class="skeleton sk-pill"></div><div class="skeleton sk-pill"></div></div>
+          </div>
+        </div>
+        <div class="ha-card" id="card-new" hidden></div>
+        <div class="ha-card" id="card-log" hidden></div>
+      </div>
+      <div class="col-main" id="groups">
+        <div class="skel-tiles" id="skeleton-tiles" aria-hidden="true">
+          <div class="skeleton sk-heading"></div>
+          <div class="tiles">
+            <div class="skeleton sk-tile"></div><div class="skeleton sk-tile"></div><div class="skeleton sk-tile"></div>
+            <div class="skeleton sk-tile"></div><div class="skeleton sk-tile"></div><div class="skeleton sk-tile"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="more-info" id="more" aria-labelledby="more-title"></dialog>
+  <dialog class="more-info" id="flows" aria-labelledby="flows-title"></dialog>
+  <dialog class="more-info" id="deepall" aria-labelledby="deepall-title"></dialog>
+  <dialog class="more-info" id="ignored" aria-labelledby="ignored-title"></dialog>
+  <dialog class="more-info" id="exportdlg" aria-labelledby="exportdlg-title"></dialog>
+  <div class="snack-stack" id="snacks" popover="manual" aria-live="polite" aria-atomic="false"></div>
+
+  <noscript><p style="padding:16px;font-family:sans-serif">JavaScript is required.</p></noscript>
+  {%- if base %}{# percorso base (ingress di HA): wrapper di fetch/EventSource, assente alla radice #}
+  <script>window.VEDETTA_BASE = {{ base|tojson }};</script>
+  <script src="{{ base }}/static/js/base.js?v={{ static_version('js/base.js') }}"></script>
+  {%- endif %}
+  <script>
+    window.VEDETTA_LANG = {{ lang|tojson }};
+    window.VEDETTA_I18N = {{ js_strings|tojson }};
+    window.VEDETTA_LANGS = {{ languages|tojson }};
+  </script>
+  <script src="{{ base }}/static/ha/icons.js?v={{ static_version('ha/icons.js') }}"></script>
+  <script src="{{ base }}/static/ha/ha.js?v={{ static_version('ha/ha.js') }}"></script>
+</body>
+</html>

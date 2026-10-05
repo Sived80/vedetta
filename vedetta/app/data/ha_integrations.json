@@ -1,0 +1,151 @@
+{
+ "_comment": "Dominio dell'integrazione di Home Assistant -> categoria (group) e tipo (kind, per l'icona). Dichiarato da HA: pesa come un dato dichiarato. platform=true: firmware/piattaforma generica (dice 'apparecchio smart', non cosa fa): vale poco e con tetto, come Shelly/Tasmota.",
+ "integrations": {
+  "shelly": {
+   "group": "iot",
+   "platform": true
+  },
+  "tasmota": {
+   "group": "iot",
+   "platform": true
+  },
+  "esphome": {
+   "group": "iot",
+   "platform": true
+  },
+  "flux_led": {
+   "group": "iot",
+   "kind": "ledstrip"
+  },
+  "hue": {
+   "group": "iot",
+   "kind": "light"
+  },
+  "wiz": {
+   "group": "iot",
+   "kind": "light"
+  },
+  "yeelight": {
+   "group": "iot",
+   "kind": "light"
+  },
+  "tplink": {
+   "group": "iot",
+   "platform": true
+  },
+  "tuya": {
+   "group": "iot",
+   "platform": true
+  },
+  "zha": {
+   "group": "iot",
+   "kind": "hub",
+   "platform": true
+  },
+  "nut": {
+   "group": "iot",
+   "kind": "ups"
+  },
+  "onvif": {
+   "group": "media",
+   "kind": "camera"
+  },
+  "generic_camera": {
+   "group": "media",
+   "kind": "camera"
+  },
+  "reolink": {
+   "group": "media",
+   "kind": "camera"
+  },
+  "braviatv": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "androidtv_remote": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "androidtv": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "samsungtv": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "webostv": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "roku": {
+   "group": "media",
+   "kind": "streaming"
+  },
+  "cast": {
+   "group": "media",
+   "kind": "streaming"
+  },
+  "nfandroidtv": {
+   "group": "media",
+   "kind": "tv"
+  },
+  "dlna_dmr": {
+   "group": "media"
+  },
+  "sonos": {
+   "group": "audio",
+   "kind": "speaker"
+  },
+  "heos": {
+   "group": "audio",
+   "kind": "speaker"
+  },
+  "denonavr": {
+   "group": "audio",
+   "kind": "receiver"
+  },
+  "mobile_app": {
+   "group": "phone"
+  },
+  "ipp": {
+   "group": "printer",
+   "kind": "printer"
+  },
+  "brother": {
+   "group": "printer",
+   "kind": "printer"
+  },
+  "proxmoxve": {
+   "group": "server",
+   "kind": "server"
+  },
+  "synology_dsm": {
+   "group": "server",
+   "kind": "nas"
+  },
+  "qnap": {
+   "group": "server",
+   "kind": "nas"
+  },
+  "fritz": {
+   "group": "router",
+   "kind": "router"
+  },
+  "fritzbox": {
+   "group": "router",
+   "kind": "router"
+  },
+  "unifi": {
+   "group": "router"
+  },
+  "tplink_router": {
+   "group": "router",
+   "kind": "router"
+  },
+  "mikrotik": {
+   "group": "router",
+   "kind": "router"
+  }
+ }
+}

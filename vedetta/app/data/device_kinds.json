@@ -1,0 +1,1506 @@
+{
+ "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND).",
+ "kinds": [
+  {
+   "id": "accesspoint",
+   "group": "router",
+   "icon": "access-point",
+   "words": [
+    "access point",
+    "accesspoint"
+   ],
+   "tokens": [
+    "ap",
+    "wap"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": [
+    "WLANAccessPointDevice",
+    "WFADevice"
+   ]
+  },
+  {
+   "id": "repeater",
+   "group": "router",
+   "icon": "wifi-arrow-up-down",
+   "words": [
+    "repeater",
+    "extender",
+    "ripetitore"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "modem",
+   "group": "router",
+   "icon": "router-network",
+   "words": [
+    "modem"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "netswitch",
+   "group": "router",
+   "icon": "switch",
+   "words": [
+    "ethernet switch",
+    "network switch",
+    "managed switch"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "router",
+   "group": "router",
+   "icon": "router-wireless",
+   "words": [
+    "router",
+    "firewall",
+    "mesh"
+   ],
+   "tokens": [],
+   "w": 2,
+   "mdns": [],
+   "upnp": [
+    "InternetGatewayDevice"
+   ],
+   "brands": [
+    "avm",
+    "mikrotik"
+   ]
+  },
+  {
+   "id": "hub",
+   "group": "router",
+   "icon": "hub",
+   "words": [
+    "bridge",
+    "coordinator",
+    "zigbee",
+    "z-wave",
+    "zwave",
+    "gateway"
+   ],
+   "tokens": [
+    "hub",
+    "matter",
+    "thread"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "nas",
+   "group": "server",
+   "icon": "nas",
+   "words": [
+    "network storage",
+    "fileserver"
+   ],
+   "tokens": [
+    "nas",
+    "nfs"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": [],
+   "brands": [
+    "synology",
+    "qnap",
+    "truenas",
+    "asustor",
+    "terramaster"
+   ]
+  },
+  {
+   "id": "raspberrypi",
+   "group": "server",
+   "icon": "raspberry-pi",
+   "words": [
+    "raspberry",
+    "raspbian"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": [],
+   "product": true
+  },
+  {
+   "id": "homeassistant",
+   "group": "server",
+   "icon": "home-assistant",
+   "words": [
+    "home assistant",
+    "homeassistant",
+    "hassio"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": [],
+   "product": true
+  },
+  {
+   "id": "container",
+   "group": "server",
+   "icon": "docker",
+   "words": [
+    "docker",
+    "container",
+    "kubernetes"
+   ],
+   "tokens": [
+    "lxc",
+    "k8s"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "database",
+   "group": "server",
+   "icon": "database",
+   "words": [
+    "database",
+    "mysql",
+    "postgres",
+    "mariadb"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "server",
+   "group": "server",
+   "icon": "server",
+   "words": [
+    "proxmox",
+    "hypervisor",
+    "virtual machine"
+   ],
+   "tokens": [
+    "vm"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": [],
+   "brands": [
+    "proxmox",
+    "vmware",
+    "supermicro"
+   ]
+  },
+  {
+   "id": "laptop",
+   "group": "pc",
+   "icon": "laptop",
+   "words": [
+    "laptop",
+    "notebook",
+    "portatile",
+    "chromebook"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "desktop",
+   "group": "pc",
+   "icon": "desktop-tower",
+   "words": [
+    "desktop",
+    "workstation"
+   ],
+   "tokens": [
+    "pc"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": [],
+   "brands": [
+    "msi",
+    "dell",
+    "lenovo",
+    "acer",
+    "alienware",
+    "razer"
+   ]
+  },
+  {
+   "id": "monitor",
+   "group": "pc",
+   "icon": "monitor",
+   "words": [
+    "monitor"
+   ],
+   "tokens": [],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "smartphone",
+   "group": "phone",
+   "icon": "cellphone",
+   "words": [
+    "smartphone",
+    "cellulare",
+    "telefono"
+   ],
+   "tokens": [
+    "phone",
+    "mobile"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "voipphone",
+   "group": "phone",
+   "icon": "phone-classic",
+   "words": [
+    "voip phone",
+    "sip phone",
+    "ip phone",
+    "telefono fisso",
+    "telefono ip",
+    "telefono voip"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "tablet",
+   "group": "phone",
+   "icon": "tablet",
+   "words": [
+    "tablet"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "watch",
+   "group": "phone",
+   "icon": "watch",
+   "words": [
+    "smartwatch",
+    "orologio"
+   ],
+   "tokens": [
+    "watch"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "tv",
+   "group": "media",
+   "icon": "television",
+   "words": [
+    "television",
+    "televisore",
+    "smart tv",
+    "smarttv"
+   ],
+   "tokens": [
+    "tv"
+   ],
+   "w": 3,
+   "mdns": [
+    "_androidtvremote2._tcp"
+   ],
+   "upnp": []
+  },
+  {
+   "id": "streaming",
+   "group": "media",
+   "icon": "cast",
+   "words": [
+    "streaming",
+    "dongle"
+   ],
+   "tokens": [
+    "stick",
+    "cast"
+   ],
+   "w": 3,
+   "mdns": [
+    "_googlecast._tcp",
+    "_amzn-wplay._tcp"
+   ],
+   "upnp": [
+    "MediaRenderer",
+    "dial"
+   ],
+   "brands": [
+    "roku"
+   ]
+  },
+  {
+   "id": "settop",
+   "group": "media",
+   "icon": "set-top-box",
+   "words": [
+    "set-top",
+    "settop",
+    "decoder",
+    "iptv"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "console",
+   "group": "media",
+   "icon": "gamepad-variant",
+   "words": [
+    "console",
+    "gaming",
+    "playstation",
+    "xbox",
+    "nintendo"
+   ],
+   "tokens": [
+    "ps2",
+    "ps3",
+    "ps4",
+    "ps5",
+    "psp",
+    "wii"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": [],
+   "brands": []
+  },
+  {
+   "id": "projector",
+   "group": "media",
+   "icon": "projector",
+   "words": [
+    "projector",
+    "proiettore"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "camera",
+   "group": "media",
+   "icon": "cctv",
+   "words": [
+    "ip camera",
+    "ipcamera",
+    "telecamera",
+    "ipcam",
+    "cctv",
+    "onvif"
+   ],
+   "tokens": [
+    "cam"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": [],
+   "brands": [
+    "milesight",
+    "hikvision",
+    "dahua",
+    "reolink",
+    "axis",
+    "amcrest",
+    "foscam",
+    "uniview",
+    "vivotek",
+    "annke",
+    "ezviz",
+    "imou",
+    "lorex",
+    "swann",
+    "hiwatch"
+   ]
+  },
+  {
+   "id": "nvr",
+   "group": "media",
+   "icon": "monitor-eye",
+   "words": [
+    "videoregistratore",
+    "videosorveglianza",
+    "surveillance"
+   ],
+   "tokens": [
+    "nvr",
+    "dvr",
+    "tvcc"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "webcam",
+   "group": "media",
+   "icon": "webcam",
+   "words": [
+    "webcam"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "wificam",
+   "group": "media",
+   "icon": "camera-wireless",
+   "words": [
+    "wireless camera",
+    "telecamera wifi",
+    "wifi camera"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "voice",
+   "group": "audio",
+   "icon": "account-voice",
+   "words": [
+    "voice assistant",
+    "assistente vocale",
+    "comando vocale",
+    "voice control",
+    "voice"
+   ],
+   "tokens": [
+    "vocale"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "smartdisplay",
+   "group": "audio",
+   "icon": "microphone-message",
+   "words": [
+    "smart display",
+    "smartdisplay",
+    "assistant"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "speaker",
+   "group": "audio",
+   "icon": "speaker-wireless",
+   "words": [
+    "speaker",
+    "diffusore",
+    "altoparlante"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [
+    "_sonos._tcp"
+   ],
+   "upnp": [],
+   "brands": [
+    "sonos",
+    "bose",
+    "jbl"
+   ]
+  },
+  {
+   "id": "soundbar",
+   "group": "audio",
+   "icon": "soundbar",
+   "words": [
+    "soundbar"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "receiver",
+   "group": "audio",
+   "icon": "speaker",
+   "words": [
+    "receiver",
+    "amplifier",
+    "amplificatore",
+    "hifi"
+   ],
+   "tokens": [
+    "avr",
+    "amp"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "radio",
+   "group": "audio",
+   "icon": "radio",
+   "words": [
+    "radio"
+   ],
+   "tokens": [
+    "dab"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "printer",
+   "group": "printer",
+   "icon": "printer",
+   "words": [
+    "printer",
+    "stampante",
+    "laserjet",
+    "inkjet"
+   ],
+   "tokens": [
+    "ipp",
+    "cups"
+   ],
+   "w": 3,
+   "mdns": [
+    "_ipp._tcp",
+    "_ipps._tcp",
+    "_printer._tcp",
+    "_pdl-datastream._tcp"
+   ],
+   "upnp": [
+    "Printer"
+   ],
+   "brands": [
+    "epson",
+    "brother",
+    "canon",
+    "lexmark",
+    "kyocera",
+    "xerox",
+    "ricoh"
+   ]
+  },
+  {
+   "id": "printer3d",
+   "group": "printer",
+   "icon": "printer-3d",
+   "words": [
+    "3d printer",
+    "stampante 3d"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "scanner",
+   "group": "printer",
+   "icon": "scanner",
+   "words": [
+    "scanner"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "light",
+   "group": "iot",
+   "icon": "lightbulb",
+   "words": [
+    "light",
+    "lamp",
+    "bulb",
+    "luce",
+    "lampada",
+    "lampadina",
+    "illuminazione"
+   ],
+   "tokens": [
+    "luci"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "ledstrip",
+   "group": "iot",
+   "icon": "led-strip-variant",
+   "words": [
+    "led strip",
+    "striscia led",
+    "nastro led"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "plug",
+   "group": "iot",
+   "icon": "power-plug",
+   "words": [
+    "plug",
+    "socket",
+    "outlet",
+    "presa"
+   ],
+   "tokens": [
+    "spina"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "dimmer",
+   "group": "iot",
+   "icon": "lightbulb-on-outline",
+   "words": [
+    "dimmer"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "switch",
+   "group": "iot",
+   "icon": "toggle-switch",
+   "words": [
+    "switch",
+    "relay",
+    "interruttore"
+   ],
+   "tokens": [],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "temperature",
+   "group": "iot",
+   "icon": "thermometer",
+   "words": [
+    "temperature",
+    "temperatura",
+    "thermometer",
+    "termometro"
+   ],
+   "tokens": [
+    "temp"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "humidity",
+   "group": "iot",
+   "icon": "water-percent",
+   "words": [
+    "humidity",
+    "umidita",
+    "hygrometer"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "microcontroller",
+   "group": "iot",
+   "icon": "chip",
+   "words": [
+    "esp32",
+    "esp8266",
+    "espressif",
+    "esphome"
+   ],
+   "tokens": [],
+   "w": 2,
+   "mdns": [
+    "_esphomelib._tcp"
+   ],
+   "upnp": []
+  },
+  {
+   "id": "bluetooth",
+   "group": "iot",
+   "icon": "bluetooth",
+   "words": [
+    "bluetooth"
+   ],
+   "tokens": [
+    "ble"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "thermostat",
+   "group": "climate",
+   "icon": "thermostat",
+   "words": [
+    "thermostat",
+    "termostato",
+    "cronotermostato"
+   ],
+   "tokens": [
+    "thermo"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "heatpump",
+   "group": "climate",
+   "icon": "heat-pump",
+   "words": [
+    "heat pump",
+    "heatpump",
+    "pompa di calore",
+    "pompa calore",
+    "aerotermic"
+   ],
+   "tokens": [],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "aircon",
+   "group": "climate",
+   "icon": "air-conditioner",
+   "words": [
+    "air conditioner",
+    "conditioning",
+    "condizionatore",
+    "climatizzatore"
+   ],
+   "tokens": [
+    "hvac",
+    "clima",
+    "climate",
+    "ac"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "heater",
+   "group": "climate",
+   "icon": "radiator",
+   "words": [
+    "heater",
+    "radiator",
+    "riscaldatore",
+    "termosifone",
+    "riscaldamento",
+    "heating",
+    "stufa",
+    "convector",
+    "termoventilatore"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "boiler",
+   "group": "climate",
+   "icon": "water-boiler",
+   "words": [
+    "boiler",
+    "caldaia",
+    "scaldabagno",
+    "water heater",
+    "bollitore",
+    "geyser"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "underfloor",
+   "group": "climate",
+   "icon": "heating-coil",
+   "words": [
+    "underfloor",
+    "radiante",
+    "floor heating"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "fan",
+   "group": "climate",
+   "icon": "fan",
+   "words": [
+    "ventilator",
+    "ventilatore"
+   ],
+   "tokens": [
+    "fan"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "humidifier",
+   "group": "climate",
+   "icon": "air-humidifier",
+   "words": [
+    "humidifier",
+    "umidificatore",
+    "deumidificatore",
+    "dehumidifier"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "purifier",
+   "group": "climate",
+   "icon": "air-purifier",
+   "words": [
+    "purifier",
+    "purificatore"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "pump",
+   "group": "water",
+   "icon": "pump",
+   "words": [
+    "pompa",
+    "circolatore",
+    "circulator"
+   ],
+   "tokens": [
+    "pump"
+   ],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "irrigation",
+   "group": "water",
+   "icon": "sprinkler-variant",
+   "words": [
+    "irrigat",
+    "sprinkler",
+    "irrigazione",
+    "giardino"
+   ],
+   "tokens": [
+    "garden"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "pool",
+   "group": "water",
+   "icon": "pool",
+   "words": [
+    "pool",
+    "piscina",
+    "swimming"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "well",
+   "group": "water",
+   "icon": "water-well",
+   "words": [
+    "pozzo",
+    "cisterna"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "airfryer",
+   "group": "appliance",
+   "icon": "toaster-oven",
+   "words": [
+    "air fryer",
+    "airfryer",
+    "friggitrice",
+    "fryer"
+   ],
+   "tokens": [],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "oven",
+   "group": "appliance",
+   "icon": "stove",
+   "words": [
+    "oven",
+    "forno",
+    "cooktop",
+    "induction",
+    "piano cottura"
+   ],
+   "tokens": [
+    "stove",
+    "hob"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "microwave",
+   "group": "appliance",
+   "icon": "microwave",
+   "words": [
+    "microwave",
+    "microonde"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "coffee",
+   "group": "appliance",
+   "icon": "coffee-maker",
+   "words": [
+    "coffee",
+    "caffe",
+    "espresso"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "kettle",
+   "group": "appliance",
+   "icon": "kettle",
+   "words": [
+    "kettle",
+    "bollitore elettrico"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "washer",
+   "group": "appliance",
+   "icon": "washing-machine",
+   "words": [
+    "washing machine",
+    "washer",
+    "lavatrice",
+    "lavasciuga"
+   ],
+   "tokens": [],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "dryer",
+   "group": "appliance",
+   "icon": "tumble-dryer",
+   "words": [
+    "dryer",
+    "asciugatrice"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "dishwasher",
+   "group": "appliance",
+   "icon": "dishwasher",
+   "words": [
+    "dishwasher",
+    "lavastoviglie"
+   ],
+   "tokens": [],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "fridge",
+   "group": "appliance",
+   "icon": "fridge",
+   "words": [
+    "fridge",
+    "refrigerator",
+    "frigorifero",
+    "freezer",
+    "congelatore"
+   ],
+   "tokens": [
+    "frigo"
+   ],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "vacuum",
+   "group": "appliance",
+   "icon": "robot-vacuum",
+   "words": [
+    "vacuum",
+    "aspirapolvere",
+    "aspirarifiuti"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "mower",
+   "group": "appliance",
+   "icon": "robot-mower",
+   "words": [
+    "mower",
+    "tosaerba",
+    "rasaerba"
+   ],
+   "tokens": [],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "cooker",
+   "group": "appliance",
+   "icon": "pot-steam",
+   "words": [
+    "cooker",
+    "multicooker",
+    "pentola"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "grill",
+   "group": "appliance",
+   "icon": "grill",
+   "words": [
+    "grill",
+    "barbecue"
+   ],
+   "tokens": [
+    "bbq"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "iron",
+   "group": "appliance",
+   "icon": "iron",
+   "words": [
+    "ferro da stiro"
+   ],
+   "tokens": [
+    "iron"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "scale",
+   "group": "appliance",
+   "icon": "scale-bathroom",
+   "words": [
+    "bilancia"
+   ],
+   "tokens": [
+    "scale"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "inverter",
+   "group": "energy",
+   "icon": "solar-power",
+   "words": [
+    "inverter",
+    "solar",
+    "fotovoltaic",
+    "photovoltaic"
+   ],
+   "tokens": [
+    "pv"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "battery",
+   "group": "energy",
+   "icon": "home-battery",
+   "words": [
+    "battery storage",
+    "home battery",
+    "accumulo"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "meter",
+   "group": "energy",
+   "icon": "meter-electric",
+   "words": [
+    "energy meter",
+    "power meter",
+    "smart meter",
+    "contatore"
+   ],
+   "tokens": [
+    "meter"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "evcharger",
+   "group": "energy",
+   "icon": "ev-station",
+   "words": [
+    "wallbox",
+    "ev charger",
+    "charging station",
+    "colonnina"
+   ],
+   "tokens": [
+    "evse"
+   ],
+   "w": 5,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "ups",
+   "group": "energy",
+   "icon": "battery-charging",
+   "words": [
+    "uninterruptible"
+   ],
+   "tokens": [
+    "ups"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "generator",
+   "group": "energy",
+   "icon": "generator-stationary",
+   "words": [
+    "generator",
+    "generatore"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "alarm",
+   "group": "security",
+   "icon": "shield-home",
+   "words": [
+    "alarm",
+    "allarme",
+    "antifurto",
+    "burglar"
+   ],
+   "tokens": [],
+   "w": 2,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "siren",
+   "group": "security",
+   "icon": "alarm-light",
+   "words": [
+    "siren",
+    "sirena"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "lock",
+   "group": "security",
+   "icon": "lock-smart",
+   "words": [
+    "serratura",
+    "deadbolt"
+   ],
+   "tokens": [
+    "lock"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "doorbell",
+   "group": "security",
+   "icon": "doorbell-video",
+   "words": [
+    "doorbell",
+    "citofono",
+    "videocitofono",
+    "intercom",
+    "campanello"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "smoke",
+   "group": "security",
+   "icon": "smoke-detector-variant",
+   "words": [
+    "smoke",
+    "carbon monoxide"
+   ],
+   "tokens": [
+    "fumo"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "motion",
+   "group": "security",
+   "icon": "motion-sensor",
+   "words": [
+    "motion",
+    "movimento",
+    "presenza"
+   ],
+   "tokens": [
+    "pir"
+   ],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "opening",
+   "group": "security",
+   "icon": "door-open",
+   "words": [
+    "door sensor",
+    "window sensor",
+    "contact sensor",
+    "contatto magnetico"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "leak",
+   "group": "security",
+   "icon": "water-alert",
+   "words": [
+    "leak",
+    "flood",
+    "perdita",
+    "allagamento"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "blinds",
+   "group": "cover",
+   "icon": "blinds",
+   "words": [
+    "blind",
+    "shutter",
+    "tapparella",
+    "persiana",
+    "veneziana"
+   ],
+   "tokens": [
+    "roller"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "curtain",
+   "group": "cover",
+   "icon": "curtains",
+   "words": [
+    "curtain",
+    "tende"
+   ],
+   "tokens": [
+    "tenda"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "garage",
+   "group": "cover",
+   "icon": "garage",
+   "words": [
+    "garage",
+    "basculante",
+    "sezionale"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "gate",
+   "group": "cover",
+   "icon": "gate",
+   "words": [
+    "cancello",
+    "portone",
+    "barrier",
+    "sbarra"
+   ],
+   "tokens": [
+    "gate"
+   ],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "awning",
+   "group": "cover",
+   "icon": "awning",
+   "words": [
+    "awning",
+    "tenda da sole",
+    "markise"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  }
+ ]
+}

@@ -1,0 +1,547 @@
+{
+ "_comment": "Regole per riconoscere la marca. Per aggiungere o correggere senza toccare il codice: crea config/brands.json con le stesse chiavi; le regole li' hanno la precedenza.",
+ "aliases": [
+  [
+   "apple",
+   "Apple"
+  ],
+  [
+   "flextronics",
+   "Apple"
+  ],
+  [
+   "amazon",
+   "Amazon"
+  ],
+  [
+   "google",
+   "Google"
+  ],
+  [
+   "samsung",
+   "Samsung"
+  ],
+  [
+   "xiaomi",
+   "Xiaomi"
+  ],
+  [
+   "huawei",
+   "Huawei"
+  ],
+  [
+   "honor device",
+   "Honor"
+  ],
+  [
+   "oneplus",
+   "OnePlus"
+  ],
+  [
+   "guangdong oppo",
+   "OPPO"
+  ],
+  [
+   "oppo",
+   "OPPO"
+  ],
+  [
+   "vivo mobile",
+   "vivo"
+  ],
+  [
+   "tp-link",
+   "TP-Link"
+  ],
+  [
+   "tplink",
+   "TP-Link"
+  ],
+  [
+   "espressif",
+   "Espressif"
+  ],
+  [
+   "allterco",
+   "Shelly"
+  ],
+  [
+   "shelly",
+   "Shelly"
+  ],
+  [
+   "avm",
+   "AVM"
+  ],
+  [
+   "proxmox",
+   "Proxmox"
+  ],
+  [
+   "raspberry pi",
+   "Raspberry Pi"
+  ],
+  [
+   "tuya",
+   "Tuya"
+  ],
+  [
+   "itead",
+   "Sonoff"
+  ],
+  [
+   "sonoff",
+   "Sonoff"
+  ],
+  [
+   "intel",
+   "Intel"
+  ],
+  [
+   "realtek",
+   "Realtek"
+  ],
+  [
+   "microsoft",
+   "Microsoft"
+  ],
+  [
+   "sony",
+   "Sony"
+  ],
+  [
+   "lg electronics",
+   "LG"
+  ],
+  [
+   "signify",
+   "Philips Hue"
+  ],
+  [
+   "philips lighting",
+   "Philips Hue"
+  ],
+  [
+   "ubiquiti",
+   "Ubiquiti"
+  ],
+  [
+   "netgear",
+   "Netgear"
+  ],
+  [
+   "asustek",
+   "ASUS"
+  ],
+  [
+   "asus",
+   "ASUS"
+  ],
+  [
+   "d-link",
+   "D-Link"
+  ],
+  [
+   "cisco",
+   "Cisco"
+  ],
+  [
+   "hewlett",
+   "HP"
+  ],
+  [
+   "hp inc",
+   "HP"
+  ],
+  [
+   "dell",
+   "Dell"
+  ],
+  [
+   "lenovo",
+   "Lenovo"
+  ],
+  [
+   "micro-star",
+   "MSI"
+  ],
+  [
+   "nintendo",
+   "Nintendo"
+  ],
+  [
+   "synology",
+   "Synology"
+  ],
+  [
+   "qnap",
+   "QNAP"
+  ],
+  [
+   "sonos",
+   "Sonos"
+  ],
+  [
+   "roku",
+   "Roku"
+  ],
+  [
+   "ring llc",
+   "Ring"
+  ],
+  [
+   "nest labs",
+   "Google Nest"
+  ],
+  [
+   "vmware",
+   "VMware"
+  ],
+  [
+   "qemu",
+   "QEMU"
+  ],
+  [
+   "microchip",
+   "Microchip"
+  ],
+  [
+   "texas instruments",
+   "Texas Instruments"
+  ],
+  [
+   "wnc",
+   "Wistron NeWeb"
+  ],
+  [
+   "wistron",
+   "Wistron NeWeb"
+  ],
+  [
+   "hikvision",
+   "Hikvision"
+  ],
+  [
+   "dahua",
+   "Dahua"
+  ],
+  [
+   "reolink",
+   "Reolink"
+  ],
+  [
+   "tenda",
+   "Tenda"
+  ],
+  [
+   "zyxel",
+   "Zyxel"
+  ],
+  [
+   "mikrotik",
+   "MikroTik"
+  ],
+  [
+   "canon",
+   "Canon"
+  ],
+  [
+   "epson",
+   "Epson"
+  ],
+  [
+   "brother industries",
+   "Brother"
+  ],
+  [
+   "hon hai",
+   "Foxconn"
+  ],
+  [
+   "foxconn",
+   "Foxconn"
+  ]
+ ],
+ "name_hints": [
+  [
+   "\\bshelly",
+   "Shelly"
+  ],
+  [
+   "\\b(iphone|ipad|macbook|imac|apple[- ]?tv|homepod)",
+   "Apple"
+  ],
+  [
+   "\\b(galaxy|samsung)",
+   "Samsung"
+  ],
+  [
+   "\\bpixel\\b",
+   "Google"
+  ],
+  [
+   "\\b(xiaomi|redmi|poco)\\b",
+   "Xiaomi"
+  ],
+  [
+   "\\bhuawei",
+   "Huawei"
+  ],
+  [
+   "\\b(oneplus)",
+   "OnePlus"
+  ],
+  [
+   "\\bamzn|\\becho\\b|\\bfire[- ]?tv",
+   "Amazon"
+  ],
+  [
+   "\\bproxmox|\\bpve\\b",
+   "Proxmox"
+  ],
+  [
+   "\\braspberry|\\brpi\\b",
+   "Raspberry Pi"
+  ],
+  [
+   "\\bsony\\b|\\bbravia\\b",
+   "Sony"
+  ],
+  [
+   "\\bfritz",
+   "AVM"
+  ],
+  [
+   "\\bps[2345]\\b|playstation",
+   "Sony"
+  ]
+ ],
+ "software_hints": [
+  [
+   "pve-api-daemon|pveproxy",
+   "Proxmox"
+  ],
+  [
+   "proxmox",
+   "Proxmox"
+  ],
+  [
+   "home ?assistant",
+   "Home Assistant"
+  ],
+  [
+   "\\bsynology|diskstation",
+   "Synology"
+  ],
+  [
+   "\\bqnap",
+   "QNAP"
+  ],
+  [
+   "adguard",
+   "AdGuard"
+  ],
+  [
+   "pi-?hole",
+   "Pi-hole"
+  ],
+  [
+   "unifi",
+   "Ubiquiti"
+  ],
+  [
+   "fritz!?box|fritz!",
+   "AVM"
+  ],
+  [
+   "\\bshelly",
+   "Shelly"
+  ],
+  [
+   "grafana",
+   "Grafana"
+  ]
+ ],
+ "os_family_brand": {
+  "ios": "Apple",
+  "macos": "Apple"
+ },
+ "strip_words": [
+  "ab",
+  "ag",
+  "as",
+  "bv",
+  "co",
+  "communication",
+  "communications",
+  "company",
+  "computer",
+  "computing",
+  "corp",
+  "corporation",
+  "devices",
+  "electronic",
+  "electronics",
+  "gmbh",
+  "group",
+  "holdings",
+  "inc",
+  "industrial",
+  "industries",
+  "international",
+  "iot",
+  "kg",
+  "limited",
+  "llc",
+  "ltd",
+  "network",
+  "networks",
+  "oy",
+  "plc",
+  "products",
+  "pte",
+  "sa",
+  "solutions",
+  "spa",
+  "srl",
+  "systems",
+  "technologies",
+  "technology"
+ ],
+ "strip_leading_places": [
+  "beijing",
+  "chengdu",
+  "dongguan",
+  "fujian",
+  "guangdong",
+  "hangzhou",
+  "hong",
+  "kong",
+  "nanjing",
+  "ningbo",
+  "shanghai",
+  "shenzhen",
+  "suzhou",
+  "taiwan",
+  "tianjin",
+  "wuhan",
+  "xiamen",
+  "zhejiang"
+ ],
+ "vendor_roles": {
+  "_comment": "Chi e' davvero il produttore del prefisso MAC. component = fa chip/moduli/schede di rete (il prodotto e' di un altro: Tuya, Shelly, Sonoff...); virtual = scheda virtuale di un hypervisor (il prodotto e' la VM); dual = fa sia schede sia prodotti finiti (router TP-Link, ma anche server con scheda TP-Link): vale come marca solo se un'altra fonte lo conferma (gateway, UPnP, nome, pagina web). Tutto il resto e' una marca (role brand). I frammenti si cercano nel nome ripulito, in minuscolo.",
+  "component": [
+   "espressif",
+   "bouffalo",
+   "realtek",
+   "mediatek",
+   "ralink",
+   "broadcom",
+   "qualcomm",
+   "atheros",
+   "marvell",
+   "intel",
+   "texas instruments",
+   "silicon lab",
+   "nordic semi",
+   "beken",
+   "hi-flying",
+   "ai-thinker",
+   "murata",
+   "azurewave",
+   "liteon",
+   "lite-on",
+   "wistron neweb",
+   "hon hai",
+   "foxconn",
+   "cloud network",
+   "pegatron",
+   "compal",
+   "quanta",
+   "askey",
+   "arcadyan",
+   "sercomm",
+   "gainspan",
+   "universal global",
+   "shenzhen bilian",
+   "shanghai high-flying",
+   "ampak",
+   "realtek semiconductor",
+   "cypress",
+   "infineon",
+   "nxp",
+   "stmicro",
+   "microchip",
+   "ublox",
+   "u-blox",
+   "telit",
+   "quectel",
+   "fn-link",
+   "lcfc"
+  ],
+  "virtual": [
+   "proxmox",
+   "vmware",
+   "virtualbox",
+   "pcs systemtechnik",
+   "qemu",
+   "xen",
+   "parallels",
+   "docker"
+  ],
+  "dual": [
+   "tp-link",
+   "d-link",
+   "netgear",
+   "asus",
+   "gigabyte",
+   "msi",
+   "tenda",
+   "zyxel",
+   "belkin",
+   "linksys",
+   "mercusys",
+   "edimax",
+   "trendnet"
+  ]
+ },
+ "model_hints": {
+  "_comment": "Modello o nome annunciato dal dispositivo (mDNS _device-info/AirPlay/HomeKit, UPnP, hostname). Per ogni classe: espressioni regolari su testo minuscolo. mobile = telefono/tablet; laptop = portatile (si sposta); fixed = apparecchio fisso (mai mobile).",
+  "mobile": [
+   "\\b(iphone|ipad|ipod)\\d*",
+   "\\b(sm-[a-z]\\d{3}|pixel \\d|redmi|poco [a-z]\\d|mi ?\\d{2}\\b)"
+  ],
+  "laptop": [
+   "\\bmacbook",
+   "\\b(thinkpad|latitude|inspiron|xps|surface (laptop|pro|book))\\b"
+  ],
+  "fixed": [
+   "\\b(imac|macmini|mac mini|macpro|mac pro|mac studio|appletv|apple tv|homepod|audioaccessory|airport)",
+   "\\b(raspberrypi|proxmox|homeassistant)\\b"
+  ]
+ },
+ "battery_hints": [
+  [
+   "\\bsh(ht|wt|dw|mos|sm|btn|trv)-|shelly ?(h&t|flood|door|motion|button|trv|smoke)",
+   "yes"
+  ],
+  [
+   "\\b(ups|smart-ups|back-ups|riello|powerware|eaton 5)\\b",
+   "yes"
+  ]
+ ],
+ "battery_hints_comment": "Indizi di batteria sul testo del modello/SNMP/web: sono per apparecchi FISSI a batteria (sensori, gruppi di continuita'); non rendono il dispositivo mobile. Le API dirette (Shelly /status campo bat, Gen2 devicepower) hanno la precedenza.",
+ "bridge_software": [
+  "aircast",
+  "airconnect",
+  "shairport",
+  "shairport-sync",
+  "owntone",
+  "forked-daapd",
+  "homebridge",
+  "raspotify",
+  "librespot",
+  "mopidy"
+ ],
+ "_comment_bridge": "Software che annuncia in mDNS servizi a nome di ALTRI dispositivi (proxy AirPlay per Chromecast, bridge HomeKit...): nome e marca di quegli annunci non sono del computer che li manda."
+}

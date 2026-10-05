@@ -1,0 +1,13 @@
+{
+  "brands.error.invalid_body": "Invalid request",
+  "brands.error.invalid_kind": "Invalid rule type",
+  "brands.error.invalid_text": "The text to look for must be 2 to 80 characters long",
+  "brands.error.invalid_brand": "The brand must be 1 to 60 characters long",
+  "brands.error.rule_not_found": "Rule not found",
+  "brands.error.save_failed": "Could not save the rule",
+  "brands.error.update_running": "An update is already in progress",
+  "brands.error.update_network": "Download failed, check the internet connection ({detail})",
+  "brands.error.update_invalid": "The downloaded file is not a valid MAC prefix list",
+  "brands.error.update_too_small": "The downloaded list looks incomplete ({detail} entries), update cancelled",
+  "brands.error.update_write": "Could not save the updated list {detail}"
+}

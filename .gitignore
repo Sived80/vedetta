@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+.deploy-tmp/
+
+# Dati di runtime e copie locali: non fanno parte del codice
+config/
+backups/
+archive/
+vedetta/app/static/models/

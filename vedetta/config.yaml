@@ -1,0 +1,41 @@
+name: Vedetta
+version: "0.3.0"
+slug: vedetta
+description: Dashboard di rete locale: trova e riconosce i dispositivi, li mostra in HA e condivide a scelta con Home Assistant
+url: https://example.invalid/vedetta
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+# Il Supervisor controlla questo indirizzo e riavvia l'add-on se non risponde.
+watchdog: http://[HOST]:[PORT:8765]/healthz
+init: false
+# Lettura (sola) dei registri di Home Assistant per nome, marca, modello e area dei dispositivi.
+homeassistant_api: true
+# Serve la rete dell'host per arp-scan, nmap, ping, SSDP/mDNS e il server DHCP passivo (UDP 67).
+host_network: true
+privileged:
+  - NET_ADMIN
+  - NET_RAW
+# Interfaccia web solo tramite ingress (barra laterale di HA). Con host_network la
+# porta e' sull'host: 8765 e' libera nell'installazione collaudata.
+ingress: true
+ingress_port: 8765
+ingress_entry: ha
+ingress_stream: true
+panel_icon: mdi:radar
+panel_title: Vedetta
+services:
+  - mqtt:want
+options:
+  language: en
+  log_level: info
+schema:
+  language: list(en|it)
+  log_level: list(debug|info|warning|error)
+  interface: str?
+  mqtt_host: str?
+  mqtt_port: port?
+  mqtt_username: str?
+  mqtt_password: password?

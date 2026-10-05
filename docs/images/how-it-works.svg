@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" role="img" aria-label="How Vedetta recognizes a device: ten weak clues are fused into name, brand, model, category and area">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1020"/><stop offset="0.55" stop-color="#0f1c33"/><stop offset="1" stop-color="#0b2b45"/></linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#03a9f4" stop-opacity="0.35"/><stop offset="1" stop-color="#03a9f4" stop-opacity="0"/></radialGradient>
+<radialGradient id="core" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#14304f"/><stop offset="1" stop-color="#0c1a2f"/></radialGradient>
+<linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#03a9f4" stop-opacity="0"/><stop offset="1" stop-color="#03a9f4" stop-opacity="0.45"/></linearGradient>
+<filter id="blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+<linearGradient id="gNetwork" gradientUnits="userSpaceOnUse" x1="348" y1="0" x2="545" y2="0"><stop offset="0" stop-color="#03a9f4"/><stop offset="1" stop-color="#7fd4ff"/></linearGradient>
+<linearGradient id="gSignals" gradientUnits="userSpaceOnUse" x1="348" y1="0" x2="545" y2="0"><stop offset="0" stop-color="#ab47bc"/><stop offset="1" stop-color="#7fd4ff"/></linearGradient>
+<linearGradient id="gServices" gradientUnits="userSpaceOnUse" x1="348" y1="0" x2="545" y2="0"><stop offset="0" stop-color="#ffa600"/><stop offset="1" stop-color="#7fd4ff"/></linearGradient>
+<linearGradient id="gHome" gradientUnits="userSpaceOnUse" x1="348" y1="0" x2="545" y2="0"><stop offset="0" stop-color="#43a047"/><stop offset="1" stop-color="#7fd4ff"/></linearGradient>
+<linearGradient id="rName" gradientUnits="userSpaceOnUse" x1="735" y1="0" x2="906" y2="0"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#03a9f4"/></linearGradient>
+<linearGradient id="rBrand" gradientUnits="userSpaceOnUse" x1="735" y1="0" x2="906" y2="0"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#43a047"/></linearGradient>
+<linearGradient id="rModel" gradientUnits="userSpaceOnUse" x1="735" y1="0" x2="906" y2="0"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#ffa600"/></linearGradient>
+<linearGradient id="rCategory" gradientUnits="userSpaceOnUse" x1="735" y1="0" x2="906" y2="0"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#ec407a"/></linearGradient>
+<linearGradient id="rArea" gradientUnits="userSpaceOnUse" x1="735" y1="0" x2="906" y2="0"><stop offset="0" stop-color="#7fd4ff"/><stop offset="1" stop-color="#26c6da"/></linearGradient>
+</defs>
+<rect width="1200" height="420" rx="18" fill="url(#bg)"/>
+<circle cx="640" cy="215" r="230" fill="url(#glow)"/>
+<g fill="none" stroke-linecap="round">
+<g filter="url(#blur)" opacity="0.55" stroke-width="5"><path d="M348 75 C450 75 450 143.0 570.6 143.0" stroke="url(#gNetwork)"/><path d="M348 106 C450 106 450 159.0 557.2 159.0" stroke="url(#gNetwork)"/><path d="M348 137 C450 137 450 175.0 548.3 175.0" stroke="url(#gNetwork)"/><path d="M348 172 C450 172 450 191.0 542.9 191.0" stroke="url(#gSignals)"/><path d="M348 203 C450 203 450 207.0 540.3 207.0" stroke="url(#gSignals)"/><path d="M348 238 C450 238 450 223.0 540.3 223.0" stroke="url(#gServices)"/><path d="M348 269 C450 269 450 239.0 542.9 239.0" stroke="url(#gServices)"/><path d="M348 300 C450 300 450 255.0 548.3 255.0" stroke="url(#gServices)"/><path d="M348 335 C450 335 450 271.0 557.2 271.0" stroke="url(#gHome)"/><path d="M348 366 C450 366 450 287.0 570.6 287.0" stroke="url(#gHome)"/><path d="M716.8 151.0 C780 151.0 800 78 906 78" stroke="url(#rName)"/><path d="M734.7 183.0 C780 183.0 800 118 906 118" stroke="url(#rBrand)"/><path d="M740.0 215.0 C780 215.0 800 158 906 158" stroke="url(#rModel)"/><path d="M734.7 247.0 C780 247.0 800 198 906 198" stroke="url(#rCategory)"/><path d="M716.8 279.0 C780 279.0 800 238 906 238" stroke="url(#rArea)"/></g>
+<g stroke-width="2"><path id="p0" d="M348 75 C450 75 450 143.0 570.6 143.0" stroke="url(#gNetwork)"/><path id="p1" d="M348 106 C450 106 450 159.0 557.2 159.0" stroke="url(#gNetwork)"/><path id="p2" d="M348 137 C450 137 450 175.0 548.3 175.0" stroke="url(#gNetwork)"/><path id="p3" d="M348 172 C450 172 450 191.0 542.9 191.0" stroke="url(#gSignals)"/><path id="p4" d="M348 203 C450 203 450 207.0 540.3 207.0" stroke="url(#gSignals)"/><path id="p5" d="M348 238 C450 238 450 223.0 540.3 223.0" stroke="url(#gServices)"/><path id="p6" d="M348 269 C450 269 450 239.0 542.9 239.0" stroke="url(#gServices)"/><path id="p7" d="M348 300 C450 300 450 255.0 548.3 255.0" stroke="url(#gServices)"/><path id="p8" d="M348 335 C450 335 450 271.0 557.2 271.0" stroke="url(#gHome)"/><path id="p9" d="M348 366 C450 366 450 287.0 570.6 287.0" stroke="url(#gHome)"/><path id="q0" d="M716.8 151.0 C780 151.0 800 78 906 78" stroke="url(#rName)"/><path id="q1" d="M734.7 183.0 C780 183.0 800 118 906 118" stroke="url(#rBrand)"/><path id="q2" d="M740.0 215.0 C780 215.0 800 158 906 158" stroke="url(#rModel)"/><path id="q3" d="M734.7 247.0 C780 247.0 800 198 906 198" stroke="url(#rCategory)"/><path id="q4" d="M716.8 279.0 C780 279.0 800 238 906 238" stroke="url(#rArea)"/></g></g>
+<g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5" fill="#6f93b8">
+<text x="52" y="42">CLUES (EACH ONE WEAK)</text><text x="640" y="42" text-anchor="middle">FUSION</text><text x="906" y="42">RESULT</text></g>
+<g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14">
+<rect x="24" y="62" width="22" height="88" rx="8" fill="#03a9f4"/>
+<text transform="translate(40 106.0) rotate(-90)" text-anchor="middle" font-size="14" font-weight="700" fill="#0a1020">Network</text>
+<rect x="52" y="62" width="296" height="26" rx="13" fill="#03a9f4" fill-opacity="0.16" stroke="#03a9f4" stroke-width="1.5"/>
+<circle cx="70" cy="75" r="5" fill="#03a9f4"/>
+<text x="86" y="80" fill="#dbeaff" font-weight="600">MAC vendor</text>
+<rect x="52" y="93" width="296" height="26" rx="13" fill="#03a9f4" fill-opacity="0.16" stroke="#03a9f4" stroke-width="1.5"/>
+<circle cx="70" cy="106" r="5" fill="#03a9f4"/>
+<text x="86" y="111" fill="#dbeaff" font-weight="600">DHCP name + class</text>
+<rect x="52" y="124" width="296" height="26" rx="13" fill="#03a9f4" fill-opacity="0.16" stroke="#03a9f4" stroke-width="1.5"/>
+<circle cx="70" cy="137" r="5" fill="#03a9f4"/>
+<text x="86" y="142" fill="#dbeaff" font-weight="600">Network role</text>
+<rect x="24" y="159" width="22" height="57" rx="8" fill="#ab47bc"/>
+<text transform="translate(40 187.5) rotate(-90)" text-anchor="middle" font-size="14" font-weight="700" fill="#0a1020">Signals</text>
+<rect x="52" y="159" width="296" height="26" rx="13" fill="#ab47bc" fill-opacity="0.16" stroke="#ab47bc" stroke-width="1.5"/>
+<path d="M64 176A8 8 0 0 1 76 176M66.5 176A4.5 4.5 0 0 1 73.5 176" fill="none" stroke="#ab47bc" stroke-width="2" stroke-linecap="round"/><circle cx="70" cy="177" r="1.6" fill="#ab47bc"/>
+<text x="86" y="177" fill="#dbeaff" font-weight="600">mDNS / Bonjour</text>
+<rect x="52" y="190" width="296" height="26" rx="13" fill="#ab47bc" fill-opacity="0.16" stroke="#ab47bc" stroke-width="1.5"/>
+<path d="M64 207A8 8 0 0 1 76 207M66.5 207A4.5 4.5 0 0 1 73.5 207" fill="none" stroke="#ab47bc" stroke-width="2" stroke-linecap="round"/><circle cx="70" cy="208" r="1.6" fill="#ab47bc"/>
+<text x="86" y="208" fill="#dbeaff" font-weight="600">UPnP / SSDP</text>
+<rect x="24" y="225" width="22" height="88" rx="8" fill="#ffa600"/>
+<text transform="translate(40 269.0) rotate(-90)" text-anchor="middle" font-size="14" font-weight="700" fill="#0a1020">Services</text>
+<rect x="52" y="225" width="296" height="26" rx="13" fill="#ffa600" fill-opacity="0.16" stroke="#ffa600" stroke-width="1.5"/>
+<rect x="65" y="233" width="10" height="10" rx="2" fill="#ffa600"/>
+<text x="86" y="243" fill="#dbeaff" font-weight="600">Ports + services</text>
+<rect x="52" y="256" width="296" height="26" rx="13" fill="#ffa600" fill-opacity="0.16" stroke="#ffa600" stroke-width="1.5"/>
+<rect x="65" y="264" width="10" height="10" rx="2" fill="#ffa600"/>
+<text x="86" y="274" fill="#dbeaff" font-weight="600">Web title + Server header</text>
+<rect x="52" y="287" width="296" height="26" rx="13" fill="#ffa600" fill-opacity="0.16" stroke="#ffa600" stroke-width="1.5"/>
+<rect x="65" y="295" width="10" height="10" rx="2" fill="#ffa600"/>
+<text x="86" y="305" fill="#dbeaff" font-weight="600">TLS certificate</text>
+<rect x="24" y="322" width="22" height="57" rx="8" fill="#43a047"/>
+<text transform="translate(40 350.5) rotate(-90)" text-anchor="middle" font-size="14" font-weight="700" fill="#0a1020">Home</text>
+<rect x="52" y="322" width="296" height="26" rx="13" fill="#43a047" fill-opacity="0.16" stroke="#43a047" stroke-width="1.5"/>
+<path d="M70 329L76 335L70 341L64 335Z" fill="#43a047"/>
+<text x="86" y="340" fill="#dbeaff" font-weight="600">Local APIs: Shelly, Tasmota, Cast</text>
+<rect x="52" y="353" width="296" height="26" rx="13" fill="#43a047" fill-opacity="0.16" stroke="#43a047" stroke-width="1.5"/>
+<path d="M70 360L76 366L70 372L64 366Z" fill="#43a047"/>
+<text x="86" y="371" fill="#dbeaff" font-weight="600">Home Assistant registry</text>
+</g>
+<g fill="none" stroke="#2a4a73" stroke-width="1.5"><circle cx="640" cy="215" r="115" stroke-dasharray="3 7"/><circle cx="640" cy="215" r="140" stroke="#35618f" opacity="0.6"/></g>
+<g transform="translate(640 215)"><g><path d="M0 0 L140 0 A140 140 0 0 0 121 -70 Z" fill="url(#sweep)"/><line x1="0" y1="0" x2="140" y2="0" stroke="#7fd4ff" stroke-width="1.5" opacity="0.7"/><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite"/></g></g>
+<circle cx="640" cy="215" r="100" fill="url(#core)" stroke="#03a9f4" stroke-width="2.5"><animate attributeName="stroke-opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite"/></circle>
+<g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" text-anchor="middle"><text x="640" y="201" font-size="16" font-weight="700" fill="#fff">families · caps</text><text x="640" y="225" font-size="16" font-weight="700" fill="#fff">signatures · margin</text><text x="640" y="251" font-size="14" font-style="italic" fill="#7fd4ff">one fact = one vote</text></g>
+<circle r="3.5" fill="#03a9f4"><animateMotion dur="3.0s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="3.5" fill="#ab47bc"><animateMotion dur="3.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="3.5" fill="#ffa600"><animateMotion dur="4.0s" repeatCount="indefinite" begin="1.4s"><mpath href="#p5"/></animateMotion></circle>
+<circle r="3.5" fill="#43a047"><animateMotion dur="4.5s" repeatCount="indefinite" begin="2.0999999999999996s"><mpath href="#p8"/></animateMotion></circle>
+<circle r="3.5" fill="#03a9f4"><animateMotion dur="3s" repeatCount="indefinite" begin="0.0s"><mpath href="#q0"/></animateMotion></circle>
+<circle r="3.5" fill="#ffa600"><animateMotion dur="3s" repeatCount="indefinite" begin="0.8s"><mpath href="#q2"/></animateMotion></circle>
+<circle r="3.5" fill="#26c6da"><animateMotion dur="3s" repeatCount="indefinite" begin="1.6s"><mpath href="#q4"/></animateMotion></circle>
+<rect x="890" y="52" width="286" height="218" rx="16" fill="#ffffff" fill-opacity="0.04" stroke="#2a4a73" stroke-width="1.5"/>
+<g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700">
+<rect x="906" y="62" width="254" height="32" rx="16" fill="#03a9f4"/><text x="928" y="83" fill="#0a1020">Name</text>
+<rect x="906" y="102" width="254" height="32" rx="16" fill="#43a047"/><text x="928" y="123" fill="#0a1020">Brand</text>
+<rect x="906" y="142" width="254" height="32" rx="16" fill="#ffa600"/><text x="928" y="163" fill="#0a1020">Model</text>
+<rect x="906" y="182" width="254" height="32" rx="16" fill="#ec407a"/><text x="928" y="203" fill="#0a1020">Category</text>
+<rect x="906" y="222" width="254" height="32" rx="16" fill="#26c6da"/><text x="928" y="243" fill="#0a1020">Area</text>
+</g>
+<g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14">
+<rect x="890" y="282" width="250" height="30" rx="15" fill="none" stroke="#7fd4ff" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="911" cy="296" r="5" fill="none" stroke="#7fd4ff" stroke-width="2"/><path d="M915 300L919 304" stroke="#7fd4ff" stroke-width="2" stroke-linecap="round"/>
+<text x="928" y="301" fill="#a9c7e8">...and the reason, in debug mode</text>
+<rect x="890" y="352" width="286" height="32" rx="16" fill="#ec407a" fill-opacity="0.18" stroke="#ec407a" stroke-width="2"/>
+<text x="1033" y="373" text-anchor="middle" font-weight="700" fill="#ffd0e0">Your choice (never overwritten)</text>
+<path d="M1160 352 V286" stroke="#ec407a" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="5 5"><animate attributeName="stroke-dashoffset" from="10" to="0" dur="1.2s" repeatCount="indefinite"/></path>
+<path d="M1160 272 L1153 285 L1167 285 Z" fill="#ec407a"/></g>
+</svg>

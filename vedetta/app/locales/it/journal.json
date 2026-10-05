@@ -1,0 +1,19 @@
+{
+  "journal.quick": "Ricerca della rete: {seen} dispositivi visti, {new} nuovi",
+  "journal.analyzed": "Analisi di {ip} completata ({ports} porte aperte)",
+  "journal.cancelled": "Ricerca annullata ({n} analisi interrotte)",
+  "journal.added": "{name} ({ip}) aggiunto alla plancia",
+  "journal.removed": "{name} ({ip}) eliminato dalla plancia",
+  "journal.ignored": "{name} ({ip}) eliminato e ignorato",
+  "journal.paused": "Controllo in pausa per {minutes} minuti",
+  "journal.paused_forever": "Controllo in pausa fino alla ripresa",
+  "journal.resumed": "Controllo ripreso",
+  "journal.dhcp": "DHCP: il server {server} distribuisce gateway {router} e DNS {dns}",
+  "journal.internet_direct": "Uscita verso internet diretta (nessun doppio NAT)",
+  "journal.internet_double": "Uscita verso internet con doppio NAT",
+  "journal.internet_cgnat": "Uscita verso internet tramite CGNAT del provider",
+  "journal.roles": "Ruoli di rete: {roles}; tramite ripetitore: {via}",
+  "journal.unignored": "{name} non è più ignorato",
+  "journal.fullports": "{ip}: scansione completa in background terminata ({ports} porte, {added} in più)",
+  "journal.fullports_failed": "{ip}: scansione completa in background non finita (dispositivo troppo lento), restano le porte mirate"
+}

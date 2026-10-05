@@ -1,0 +1,19 @@
+{
+  "journal.quick": "Network search: {seen} devices seen, {new} new",
+  "journal.analyzed": "Analysis of {ip} completed ({ports} open ports)",
+  "journal.cancelled": "Search cancelled ({n} analyses stopped)",
+  "journal.added": "{name} ({ip}) added to the dashboard",
+  "journal.removed": "{name} ({ip}) removed from the dashboard",
+  "journal.ignored": "{name} ({ip}) removed and ignored",
+  "journal.paused": "Monitoring paused for {minutes} minutes",
+  "journal.paused_forever": "Monitoring paused until resumed",
+  "journal.resumed": "Monitoring resumed",
+  "journal.dhcp": "DHCP: server {server} hands out gateway {router} and DNS {dns}",
+  "journal.internet_direct": "Direct internet uplink (no double NAT)",
+  "journal.internet_double": "Internet uplink behind double NAT",
+  "journal.internet_cgnat": "Internet uplink through provider CGNAT",
+  "journal.roles": "Network roles: {roles}; via repeater: {via}",
+  "journal.unignored": "{name} is no longer ignored",
+  "journal.fullports": "{ip}: full background scan finished ({ports} ports, {added} more)",
+  "journal.fullports_failed": "{ip}: full background scan did not finish (device too slow), targeted ports kept"
+}

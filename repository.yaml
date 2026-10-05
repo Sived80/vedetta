@@ -1,4 +1,3 @@
-# Per un futuro repository di app: aggiungere l'URL del repository git a Home Assistant.
-name: Vedetta (repository di app)
-url: https://example.invalid/vedetta
+name: Vedetta
+url: https://github.com/Sived80/vedetta
 maintainer: Sived80

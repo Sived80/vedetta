@@ -35,6 +35,11 @@ devices **you** set up, not the rest of your network.
 the part nobody does — **tells you why**. A name from a title page, a brand from a DHCP fingerprint, a PlayStation spotted
 by the class it announces: every conclusion carries its evidence, and anything you set by hand is never overwritten.
 
+Looking for a **network scanner for Home Assistant** that says *what* each device is, not just that it is online?
+Vedetta is a Home Assistant **app** (not a custom integration): install it from the App store, no YAML, no cloud. It
+works as a local **device discovery and identification** tool with presence and latency history, and it can share the
+devices you choose with Home Assistant through MQTT.
+
 It lives inside Home Assistant as an app (sidebar panel via ingress), reads Home Assistant’s own registry to learn the
 names and rooms you already chose, and publishes back **only what you decide to share**.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+- Log card: the "Log level" button now sits on the same column as the title arrow, and the "Search the log" field is slightly more compact.
+- Start-up messages of the app (`run.sh`) are now in English, like the documentation and the code comments.
+- Documentation: install steps checked on a real Home Assistant, correct direct links (`/app/<name>`), and a note on what improves over time.
+
 ## 0.3.1
 - Deep search: the menu next to "Scan network" has a second item, "Deep search: not yet analysed…", that analyses in depth only the devices that never were (the ones with no "Last deep scan" date). When every device has already been analysed, the item is disabled.
 

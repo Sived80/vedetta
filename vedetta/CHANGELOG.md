@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.6
+- Brand logos reach more devices: "AdGuard Team" (the name Home Assistant gives) is recognized as AdGuard, a host named "MSI" is an MSI, and a host named "Node-RED" (or serving its page) is Node-RED, even when the network card or the virtual machine says something else.
+
 ## 0.3.5
 - Brand logos: a big faint logo on the right of each card, cut by the edge, and in the device sheet; in list view the logo replaces the icon in the circle, tinted with the brand colour. 58 brands to start with (Simple Icons and Dashboard Icons, shipped with the app, no Internet request). A brand without a free logo shows none; chip makers never get one. The logo follows the brand shown now, so a brand changed by hand or by a new clue changes it.
 - New brand "Magic Home" (the maker is Zengge): recognized from the name, the MAC prefix or the manufacturer declared by Home Assistant.

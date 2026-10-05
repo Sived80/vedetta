@@ -272,6 +272,10 @@
   [
    "magichome",
    "Magic Home"
+  ],
+  [
+   "adguard",
+   "AdGuard"
   ]
  ],
  "name_hints": [
@@ -330,6 +334,14 @@
   [
    "magic ?home|magichome|ledenet",
    "Magic Home"
+  ],
+  [
+   "\\bmsi\\b",
+   "MSI"
+  ],
+  [
+   "node-?red",
+   "Node-RED"
   ]
  ],
  "software_hints": [
@@ -384,6 +396,10 @@
   [
    "esphome",
    "ESPHome"
+  ],
+  [
+   "node-?red",
+   "Node-RED"
   ]
  ],
  "os_family_brand": {

@@ -48,6 +48,14 @@ assert brands.refine_brand("Espressif Inc.", names=["Gateway"], web_text="Tasmot
 assert brands.refine_brand("ITEAD", names=["Sonoff ZBBridge"], web_text="Tasmota 15.6") == "Tasmota"
 assert brands.refine_brand("Espressif Inc.", names=["Lamp"], web_text="ESPHome") == "ESPHome"
 
+# brands that reach their logo through their own rules (seen on a real network)
+assert brands.known_brand("AdGuard Team") == "AdGuard" and brand_logo.logo_for("AdGuard")["id"] == "adguard"   # HA says "AdGuard Team"
+assert brands.refine_brand("Intel Corporate", names=["MSI"]) == "MSI"               # a host called MSI, network card by Intel
+assert brands.refine_brand("Intel Corporate", names=["admsin"]) is None             # "msi" inside another word is not MSI
+assert brands.refine_brand("Proxmox Server Solutions GmbH", names=["Node-RED"]) == "Node-RED"   # Node-RED runs in a Proxmox VM
+assert brands.refine_brand(None, names=["host"], web_text="Node-RED") == "Node-RED"
+assert brand_logo.logo_for("Node-RED")["id"] == "nodered" and brand_logo.logo_for("MSI")["id"] == "msi"
+
 # --- the logo is worked out from the brand shown now: it follows a change, by hand or automatic
 dev = {"id": "d1", "ip": "10.0.0.5", "name": "Thing", "extra": {}, "scanned_ports": [], "brand": "Shelly"}
 assert ha_data.compact_device(dev, {})["logo"] == "shelly"

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+- Deep search "not yet analysed": a device that answers nothing useful (a phone with every port closed) is no longer listed again and again. The search now remembers it was tried ("Deep search: nothing found" on the device card), and the nightly run waits as long as for any other device.
+- A deep search no longer erases what a device announced earlier (Bonjour name and model, UPnP, NetBIOS). A phone that was asleep during the scan keeps its identity instead of falling into "Other devices". If the scan finds no open port at all, every previous clue is kept.
+
 ## 0.3.2
 - Log card: the "Log level" button now sits on the same column as the title arrow, and the "Search the log" field is slightly more compact.
 - Start-up messages of the app (`run.sh`) are now in English, like the documentation and the code comments.

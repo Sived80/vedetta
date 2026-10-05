@@ -129,7 +129,7 @@ def device_debug(device_id: str) -> dict | None:
                    "battery": device.get("battery"), "battery_source": device.get("battery_source")},
         "dhcp": {k: v for k, v in entry.items() if k != "seen"},
         "roles": {"roles": roles.roles_for(device.get("ip")), "upnp_types": roles.upnp_types(device.get("ip"))},
-        "scan": {k: scan.get(k) for k in ("scanned_at", "slow_scan", "full_ports_at", "services_at", "mdns_model", "mdns_manufacturer",
+        "scan": {k: scan.get(k) for k in ("scanned_at", "deep_empty_at", "slow_scan", "full_ports_at", "services_at", "mdns_model", "mdns_manufacturer",
                                           "mdns_services", "http_server", "http_title", "tls_subject", "ssh_hostkey") if scan.get(k)},
         "extra_keys": sorted(extra),
         "wol": {"ok": bool(cfg.get("wol_ok"))},

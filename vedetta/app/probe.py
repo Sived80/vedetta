@@ -319,4 +319,5 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         "extra": extra,
         "scanned_ports": scanned_ports,
         "scanned_at": scan_info.get("scanned_at"),
+        "deep_empty_at": scan_info.get("deep_empty_at"),
     }

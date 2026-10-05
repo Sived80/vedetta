@@ -131,6 +131,7 @@
   "js.ha.attr.uptime": "Uptime",
   "js.ha.attr.last_seen": "Last seen",
   "js.ha.attr.scanned": "Last deep scan",
+  "js.ha.attr.scanned_empty": "Deep search: nothing found",
   "js.ha.attr.ports": "Ports",
   "js.ha.act.open": "Open web interface",
   "js.ha.act.wake": "Wake up",

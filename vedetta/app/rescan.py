@@ -99,6 +99,26 @@ async def _full_ports_background(device_id: str, ip: str) -> None:
         logger.exception("%s: scansione completa in background fallita", ip)
 
 
+# Clues a device announces by itself (multicast / broadcast). A sleeping phone often stays silent during a scan.
+_ANNOUNCED_CLUES = ("mdns_name", "mdns_model", "mdns_manufacturer", "mdns_services", "upnp_name", "upnp_manufacturer",
+                    "upnp_model", "netbios_name", "wsd_types", "igmp_groups")
+# Clues read from an open port: they only make sense while the port answers.
+_PORT_CLUES = ("http_title", "http_server", "rtsp_server", "tls_subject", "tls_issuer", "ssh_hostkey", "snmp_descr",
+               "onvif_name", "onvif_hardware", "onvif_manufacturer", "api_source", "api_vendor", "api_model",
+               "api_name", "api_fw", "battery")
+
+
+def _keep_previous_clues(previous: dict, fields: dict) -> None:
+    """A deep scan replaces the saved data, so what it did not hear this time would be lost and the device could fall
+    back to "Other devices" (an iPhone that was asleep: no Bonjour name or model). Announced clues are kept when the
+    new scan lacks them. If the scan found no open port at all (device asleep, off or filtered) every old clue stays,
+    because nothing in the new result contradicts it."""
+    silent = not fields.get("ports")
+    for key in _ANNOUNCED_CLUES + (_PORT_CLUES if silent else ()):
+        if key not in fields and previous.get(key):
+            fields[key] = previous[key]
+
+
 async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
     """Deep scan (deep profile) of a device: saves the
     result (with date and history), compares the ports with the previous
@@ -116,6 +136,12 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
         # An old but good scan is not overwritten with an empty result
         # (host momentarily unreachable or too filtered).
         logger.warning("%s scansione completata senza alcun risultato utile (%.0fs), dati precedenti mantenuti", label, elapsed)
+        # Remember that the deep search was done, without touching scanned_at (that one means "ports and services
+        # were really read" and feeds the mobile guess): otherwise a device that never answers (a phone with every
+        # port closed) would stay "never analysed" forever and be retried by every "only missing" search and night.
+        kept = dict(device.get("scan_info") or {})
+        kept["deep_empty_at"] = time.time()
+        devices_config.update_scan_info(device["id"], kept)
         return {}
 
     previous = device.get("scan_info") or {}
@@ -132,6 +158,7 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
             fields["full_ports_at"] = previous["full_ports_at"]
         if previous.get("services_at"):
             fields["services_at"] = previous["services_at"]
+    _keep_previous_clues(previous, fields)
     devices_config.update_scan_info(device["id"], fields)
     await asyncio.to_thread(history.save_scan, device["id"], now, fields)
 

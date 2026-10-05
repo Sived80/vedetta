@@ -474,6 +474,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "url": device.get("url"),
         "title": extra.get("title"),
         "scanned_at": device.get("scanned_at"),
+        "deep_empty_at": device.get("deep_empty_at"),
         "attrs": [
             {"key": k, "label": i18n.t_or("extra." + k, k), "value": str(v)}
             for k, v in extra.items() if k not in ("vendor", "brand") and v not in (None, "")

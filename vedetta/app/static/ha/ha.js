@@ -588,7 +588,7 @@
   var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
   function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
   // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
-  function deepPending() { return S.list.filter(function (d) { return !d.scanned_at; }); }
+  function deepPending() { return S.list.filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
   var deepIds = [];
   function runDeep(ids) {
     if (!ids.length) return;
@@ -1963,6 +1963,7 @@
     if (d.uptime != null && d.online) row(t("js.ha.attr.uptime"), esc(fmtUptime(d.uptime)));
     if (!d.online && d.last_seen) row(t("js.ha.attr.last_seen"), esc(ago(d.last_seen) + " · " + fmtStamp(d.last_seen, true)));
     if (d.scanned_at) row(t("js.ha.attr.scanned"), esc(ago(d.scanned_at)));
+    else if (d.deep_empty_at) row(t("js.ha.attr.scanned_empty"), esc(ago(d.deep_empty_at)));
     (d.attrs || []).forEach(function (a) { row(a.label, esc(a.value)); });
     if (d.ports && d.ports.length) {
       var ports = d.ports.map(function (p) { return { p: p, cat: portCategory(p), n: parseInt(p.label, 10) || 0 }; });

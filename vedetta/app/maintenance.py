@@ -14,13 +14,19 @@ NIGHT_HOUR = 3
 STALE_DAYS = 7
 
 
+def last_deep_attempt(device: dict) -> float:
+    """When the deep search last ran on the device: a real result (scanned_at) or an attempt that found nothing."""
+    info = device.get("scan_info") or {}
+    return max(info.get("scanned_at", 0) or 0, info.get("deep_empty_at", 0) or 0)
+
+
 async def run_nightly() -> None:
     """Rescan devices with data older than STALE_DAYS (or never
     scanned), one at a time so as not to compete for the container's CPU."""
     cutoff = time.time() - STALE_DAYS * 86400
     stale = [
         d for d in devices_config.load_devices()
-        if (d.get("scan_info") or {}).get("scanned_at", 0) < cutoff
+        if last_deep_attempt(d) < cutoff
     ]
     local = set(await filter_local_ips([d["ip"] for d in stale])) if stale else set()
     stale = [d for d in stale if d["ip"] in local]

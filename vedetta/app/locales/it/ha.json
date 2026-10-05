@@ -131,6 +131,7 @@
   "js.ha.attr.uptime": "Tempo attivo",
   "js.ha.attr.last_seen": "Visto l'ultima volta",
   "js.ha.attr.scanned": "Ultima scansione approfondita",
+  "js.ha.attr.scanned_empty": "Ricerca approfondita: nessun dato trovato",
   "js.ha.attr.ports": "Porte",
   "js.ha.act.open": "Apri l'interfaccia web",
   "js.ha.act.wake": "Accendi",

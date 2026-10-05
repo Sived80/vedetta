@@ -271,7 +271,7 @@ You copy the app folder into Home Assistant's `addons` folder, using the **Samba
 
 1. Open **Vedetta** from the sidebar. The first page may be empty: that is normal.
 2. Press **Scan network**. Within a few seconds the devices on your network appear; add the ones you want on your board.
-3. Leave it running. Names and categories improve over the first hours, as devices announce themselves.
+3. **Leave it running.** Vedetta is not learning: it collects clues, and some only arrive with time. Phones that were asleep announce their names when they wake up, the history bars (24 h and 7 days) fill in, and a deeper search runs every night. Expect most names to settle within a day. Devices that announce nothing (an iPhone with a private Wi-Fi address, for example) stay generic: set their name once by hand and it stays.
 4. Curious why it chose a name? The debug view lists every clue behind each name and brand.
 
 Want to share devices back into Home Assistant? That needs an MQTT broker: see [MQTT (optional)](#mqtt-optional). Everything else works without it.

@@ -1,5 +1,8 @@
 # Changelog
 
+## Non ancora rilasciato
+- Ricerca approfondita: nel menu accanto a "Scan network" c'e' una seconda voce, "solo mancanti", che analizza a fondo soltanto i dispositivi mai analizzati (quelli senza data di "Ultima ricerca approfondita"). Con tutti gia' analizzati la voce e' disattivata.
+
 ## 0.3.0
 - Riconoscimento piu' solido: gli indizi si sommano per famiglia (lo stesso fatto, come Cast, conta una volta), le porte hanno un tetto, due categorie alla pari con indizi deboli restano "Altri dispositivi".
 - Catalogo di firme dei prodotti (`app/data/signatures.json`): il modello dichiarato decide dove i segnali generici sono ambigui (Google Home e Chromecast, Fire TV, PlayStation, Proxmox...).

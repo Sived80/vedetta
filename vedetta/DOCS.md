@@ -10,6 +10,7 @@ Tutto resta in casa: nessun dato viene inviato fuori dalla rete.
 - **Scheda del dispositivo**: IP, MAC, tempo di risposta e porte sono sempre visibili; "Altri attributi" apre il
   resto (marca, tipo, area...). Marca e tipo si possono scegliere a mano e non vengono più cambiati. Il
   pulsante **Condividi con HA** mostra il dispositivo in Home Assistant (vedi sotto).
+- **Ricerca approfondita** (freccia accanto a "Scan network"): due voci, "tutti i dispositivi" oppure "solo mancanti", cioe' quelli mai analizzati a fondo.
 - **Flussi di ricerca** (menu): quali metodi usano le tre ricerche (iniziale, associativa, approfondita). Il
   pallino indica il rischio: verde non invasivo, arancione invasivo, rosso rischioso.
 - **Esporta per l'analisi** (menu, voce discreta): crea un file zip con configurazione, storico e il motivo di

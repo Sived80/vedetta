@@ -45,7 +45,7 @@ names and rooms you already chose, and publishes back **only what you decide to 
 
 | | |
 |---|---|
-| 🔭 **Three levels of search** | A light **ARP sweep** that only lists addresses; an **associative** scan of the devices you pick; a **deep** rescan (also nightly) with all ports and service detection. Each method shows its risk with a colored dot — 🟢 non-intrusive, 🟠 intrusive, 🔴 risky — and you choose which ones run. |
+| 🔭 **Three levels of search** | A light **ARP sweep** that only lists addresses; an **associative** scan of the devices you pick; a **deep** rescan (also nightly) with all ports and service detection, on everything or only on the devices not analysed in depth yet. Each method shows its risk with a colored dot — 🟢 non-intrusive, 🟠 intrusive, 🔴 risky — and you choose which ones run. |
 | 🧠 **Real recognition** | Name, brand, model and category from ~15 independent sources, fused by family so one fact is never counted twice. Ambiguous? It stays in *Other* instead of guessing. |
 | 🔎 **It explains itself** | A **debug view** shows every clue, its weight and where each name and brand came from. |
 | 🏠 **Home Assistant aware** | Reads the device registry (read-only) for names, makers, models, areas and integrations; follows a rename made in HA. |

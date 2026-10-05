@@ -588,6 +588,9 @@
   // tutti i dispositivi no.
   var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
   function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
+  // Dispositivi mai analizzati a fondo: scanned_at lo scrive solo la ricerca approfondita ("Ultima ricerca approfondita").
+  function deepPending() { return S.list.filter(function (d) { return !d.scanned_at; }); }
+  var deepIds = [];
   function runDeep(ids) {
     if (!ids.length) return;
     api("/api/devices/rescan", { method: "POST", json: { ids: ids } }).then(function () {
@@ -600,8 +603,11 @@
     if (open === undefined) open = deepMenuEl.hidden;
     if (open) {
       closePopups("deep");
+      var pending = deepPending().length;
       deepMenuEl.innerHTML = '<button type="button" class="menu-item dm-item rp" role="menuitem" data-deep="all">' + icon("magnify") + '<span class="dm-text"><b>' + esc(t("js.ha.deep.menu_title")) +
-        "</b><span>" + esc(t("js.ha.deep.menu_hint")) + "</span></span></button>";
+        "</b><span>" + esc(t("js.ha.deep.menu_hint")) + "</span></span></button>" +
+        '<button type="button" class="menu-item dm-item rp" role="menuitem" data-deep="pending"' + (pending ? "" : " disabled") + ">" + icon("magnify") + '<span class="dm-text"><b>' + esc(t("js.ha.deep.menu_pending_title")) +
+        "</b><span>" + esc(pending ? t("js.ha.deep.menu_pending_hint", { n: pending }) : t("js.ha.deep.menu_pending_none")) + "</span></span></button>";
       var btn = $("btn-deepmenu"), r = btn.getBoundingClientRect();
       deepMenuEl.style.top = Math.round(r.bottom + 4) + "px";
       deepMenuEl.style.left = "auto";
@@ -610,11 +616,12 @@
     deepMenuEl.hidden = !open;
     var b2 = $("btn-deepmenu"); if (b2) b2.setAttribute("aria-expanded", String(open));
   }
-  function openDeepAll() {
-    var n = S.list.length;
-    if (!n) { snack(t("js.ha.deep.none"), { kind: "warning" }); return; }
+  function openDeepAll(mode) {
+    var list = mode === "pending" ? deepPending() : S.list, n = list.length;
+    if (!n) { snack(t(mode === "pending" ? "js.ha.deep.menu_pending_none" : "js.ha.deep.none"), { kind: "warning" }); return; }
+    deepIds = list.map(function (d) { return d.id; });
     deepDlg.innerHTML = '<div class="mi"><div class="mi-header"><div class="mi-titles"><h2 class="mi-title" id="deepall-title">' + esc(t("js.ha.deep.title")) + "</h2></div></div>" +
-      '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("magnify") + "</span><p>" + esc(t("js.ha.deep.all_text", { n: n })) + "</p></div></div>" +
+      '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("magnify") + "</span><p>" + esc(t(mode === "pending" ? "js.ha.deep.pending_text" : "js.ha.deep.all_text", { n: n })) + "</p></div></div>" +
       '<div class="mi-actions"><button type="button" class="btn text rp" data-deep="cancel">' + esc(t("js.ha.cancel")) + "</button>" +
       '<button type="button" class="btn filled rp" data-deep="start">' + esc(t("js.ha.deep.start")) + "</button></div></div>";
     if (typeof deepDlg.showModal === "function") deepDlg.showModal(); else deepDlg.setAttribute("open", "");
@@ -626,15 +633,16 @@
     if (e.target.closest("#btn-deepmenu")) { e.stopPropagation(); toggleDeepMenu(); }
   });
   deepMenuEl.addEventListener("click", function (e) {
-    if (!e.target.closest("[data-deep]")) return;
+    var item = e.target.closest("[data-deep]");
+    if (!item || item.disabled) return;
     toggleDeepMenu(false);
-    openDeepAll();
+    openDeepAll(item.dataset.deep);
   });
   deepDlg.addEventListener("click", function (e) {
     if (e.target === deepDlg) return closeDeepAll();
     var b = e.target.closest("[data-deep]");
     if (!b) return;
-    if (b.dataset.deep === "start") { closeDeepAll(); runDeep(S.list.map(function (d) { return d.id; })); }
+    if (b.dataset.deep === "start") { closeDeepAll(); runDeep(deepIds); }
     else closeDeepAll();
   });
   document.addEventListener("click", function (e) {

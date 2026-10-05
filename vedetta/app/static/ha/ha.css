@@ -254,6 +254,7 @@
   }
   .menu-item:hover { background: var(--ha-hover); }
   .menu-item[aria-checked="true"] { color: var(--primary-color); }
+  .menu-item:disabled { opacity: 0.5; cursor: default; pointer-events: none; }
   .mi-check { width: 24px; height: 24px; display: grid; place-items: center; flex: none; }
 
   .banner {

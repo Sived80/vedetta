@@ -1,12 +1,12 @@
-"""Supporto all'ingress di Home Assistant (add-on).
+"""Home Assistant ingress support (add-on).
 
-L'ingress serve l'app sotto un prefisso (/api/hassio_ingress/<token>) ma lo
-toglie prima di inoltrare: le route restano /, /ha, /api/...; vanno prefissati
-solo gli URL GENERATI. Il prefisso arriva in X-Ingress-Path (o in
-VEDETTA_BASE_PATH); assente = stringa vuota e nulla cambia rispetto all'LXC.
+Ingress serves the app under a prefix (/api/hassio_ingress/<token>) but
+strips it before forwarding: the routes stay /, /ha, /api/...; only the GENERATED
+URLs must be prefixed. The prefix arrives in X-Ingress-Path (or in
+VEDETTA_BASE_PATH); absent = empty string and nothing changes compared to the LXC.
 
-VEDETTA_INGRESS_ONLY=1 (spento di default): 403 a chi non arriva dal Supervisor
-(172.30.32.2) o da localhost."""
+VEDETTA_INGRESS_ONLY=1 (off by default): 403 for anyone not coming from the Supervisor
+(172.30.32.2) or from localhost."""
 import os
 
 from .paths import env_base_path, normalize_base
@@ -25,8 +25,8 @@ def base_from_headers(headers: dict[bytes, bytes]) -> str:
 
 
 class IngressMiddleware:
-    """ASGI puro (niente BaseHTTPMiddleware: non bufferizza il flusso SSE).
-    Mette il prefisso in request.state.base."""
+    """Pure ASGI (no BaseHTTPMiddleware: it does not buffer the SSE stream).
+    Puts the prefix in request.state.base."""
 
     def __init__(self, app) -> None:
         self.app = app
@@ -35,7 +35,7 @@ class IngressMiddleware:
         if scope["type"] not in ("http", "websocket"):
             await self.app(scope, receive, send)
             return
-        # /healthz resta raggiungibile dal Supervisor (watchdog dell'add-on): non rivela nulla.
+        # /healthz stays reachable by the Supervisor (add-on watchdog): it reveals nothing.
         if ingress_only() and scope.get("path") != "/healthz":
             client = (scope.get("client") or ("",))[0]
             if client not in _ALLOWED_PEERS:
@@ -53,5 +53,5 @@ class IngressMiddleware:
 
 
 def template_context(request) -> dict:
-    """Context processor di Jinja2Templates: `base` in ogni template."""
+    """Jinja2Templates context processor: `base` in every template."""
     return {"base": getattr(request.state, "base", "")}

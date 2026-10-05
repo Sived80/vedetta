@@ -5,8 +5,8 @@ from . import dhcp
 from .brands import normalize_brand, resolve
 
 OUI_PATH = Path(__file__).resolve().parent / "data" / "oui-ieee.txt"
-# Copia scaricata dal web (oui_update.py): sta in config/ perche' un deploy
-# sostituisce app/. Se esiste ha la precedenza su quella inclusa nell'app.
+# Copy downloaded from the web (oui_update.py): it lives in config/ because a deploy
+# replaces app/. If it exists it takes precedence over the one bundled with the app.
 from .paths import data_path
 USER_OUI_PATH = data_path("oui-ieee.txt")
 
@@ -23,16 +23,16 @@ def _stamp(path: Path) -> float | None:
 
 
 def _tables() -> dict[int, dict[str, str]]:
-    """Tabelle correnti; si ricaricano da sole quando il file cambia (mtime)."""
+    """Current tables; they reload by themselves when the file changes (mtime)."""
     path = _active_path()
     return _load_tables(str(path), _stamp(path))
 
 
 @lru_cache(maxsize=1)
 def _load_tables(path_str: str | None = None, stamp: float | None = None) -> dict[int, dict[str, str]]:
-    """{bit: {prefisso esadecimale: nome registrato}} per i tre registri IEEE:
-    MA-L (24 bit), MA-M (28 bit), MA-S (36 bit). Gli argomenti servono solo da
-    chiave di cache (file usato e sua data di modifica)."""
+    """{bit: {hex prefix: registered name}} for the three IEEE registries:
+    MA-L (24 bit), MA-M (28 bit), MA-S (36 bit). The arguments only serve as
+    cache key (file used and its modification date)."""
     tables: dict[int, dict[str, str]] = {24: {}, 28: {}, 36: {}}
     path = Path(path_str) if path_str else _active_path()
     if not path.exists():
@@ -47,8 +47,8 @@ def _load_tables(path_str: str | None = None, stamp: float | None = None) -> dic
 
 
 def oui_stats() -> dict:
-    """Numero di blocchi caricati, origine ("downloaded" = copia in config/) e
-    data di modifica del file in uso."""
+    """Number of blocks loaded, origin ("downloaded" = copy in config/) and
+    modification date of the file in use."""
     path = _active_path()
     return {"blocks": sum(len(t) for t in _tables().values()),
             "source": "downloaded" if path == USER_OUI_PATH else "bundled",
@@ -56,8 +56,8 @@ def oui_stats() -> dict:
 
 
 def is_private_mac(mac: str | None) -> bool:
-    """Bit U/L del primo byte: indirizzo assegnato localmente (MAC "privato" o
-    casuale di telefoni e portatili, ma anche di macchine virtuali)."""
+    """U/L bit of the first byte: locally assigned address ("private" or
+    random MAC of phones and laptops, but also of virtual machines)."""
     try:
         return bool(int(mac.replace("-", ":").split(":")[0], 16) & 0x02)
     except (AttributeError, ValueError):
@@ -65,8 +65,8 @@ def is_private_mac(mac: str | None) -> bool:
 
 
 def lookup_registrant(mac: str | None) -> str | None:
-    """Nome registrato all'IEEE (legale, es. "Hong Kong Bouffalo Lab Limited"),
-    con corrispondenza piu' lunga: prima i blocchi da 36 bit, poi 28, poi 24."""
+    """Name registered with the IEEE (legal, e.g. "Hong Kong Bouffalo Lab Limited"),
+    with longest match: 36-bit blocks first, then 28, then 24."""
     if not mac:
         return None
     digits = mac.replace(":", "").replace("-", "").upper()
@@ -81,25 +81,25 @@ def lookup_registrant(mac: str | None) -> str | None:
 
 
 def lookup_vendor(mac: str | None) -> str | None:
-    """Marca dedotta dal prefisso del MAC: il nome registrato ripulito (senza
-    "Inc.", "Co., Ltd." ecc.) e ricondotto alla marca nota quando c'e'.
-    None per i MAC casuali e per i prefissi non registrati."""
+    """Brand deduced from the MAC prefix: the cleaned-up registered name (without
+    "Inc.", "Co., Ltd." etc.) and mapped to the known brand when there is one.
+    None for random MACs and for unregistered prefixes."""
     registrant = lookup_registrant(mac)
     return normalize_brand(registrant) if registrant else None
 
 
 def resolve_brand(mac: str | None, raw_vendor: str | None = None, names: list[str] | tuple = ()) -> str | None:
-    """Marca del PRODOTTO per le scansioni (None se non nota: un chip Espressif o
-    una scheda virtuale non sono una marca, vedi brands.resolve): prefisso del MAC
-    (database completo), altrimenti il nome grezzo dato da nmap/arp-scan ripulito;
-    poi nome del dispositivo e impronta DHCP, come fa la scheda del dispositivo."""
+    """PRODUCT brand for scans (None if not known: an Espressif chip or
+    a virtual board is not a brand, see brands.resolve): MAC prefix
+    (full database), otherwise the raw name given by nmap/arp-scan, cleaned up;
+    then device name and DHCP fingerprint, as the device card does."""
     return resolve_vendor_info(mac, raw_vendor, names)["brand"]
 
 
 def resolve_vendor_info(mac: str | None, raw_vendor: str | None = None, names: list[str] | tuple = ()) -> dict:
-    """{"vendor": produttore del prefisso MAC, "vendor_role", "brand"} per gli elenchi
-    di host (nuovi dispositivi, ricerca): il produttore e' sempre mostrabile, la
-    marca solo quando e' davvero quella del prodotto."""
+    """{"vendor": MAC prefix manufacturer, "vendor_role", "brand"} for host
+    lists (new devices, search): the manufacturer can always be shown, the
+    brand only when it is truly the product's."""
     oui = lookup_vendor(mac)
     if oui is None and raw_vendor and not is_private_mac(mac):
         oui = normalize_brand(raw_vendor)

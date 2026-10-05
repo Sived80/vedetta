@@ -1,13 +1,13 @@
-"""Memoria e ascolto continuo dei nomi Bonjour (mDNS), come la memoria DHCP.
+"""Memory and continuous listening of Bonjour (mDNS) names, like the DHCP memory.
 
-Molti dispositivi (iPhone, tablet) annunciano il proprio nome solo quando sono svegli: una scansione di pochi
-secondi li manca spesso. Qui si fa in due modi:
-- ascolto continuo: un browser DNS-SD (zeroconf) sempre attivo raccoglie gli annunci appena arrivano;
-- memoria: ogni nome visto (anche da una scansione) si ricorda per MAC in /data/mdns_seen.json e non si perde
-  quando il dispositivo torna a dormire.
+Many devices (iPhones, tablets) announce their name only when they are awake: a scan of a few
+seconds often misses them. Here it is done in two ways:
+- continuous listening: an always-on DNS-SD browser (zeroconf) collects the announcements as soon as they arrive;
+- memory: every name seen (even from a scan) is remembered per MAC in /data/mdns_seen.json and is not lost
+  when the device goes back to sleep.
 
-Il nome arriva con un IP: si lega al MAC tramite la tabella ARP; se il MAC non e' ancora noto si tiene per IP
-(valido per 14 giorni, un IP puo' cambiare padrone). Solo lettura passiva: nessuna richiesta mirata a un dispositivo."""
+The name arrives with an IP: it is tied to the MAC through the ARP table; if the MAC is not known yet it is kept by IP
+(valid for 14 days, an IP can change owner). Passive reading only: no request targeted at a device."""
 import asyncio
 import json
 import re
@@ -19,11 +19,11 @@ from .applog import logger
 
 STORE_PATH = paths.data_path("mdns_seen.json")
 IP_TTL_S = 14 * 86400
-_NAME_STRONG = 3   # punteggio di un nome scelto dall'utente (friendly_name / servizio con nome utente)
+_NAME_STRONG = 3   # score of a user-chosen name (friendly_name / service with a user name)
 
-by_mac: dict[str, dict] = {}   # mac minuscolo -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"}
-by_ip: dict[str, dict] = {}    # ip -> stessa scheda, finche' il MAC non e' noto
-_mac_for_ip = lambda ip: None  # noqa: E731  (impostato da start)
+by_mac: dict[str, dict] = {}   # lowercase mac -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"}
+by_ip: dict[str, dict] = {}    # ip -> same card, until the MAC is known
+_mac_for_ip = lambda ip: None  # noqa: E731  (set by start)
 _task: asyncio.Task | None = None
 _dirty = False
 
@@ -49,7 +49,7 @@ def _save() -> None:
 
 
 def score_name(stype: str, instance: str, txt: str) -> tuple[int, str]:
-    """(punteggio, nome) di un annuncio: stessa scelta della scansione (chiavi del TXT, servizi con nome utente)."""
+    """(score, name) of an announcement: same choice as the scan (TXT keys, services with a user name)."""
     from . import scanner
     score, value = (2 if stype in scanner._MDNS_USER_NAMED else 1), instance
     for key, key_score in scanner._MDNS_NAME_KEYS:
@@ -60,7 +60,7 @@ def score_name(stype: str, instance: str, txt: str) -> tuple[int, str]:
 
 
 def record(ip: str, stype: str, instance: str, txt: str, now: float | None = None) -> None:
-    """Ricorda un annuncio (chiamata sia dall'ascolto continuo sia dalla scansione)."""
+    """Remembers an announcement (called both by continuous listening and by the scan)."""
     global _dirty
     from . import scanner
     if not scanner.is_valid_ipv4(ip):
@@ -72,7 +72,7 @@ def record(ip: str, stype: str, instance: str, txt: str, now: float | None = Non
     card = by_mac.get(mac) if mac else by_ip.get(ip)
     card = dict(card or {})
     services = set(card.get("services") or []) | {stype}
-    # un nome migliore sostituisce quello vecchio; a pari punteggio vale il piu' recente
+    # a better name replaces the old one; on equal score the most recent wins
     if score >= int(card.get("score") or 0):
         card.update(name=scanner.truncate_name(name), score=score)
     for key in ("model", "manufacturer"):
@@ -88,13 +88,13 @@ def record(ip: str, stype: str, instance: str, txt: str, now: float | None = Non
 
 
 def remember_scan(found: list[tuple[str, str, str, str]]) -> None:
-    """Annunci raccolti da una scansione mDNS (tipo, istanza, ip, txt)."""
+    """Announcements collected by an mDNS scan (type, instance, ip, txt)."""
     for stype, instance, ip, txt in found:
         record(ip, stype, instance, txt)
 
 
 def lookup(mac, ip: str | None = None) -> dict | None:
-    """Scheda ricordata per quel MAC o, se manca, per quell'IP (recente). None se mai visto."""
+    """Card remembered for that MAC or, if missing, for that IP (recent). None if never seen."""
     m = str(mac or "").strip().lower().replace("-", ":")
     if m and m in by_mac:
         return by_mac[m]
@@ -105,7 +105,7 @@ def lookup(mac, ip: str | None = None) -> dict | None:
 
 
 def as_scan_info(card: dict | None) -> dict:
-    """La scheda ricordata nel formato dei campi di scan_info (solo i campi presenti)."""
+    """The remembered card in the format of the scan_info fields (only the fields present)."""
     if not card:
         return {}
     out = {}
@@ -118,7 +118,7 @@ def as_scan_info(card: dict | None) -> dict:
 
 
 def _housekeeping() -> None:
-    """Lega al MAC le schede tenute per IP (appena l'ARP lo conosce) e scarta quelle vecchie."""
+    """Ties to the MAC the cards kept by IP (as soon as ARP knows it) and discards the old ones."""
     global _dirty
     now = time.time()
     for ip, card in list(by_ip.items()):
@@ -135,7 +135,7 @@ def _housekeeping() -> None:
 
 
 async def _listen() -> None:
-    """Browser DNS-SD sempre attivo: scopre i tipi di servizio e naviga ogni tipo; ogni istanza vista si registra."""
+    """Always-on DNS-SD browser: discovers the service types and browses each type; every instance seen is recorded."""
     from zeroconf import IPVersion, ServiceStateChange
     from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
     from . import scanner
@@ -199,7 +199,7 @@ async def _listen() -> None:
 
 
 def start(state) -> None:
-    """Dal lifespan: carica la memoria e avvia l'ascolto (se zeroconf manca resta solo la memoria)."""
+    """From the lifespan: loads the memory and starts listening (if zeroconf is missing only the memory remains)."""
     global _task, _mac_for_ip
     _load()
 

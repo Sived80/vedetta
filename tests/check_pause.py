@@ -1,4 +1,4 @@
-"""Pausa del controllo periodico: scadenza, ripresa, aggiornamento a mano."""
+"""Pause of the periodic check: expiry, resume, manual refresh."""
 import asyncio
 import os
 import sys
@@ -34,7 +34,7 @@ async def go():
     s.resume()
     await asyncio.sleep(0.2)
     assert len(polls) == 2 and not s.poll_info()["paused"], "la ripresa controlla subito"
-    s._paused_until = __import__("time").time() + 0.5  # pausa a tempo: riparte da sola
+    s._paused_until = __import__("time").time() + 0.5  # timed pause: restarts by itself
     n = len(polls)
     await asyncio.sleep(1.8)
     assert len(polls) > n and s.paused_remaining() is None, "scaduta la pausa si riparte"
@@ -43,7 +43,7 @@ async def go():
 
 asyncio.run(go())
 
-# La pausa sopravvive al riavvio del servizio (file pause.json).
+# The pause survives a service restart (pause.json file).
 import json, pathlib, tempfile, time  # noqa: E402
 from app import settings  # noqa: E402
 settings.CONFIG_DIR = pathlib.Path(tempfile.mkdtemp())

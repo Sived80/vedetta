@@ -1,10 +1,10 @@
-"""Verifica della logica pura della dashboard in stile Home Assistant (/ha):
-tipo di dispositivo dedotto, formato compatto, riepilogo, registro eventi,
-segmenti storici, traduzioni (chiavi usate da ha.js presenti in en e it).
-Nel container: python tests/check_ha_api.py
-In locale (Windows) funziona anche senza zoneinfo: se app.applog non si
-importa lo si simula. Usa un database temporaneo.
-Con "python - < file" la cartella corrente deve essere la radice del progetto."""
+"""Check of the pure logic of the Home Assistant-style dashboard (/ha):
+inferred device type, compact format, summary, event log,
+history segments, translations (keys used by ha.js present in en and it).
+In the container: python tests/check_ha_api.py
+Locally (Windows) it also works without zoneinfo: if app.applog cannot be
+imported it is simulated. Uses a temporary database.
+With "python - < file" the current folder must be the project root."""
 import json
 import re
 import sys
@@ -43,17 +43,17 @@ def port(n, label=None, cat="other"):
     return {"label": label or str(n), "confirmed": True, "category": cat}
 
 
-# 1) tipo dedotto: regole generiche, nessun caso particolare
+# 1) inferred type: generic rules, no special cases
 cases = [
     (dev(is_mobile=True, name="qualunque"), None, "phone"),
-    (dev(name="Camera luce"), "shelly_gen1", "iot"),               # adapter shelly
-    (dev(name="Plug cucina", vendor="Shelly"), None, "iot"),       # parola chiave
+    (dev(name="Camera luce"), "shelly_gen1", "iot"),               # shelly adapter
+    (dev(name="Plug cucina", vendor="Shelly"), None, "iot"),       # keyword
     (dev(name="Salotto", vendor="Philips Hue"), None, "iot"),
     (dev(name="HP", scanned_ports=[port(631, "631 · ipp")]), None, "printer"),
     (dev(name="Ufficio", vendor="Epson"), None, "printer"),
     (dev(name="Samsung TV salotto"), None, "media"),
     (dev(name="Bravia"), None, "media"),
-    # NVR e telecamere: dati reali del test (RTSP aperto, ONVIF dichiarato); "webserver" non e' un server.
+    # NVRs and cameras: real test data (RTSP open, ONVIF declared); "webserver" is not a server.
     (dev(name="192.168.50.190", vendor="Milesight", extra={"http_server": "webserver", "title": "Login"},
          scanned_ports=[port(80, "80 · http"), port(554, "554 · rtsp")]), None, "media"),
     (dev(name="192.168.50.199", extra={"onvif_name": "IPCAM", "rtsp_server": "Hipcam RealServer/V1.0"}), None, "media"),
@@ -67,9 +67,9 @@ cases = [
     (dev(name="x", scanned_ports=[port(3389, "3389 · rdp")]), None, "pc"),
     (dev(name="proxmox"), None, "server"),
     (dev(name="x", scanned_ports=[port(22, "22 · ssh"), port(8006, "8006 · https")]), None, "server"),
-    (dev(name="x", extra={"os": "Linux 5.x"}), None, "generic"),   # Linux da solo non e' un ruolo (gira anche su telefoni, TV, router)
-    (dev(name="x", vendor="Canonical Ltd"), None, "generic"),         # "canon" dentro "canonical": non e' una stampante
-    (dev(name="Verbose logger"), None, "generic"),                    # "bose" dentro "verbose": non e' audio
+    (dev(name="x", extra={"os": "Linux 5.x"}), None, "generic"),   # Linux alone is not a role (it also runs on phones, TVs, routers)
+    (dev(name="x", vendor="Canonical Ltd"), None, "generic"),         # "canon" inside "canonical": not a printer
+    (dev(name="Verbose logger"), None, "generic"),                    # "bose" inside "verbose": not audio
     (dev(name="qualcosa"), None, "generic"),
 ]
 for device, adapter, expected in cases:
@@ -78,7 +78,7 @@ for device, adapter, expected in cases:
 assert set(c[2] for c in cases) <= set(ha_data.TYPE_ORDER)
 print("ok: tipo dedotto (%d casi)" % len(cases))
 
-# 2) formato compatto
+# 2) compact format
 i18n.use("en")
 d = dev(
     name="Shelly 1", vendor="Shelly", signal_kind="wifi", signal_value=-58, signal_band="2.4 GHz", signal_label="good",
@@ -99,10 +99,10 @@ online = ha_data.compact_device(dev(last_seen=99.0))
 assert online["last_seen"] is None, "da online last_seen non si espone"
 assert ha_data.compact_device(dev(signal_kind="lan", signal_value="1000 Mbps"))["signal"]["display"] == "1000 Mbps"
 assert ha_data.compact_device(dev())["signal"] is None
-json.dumps(c)  # serializzabile
+json.dumps(c)  # serializable
 print("ok: formato compatto")
 
-# 3) riepilogo
+# 3) summary
 devices = [
     dev(id="a", ip="10.0.0.1", vendor="Allterco", brand="Shelly", online=True),
     dev(id="b", ip="10.0.0.2", vendor="Espressif", brand="Shelly", online=False, is_mobile=False),
@@ -121,7 +121,7 @@ assert s["new_devices"]["count"] == 1
 assert s["types"].get("phone") == 2
 empty = ha_data.build_summary([], {}, {}, {}, 0)
 assert empty["total"] == 0 and empty["online_pct"] is None and empty["brands"] == []
-# la marca e' quella del PRODOTTO: un chip senza marca nota non conta come marca
+# the brand is the PRODUCT's: a chip without a known brand does not count as a brand
 chips = [
     dev(id="e", ip="10.0.0.5", vendor="Bouffalo Lab", brand=None, online=True),
     dev(id="f", ip="10.0.0.6", vendor="Bouffalo Lab", brand=None, online=True, battery="yes"),
@@ -134,7 +134,7 @@ assert s2["unknown_chips"] == [{"vendor": "Bouffalo Lab", "count": 2}, {"vendor"
 assert s2["battery"] == 1
 print("ok: riepilogo")
 
-# 4) registro eventi e storico (database temporaneo)
+# 4) event log and history (temporary database)
 tmp = Path(tempfile.mkdtemp())
 hist = History(tmp / "t.db")
 now = time.time()
@@ -159,14 +159,14 @@ assert all(isinstance(s_["from"], int) and isinstance(s_["to"], int) for s_ in s
 assert [s_["online"] for s_ in slim["segments"]] == [True, False] and slim["online_pct"] == window["online_pct"]
 print("ok: registro eventi e segmenti")
 
-# 5) localize (flusso SSE) se il router e' importabile qui
+# 5) localize (SSE stream) if the router can be imported here
 try:
     try:
         import httpx  # noqa: F401
-    except ImportError:  # in locale puo' mancare: serve solo agli adapter, non a questi controlli
+    except ImportError:  # it may be missing locally: it is only needed by the adapters, not by these checks
         sys.modules["httpx"] = types.ModuleType("httpx")
     from app import routes_ha
-except Exception as exc:  # fastapi o altre dipendenze mancanti in locale: si salta
+except Exception as exc:  # fastapi or other dependencies missing locally: skip
     print("salto: routes_ha non importabile (%s)" % exc.__class__.__name__)
 else:
     ev = routes_ha.localize({"type": "device", "id": "d1", "rev": 3, "device": dev()}, {})
@@ -178,7 +178,7 @@ else:
     assert routes_ha._flag("1") and routes_ha._flag("TRUE") and not routes_ha._flag("0") and not routes_ha._flag(None)
     print("ok: localize SSE e parametri")
 
-    # Le funzioni delle route, chiamate direttamente con uno stato finto.
+    # The route functions, called directly with a fake state.
     import asyncio
     from app.state import state
 
@@ -208,7 +208,7 @@ else:
         assert sm["total"] == 4 and sm["new_devices"]["count"] == 1
         lg = await routes_ha.api_ha_logbook(FakeReq(), limit=5, level="normal")
         assert [e["device_id"] for e in lg["events"]] == ["gone", "a", "a"]
-        # Minimo: solo i dispositivi ancora in plancia e non mobili ("gone" non c'e' piu').
+        # Minimum: only devices still on the dashboard and not mobile ("gone" is no longer there).
         lg = await routes_ha.api_ha_logbook(FakeReq(), limit=5)
         assert [e["device_id"] for e in lg["events"]] == ["a", "a"], lg["events"]
         hs = await routes_ha.api_ha_history_all(hours=24)
@@ -237,12 +237,12 @@ else:
     asyncio.run(run_routes())
     print("ok: route /api/ha/* chiamate con stato finto (devices, summary, logbook, history, SSE)")
 
-# 6) traduzioni: stesse chiavi in en e it; tutte le chiavi usate da ha.js ci sono
+# 6) translations: same keys in en and it; all keys used by ha.js are present
 en = json.loads((ROOT / "app/locales/en/ha.json").read_text(encoding="utf-8"))
 it = json.loads((ROOT / "app/locales/it/ha.json").read_text(encoding="utf-8"))
 assert set(en) == set(it), sorted(set(en) ^ set(it))
 assert all(k.startswith(("ha.", "js.ha.")) for k in en), "solo chiavi ha.* e js.ha.*"
-for k in en:  # stessi segnaposto in entrambe le lingue
+for k in en:  # same placeholders in both languages
     assert sorted(re.findall(r"\{(\w+)\}", en[k])) == sorted(re.findall(r"\{(\w+)\}", it[k])), k
 src = (ROOT / "app/static/ha/ha.js").read_text(encoding="utf-8")
 
@@ -260,12 +260,12 @@ for kind, vals in (("js.ha.type.", types_), ("js.ha.type1.", types_),
                    ("js.ha.rename.mode_", ("auto", "yes", "no"))):
     for v in vals:
         assert kind + v in en, kind + v
-# il loader unisce davvero il file e js_table espone solo js.*
+# the loader really merges the file and js_table exposes only js.*
 assert i18n.translate("it", "js.ha.network") == "Rete" and i18n.translate("en", "js.ha.network") == "Network"
 assert "js.ha.network" in i18n.js_table("it") and "ha.logbook.online" not in i18n.js_table("it")
 print("ok: traduzioni (%d chiavi, %d usate da ha.js)" % (len(en), len(used)))
 
-# 7) il tipo dedotto ha un'icona e un'etichetta per ogni valore possibile
+# 7) the inferred type has an icon and a label for every possible value
 icons = (ROOT / "app/static/ha/icons.js").read_text(encoding="utf-8")
 for kind in ha_data.TYPE_ORDER:
     assert re.search(r'\b"?%s"?:\s*"[a-z-]+"' % kind, icons), kind

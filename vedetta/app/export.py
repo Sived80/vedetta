@@ -1,6 +1,6 @@
-"""Esportazione per l'analisi: un file zip con i dati che servono a capire perche' un nome, una marca o una
-categoria sono sbagliati. Niente password (quella MQTT e' sostituita) e niente invio: il file lo scarica
-l'utente e lo consegna lui."""
+"""Export for analysis: a zip file with the data needed to understand why a name, a brand or a
+category is wrong. No passwords (the MQTT one is replaced) and no upload: the user downloads the file
+and hands it over themselves."""
 import io
 import json
 import platform
@@ -13,13 +13,13 @@ from pathlib import Path
 from . import dhcp, ha_registry, journal, mdns_listener, mqtt_ha, paths, roles, settings
 from .state import state
 
-MAX_DB_BYTES = 40 * 1024 * 1024    # oltre questa dimensione il database non si include
-MAX_LOG_BYTES = 2 * 1024 * 1024    # dei registri si tiene la parte finale
-SKIP_WORDS = ("key", "token", "secret", "pass")   # file che potrebbero contenere credenziali
+MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
+MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
+SKIP_WORDS = ("key", "token", "secret", "pass")   # files that might contain credentials
 
 
 def _redact(obj):
-    """Copia con ogni campo che sembra una credenziale sostituito."""
+    """Copy with every field that looks like a credential replaced."""
     if isinstance(obj, dict):
         return {k: ("***" if any(w in str(k).lower() for w in SKIP_WORDS) and v else _redact(v)) for k, v in obj.items()}
     if isinstance(obj, list):
@@ -32,7 +32,7 @@ def _tail(path: Path, limit: int) -> bytes:
     with path.open("rb") as fh:
         if size > limit:
             fh.seek(size - limit)
-            fh.readline()   # riga intera
+            fh.readline()   # whole line
         return fh.read()
 
 
@@ -49,7 +49,7 @@ def build_zip() -> bytes:
             z.writestr(name, raw)
             manifest["files"][name] = len(raw)
 
-        # file di dati: configurazione, memoria DHCP, giornale, registro (parte finale)
+        # data files: configuration, DHCP memory, journal, log (tail only)
         if data_dir.exists():
             for f in sorted(data_dir.iterdir()):
                 if not f.is_file() or f.name.startswith("vedetta.db") or any(w in f.name.lower() for w in SKIP_WORDS):
@@ -61,9 +61,9 @@ def build_zip() -> bytes:
                         put(f"data/{f.name}", _tail(f, MAX_LOG_BYTES))
                     else:
                         put(f"data/{f.name}", f.read_bytes())
-                except Exception as exc:   # un file illeggibile non deve fermare l'esportazione
+                except Exception as exc:   # an unreadable file must not stop the export
                     manifest["notes"].append(f"{f.name}: {exc!r}")
-        # database dello storico: copia coerente (backup SQLite) se non e' enorme
+        # history database: consistent copy (SQLite backup) unless it is huge
         db = data_dir / "vedetta.db"
         if db.exists():
             if db.stat().st_size > MAX_DB_BYTES:
@@ -79,7 +79,7 @@ def build_zip() -> bytes:
                         put("data/vedetta.db", copy.read_bytes())
                 except Exception as exc:
                     manifest["notes"].append(f"vedetta.db: {exc!r}")
-        # lo stato di adesso: perche' ogni dispositivo e' cosi'
+        # the current state: why each device is the way it is
         dbg = {}
         for did in list(state.devices):
             try:

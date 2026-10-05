@@ -1,8 +1,8 @@
-"""Dispositivi ignorati: non compaiono nelle ricerche ne' negli avvisi di nuovo
-dispositivo. Elenco in config/ignored.json (un deploy non lo cancella).
+"""Ignored devices: they do not appear in searches nor in new-device
+alerts. List in config/ignored.json (a deploy does not delete it).
 
-Si ignora per MAC, IP o nome. Il nome serve ai telefoni con MAC privato, che
-cambia da una rete all'altra mentre l'hostname annunciato resta lo stesso."""
+Devices are ignored by MAC, IP or name. The name is for phones with a private MAC, which
+changes from one network to another while the announced hostname stays the same."""
 import json
 import os
 import tempfile
@@ -70,7 +70,7 @@ def _write(items: list[dict]) -> None:
 
 
 def add(kind: str, value: str, label: str = "") -> list[dict]:
-    """Aggiunge una voce (se la coppia tipo+valore c'e' gia' non duplica). ValueError se non valida."""
+    """Adds an entry (if the kind+value pair already exists it does not duplicate). ValueError if invalid."""
     value = (value or "").strip()
     if kind not in KINDS or not 2 <= len(value) <= 80:
         raise ValueError("invalid")
@@ -95,8 +95,8 @@ def remove(item_id: str) -> bool:
 
 
 def matches(*, mac: str | None = None, ip: str | None = None, name: str | None = None) -> bool:
-    """True se il dispositivo e' nell'elenco. Il nome si confronta anche con
-    quello annunciato via DHCP dal MAC, se noto."""
+    """True if the device is in the list. The name is also compared with
+    the one announced via DHCP by the MAC, if known."""
     items = list_items()
     if not items:
         return False
@@ -114,8 +114,8 @@ def matches(*, mac: str | None = None, ip: str | None = None, name: str | None =
 
 
 def choose(ip: str | None, mac: str | None, name: str | None) -> tuple[str, str]:
-    """Come ignorare un dispositivo: per nome se il MAC e' privato (cambia) e il
-    nome e' noto, altrimenti per MAC, altrimenti per nome, altrimenti per IP."""
+    """How to ignore a device: by name if the MAC is private (it changes) and the
+    name is known, otherwise by MAC, otherwise by name, otherwise by IP."""
     hostname = naming.clean_name(name) or naming.clean_name((dhcp.seen.get((mac or "").lower()) or {}).get("hostname"))
     if mac and not (is_private_mac(mac) and hostname):
         return "mac", mac.upper()

@@ -1,15 +1,15 @@
-"""Catalogo di firme dichiarative dei prodotti (app/data/signatures.json).
+"""Catalog of declarative product signatures (app/data/signatures.json).
 
-Una firma e' un insieme di condizioni su cio' che il dispositivo dichiara (modello mDNS, servizi, tipo UPnP, classe
-DHCP, intestazione Server, titolo, porte...) e dice cos'e' (categoria, tipo). Serve dove i segnali generici sono
-ambigui: Google Home e Chromecast annunciano entrambi "Cast", ma solo il modello li distingue. Si estende
-aggiungendo una riga al file, senza toccare il codice; ogni firma indica da quale dispositivo viene ("fixture":
-"real" = letto da un dispositivo vero, "simulated" = dai dati noti del produttore, da confermare con uno vero).
+A signature is a set of conditions on what the device declares (mDNS model, services, UPnP type, DHCP
+class, Server header, title, ports...) and says what it is (category, type). It is used where the generic signals are
+ambiguous: Google Home and Chromecast both announce "Cast", but only the model tells them apart. It is extended
+by adding a row to the file, without touching the code; each signature states which device it comes from ("fixture":
+"real" = read from a real device, "simulated" = from the manufacturer's known data, to be confirmed with a real one).
 
-Condizioni (tutte da soddisfare):
-  {"field": <campo>, "re": <espressione regolare, senza distinzione di maiuscole>}   campo testuale
-  {"field": "mdns_services" | "ports" | "ha_domains", "has": <valore>}                 campo a elenco
-Campi: mdns_model, mdns_services, upnp_model, upnp_manufacturer, dhcp_class, http_server, title, brand, port_labels,
+Conditions (all must be satisfied):
+  {"field": <field>, "re": <regular expression, case-insensitive>}   text field
+  {"field": "mdns_services" | "ports" | "ha_domains", "has": <value>}                 list field
+Fields: mdns_model, mdns_services, upnp_model, upnp_manufacturer, dhcp_class, http_server, title, brand, port_labels,
 ports, api_source, ha_domains."""
 import json
 import re
@@ -41,7 +41,7 @@ def load() -> list[dict]:
 
 
 def context(device: dict, upnp_types=()) -> dict:
-    """I campi su cui si valutano le firme, dal dispositivo (formato di probe)."""
+    """The fields the signatures are evaluated on, taken from the device (probe format)."""
     extra = device.get("extra") or {}
     ports, labels = [], []
     for p in device.get("scanned_ports") or []:
@@ -70,7 +70,7 @@ def _holds(cond, ctx: dict) -> bool:
 
 
 def matches(device: dict, upnp_types=()) -> list[dict]:
-    """Firme soddisfatte dal dispositivo, dalla piu' specifica (piu' condizioni) alla meno."""
+    """Signatures satisfied by the device, from the most specific (most conditions) to the least."""
     ctx = context(device, upnp_types)
     found = [s for s in load() if s["_conds"] and all(_holds(c, ctx) for c in s["_conds"])]
     found.sort(key=lambda s: -len(s["_conds"]))

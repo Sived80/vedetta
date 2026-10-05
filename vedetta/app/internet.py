@@ -1,12 +1,12 @@
-"""Uscita verso internet: IP pubblico, doppio NAT, CGNAT del provider.
+"""Outbound internet connectivity: public IP, double NAT, provider CGNAT.
 
-  IP pubblico  query DNS standard al resolver di OpenDNS per myip.opendns.com: la
-               risposta e' l'indirizzo da cui la query arriva (nessuna API web)
-  percorso     traceroute di nmap (--traceroute) verso 1.1.1.1: i primi salti
-  doppio NAT   due o piu' salti con IP privati (RFC 1918) prima del primo pubblico:
-               c'e' un altro router (es. il modem del provider) davanti al tuo
-  CGNAT        un salto in 100.64.0.0/10 (RFC 6598) prima del primo pubblico: il
-               provider condivide l'IP pubblico tra piu' clienti"""
+  public IP    standard DNS query to the OpenDNS resolver for myip.opendns.com: the
+               answer is the address the query comes from (no web API)
+  path         nmap traceroute (--traceroute) to 1.1.1.1: the first hops
+  double NAT   two or more hops with private IPs (RFC 1918) before the first public one:
+               there is another router (e.g. the provider's modem) in front of yours
+  CGNAT        a hop in 100.64.0.0/10 (RFC 6598) before the first public one: the
+               provider shares the public IP among multiple customers"""
 import asyncio
 import ipaddress
 import random
@@ -38,7 +38,7 @@ def _skip_name(data: bytes, pos: int) -> int:
 
 
 def parse_a_answer(data: bytes, qid: int) -> str | None:
-    """Primo record A della risposta, None se assente o non valida."""
+    """First A record of the answer, None if missing or invalid."""
     if len(data) < 12 or struct.unpack(">H", data[:2])[0] != qid or not data[2] & 0x80:
         return None
     qd, an = struct.unpack(">HH", data[4:8])
@@ -98,7 +98,7 @@ def parse_trace(xml_text: str) -> list[str]:
 
 
 def classify(hops: list[str]) -> dict:
-    """Salti fino al primo pubblico: quanti privati, se c'e' CGNAT."""
+    """Hops up to the first public one: how many are private, whether CGNAT is present."""
     private, cgnat = [], False
     for ip in hops:
         try:

@@ -1,6 +1,6 @@
-"""Wake-on-LAN: magic packet standard (6 byte 0xFF + 16 ripetizioni del MAC
-= 102 byte) inviato in UDP broadcast. Protocollo aperto, nessun privilegio
-particolare: basta SO_BROADCAST."""
+"""Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC
+= 102 bytes) sent as a UDP broadcast. Open protocol, no special privileges
+needed: SO_BROADCAST is enough."""
 import re
 import socket
 
@@ -20,9 +20,9 @@ def build_magic_packet(mac: str) -> bytes:
 
 
 def send(mac: str, broadcasts: list[str]) -> int:
-    """Invia il pacchetto a ogni indirizzo di broadcast e porta (9 e 7).
-    Ritorna quanti invii sono riusciti; un indirizzo irraggiungibile non
-    blocca gli altri."""
+    """Sends the packet to every broadcast address and port (9 and 7).
+    Returns how many sends succeeded; an unreachable address does not
+    block the others."""
     packet = build_magic_packet(mac)
     sent = 0
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:

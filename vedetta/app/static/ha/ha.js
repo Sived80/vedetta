@@ -1,13 +1,13 @@
-// Vedetta in stile Home Assistant (/ha). JavaScript vanilla, nessuna libreria.
-// Dati: /api/ha/devices, /api/ha/summary, /api/ha/logbook, /api/ha/history
-// e il flusso SSE /api/ha/events (JSON, con revisione e ripresa automatica).
-// Azioni: gli endpoint gia' esistenti (refresh, wake, rename, delete, scan).
+// Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries.
+// Data: /api/ha/devices, /api/ha/summary, /api/ha/logbook, /api/ha/history
+// and the SSE stream /api/ha/events (JSON, with revision and automatic resume).
+// Actions: the existing endpoints (refresh, wake, rename, delete, scan).
 (function () {
   "use strict";
 
   var I = window.VedettaIcons;
   var LANG = window.VEDETTA_LANG || "en";
-  var BASE = window.VEDETTA_BASE || ""; // prefisso ingress di HA (vuoto alla radice)
+  var BASE = window.VEDETTA_BASE || ""; // HA ingress prefix (empty at the root)
   var params = new URLSearchParams(location.search);
   var ROOT = document.documentElement;
   var COMPACT = ROOT.getAttribute("data-compact") === "1";
@@ -23,9 +23,9 @@
   var TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "generic"];
   var POLL_WATCHDOG_MS = 90000;
 
-  // ---------------------------------------------------------------- lingua
-  // Come static/js/lang.js: ?lang= vale come scelta, altrimenti si ripristina
-  // l'ultima scelta salvata (il cookie, dentro un iframe, spesso non viaggia).
+  // ---------------------------------------------------------------- language
+  // Like static/js/lang.js: ?lang= counts as a choice, otherwise the last saved
+  // choice is restored (the cookie often does not travel inside an iframe).
   var LANG_KEY = "dash-lang";
   function langAvailable(code) {
     var list = window.VEDETTA_LANGS || [];
@@ -48,7 +48,7 @@
       }
       localStorage.setItem(LANG_KEY, LANG);
     }
-  } catch (err) { /* storage non disponibile: si resta nella lingua del server */ }
+  } catch (err) { /* storage not available: stay on the server's language */ }
 
   function t(key, vars) {
     var table = window.VEDETTA_I18N || {};
@@ -62,7 +62,7 @@
     });
   }
 
-  // --------------------------------------------------------------- utilita'
+  // --------------------------------------------------------------- utilities
   function $(id) { return document.getElementById(id); }
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -71,18 +71,18 @@
   }
   function icon(name, cls) { return I.svg(name, cls); }
   function typeIcon(type) { return I.typeIcon[type] || I.typeIcon.generic; }
-  // Icona del dispositivo: quella piu' adatta scelta dal server (nome MDI) se la conosciamo,
-  // altrimenti quella della sua categoria.
+  // Device icon: the best-fitting one chosen by the server (MDI name) if we know it,
+  // otherwise the one for its category.
   function devIcon(d) {
     return d && d.icon && I.paths[d.icon] ? d.icon : typeIcon(d && d.type);
   }
-  // Si puo' aprire un'interfaccia web solo se la scansione ne ha trovata una (porta web o titolo di pagina).
+  // A web interface can be opened only if the scan found one (web port or page title).
   function canOpen(d) {
     return !!(d.title || (d.ports || []).some(function (p) { return p.category === "web"; }));
   }
-  // Origine e affidabilita' di marca e nome: dati per l'analisi, non per l'utente. Si attivano con
-  // 3 tocchi consecutivi sul titolo della card della rete (o ?debug=1); finche' sono attivi un
-  // distintivo fisso "DEBUG" resta sempre visibile. L'API restituisce questi dati in ogni caso.
+  // Origin and reliability of brand and name: data for analysis, not for the user. Enabled with
+  // 3 consecutive taps on the network card title (or ?debug=1); while enabled a fixed
+  // "DEBUG" badge stays always visible. The API returns this data in any case.
   var DEBUG = /[?&]debug=1/.test(location.search) || (function () { try { return localStorage.getItem("vedetta-debug") === "1"; } catch (e) { return false; } })();
   function showDebugBadge() {
     ROOT.toggleAttribute("data-debug", DEBUG);
@@ -97,17 +97,17 @@
   function setDebug(on) {
     DEBUG = !!on;
     ROOT.toggleAttribute("data-debug", DEBUG);
-    try { localStorage.setItem("vedetta-debug", DEBUG ? "1" : "0"); } catch (e) { /* ignora */ }
+    try { localStorage.setItem("vedetta-debug", DEBUG ? "1" : "0"); } catch (e) { /* ignore */ }
     showDebugBadge();
     snack(t(DEBUG ? "js.ha.debug.on" : "js.ha.debug.off"), { kind: DEBUG ? "warning" : "success", ms: 3500 });
     S.tiles.forEach(function (el, id) { updateTile(id); });
     var od = S.open && S.devices.get(S.open);
     if (od && dlg.open && S.mi.view === "main") { miAttrs(od); miDebug(od); }
   }
-  // 3 tocchi consecutivi (entro 2 s) sul titolo della card della rete. Come il "numero build" di Android:
-  // dal secondo tocco un avviso dice quanti ne mancano, cosi' si vede che il gesto e' stato capito.
-  // In fase di cattura (nessun altro gestore puo' fermare l'evento) e con touch-action sul titolo
-  // (niente zoom col doppio tocco). Da tastiera: Ctrl+Maiusc+D.
+  // 3 consecutive taps (within 2 s) on the network card title. Like Android's "build number":
+  // from the second tap a notice says how many are left, so it is clear the gesture was understood.
+  // In the capture phase (no other handler can stop the event) and with touch-action on the title
+  // (no double-tap zoom). From the keyboard: Ctrl+Shift+D.
   var tapTimes = [];
   function debugTap(e) {
     var el = e.target && e.target.closest ? e.target.closest("#card-network .card-header .ch-text") : null;
@@ -122,10 +122,10 @@
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")) { e.preventDefault(); setDebug(!DEBUG); }
   });
-  // Wake-on-LAN: il pacchetto non ha risposta, quindi non si puo' sapere in anticipo se il dispositivo lo
-  // accetta. Si offre solo dove ha senso: dispositivo spento, MAC noto e reale (non "privato" come quello
-  // dei telefoni), non mobile e di un tipo che di solito lo supporta (PC, server, TV/media); oppure
-  // quando una sveglia precedente ha gia' funzionato (il server lo ricorda in wol_ok).
+  // Wake-on-LAN: the packet gets no reply, so it cannot be known in advance whether the device
+  // accepts it. It is offered only where it makes sense: device off, MAC known and real (not "private" like those
+  // of phones), not mobile and of a type that usually supports it (PC, server, TV/media); or
+  // when a previous wake-up has already worked (the server remembers it in wol_ok).
   var WAKE_TYPES = ["pc", "server", "media"];
   function macIsLocal(mac) { var b = parseInt(String(mac || "").slice(0, 2), 16); return isNaN(b) || (b & 2) === 2; }
   function canWake(d) {
@@ -183,8 +183,8 @@
     };
   }
 
-  // Chiamate JSON: la lingua viaggia nell'intestazione X-Lang e, per i GET,
-  // anche nell'indirizzo. Un errore HTTP diventa un'eccezione col testo del server.
+  // JSON calls: the language travels in the X-Lang header and, for GETs,
+  // also in the URL. An HTTP error becomes an exception with the server's text.
   function api(path, opts) {
     opts = opts || {};
     var method = opts.method || "GET";
@@ -196,7 +196,7 @@
       headers["Content-Type"] = "application/json";
       body = JSON.stringify(opts.json);
     }
-    // Tempo massimo: dopo lo standby di un'app mobile una richiesta puo' restare sospesa per sempre.
+    // Maximum time: after a mobile app standby a request can stay suspended forever.
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, opts.timeout || 25000);
     return fetch(url, { method: method, headers: headers, body: body, cache: "no-store", signal: ctrl ? ctrl.signal : undefined }).then(function (r) {
@@ -212,24 +212,24 @@
     }, function (err) { clearTimeout(timer); throw err; });
   }
 
-  // La sessione di Home Assistant (ingress) puo' scadere mentre l'app e' in secondo piano:
-  // le richieste falliscono con 401/403 e riprovare non serve. La pagina e' dello stesso
-  // dominio di Home Assistant: si ricarica quella intera, che rinnova la sessione.
+  // The Home Assistant session (ingress) can expire while the app is in the background:
+  // requests fail with 401/403 and retrying is useless. The page is on the same
+  // domain as Home Assistant: the whole page is reloaded, which renews the session.
   function reloadHost(force) {
     var key = "vedetta-ha-reloaded", now = Date.now();
     if (!force) {
       try {
-        if (now - (+sessionStorage.getItem(key) || 0) < 60000) return;  // niente cicli di ricarica
+        if (now - (+sessionStorage.getItem(key) || 0) < 60000) return;  // no reload loops
         sessionStorage.setItem(key, String(now));
-      } catch (err) { /* ignora */ }
+      } catch (err) { /* ignore */ }
     }
     try { window.top.location.reload(); } catch (err) { location.reload(); }
   }
 
-  // ------------------------------------------------------------------ stato
+  // ------------------------------------------------------------------ state
   var S = {
     devices: new Map(),
-    list: [],               // dispositivi in ordine di IP
+    list: [],               // devices in IP order
     rev: 0,
     loaded: false,
     loadTries: 0,
@@ -241,39 +241,39 @@
     refreshStart: 0,
     changedSince: 0,
     scanBusy: false,
-    hist: new Map(),        // id -> {from,to,segments,online_pct} (ultime 24 h)
+    hist: new Map(),        // id -> {from,to,segments,online_pct} (last 24 h)
     log: { events: [], limit: 30, ids: null, open: false, q: "",
            level: (function () { try { var v = localStorage.getItem("vedetta-ha-loglevel"); return v === "normal" || v === "detail" ? v : "min"; } catch (e) { return "min"; } })() },
-    open: null,             // dispositivo mostrato nel dialogo "Piu' info"
+    open: null,             // device shown in the "More info" dialog
     mi: { range: 24, view: "main", win: {}, token: 0 },
     conn: { ok: false, everOk: false, retryAt: 3000, last: 0 },
     es: null,
     retryTimer: null,
-    tiles: new Map(),       // id -> elemento tile (riusato tra i ridisegni)
+    tiles: new Map(),       // id -> tile element (reused across redraws)
     groups: {},
     chipsSig: "",
     scanned: (function () { try { return localStorage.getItem("vedetta-ha-scanned") === "1"; } catch (err) { return false; } })(),
-    scanDone: false,  // vero solo dopo una scansione conclusa in questa pagina
-    roles: { by_ip: {}, via: {}, names: {} },  // chi fa cosa nella rete (roles.py)
-    adding: null,           // aggiunta in corso: {ips, done}
-    found: [],              // dispositivi trovati dall'ultima scansione e non ancora aggiunti
-    missLimit: 3,           // controlli falliti di fila prima dell'offline (impostazione condivisa)
+    scanDone: false,  // true only after a scan completed in this page
+    roles: { by_ip: {}, via: {}, names: {} },  // who does what on the network (roles.py)
+    adding: null,           // add in progress: {ips, done}
+    found: [],              // devices found by the last scan and not yet added
+    missLimit: 3,           // consecutive failed checks before going offline (shared setting)
     dirty: { ids: new Set(), layout: false, net: false, more: false },
     flushQueued: false,
     gauge: 0
   };
 
   // ---------------------------------------------------------------- toast
-  // Snackbar in basso come in HA: testo, azione facoltativa, scompare da solo.
+  // Snackbar at the bottom as in HA: text, optional action, disappears on its own.
   var snacksEl = $("snacks");
-  // Il dialogo modale sta nel "top layer" del browser e coprirebbe i toast:
-  // il contenitore e' un popover manuale, che si riporta in cima ogni volta.
+  // The modal dialog sits in the browser's "top layer" and would cover the toasts:
+  // the container is a manual popover, brought back to the top every time.
   function raiseSnacks() {
     try {
       if (typeof snacksEl.showPopover !== "function") return;
       if (snacksEl.matches(":popover-open")) snacksEl.hidePopover();
       snacksEl.showPopover();
-    } catch (err) { /* senza popover i toast restano sotto il dialogo aperto */ }
+    } catch (err) { /* without the popover the toasts stay under the open dialog */ }
   }
   function snack(message, opts) {
     opts = opts || {};
@@ -306,7 +306,7 @@
   }
 
   // ------------------------------------------------------------- ripple
-  // Onda al tocco come nei componenti HA (mwc-ripple): una sola delega.
+  // Touch ripple as in HA components (mwc-ripple): a single delegation.
   document.addEventListener("pointerdown", function (e) {
     if (REDUCED || e.button > 0) return;
     var host = e.target.closest ? e.target.closest(".rp") : null;
@@ -323,7 +323,7 @@
     setTimeout(function () { if (wave.parentNode) wave.parentNode.removeChild(wave); }, 900);
   }, { passive: true });
 
-  // Contatori che scorrono verso il nuovo valore.
+  // Counters that scroll toward the new value.
   function animateNumber(el, to) {
     if (!el) return;
     var from = el._v == null ? 0 : el._v;
@@ -339,7 +339,7 @@
     })(start);
   }
 
-  // ---------------------------------------------------------------- barra
+  // ---------------------------------------------------------------- bar
   var searchEl = $("search"), searchClear = $("search-clear");
   function buildToolbar() {
     $("search-icon").innerHTML = icon("magnify");
@@ -371,9 +371,9 @@
   });
   searchClear.addEventListener("click", function () { searchEl.value = ""; applySearch(); searchEl.focus(); });
 
-  // Pallino "in tempo reale" e banner se il flusso cade.
+  // "Real time" dot and banner if the stream drops.
   var bannerEl = $("banner");
-  // Pausa del controllo periodico: left = ms rimasti (null = senza scadenza).
+  // Pause of the periodic check: left = ms remaining (null = no expiry).
   function pauseLeft() {
     if (!S.poll.paused) return null;
     return S.poll.pausedAt == null ? Infinity : Math.max(0, S.poll.pausedAt - Date.now());
@@ -382,7 +382,7 @@
     var m = Math.ceil(ms / 60000);
     return m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : "");
   }
-  // Una sola pill per lo stato: in tempo reale / in pausa / disconnesso. Cliccabile.
+  // A single pill for the status: real time / paused / disconnected. Clickable.
   function renderLive() {
     var live = $("live"), text = $("live-text");
     if (!live) return;
@@ -390,8 +390,8 @@
     var paused = ok === true && S.poll.paused;
     live.classList.toggle("ok", ok === true && !paused);
     live.classList.toggle("paused", paused);
-    // LED: arancione lampeggiante = pausa a tempo; rosso lampeggiante = fermo finche'
-    // non si riprende; rosso fisso = connessione persa (classe "bad").
+    // LED: blinking orange = timed pause; blinking red = stopped until
+    // resumed; solid red = connection lost (class "bad").
     live.classList.toggle("timed", paused && left !== Infinity);
     live.classList.toggle("forever", paused && left === Infinity);
     live.classList.toggle("bad", ok === false);
@@ -422,8 +422,8 @@
 
   // ----------------------------------------------------------------- menu
   var menuEl = $("menu"), menuBtn = $("btn-menu");
-  // Menu a pulsanti: ogni impostazione e' un gruppo con un titolo e una fila di pulsanti
-  // tondi (grandi per lingua e tema, piccoli per i valori numerici).
+  // Button menu: each setting is a group with a title and a row of round
+  // buttons (large for language and theme, small for numeric values).
   function menuGroup(label, buttons) {
     return '<div class="menu-group"><div class="menu-label">' + esc(label) + '</div><div class="menu-pills">' + buttons + "</div></div>";
   }
@@ -431,8 +431,8 @@
     return '<button type="button" class="menu-item pill ' + size + ' rp" data-' + attr + '="' + esc(value) + '" aria-pressed="' + on +
       '"' + (title ? ' title="' + esc(title) + '" aria-label="' + esc(title) + '"' : "") + ">" + esc(text) + "</button>";
   }
-  // "Reattivita'": un'unica scelta per l'utente; la combinazione di intervallo di
-  // controllo e soglia offline e' decisa qui (valori accettati dal server).
+  // "Responsiveness": a single choice for the user; the combination of check
+  // interval and offline threshold is decided here (values accepted by the server).
   var SPEEDS = [
     { id: "fast", poll: 10, miss: 2 },
     { id: "normal", poll: 30, miss: 3 },
@@ -463,7 +463,7 @@
       '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>";
     html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
     html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1">' + esc(t("js.ha.menu.ignored")) + icon("eye-off") + "</button>";
-    // Esportazione per l'analisi: quasi invisibile di proposito (icona piccola e sbiadita).
+    // Export for analysis: almost invisible on purpose (small, faded icon).
     html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
     menuEl.innerHTML = html;
   }
@@ -472,8 +472,8 @@
     if (open) {
       closePopups("menu");
       buildMenu();
-      // Il menu sta dentro una card che ritaglia cio' che esce dai suoi bordi: lo si
-      // posiziona rispetto alla finestra, sotto il pulsante, con altezza massima.
+      // The menu sits inside a card that clips whatever goes past its edges: it is
+      // positioned relative to the window, below the button, with a maximum height.
       var r = menuBtn.getBoundingClientRect();
       menuEl.style.top = Math.round(r.bottom + 4) + "px";
       menuEl.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + "px";
@@ -493,17 +493,17 @@
     if (!item) return;
     if (item.dataset.lang) {
       if (item.dataset.lang === LANG) return toggleMenu(false);
-      try { localStorage.setItem(LANG_KEY, item.dataset.lang); } catch (err) { /* ignora */ }
+      try { localStorage.setItem(LANG_KEY, item.dataset.lang); } catch (err) { /* ignore */ }
       api("/api/lang/" + encodeURIComponent(item.dataset.lang), { method: "POST" })
         .catch(function () {}).then(function () { goLang(item.dataset.lang); });
     } else if (item.dataset.theme) {
       ROOT.setAttribute("data-theme", item.dataset.theme);
-      try { localStorage.setItem("vedetta-ha-theme", item.dataset.theme); } catch (err) { /* ignora */ }
+      try { localStorage.setItem("vedetta-ha-theme", item.dataset.theme); } catch (err) { /* ignore */ }
       toggleMenu(false);
     } else if (item.dataset.view) {
-      // Stessi elementi, disposizione diversa (CSS): aggiornamenti, filtri e finestre non cambiano.
+      // Same elements, different layout (CSS): updates, filters and windows do not change.
       if (item.dataset.view === "list") ROOT.setAttribute("data-view", "list"); else ROOT.removeAttribute("data-view");
-      try { localStorage.setItem("vedetta-ha-view", item.dataset.view); } catch (err) { /* ignora */ }
+      try { localStorage.setItem("vedetta-ha-view", item.dataset.view); } catch (err) { /* ignore */ }
       toggleMenu(false);
     } else if (item.dataset.ignored) {
       toggleMenu(false);
@@ -529,9 +529,8 @@
     if (e.key === "Escape" && !menuEl.hidden) { toggleMenu(false); menuBtn.focus(); }
   });
   window.addEventListener("resize", function () { if (!menuEl.hidden) toggleMenu(false); });
-  // Tutti i menu a comparsa (app, pausa, ricerca approfondita, livelli del registro) si
-  // comportano allo stesso modo: si chiudono con lo scorrimento della pagina, il
-  // ridimensionamento, Esc e il clic fuori, e aprirne uno chiude gli altri.
+  // All popup menus (app, pause, deep search, log levels) behave the same way:
+  // they close on page scroll, resize, Esc and click outside, and opening one closes the others.
   function closePopups(except) {
     if (except !== "menu" && !menuEl.hidden) toggleMenu(false);
     if (except !== "pause" && !pauseEl.hidden) togglePause(false);
@@ -539,8 +538,8 @@
     if (except !== "log" && !logMenuEl.hidden) toggleLogMenu(false);
   }
   window.addEventListener("scroll", function (e) {
-    // Si scorre la pagina (o un suo contenitore): i menu, che sono fissi, si chiudono.
-    // Lo scorrimento DENTRO un menu non lo chiude.
+    // The page (or one of its containers) scrolls: the menus, which are fixed, close.
+    // Scrolling INSIDE a menu does not close it.
     var open = [menuEl, pauseEl, deepMenuEl, logMenuEl].filter(function (el) { return el && !el.hidden; });
     if (!open.length || open.some(function (el) { return el.contains(e.target); })) return;
     closePopups();
@@ -549,7 +548,7 @@
 
 
 
-  // ------------------------------------------------- esportazione per l'analisi
+  // ------------------------------------------------- export for analysis
   var exportDlg = $("exportdlg");
   function closeExport() {
     if (exportDlg.open && typeof exportDlg.close === "function") exportDlg.close(); else exportDlg.removeAttribute("open");
@@ -582,13 +581,13 @@
     }).catch(function () { snack(t("js.ha.export.failed"), { kind: "error" }); });
   });
 
-  // ------------------------------------------------- ricerca approfondita (deep)
-  // Prima ricerca avanzata: sistema, servizi aperti, pagina web. Lenta, quindi sempre
-  // dietro una conferma. Su un solo dispositivo la conferma si puo' disattivare; su
-  // tutti i dispositivi no.
+  // ------------------------------------------------- deep search
+  // First advanced search: system, open services, web page. Slow, so always
+  // behind a confirmation. On a single device the confirmation can be disabled; on
+  // all devices it cannot.
   var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
   function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
-  // Dispositivi mai analizzati a fondo: scanned_at lo scrive solo la ricerca approfondita ("Ultima ricerca approfondita").
+  // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
   function deepPending() { return S.list.filter(function (d) { return !d.scanned_at; }); }
   var deepIds = [];
   function runDeep(ids) {
@@ -653,7 +652,7 @@
   });
   window.addEventListener("resize", function () { if (!deepMenuEl.hidden) toggleDeepMenu(false); });
 
-  // ------------------------------------------------------------- pausa
+  // ------------------------------------------------------------- pause
   var pauseEl = $("pause-menu"), liveEl = $("live");
   function buildPause() {
     var html;
@@ -704,9 +703,9 @@
   });
   window.addEventListener("resize", function () { if (!pauseEl.hidden) togglePause(false); });
 
-  // ------------------------------------------------- dispositivi ignorati
-  // Due provenienze: "Ignora" su un dispositivo trovato dalla ricerca (lista degli
-  // ignorati: IP, MAC o nome) e "Ignora" su un dispositivo rilevato in rete (MAC).
+  // ------------------------------------------------- ignored devices
+  // Two origins: "Ignore" on a device found by the search (list of
+  // ignored: IP, MAC or name) and "Ignore" on a device detected on the network (MAC).
   var ignDlg = $("ignored");
   function openIgnored() {
     Promise.all([api("/api/ignored"), api("/api/new-devices/ignored")]).then(function (res) {
@@ -750,9 +749,9 @@
       .catch(function () { b.disabled = false; snack(t("js.ha.toast.error"), { kind: "error" }); });
   });
 
-  // ------------------------------------------------- metodi di ricerca (flussi)
-  // Stessa impostazione della dashboard classica (/api/flows): per ogni tipo di ricerca,
-  // quali funzioni eseguire. Salva a ogni interruttore.
+  // ------------------------------------------------- search methods (flows)
+  // Same setting as the classic dashboard (/api/flows): for each type of search,
+  // which functions to run. Saves on every switch.
   var flowsDlg = $("flows");
   function openFlows() {
     api("/api/flows").then(function (r) {
@@ -771,7 +770,7 @@
     var r = S.fl, html = '<div class="mi-header"><button type="button" class="icon-btn touch rp" data-fl="close" aria-label="' +
       esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><div class="mi-titles"><h2 class="mi-title" id="flows-title">' +
       esc(t("js.flows.title")) + '</h2><div class="mi-sub">' + esc(t("js.flows.hint")) + '</div></div></div><div class="fl-body">';
-    // Legenda dei livelli di rischio (i testi arrivano dal server nella lingua giusta).
+    // Legend of risk levels (the texts come from the server in the right language).
     html += '<div class="fl-legend">' + ["easy", "invasive", "risky"].map(function (k) {
       var info = (r.risks || {})[k] || { label: k, description: "" };
       return '<span class="risk r-' + k + '" title="' + esc(info.description) + '"><i></i>' + esc(info.label) + "</span>";
@@ -816,8 +815,8 @@
     });
   });
 
-  // ------------------------------------------------------------ filtri
-  // Si scelgono dai badge della card "Rete" (Tutti, Online, Offline, Mobili).
+  // ------------------------------------------------------------ filters
+  // Chosen from the badges of the "Network" card (All, Online, Offline, Mobile).
   function matches(d) {
     var f = S.filter;
     if (f.status === "online" && !d.online) return false;
@@ -844,11 +843,11 @@
     schedule();
   }
 
-  // ---------------------------------------------------------- card "Rete"
+  // ---------------------------------------------------------- "Network" card
   var netEl = $("card-network");
   var GAUGE_C = 2 * Math.PI * 52;
-  // Numero e anello avanzano insieme (stessa durata e stessa curva): una transizione
-  // CSS sull'anello non parte al primo disegno, quando l'elemento nasce gia' al valore finale.
+  // Number and ring advance together (same duration and same curve): a CSS
+  // transition on the ring does not start on first draw, when the element is born already at its final value.
   function animateGauge(online, total) {
     var fill = $("g-fill"), val = $("g-val");
     var to = total ? online / total : 0;
@@ -858,8 +857,8 @@
       val.textContent = String(n);
     }
     if (REDUCED) { cancelAnimationFrame(fill._raf || 0); fill._r = to; val._v = online; paint(to, online); return; }
-    // Stessi valori di prima: non toccare l'animazione eventualmente in corso
-    // (la card viene aggiornata piu' volte di fila appena si disegna).
+    // Same values as before: do not touch the animation possibly in progress
+    // (the card is updated several times in a row as soon as it is drawn).
     if (fill._r === to && val._v === online) return;
     var from = fill._cur == null ? 0 : fill._cur, fromN = val._cur == null ? 0 : val._cur;
     fill._r = to;
@@ -874,8 +873,8 @@
     })(start);
   }
 
-  // Il nome dell'app compare nel titolo solo se HA non mostra la sua barra
-  // (finestra larga o pagina aperta fuori da HA); con la barra HA e' gia' scritto li'.
+  // The app name appears in the title only if HA does not show its bar
+  // (wide window or page opened outside HA); with the HA bar it is already written there.
   var haBar = false;
   function renderNetTitle() {
     var title = $("net-title"), sub = $("net-sub");
@@ -893,10 +892,10 @@
     try { window.parent.postMessage({ type: "home-assistant/subscribe-properties" }, "*"); } catch (err) {}
   }
 
-  // Ricerca, stato in tempo reale e impostazioni: nodi creati una volta sola (con i loro
-  // gestori) e portati dentro la card della rete. Se la card si ricostruisce (risincronizzazione
-  // dopo un riavvio del servizio o un cambio di ruoli) vanno messi al sicuro prima, altrimenti
-  // sparirebbero con il vecchio contenuto e i pulsanti smetterebbero di rispondere.
+  // Search, real-time status and settings: nodes created only once (with their
+  // handlers) and moved into the network card. If the card is rebuilt (resync
+  // after a service restart or a roles change) they must be put in a safe place first, otherwise they
+  // would vanish with the old content and the buttons would stop responding.
   var NET_PARTS = null;
   function buildNetwork() {
     if (!NET_PARTS) NET_PARTS = { live: $("live"), wrap: document.querySelector(".menu-wrap"), search: $("search-box") };
@@ -927,8 +926,8 @@
         '<div class="brands" id="brands"></div>' +
       "</div>" +
       '<div class="progress" id="progress" aria-hidden="true"><div class="bar" id="progress-bar"></div></div>';
-    // Ricerca, stato in tempo reale e impostazioni stanno dentro questa card: si
-    // spostano qui i nodi gia' creati (con i loro gestori) dal contenitore nascosto.
+    // Search, real-time status and settings live inside this card: the already created
+    // nodes (with their handlers) are moved here from the hidden container.
     var tools = $("card-tools");
     tools.insertBefore(NET_PARTS.live, tools.firstChild);
     tools.appendChild(NET_PARTS.wrap);
@@ -993,8 +992,8 @@
   }
 
   var BRAND_COLORS = 8;
-  // Testo breve e onesto per chi non ha una marca nota: cosa si sa davvero, cioe'
-  // il produttore del MAC e il suo ruolo (chip, scheda, macchina virtuale).
+  // Short and honest text for those without a known brand: what is really known, i.e.
+  // the MAC manufacturer and its role (chip, board, virtual machine).
   function chipText(d) {
     if (d.brand) return d.brand;
     if (d.vendor_role === "private") return t("js.ha.chip.private");
@@ -1002,7 +1001,7 @@
     var role = d.vendor_role === "component" || d.vendor_role === "virtual" || d.vendor_role === "dual" ? d.vendor_role : "brand";
     return t("js.ha.chip." + role, { vendor: d.vendor });
   }
-  // Produttori di MAC dei dispositivi senza marca (tooltip della voce "Sconosciuta").
+  // MAC manufacturers of devices without a brand (tooltip of the "Unknown" entry).
   function batteryTitle(d) {
     return t("js.ha.battery.yes") + (d.battery_source ? " · " + t("js.ha.battery.src_" + d.battery_source) : "");
   }
@@ -1011,8 +1010,8 @@
     if (!el) return;
     var map = {};
     S.list.forEach(function (d) {
-      // Marca del PRODOTTO, mai il produttore della scheda di rete (un chip
-      // Espressif non e' una marca). Chi non ha una marca nota non compare.
+      // Brand of the PRODUCT, never the network card manufacturer (an
+      // Espressif chip is not a brand). Those without a known brand do not appear.
       if (!d.brand) return;
       map[d.brand] = (map[d.brand] || 0) + 1;
     });
@@ -1037,8 +1036,8 @@
     el.innerHTML = '<div class="brands-title">' + esc(t("js.ha.brands.title")) + '</div><div class="brand-bar">' + bar + "</div><ul>" + legend + "</ul>";
   }
 
-  // Stato della ricerca: testo e barra (determinata = conto alla rovescia del
-  // prossimo ciclo; indeterminata = qualcosa sta lavorando).
+  // Search status: text and bar (determinate = countdown to the
+  // next cycle; indeterminate = something is working).
   function updateScan() {
     var textEl = $("scan-text");
     if (!textEl) return;
@@ -1110,7 +1109,7 @@
     S.scanBusy = true;
     updateScan();
     api("/api/scan/quick", { method: "POST" }).then(function (list) {
-      // Un indirizzo compare una sola volta nella lista di acquisizione.
+      // An address appears only once in the acquisition list.
       var once = {};
       S.found = (Array.isArray(list) ? list : []).filter(function (h) {
         if (!h.ip || once[h.ip]) return false;
@@ -1120,10 +1119,10 @@
       var n = S.found.length;
       S.scanned = true;
       S.scanDone = true;
-      try { localStorage.setItem("vedetta-ha-scanned", "1"); } catch (err) { /* ignora */ }
+      try { localStorage.setItem("vedetta-ha-scanned", "1"); } catch (err) { /* ignore */ }
       renderNew();
       snack(n === 0 ? t("js.ha.toast.scan_none") : t("js.ha.toast.scan_found", { n: n }), { kind: "success" });
-      // La scheda dei trovati puo' stare sotto la parte visibile (su mobile soprattutto).
+      // The card of found devices may sit below the visible part (on mobile especially).
       if (n && !newEl.hidden && newEl.scrollIntoView) newEl.scrollIntoView({ behavior: "smooth", block: "start" });
     }).catch(function () {
       snack(t("js.ha.toast.scan_failed"), { kind: "error" });
@@ -1169,7 +1168,7 @@
     return el;
   }
 
-  // Ruoli di rete (gateway, DHCP, DNS, router, AP, ripetitore) e ripetitore da cui passa.
+  // Network roles (gateway, DHCP, DNS, router, AP, repeater) and the repeater it goes through.
   function roleText(ip) {
     var rr = (S.roles.by_ip || {})[ip];
     return rr ? Object.keys(rr).map(function (k) { return t("js.ha.role." + k); }).join(" \u00b7 ") : "";
@@ -1194,10 +1193,10 @@
     var st = stateText(d);
     if (r.state.textContent !== st) r.state.textContent = st;
     var chip = [roleText(d.ip), viaText(d.ip, true), chipText(d)].filter(Boolean).join(" \u00b7 ");
-    // Ordine: nome, IP (per intero), stato e latenza, altre informazioni (ruolo, marca/chip, batteria).
+    // Order: name, IP (in full), status and latency, other information (role, brand/chip, battery).
     if (r.ip.textContent !== d.ip) r.ip.textContent = d.ip;
     if (r.sub.textContent !== chip) r.sub.textContent = chip;
-    // Batteria: icona discreta solo se il dispositivo e' certamente a batteria.
+    // Battery: discreet icon only if the device is certainly battery-powered.
     var bt = DEBUG && d.battery === "yes" ? batteryTitle(d) : "";
     if (r.batt._t !== bt) {
       r.batt._t = bt;
@@ -1216,8 +1215,8 @@
     renderHbar(id);
   }
 
-  // Mini barra delle ultime 24 h (come la history bar di HA): finestra mobile
-  // che termina adesso, segmenti ritagliati; senza dati resta vuota.
+  // Mini bar of the last 24 h (like the HA history bar): sliding window
+  // ending now, clipped segments; with no data it stays empty.
   function renderHbar(id) {
     var el = S.tiles.get(id);
     if (!el) return;
@@ -1308,7 +1307,7 @@
     reconcile(groupsEl, nodes);
   }
 
-  // Modalita' compatta: un'unica card con un elenco corto (offline per primi).
+  // Compact mode: a single card with a short list (offline first).
   function layoutCompact(visible) {
     var rank = function (d) { return d.online ? 2 : (d.is_mobile ? 1 : 0); };
     var sorted = visible.slice().sort(function (a, b) { return rank(a) - rank(b) || a.name.localeCompare(b.name); });
@@ -1339,7 +1338,7 @@
     if (opn) {
       e.stopPropagation();
       var od = S.devices.get(opn.closest(".tile").dataset.id);
-      // Da offline il pulsante e' grigio e non fa nulla.
+      // When offline the button is grey and does nothing.
       if (od && od.online) openExternal(od.url || "http://" + od.ip + (od.port && od.port !== 80 ? ":" + od.port : ""));
       return;
     }
@@ -1353,7 +1352,7 @@
     if (empty) {
       if (empty.dataset.empty === "scan") doScan();
       else if (empty.dataset.empty === "retry") {
-        // Riscontro visibile: pulsante occupato; se fallisce ancora si ricarica la pagina intera.
+        // Visible feedback: button busy; if it fails again the whole page is reloaded.
         empty.disabled = true;
         empty.textContent = t("js.ha.error.retrying");
         load().then(function () { if (!S.loaded && S.loadFails >= 2) reloadHost(true); });
@@ -1391,13 +1390,13 @@
     ic.classList.add(kind === "on" ? "flash-on" : "flash-off");
   }
 
-  // ---------------------------------------------------- nuovi dispositivi
+  // ---------------------------------------------------- new devices
   var newEl = $("card-new");
-  // Righe della card: i dispositivi trovati dall'ultima scansione (S.found, con
-  // Aggiungi) e i MAC mai visti rilevati in rete (S.newDevices); niente doppioni per IP.
+  // Rows of the card: the devices found by the last scan (S.found, with
+  // Add) and the never-seen MACs detected on the network (S.newDevices); no duplicates by IP.
   function newRows() {
     var seen = {}, rows = [];
-    // Lo stesso apparecchio compare una volta sola: per IP o per MAC.
+    // The same device appears only once: by IP or by MAC.
     function keys(d) {
       var k = [];
       if (d.ip) k.push("i:" + d.ip);
@@ -1413,12 +1412,12 @@
     S.found.forEach(function (h) {
       take({ src: "found", ip: h.ip, mac: h.mac });
     });
-    // I MAC mai visti rilevati in rete si aggiungono solo dopo una scansione conclusa.
+    // Never-seen MACs detected on the network are added only after a completed scan.
     var list = (S.scanDone || S.newReady) ? S.newDevices.devices : [];
     list.forEach(function (d) {
       take({ src: "new", ip: d.ip, mac: d.mac });
     });
-    // In ordine di indirizzo IP (chi non ne ha uno noto, in fondo).
+    // In IP address order (those without a known one at the bottom).
     rows.sort(function (a, b) { return (a.ip ? ipKey(a.ip) : Infinity) - (b.ip ? ipKey(b.ip) : Infinity); });
     return rows;
   }
@@ -1427,17 +1426,17 @@
     var list = newRows();
     if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; return; }
     newEl.hidden = false;
-    var ad = S.adding;  // {ips: {ip: true}, done: {ip: true}} durante l'aggiunta
+    var ad = S.adding;  // {ips: {ip: true}, done: {ip: true}} during the add
     var busy = !!ad;
     var rows = list.map(function (d) {
       var working = busy && ad.ips[d.ip], finished = working && ad.done[d.ip];
-      var label = d.ip || d.mac;  // solo IP e MAC: i nomi si trovano dopo, analizzando il dispositivo
+      var label = d.ip || d.mac;  // only IP and MAC: names are found later, by analyzing the device
       var state = finished ? " is-done" : working ? " is-adding" : "";
       var actions;
       if (working) {
         actions = '<span class="nd-status">' + esc(finished ? t("js.ha.new.done") : t("js.ha.new.analyzing")) + "</span>";
       } else {
-        var dis = "";  // le altre righe restano utilizzabili: le aggiunte vanno in parallelo
+        var dis = "";  // the other rows stay usable: additions run in parallel
         var ignoreBtn = d.src === "found"
           ? '<button type="button" class="btn text rp" data-ign-ip="' + esc(d.ip) + '"' + dis + ' data-ign-mac="' + esc(d.mac || "") +
             '" data-ign-host="' + esc(d.name || "") + '">' + esc(t("js.ha.new.ignore")) + "</button>"
@@ -1467,14 +1466,14 @@
     newEl.innerHTML =
       '<div class="card-header"><span class="ch-ic warn' + (busy ? " is-adding" : "") + '">' + icon("plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +
       esc(title) + '</div><div class="ch-sub">' + esc(sub) + "</div></div>" +
-      // "Aggiungi tutti" e "Annulla" in alto a destra, sulla riga del titolo
+      // "Add all" and "Cancel" at the top right, on the title row
       (actionsBar ? '<div class="nd-head-actions">' + actionsBar + "</div>" : "") + "</div>" +
       '<div class="nd-list">' + rows + "</div>" +
       (busy ? '<div class="progress indet" aria-hidden="true"><div class="bar"></div></div>' : "");
   }
-  // Aggiunta direttamente da qui (nell'app mobile di HA un link verso la dashboard
-  // classica verrebbe bloccato): ricerca associativa sui dispositivi per nome e porta
-  // consigliati, poi un unico salvataggio.
+  // Adding directly from here (in the HA mobile app a link to the classic
+  // dashboard would be blocked): associative search on the devices by recommended
+  // name and port, then a single save.
   function scanMany(ips, hosts, onResult, signal) {
     var hints = {}, NL = String.fromCharCode(10);
     ips.forEach(function (ip) { if (hosts[ip]) hints[ip] = hosts[ip]; });
@@ -1485,13 +1484,13 @@
         var ev = JSON.parse(line.slice(6));
         if (ev.type === "progress" && ev.result) { results.push(ev.result); if (onResult) onResult(ev.result); }
         else if (ev.type === "complete" && ev.results) complete = ev.results;
-      } catch (err) { /* riga non valida: ignorata */ }
+      } catch (err) { /* invalid row: ignored */ }
     }
     return fetch("/api/scan/deep", {
       method: "POST", headers: { "Content-Type": "application/json", "X-Lang": LANG },
       body: JSON.stringify({ ips: ips, hints: hints }), signal: signal
     }).then(function (r) {
-      // Lettura a flusso: ogni dispositivo completato si segnala subito.
+      // Stream reading: each completed device is reported immediately.
       if (!r.body || !r.body.getReader) {
         return r.text().then(function (txt) { txt.split(NL).forEach(eat); });
       }
@@ -1514,8 +1513,8 @@
       port: (r && r.suggested_port) || 80, scan_info: r && r.scan_info, name_source: r && r.name_source };
   }
   function afterAdd(ips) {
-    // Le righe gia' aggiunte restano verdi ("Terminato") finche' dura il lotto: si tolgono
-    // tutte insieme alla fine, sia con "Aggiungi tutti" sia aggiungendo un dispositivo alla volta.
+    // Rows already added stay green ("Finished") for the duration of the batch: they are removed
+    // all together at the end, both with "Add all" and when adding one device at a time.
     if (S.adding) (S.adding.added || (S.adding.added = [])).push.apply(S.adding.added, ips);
     else S.found = S.found.filter(function (h) { return ips.indexOf(h.ip) < 0; });
     snack(t("js.ha.new.added"), { kind: "success" });
@@ -1527,10 +1526,10 @@
     });
   }
   function addDevices(ips, hosts) {
-    // Stato "in aggiunta", condiviso tra piu' aggiunte in parallelo: le righe interessate
-    // lampeggiano, diventano verdi quando il loro dispositivo e' stato analizzato, e la
-    // scheda mostra "N di M" sul totale. Le altre righe restano cliccabili: ogni nuova
-    // aggiunta parte subito con la sua ricerca (il server mette in coda i lavori pesanti).
+    // "Adding" state, shared among several parallel additions: the affected rows
+    // blink, turn green when their device has been analyzed, and the
+    // card shows "N of M" of the total. The other rows stay clickable: each new
+    // addition starts at once with its own search (the server queues the heavy jobs).
     var ad = S.adding || (S.adding = { ips: {}, done: {}, jobs: 0 });
     ips = ips.filter(function (ip) { return !ad.ips[ip]; });
     if (!ips.length) return;
@@ -1544,7 +1543,7 @@
       if (ad.jobs <= 0 && S.adding === ad) {
         S.adding = null;
         if (ad.added && ad.added.length) S.found = S.found.filter(function (h) { return ad.added.indexOf(h.ip) < 0; });
-        if (S.cancelAll) {  // Annulla: chiusa la lista quando tutte le aggiunte sono ferme
+        if (S.cancelAll) {  // Cancel: list closed when all additions have stopped
           S.cancelAll = false;
           S.found = [];
           S.scanDone = false;
@@ -1556,7 +1555,7 @@
     scanMany(ips, hosts, function (r) { ad.done[r.ip] = true; renderNew(); }, job.ctrl && job.ctrl.signal).then(function (results) {
       var byIp = {};
       results.forEach(function (r) { byIp[r.ip] = r; });
-      // Annullata: si tengono solo i dispositivi la cui analisi era gia' finita.
+      // Cancelled: only the devices whose analysis had already finished are kept.
       use = job.cancelled ? ips.filter(function (ip) { return byIp[ip]; }) : ips;
       use.forEach(function (ip) { ad.done[ip] = true; });
       renderNew();
@@ -1585,12 +1584,12 @@
     if (all) {
       var map = {};
       S.found.forEach(function (h) { map[h.ip] = h.hostname || ""; });
-      addDevices(S.found.map(function (h) { return h.ip; }), map);  // quelli gia' in corso si saltano
+      addDevices(S.found.map(function (h) { return h.ip; }), map);  // those already in progress are skipped
       return;
     }
     if (S.adding && e.target.closest("[data-ignore-all]")) {
-      // Annulla durante un'aggiunta: si fermano le analisi in corso (anche sul server) e
-      // si aggiungono solo i dispositivi gia' analizzati; poi la lista si chiude.
+      // Cancel during an add: the analyses in progress are stopped (on the server too) and
+      // only the already analyzed devices are added; then the list closes.
       var pending = [];
       (S.adding.list || []).forEach(function (job) {
         job.cancelled = true;
@@ -1618,8 +1617,8 @@
     }
     var ia = e.target.closest("[data-ignore-all]");
     if (ia) {
-      // Annulla: chiude l'elenco di questa scansione; i dispositivi non vengono ignorati
-      // e una nuova scansione li ritrova.
+      // Cancel: closes the list of this scan; the devices are not ignored
+      // and a new scan finds them again.
       S.found = [];
       S.scanDone = false;
       renderNew();
@@ -1641,7 +1640,7 @@
     });
   });
 
-  // --------------------------------------------------------------- registro
+  // --------------------------------------------------------------- log
   var logEl = $("card-log");
   function dayLabel(ts) {
     var d = new Date(ts * 1000), n = new Date();
@@ -1657,12 +1656,12 @@
     logEl.hidden = false;
     var all = S.log.events, html = "", lastDay = "";
     var prev = S.log.ids;
-    // Ricerca: su testo, nome e IP (minuscole), senza ricaricare dal server.
+    // Search: on text, name and IP (lowercase), without reloading from the server.
     var q = (S.log.q || "").trim().toLowerCase();
     var ev = q ? all.filter(function (e) {
       return [e.message, e.name, e.ip, typeLabel(e.type)].join(" ").toLowerCase().indexOf(q) >= 0;
     }) : all;
-    // Solo i cambi di stato consecutivi dello stesso dispositivo si raggruppano.
+    // Only consecutive state changes of the same device are grouped.
     var IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
     var groups = [];
     ev.forEach(function (e) {
@@ -1696,7 +1695,7 @@
         : '<div class="log-empty">' + icon("history") + "<div><b>" + esc(t("js.ha.log.empty")) + "</b><span>" + esc(t("js.ha.log.empty_hint")) + "</span></div></div>";
     }
     if (onlyRows && S.log.open && $("log-rows")) {
-      // Durante la digitazione si aggiorna solo l'elenco: il campo non perde il cursore.
+      // While typing only the list is updated: the field does not lose the cursor.
       $("log-rows").innerHTML = html;
       var subEl = logEl.querySelector(".ch-sub");
       if (subEl) subEl.textContent = t("js.ha.log.level_" + S.log.level) + " · " + t("js.ha.log.today", { n: all.filter(function (e) { return dayLabel(e.ts) === dayLabel(Date.now() / 1000); }).length });
@@ -1713,14 +1712,14 @@
       '<span class="log-chev">' + icon("chevron-down") + "</span></div>" +
       (S.log.open ? '<div class="log-search"><label class="search">' + icon("magnify", "search-icon") +
         '<input type="search" id="log-q" autocomplete="off" placeholder="' + esc(t("js.ha.log.search")) + '" value="' + esc(S.log.q) + '"></label>' +
-        // Livello del registro: accanto alla ricerca, in colonna con la freccia del titolo
+        // Log level: next to the search, in a column with the title arrow
         '<button type="button" class="icon-btn touch rp" id="log-level-btn" aria-haspopup="true" aria-expanded="false" title="' + esc(t("js.ha.log.level")) +
         '" aria-label="' + esc(t("js.ha.log.level")) + '">' + icon("format-list-bulleted-type") + "</button></div>" +
         '<div class="log-list" id="log-rows">' + html + "</div>" + more : "");
     logEl.classList.toggle("is-open", S.log.open);
     S.log.ids = new Set(all.map(function (e) { return e.id; }));
   }
-  // Menu dei livelli del registro: stessi pulsanti del menu della plancia.
+  // Log level menu: same buttons as the dashboard menu.
   var logMenuEl = $("log-menu");
   function buildLogMenu() {
     logMenuEl.innerHTML = menuGroup(t("js.ha.log.level"), LOG_LEVELS.map(function (l) {
@@ -1745,7 +1744,7 @@
     var item = e.target.closest("[data-loglevel]");
     if (!item) return;
     S.log.level = item.dataset.loglevel;
-    try { localStorage.setItem("vedetta-ha-loglevel", S.log.level); } catch (err) { /* ignora */ }
+    try { localStorage.setItem("vedetta-ha-loglevel", S.log.level); } catch (err) { /* ignore */ }
     toggleLogMenu(false);
     S.log.open = true;
     fetchLog();
@@ -1779,9 +1778,9 @@
   function fetchLog() {
     return api("/api/ha/logbook?limit=" + S.log.limit + "&level=" + S.log.level).then(function (r) {
       S.log.events = r.events || [];
-      // Con il registro aperto si aggiornano solo le righe: ricerca e scorrimento restano.
+      // With the log open only the rows are updated: search and scroll stay.
       renderLog(S.log.open && !!$("log-rows"));
-    }).catch(function () { /* il registro e' secondario: si riprova al prossimo cambio */ });
+    }).catch(function () { /* the log is secondary: retry at the next change */ });
   }
   var fetchLogSoon = debounce(fetchLog, 1500);
 
@@ -1789,9 +1788,9 @@
     return api("/api/ha/history?hours=24").then(function (r) {
       Object.keys(r.devices || {}).forEach(function (id) { S.hist.set(id, r.devices[id]); });
       S.tiles.forEach(function (el, id) { renderHbar(id); });
-    }).catch(function () { /* senza storico le barre restano vuote */ });
+    }).catch(function () { /* without history the bars stay empty */ });
   }
-  // Un cambio di stato dal vivo allunga/chiude l'ultimo segmento senza richiedere nulla.
+  // A live state change extends/closes the last segment without requesting anything.
   function histPush(id, online) {
     var h = S.hist.get(id), now = Math.floor(nowSec());
     if (!h) { h = { from: now - 86400, to: now, segments: [], online_pct: null }; S.hist.set(id, h); }
@@ -1801,12 +1800,12 @@
     h.to = now;
   }
 
-  // ------------------------------------------------- dialogo "Piu' info"
+  // ------------------------------------------------- "More info" dialog
   var dlg = $("more");
   function openMore(id) {
     if (!S.devices.has(id)) return;
     S.open = id;
-    S.mi.moreOpen = false;   // "Altri attributi" parte sempre chiusa
+    S.mi.moreOpen = false;   // "Other attributes" always starts closed
     S.mi.range = 24;
     S.mi.view = "main";
     S.mi.win = {};
@@ -1869,7 +1868,7 @@
     return d.last_seen ? t("js.ha.more.seen_at", { ago: ago(d.last_seen), time: fmtStamp(d.last_seen, true) }) : "";
   }
 
-  // Modalita' debug: perche' il dispositivo ha questo tipo, nome e marca (dati dal server, non nella lista normale).
+  // Debug mode: why the device has this type, name and brand (data from the server, not in the normal list).
   var dbgFetch = { id: null, at: 0, data: null };
   function miDebug(d) {
     var el = $("mi-debug");
@@ -1907,13 +1906,13 @@
     api("/api/ha/devices/" + encodeURIComponent(d.id) + "/debug").then(function (x) {
       dbgFetch.data = x;
       if (S.open === d.id && DEBUG) draw(x);
-    }).catch(function () { /* il debug non deve mai dare errori */ });
+    }).catch(function () { /* debug must never cause errors */ });
   }
 
   function miAttrs(d) {
     var el = $("mi-attrs");
     if (!el) return;
-    // Sempre visibili: IP, MAC, tempo di risposta, porte. Il resto sta nella tendina "Altri attributi".
+    // Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown.
     var rows = [], fixedRows = [];
     function row(label, value, extra, fixed, cls) { (fixed ? fixedRows : rows).push({ label: label, html: value, extra: extra || "", cls: cls || "" }); }
     row(t("js.ha.attr.ip"), esc(d.ip + (d.port && d.port !== 80 ? ":" + d.port : "")),
@@ -1921,7 +1920,7 @@
         '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</a>" : "", true);
     if (d.mac) row(t("js.ha.attr.mac"), '<span class="mono">' + esc(d.mac) + "</span>",
       '<button type="button" class="icon-btn small touch rp" data-copy="' + esc(d.mac) + '" title="' + esc(t("js.ha.act.copy_mac")) + '" aria-label="' + esc(t("js.ha.act.copy_mac")) + '">' + icon("content-copy") + "</button>", true);
-    // Due livelli: marca del prodotto (con la fonte) e produttore del MAC (chip/scheda).
+    // Two levels: product brand (with the source) and MAC manufacturer (chip/board).
     var ev = DEBUG && d.brand_evidence ? '<span class="ev ev-' + esc(d.brand_evidence) + '">' + esc(t("js.ha.ev." + d.brand_evidence)) + "</span>" : "";
     row(t("js.ha.attr.brand"), d.brand
       ? esc(d.brand) + (DEBUG && d.brand_source ? ' <span class="dbg-txt">· ' + esc(t("js.ha.brand_src." + d.brand_source)) + "</span>" : "") + ev
@@ -1970,7 +1969,7 @@
       ports.sort(function (a, b) { return PORT_CATS.indexOf(a.cat) - PORT_CATS.indexOf(b.cat) || a.n - b.n; });
       row(t("js.ha.attr.ports"), '<span class="pills">' + ports.map(function (x) {
         var p = Object.assign({}, x.p, { category: x.cat });
-        // Servizio non certo (nmap l'ha solo dedotto dal numero): si mostra solo la porta.
+        // Service not certain (nmap only inferred it from the number): only the port is shown.
         var label = p.confirmed ? p.label : String(p.label || "").split(" · ")[0];
         return '<span class="pill cat-' + esc(p.category) + (p.confirmed ? "" : " guess") + '" title="' + esc(label) + '">' + esc(label) + "</span>";
       }).join("") + "</span>", "", true);
@@ -1980,7 +1979,7 @@
         return '<div class="attr' + (r.cls ? " " + r.cls : "") + '"><dt>' + esc(r.label) + '</dt><dd><span class="attr-val">' + r.html + "</span>" + r.extra + "</dd></div>";
       }).join("");
     }
-    // Tendina chiusa di partenza; se la si apre resta aperta quando i dati si aggiornano.
+    // Dropdown closed initially; if opened it stays open when the data updates.
     el.innerHTML = html(fixedRows) + (rows.length
       ? '<details class="attr-more" id="attr-more"' + (S.mi.moreOpen ? " open" : "") + "><summary>" + esc(t("js.ha.attr.more", { n: rows.length })) +
         "</summary>" + html(rows) + "</details>"
@@ -1989,10 +1988,10 @@
     if (det) det.addEventListener("toggle", function () { S.mi.moreOpen = det.open; });
   }
 
-  // Tutte le azioni stanno in linea (matita e occhio vicino al nome, accendi vicino allo
-  // stato, apri vicino all'IP, copia vicino al MAC): sotto non resta nessun pulsante.
-  // Categorie delle porte (stesse regole di scanner._PORT_CATEGORY_RULES), calcolate anche
-  // qui dal numero: valgono subito anche per le porte salvate prima delle nuove categorie.
+  // All actions are inline (pencil and eye next to the name, power on next to the
+  // status, open next to the IP, copy next to the MAC): no button is left below.
+  // Port categories (same rules as scanner._PORT_CATEGORY_RULES), also computed
+  // here from the number: they apply immediately to ports saved before the new categories too.
   var PORT_CATS = ["web", "media", "remote", "iot", "file", "print", "db", "infra", "vpn", "mail", "other"];
   var PORT_NUM = {
     media: [554, 1935, 7000, 8008, 8009, 1400, 8060, 32400, 8096, 8200],
@@ -2014,8 +2013,8 @@
     var el = $("mi-actions");
     if (!el) return;
     var html = "";
-    // Condivisione con Home Assistant (MQTT): solo se il collegamento esiste. Condiviso = HA vede il dispositivo come
-    // sotto-dispositivo di "Vedetta"; "Rimuovi" lo toglie da HA.
+    // Sharing with Home Assistant (MQTT): only if the link exists. Shared = HA sees the device as a
+    // sub-device of "Vedetta"; "Remove" takes it out of HA.
     if (d && S.mqtt && S.mqtt.active) {
       html += '<button type="button" class="btn ' + (d.ha_share ? "outlined" : "tonal") + ' rp" data-act="share">' + icon("home-assistant") +
         "<span>" + esc(t(d.ha_share ? "js.ha.share.remove" : "js.ha.share.add")) + "</span></button>";
@@ -2037,8 +2036,8 @@
     miActions(d);
   }
 
-  // Grafico storico: unica fascia a segmenti (online / offline / nessun dato)
-  // come la history bar di HA, con tooltip al passaggio o al tocco.
+  // History chart: a single segmented band (online / offline / no data)
+  // like the HA history bar, with tooltip on hover or touch.
   function loadGraph() {
     var id = S.open, hours = S.mi.range;
     var cached = S.mi.win[hours];
@@ -2057,8 +2056,8 @@
     });
   }
 
-  // Tratti della timeline: segmenti online/offline piu' i buchi "nessun dato",
-  // ritagliati sulla finestra. Nessuno stato intermedio.
+  // Timeline strokes: online/offline segments plus the "no data" gaps,
+  // clipped to the window. No intermediate state.
   function bucketsFor(win) {
     var segs = win.segments.slice().sort(function (x, y) { return x.from - y.from; });
     var out = [], cur = win.from;
@@ -2073,8 +2072,8 @@
     return out;
   }
 
-  // Piccolo grafico a linea (SVG) del tempo di risposta: serie gia' ridotta dal
-  // server a ~120 punti [ts, ms]. Vuoto se non ci sono dati.
+  // Small line chart (SVG) of the response time: series already reduced by the
+  // server to ~120 points [ts, ms]. Empty if there is no data.
   function latencyChart(lat) {
     var pts = lat && lat.points ? lat.points : [];
     if (pts.length < 2) return "";
@@ -2125,7 +2124,7 @@
         '<div class="tip" id="tip" hidden></div></div>' + latHtml;
   }
 
-  // Tooltip unico del grafico.
+  // Single chart tooltip.
   var tipTimer = null;
   function tipFor(e) {
     var chart = e.target.closest ? e.target.closest(".chart") : null;
@@ -2178,14 +2177,14 @@
     var input = $("br-name");
     if (input) { input.focus(); input.select(); }
   }
-  // Scelta manuale di marca o tipo: resta finche' non si torna su automatico.
+  // Manual choice of brand or type: stays until switching back to automatic.
   function saveOverride(d, body) {
     return api("/api/devices/" + encodeURIComponent(d.id) + "/override", { method: "POST", json: body }).then(function () {
       return load({ silent: true });
     }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
   }
-  // Menu a tendina del tipo: dentro il dialogo (e' modale), con le stesse regole degli altri
-  // menu (si chiude con Esc, clic fuori e scorrimento; aprirne uno chiude gli altri).
+  // Type dropdown menu: inside the dialog (it is modal), with the same rules as the other
+  // menus (closes with Esc, click outside and scroll; opening one closes the others).
   var typeMenu = null;
   function closeTypeMenu() {
     if (typeMenu) { typeMenu.remove(); typeMenu = null; }
@@ -2235,9 +2234,9 @@
 
   function copyText(text) {
     function fallback() {
-      // Con un dialogo modale aperto il resto della pagina e' "inerte": il campo di
-      // appoggio deve stare dentro il dialogo, altrimenti non si puo' selezionare e
-      // la copia fallisce in silenzio (succede su HTTP, dove manca clipboard API).
+      // With a modal dialog open the rest of the page is "inert": the support
+      // field must be inside the dialog, otherwise it cannot be selected and
+      // the copy fails silently (happens on HTTP, where the clipboard API is missing).
       var host = document.querySelector("dialog[open]") || document.body;
       var ta = document.createElement("textarea");
       ta.value = text;
@@ -2246,7 +2245,7 @@
       host.appendChild(ta);
       ta.focus();
       ta.select();
-      try { ta.setSelectionRange(0, text.length); } catch (err) { /* ignora */ }
+      try { ta.setSelectionRange(0, text.length); } catch (err) { /* ignore */ }
       var ok = false;
       try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
       host.removeChild(ta);
@@ -2268,29 +2267,29 @@
     });
   }
 
-  // Apertura di una pagina esterna (interfaccia web del dispositivo, dashboard
-  // classica): un link con target="_blank" dentro l'iframe dell'app mobile di HA
-  // puo' essere ignorato. Si apre con window.open da un gesto dell'utente; se il
-  // browser lo blocca, si copia l'indirizzo e si avvisa.
+  // Opening an external page (the device's web interface, classic
+  // dashboard): a link with target="_blank" inside the iframe of the HA mobile app
+  // may be ignored. It is opened with window.open from a user gesture; if the
+  // browser blocks it, the address is copied and a notice is shown.
   function openExternal(url) {
     var w = null;
     try { w = window.open(url, "_blank"); } catch (err) { w = null; }
-    if (w) { try { w.opener = null; } catch (err) { /* ignora */ } return; }
+    if (w) { try { w.opener = null; } catch (err) { /* ignore */ } return; }
     function copyFallback() {
       copyText(url).then(function (ok) {
         snack(t("js.ha.toast.open_blocked"), { kind: ok ? "success" : "error", ms: 4500 });
       });
     }
-    // Nell'app mobile di HA l'iframe non puo' aprire finestre: si chiede al livello
-    // superiore (l'app) di navigare, che per un indirizzo esterno lo apre nel browser
-    // predefinito. Se la pagina non passa in secondo piano entro un istante, non e'
-    // riuscito e si ripiega sulla copia dell'indirizzo.
+    // In the HA mobile app the iframe cannot open windows: the upper level
+    // (the app) is asked to navigate, which opens an external address in the default
+    // browser. If the page does not go to the background within a moment, it did not
+    // succeed and the fallback is copying the address.
     var inApp = window.top !== window && /home\s?assistant/i.test(navigator.userAgent || "");
     if (!inApp) { copyFallback(); return; }
     var left = false;
     function onHide() { if (document.hidden) left = true; }
     document.addEventListener("visibilitychange", onHide);
-    try { window.open(url, "_top"); } catch (err) { /* ignora */ }
+    try { window.open(url, "_top"); } catch (err) { /* ignore */ }
     setTimeout(function () {
       document.removeEventListener("visibilitychange", onHide);
       if (!left) copyFallback();
@@ -2337,13 +2336,13 @@
       case "type-menu": if (d) openTypeMenu(act, d); break;
       case "ignore": S.mi.view = "ignore"; renderMore(); break;
       case "deep":
-        // Avviata la ricerca si torna alla plancia: l'avanzamento si vede sulla scheda.
+        // Once the search has started, return to the dashboard: progress is visible on the card.
         if (d && skipDeepConfirm()) { runDeep([d.id]); closeMore(); break; }
         S.mi.view = "deep"; renderMore(); break;
       case "deep-confirm":
         if (d) {
           var skip = $("deep-skip");
-          if (skip && skip.checked) { try { localStorage.setItem(SKIP_DEEP_KEY, "1"); } catch (err) { /* ignora */ } }
+          if (skip && skip.checked) { try { localStorage.setItem(SKIP_DEEP_KEY, "1"); } catch (err) { /* ignore */ } }
           runDeep([d.id]);
         }
         S.mi.view = "main"; closeMore(); break;
@@ -2368,7 +2367,7 @@
     var m = selected ? selected.dataset.mode : "auto";
     var body = { name: name };
     if (m === "yes") body.mobile = true;
-    else if (m === "no") body.mobile = false; // "auto": campo assente = decide di nuovo l'euristica
+    else if (m === "no") body.mobile = false; // "auto": missing field = the heuristic decides again
     var submit = e.target.querySelector('[type="submit"]');
     if (submit) submit.disabled = true;
     api("/api/devices/" + encodeURIComponent(d.id) + "/rename", { method: "POST", json: body }).then(function () {
@@ -2391,8 +2390,8 @@
     });
   }
 
-  // ---------------------------------------------------------- aggiornamento
-  // Le modifiche si accumulano e si applicano una sola volta per frame.
+  // ---------------------------------------------------------- update
+  // Changes accumulate and are applied once per frame.
   function schedule() {
     if (S.flushQueued) return;
     S.flushQueued = true;
@@ -2410,9 +2409,9 @@
   }
 
 
-  // I dispositivi nuovi rilevati in rete (scheda e notifiche) si mostrano solo quando il
-  // pannello delle schede e' gia' popolato, e qualche secondo dopo: prima la plancia, poi
-  // le novita'. Dopo una ricerca fatta a mano compaiono subito (S.scanDone).
+  // New devices detected on the network (card and notifications) are shown only when the
+  // card panel is already populated, and a few seconds later: first the dashboard, then
+  // the news. After a manual search they appear immediately (S.scanDone).
   var NEW_DELAY_MS = 10000;
   function armNew() {
     if (S.newReady || S.newTimer || !S.list.length) return;
@@ -2428,8 +2427,8 @@
     S.devices.set(d.id, d);
     if (S.refreshing) S.changedSince++;
     var structural = !prev || prev.type !== d.type || prev.icon !== d.icon || prev.name !== d.name || prev.ip !== d.ip || prev.is_mobile !== d.is_mobile;
-    // Nuovo dispositivo o categoria, icona, nome, IP cambiati: l'elenco interno (da cui si
-    // fanno i gruppi) si ricostruisce, altrimenti la scheda resta nel gruppo vecchio.
+    // New device or category, icon, name, IP changed: the internal list (from which the
+    // groups are made) is rebuilt, otherwise the card stays in the old group.
     if (structural) rebuildList();
     if (prev && prev.online !== d.online) {
       flash(d.id, d.online ? "on" : "off");
@@ -2495,7 +2494,7 @@
     if (ev.message && ALERT_TOAST[ev.key]) snack(ev.message, { kind: "warning", ms: 7000 });
   }
 
-  // ------------------------------------------------------- flusso in tempo reale
+  // ------------------------------------------------------- real-time stream
   function connect() {
     clearTimeout(S.retryTimer);
     if (S.es) { S.es.close(); S.es = null; }
@@ -2518,13 +2517,13 @@
     on("alert", onAlert);
     on("new_devices", onNewDevices);
     on("roles", function (ev) {
-      // Ruoli, nomi e tipi UPnP decidono categoria, icona e nome: se cambiano si rifanno i gruppi.
+      // UPnP roles, names and types decide category, icon and name: if they change the groups are redone.
       function sig(r) { return JSON.stringify([r.by_ip || {}, r.names || {}, r.types || {}]); }
       var changed = sig(ev) !== sig(S.roles);
       S.roles = { by_ip: ev.by_ip || {}, via: ev.via || {}, names: ev.names || {}, types: ev.types || {}, dhcp: ev.dhcp || [], internet: ev.internet || null };
       S.tiles.forEach(function (el, id) { updateTile(id); });
-      // Il ruolo decide anche la categoria (es. gateway -> apparati di rete): si
-      // ricaricano i dispositivi per rifare i gruppi.
+      // The role also decides the category (e.g. gateway -> network equipment): the
+      // devices are reloaded to redo the groups.
       if (changed && S.loaded) load({ silent: true });
       if (S.open && dlg.open && S.mi.view === "main") { var od = S.devices.get(S.open); if (od) miAttrs(od); }
     });
@@ -2532,12 +2531,12 @@
       var wasDown = !S.conn.ok && S.conn.everOk;
       S.conn.retryAt = 3000;
       setConn(true);
-      // Dopo una caduta (o un riavvio del servizio, che azzera le revisioni) si risincronizza
-      // tutto: dispositivi, categorie, icone.
+      // After a drop (or a service restart, which resets the revisions) everything is
+      // resynced: devices, categories, icons.
       if (wasDown) { if (S.loaded) load({ silent: true }); fetchLog(); fetchHist(); }
     };
     es.onerror = function () {
-      // Si riapre con l'ultima revisione vista: il server manda solo la differenza.
+      // Reopens with the last seen revision: the server sends only the difference.
       es.close();
       if (S.es === es) S.es = null;
       setConn(false);
@@ -2546,7 +2545,7 @@
     };
   }
 
-  // ------------------------------------------------------------ avvio
+  // ------------------------------------------------------------ startup
   var loadTimer = null;
   function load(opts) {
     opts = opts || {};
@@ -2554,7 +2553,7 @@
     return Promise.all([api("/api/ha/summary"), api("/api/ha/devices")]).then(function (res) {
       var sum = res[0], dev = res[1];
       if (!dev.ready && S.loadTries < 8) {
-        // Il primo ciclo di controllo non e' ancora finito: si resta sullo scheletro.
+        // The first check cycle has not finished yet: stay on the skeleton.
         S.loadTries++;
         loadTimer = setTimeout(load, 1500);
         return;
@@ -2591,7 +2590,7 @@
       S.loadFails = (S.loadFails || 0) + 1;
       S.lastErr = err || null;
       var expired = !!err && (err.status === 401 || err.status === 403);
-      // Risincronizzazione silenziosa (ritorno nell'app, ruoli): la plancia resta com'e'.
+      // Silent resync (return to the app, roles): the dashboard stays as it is.
       if (opts.silent && S.loaded) {
         if (expired) reloadHost();
         return;
@@ -2601,11 +2600,11 @@
       if (skeleton) skeleton.remove();
       netEl.hidden = true;
       reconcile(groupsEl, [emptyState("error")]);
-      if (expired) reloadHost();  // una sola volta ogni minuto: poi resta il pulsante
+      if (expired) reloadHost();  // only once a minute: then the button remains
     });
   }
 
-  // Cosa va rinfrescato col passare del tempo ("visto 5 min fa", barre 24 h).
+  // What needs refreshing as time passes ("seen 5 min ago", 24 h bars).
   function tick() {
     if (!S.loaded) return;
     S.tiles.forEach(function (el, id) { updateTile(id); });
@@ -2618,15 +2617,15 @@
   showDebugBadge();
   load();
   setInterval(updateScan, 1000);
-  // Registro aperto: si ricarica da solo (piu' spesso nel livello dettagliato, dove
-  // le voci del servizio arrivano di continuo).
+  // Log open: reloads by itself (more often at the detailed level, where
+  // the service entries arrive continuously).
   setInterval(function () {
     if (S.log.open && !document.hidden) fetchLog();
   }, 6000);
   setInterval(tick, 30000);
   setInterval(fetchHist, 300000);
-  // Se il flusso tace (rete mobile, standby): in piu' dell'intervallo massimo tra
-  // due cicli senza nessun evento lo si riapre da zero.
+  // If the stream goes quiet (mobile network, standby): beyond the maximum interval between
+  // two cycles with no event at all it is reopened from scratch.
   setInterval(function () {
     if (S.es && S.loaded && Date.now() - S.conn.last > POLL_WATCHDOG_MS) connect();
   }, 15000);
@@ -2635,15 +2634,15 @@
   var hiddenAt = 0;
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
-    if (!S.loaded) { load(); return; }                       // era in errore: si riprova subito
+    if (!S.loaded) { load(); return; }                       // it was in error: retry immediately
     tick();
-    // Dopo piu' di 30 s in secondo piano (app mobile, scheda in standby) flusso e sessione
-    // possono essere morti: si risincronizza tutto, senza mostrare errori se non serve.
+    // After more than 30 s in the background (mobile app, tab in standby) stream and session
+    // may be dead: everything is resynced, without showing errors if not needed.
     if (hiddenAt && Date.now() - hiddenAt > 30000) load({ silent: true });
     else if (!S.es) connect();
   });
-  // Scheda aperta a lungo senza nessun evento (nemmeno i battiti ogni 15 s): sessione o rete
-  // cadute senza che il browser se ne accorga.
+  // Tab open for a long time with no event (not even the heartbeats every 15 s): session or network
+  // dropped without the browser noticing.
   setInterval(function () {
     if (S.loaded && !document.hidden && Date.now() - S.conn.last > 3 * POLL_WATCHDOG_MS) load({ silent: true });
   }, 60000);

@@ -1,5 +1,5 @@
-"""API di stato e configurazione della pubblicazione MQTT (GET/POST /api/mqtt).
-La password si accetta in scrittura ma non viene mai restituita."""
+"""Status and configuration API for MQTT publishing (GET/POST /api/mqtt).
+The password is accepted on write but is never returned."""
 from fastapi import APIRouter, HTTPException, Request
 
 from . import settings
@@ -7,7 +7,7 @@ from .mqtt_ha import service
 
 router = APIRouter()
 
-# nome breve nel corpo della richiesta -> chiave di settings.json
+# short name in the request body -> settings.json key
 _FIELDS = {"enabled": "mqtt_enabled", "host": "mqtt_host", "port": "mqtt_port",
            "user": "mqtt_user", "password": "mqtt_password"}
 
@@ -25,7 +25,7 @@ async def api_mqtt_set(request: Request):
         raise HTTPException(400, "JSON non valido")
     if not isinstance(body, dict):
         raise HTTPException(400, "JSON non valido")
-    # password assente o null = resta quella salvata; "" = cancellata
+    # password absent or null = the saved one is kept; "" = cleared
     changes = {full: body[short] for short, full in _FIELDS.items()
                if short in body and not (short == "password" and body[short] is None)}
     try:

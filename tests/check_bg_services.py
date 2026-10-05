@@ -1,5 +1,5 @@
-"""Scansione completa in background: dopo le porte si leggono servizio e sistema operativo
-solo sulle porte aperte (dati reali di una Fire TV Stick: porta 40027 "Amazon FireTV Stick")."""
+"""Full background scan: after the ports, service and operating system are read
+only on the open ports (real data from a Fire TV Stick: port 40027 "Amazon FireTV Stick")."""
 import asyncio
 import os
 import sys
@@ -28,7 +28,7 @@ calls = []
 
 async def fake_nmap(args, semaphore=None):
     calls.append(args)
-    if "-sV" in args:   # seconda fase: solo le porte trovate
+    if "-sV" in args:   # second phase: only the ports found
         assert args[args.index("-p") + 1] == "5555,8009,40027", args
         return xml([(5555, "adb", "Android Debug Bridge"), (8009, "castv2", None), (40027, "amazon-wplay", "Amazon FireTV Stick")],
                    "Amazon Fire TV or Kindle Paperwhite")
@@ -44,6 +44,6 @@ asyncio.run(rescan._full_ports_background(did, "10.0.0.103"))
 info = devices_config.load_devices()[0]["scan_info"]
 labels = [p["label"] for p in info["ports"]]
 assert any("40027" in l and "Amazon FireTV Stick" in l for l in labels), labels
-assert "os" not in info          # il sistema operativo non si legge ne' si salva
+assert "os" not in info          # the operating system is neither read nor saved
 assert len(calls) == 2
 print("TUTTO OK")

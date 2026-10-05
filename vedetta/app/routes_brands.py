@@ -1,5 +1,5 @@
-"""API del riconoscimento marche: regole create dall'interfaccia e
-aggiornamento dal web del database dei prefissi MAC."""
+"""Brand recognition API: rules created from the interface and
+update of the MAC prefix database from the web."""
 import asyncio
 import logging
 import time

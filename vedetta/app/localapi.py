@@ -1,14 +1,14 @@
-"""Interfacce locali documentate dei produttori, in sola lettura e senza credenziali.
+"""Documented local interfaces of the manufacturers, read-only and without credentials.
 
-Si interroga un dispositivo solo se ha la porta tipica aperta (vista dalla scansione
-porte), con una GET che il produttore documenta proprio per farsi riconoscere:
-  Shelly     GET :80/shelly                    -> type/model, mac, fw (gen1 e gen2+)
-  Tasmota    GET :80/cm?cmnd=Status%200        -> DeviceName, versione, hardware, MAC
-  Sonos      GET :1400/xml/device_description.xml (descrittore UPnP)
-  Roku       GET :8060/query/device-info        -> vendor-name, model-name, nome
-  Chromecast GET :8008/setup/eureka_info        -> nome, versione (se il firmware lo espone)
-  ESPHome    GET :80/events (web server, SSE)   -> primo evento "ping": nome del dispositivo
-Ritorna campi api_* da usare come dichiarazione del dispositivo stesso."""
+A device is queried only if it has the typical port open (seen by the port
+scan), with a GET that the manufacturer documents precisely so that it can be recognized:
+  Shelly     GET :80/shelly                    -> type/model, mac, fw (gen1 and gen2+)
+  Tasmota    GET :80/cm?cmnd=Status%200        -> DeviceName, version, hardware, MAC
+  Sonos      GET :1400/xml/device_description.xml (UPnP descriptor)
+  Roku       GET :8060/query/device-info        -> vendor-name, model-name, name
+  Chromecast GET :8008/setup/eureka_info        -> name, version (if the firmware exposes it)
+  ESPHome    GET :80/events (web server, SSE)   -> first "ping" event: device name
+Returns api_* fields to use as the declaration of the device itself."""
 import asyncio
 import json
 import re
@@ -59,7 +59,7 @@ def parse_sonos(text: str) -> dict:
 
 
 def parse_esphome_events(text: str) -> dict:
-    """Primo evento 'ping' del web server di ESPHome: {"title": nome, ...}."""
+    """First 'ping' event of the ESPHome web server: {"title": name, ...}."""
     lines = text.splitlines()
     for i, line in enumerate(lines):
         if line.strip() == "event: ping":
@@ -75,7 +75,7 @@ def parse_esphome_events(text: str) -> dict:
 
 
 async def _esphome(client: httpx.AsyncClient, ip: str) -> dict:
-    """Legge solo l'inizio del flusso /events (che altrimenti resta aperto)."""
+    """Reads only the beginning of the /events stream (which otherwise stays open)."""
     buf = ""
     try:
         async with client.stream("GET", f"http://{ip}/events") as resp:
@@ -108,8 +108,8 @@ async def _get(client: httpx.AsyncClient, url: str):
 
 
 async def probe(ip: str, ports) -> dict:
-    """Prova solo le interfacce delle porte aperte; vince la prima che risponde
-    con la forma attesa. {} se nessuna."""
+    """Tries only the interfaces of the open ports; the first one that answers
+    with the expected shape wins. {} if none."""
     ports = set(ports)
     out: dict = {}
     async with httpx.AsyncClient(timeout=_TIMEOUT, follow_redirects=False) as client:

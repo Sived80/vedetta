@@ -54,13 +54,13 @@ CREATE TABLE IF NOT EXISTS known_macs (
 
 
 class History:
-    """Storico su SQLite: transizioni online/offline, scansioni approfondite e
-    qualche valore di servizio. devices.yaml resta la configurazione scelta
-    dall'utente; qui va solo cio' che il programma osserva nel tempo.
+    """SQLite history: online/offline transitions, deep scans and
+    a few service values. devices.yaml remains the configuration chosen
+    by the user; only what the program observes over time goes here.
 
-    Tutti i metodi sono sincroni e protetti da un lock: dal loop asyncio si
-    chiamano con asyncio.to_thread, cosi' un disco lento (es. durante un
-    backup dell'host) non blocca l'aggiornamento delle pagine."""
+    All the methods are synchronous and protected by a lock: from the asyncio loop they
+    are called with asyncio.to_thread, so a slow disk (e.g. during a
+    host backup) does not block the page updates."""
 
     def __init__(self, path: Path = DB_PATH) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -73,7 +73,7 @@ class History:
             self._db.executescript(_SCHEMA)
             self._db.commit()
 
-    # ---- presenza ----
+    # ---- presence ----
     def record_presence(self, device_id: str, ip: str | None, mac: str | None, online: bool, ts: float) -> None:
         with self._lock:
             self._db.execute(
@@ -83,7 +83,7 @@ class History:
             self._db.commit()
 
     def last_presence(self) -> dict[str, tuple[bool, float]]:
-        """Ultimo evento noto di ogni dispositivo: {id: (online, ts)}."""
+        """Latest known event of each device: {id: (online, ts)}."""
         with self._lock:
             rows = self._db.execute(
                 """SELECT device_id, online, ts FROM presence_events
@@ -92,9 +92,9 @@ class History:
         return {r["device_id"]: (bool(r["online"]), r["ts"]) for r in rows}
 
     def presence_flaps(self, since: float) -> dict[str, int]:
-        """Numero di transizioni online/offline per dispositivo dopo `since`.
-        Telefoni e portatili ne fanno molte (entrano e escono dalla rete), le
-        apparecchiature fisse quasi nessuna: indizio "mobile" di identity.py."""
+        """Number of online/offline transitions per device after `since`.
+        Phones and laptops have many (they join and leave the network), fixed
+        equipment almost none: the "mobile" hint of identity.py."""
         with self._lock:
             rows = self._db.execute(
                 "SELECT device_id, COUNT(*) AS n FROM presence_events WHERE ts >= ? GROUP BY device_id",
@@ -103,9 +103,9 @@ class History:
         return {r["device_id"]: r["n"] for r in rows}
 
     def presence_segments(self, device_id: str, since: float, until: float) -> dict:
-        """Segmenti online/offline del dispositivo nella finestra [since, until].
-        Prima del primo evento noto lo stato e' sconosciuto: nessun segmento,
-        cosi' il grafico lo mostra come "nessun dato" e non come offline."""
+        """Online/offline segments of the device in the window [since, until].
+        Before the first known event the state is unknown: no segment,
+        so the chart shows it as "no data" and not as offline."""
         with self._lock:
             before = self._db.execute(
                 "SELECT online FROM presence_events WHERE device_id = ? AND ts <= ? ORDER BY ts DESC, id DESC LIMIT 1",
@@ -135,7 +135,7 @@ class History:
             "online_pct": round(100 * online / known, 1) if known > 0 else None,
         }
 
-    # ---- scansioni ----
+    # ---- scans ----
     def save_scan(self, device_id: str, ts: float, result: dict) -> None:
         with self._lock:
             self._db.execute(
@@ -150,8 +150,8 @@ class History:
             self._db.commit()
 
     def last_mac(self, device_id: str) -> str | None:
-        """Ultimo MAC noto di un dispositivo (serve a svegliarlo quando e'
-        spento e il probe non ne vede piu' il MAC)."""
+        """Latest known MAC of a device (used to wake it up when it is
+        off and the probe no longer sees its MAC)."""
         with self._lock:
             row = self._db.execute(
                 "SELECT mac FROM presence_events WHERE device_id = ? AND mac IS NOT NULL ORDER BY id DESC LIMIT 1",
@@ -159,7 +159,7 @@ class History:
             ).fetchone()
         return row["mac"] if row else None
 
-    # ---- MAC noti (nuovi dispositivi in rete) ----
+    # ---- known MACs (new devices on the network) ----
     def known_all(self) -> dict[str, dict]:
         with self._lock:
             rows = self._db.execute("SELECT * FROM known_macs").fetchall()
@@ -177,7 +177,7 @@ class History:
             self._db.commit()
 
     def known_ignore(self, macs: list[str] | None) -> None:
-        """'new' -> 'ignored' per i MAC dati, o per tutti se macs e' None."""
+        """'new' -> 'ignored' for the given MACs, or for all of them if macs is None."""
         with self._lock:
             if macs is None:
                 self._db.execute("UPDATE known_macs SET status = 'ignored' WHERE status = 'new'")
@@ -186,9 +186,9 @@ class History:
                                      [(m,) for m in macs])
             self._db.commit()
 
-    # ---- tempo di risposta ----
+    # ---- response time ----
     def record_latency(self, rows: list[tuple[str, float, float]]) -> None:
-        """Campioni (device_id, ts, ms), tutti in una sola transazione."""
+        """Samples (device_id, ts, ms), all in a single transaction."""
         with self._lock:
             self._db.executemany("INSERT INTO latency (device_id, ts, ms) VALUES (?, ?, ?)", rows)
             self._db.commit()
@@ -201,7 +201,7 @@ class History:
             ).fetchall()
         return [(r["ts"], r["ms"]) for r in rows]
 
-    # ---- valori di servizio ----
+    # ---- service values ----
     def meta_get(self, key: str) -> str | None:
         with self._lock:
             row = self._db.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
@@ -215,18 +215,18 @@ class History:
             )
             self._db.commit()
 
-    # ---- manutenzione ----
+    # ---- maintenance ----
     def prune(self) -> int:
         cutoff = time.time() - PRESENCE_RETENTION_DAYS * 86400
         with self._lock:
-            # Di ogni dispositivo si tiene sempre l'ultimo evento anche se
-            # vecchio: serve a sapere in che stato si trova la finestra.
+            # For each device the latest event is always kept even if
+            # old: it is needed to know what state the window starts in.
             cur = self._db.execute(
                 """DELETE FROM presence_events WHERE ts < ? AND id NOT IN
                    (SELECT MAX(id) FROM presence_events GROUP BY device_id)""",
                 (cutoff,),
             )
-            # Latenza: solo gli ultimi 7 giorni (un campione al minuto per dispositivo).
+            # Latency: only the last 7 days (one sample per minute per device).
             self._db.execute("DELETE FROM latency WHERE ts < ?", (time.time() - LATENCY_RETENTION_DAYS * 86400,))
             self._db.commit()
             return cur.rowcount

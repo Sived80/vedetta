@@ -7,14 +7,14 @@ from .i18n import t_or as i18n_t_or
 from .brands import match_model
 from .identity import battery_assess, default_gateway, identify_brand, mobile_assess, presence_churn
 
-# Riconoscimento per parola chiave nel nome, non per produttore MAC: il
-# vendor lookup e' inaffidabile per i telefoni (MAC randomizzati, vedi
-# iPhone-di-Caio) e comunque ambiguo (Apple/Samsung fanno anche laptop, TV,
-# monitor - non solo telefoni). Il nome del dispositivo (spesso auto-risolto
-# via mDNS: "iPhone-di-Caio", "Xiaomi - MI14 di Sempronio") e' il segnale piu'
-# diretto che si ha davvero a disposizione.
-# "android" non c'e': e' il sistema operativo, non il tipo di apparecchio (gira anche su
-# TV, chiavette e box). Vale come indizio debole (vedi _MOBILE_NAME_WEAK).
+# Recognition by keyword in the name, not by MAC vendor: the
+# vendor lookup is unreliable for phones (randomized MACs, see
+# iPhone-di-Caio) and ambiguous anyway (Apple/Samsung also make laptops, TVs,
+# monitors - not just phones). The device name (often auto-resolved
+# via mDNS: "iPhone-di-Caio", "Xiaomi - MI14 di Sempronio") is the most
+# direct signal actually available.
+# "android" is not in the list: it is the operating system, not the device type (it also runs on
+# TVs, sticks and boxes). It counts as a weak hint (see _MOBILE_NAME_WEAK).
 _MOBILE_NAME_KEYWORDS = (
     "iphone", "ipad", "pixel", "galaxy", "xiaomi", "redmi",
     "oneplus", "huawei", "honor", "oppo", "vivo", "smartphone", "tablet",
@@ -27,20 +27,20 @@ def _is_mobile(name: str | None) -> bool:
 
 
 _MOBILE_NAME_WEAK = ("android",)
-# Modelli "dichiarati" che in realta' sono il tipo di servizio, non un modello.
+# "Declared" models that are actually the service type, not a model.
 _GENERIC_MODELS = {"mediarenderer", "mediaserver", "basic", "dial", "device", "root"}
-# Cio' che il dispositivo dichiara quando RICEVE o RIPRODUCE video (cast, mirroring,
-# renderer): servizi mDNS, tipi UPnP, servizi e sistema riconosciuti da nmap.
-# (niente _airplay: lo annunciano anche i Mac, che sono portatili)
+# What the device declares when it RECEIVES or PLAYS video (cast, mirroring,
+# renderer): mDNS services, UPnP types, services and OS recognized by nmap.
+# (no _airplay: Macs announce it too, and they are laptops)
 _MEDIA_SERVICES = {"_googlecast._tcp", "_amzn-wplay._tcp", "_androidtvremote2._tcp"}
 _MEDIA_UPNP = {"MediaRenderer", "dial"}
-# Servizi mDNS annunciati solo da telefoni e tablet.
+# mDNS services announced only by phones and tablets.
 _MOBILE_SERVICES = {"_nearbypresence._tcp", "_apple-mobdev2._tcp"}
-_MEDIA_TEXT = re.compile(r"tv\b|\btv|television", re.I)  # FireTV, AndroidTV, SmartTV, TV, tvOS: nessuna marca
+_MEDIA_TEXT = re.compile(r"tv\b|\btv|television", re.I)  # FireTV, AndroidTV, SmartTV, TV, tvOS: no brand
 
 
 def _media_receiver(ip: str, scan_info: dict, ports: list[dict]) -> bool:
-    from . import roles  # tardivo
+    from . import roles  # late import
     services = set((scan_info.get("mdns_services") or "").replace(" ", "").split(","))
     if services & _MEDIA_SERVICES or _MEDIA_UPNP & set(roles.upnp_types(ip)):
         return True
@@ -61,20 +61,20 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         except Exception:
             result = {"online": False}
 
-    # L'ARP e' il segnale di presenza piu' affidabile su una LAN (pratica
-    # consolidata: usato da arp-scan/Fing/Advanced IP Scanner, raccomandato
-    # anche in progetti di home automation come Domoticz al posto del ping):
-    # un dispositivo puo' bloccare ping e porte TCP (tipico di telefoni e
-    # tablet) ma non puo' evitare di rispondere all'ARP se comunica affatto
-    # sulla rete. Se l'adapter non l'ha trovato online ma compare nell'ultima
-    # scansione ARP, vince l'ARP - mai il contrario (l'adapter puo' comunque
-    # dare informazioni in piu' anche per un host visto "solo" via ARP).
+    # ARP is the most reliable presence signal on a LAN (established practice:
+    # used by arp-scan/Fing/Advanced IP Scanner, also recommended in home
+    # automation projects such as Domoticz instead of ping):
+    # a device can block ping and TCP ports (typical of phones and
+    # tablets) but cannot avoid answering ARP if it communicates at all on the
+    # network. If the adapter did not find it online but it appears in the latest
+    # ARP scan, ARP wins - never the other way around (the adapter can still
+    # provide extra information even for a host seen "only" via ARP).
     #
-    # arp_task e' un asyncio.Task condiviso da tutti i dispositivi, avviato
-    # PRIMA di iniziare i probe: cosi' la scansione ARP (~2s) gira in parallelo
-    # con tutti i controlli invece che prima di essi in sequenza (altrimenti
-    # ogni refresh pagina costava la somma dei due, non il piu' lento dei due -
-    # verificato: 4.2s in sequenza contro 2.2s in parallelo).
+    # arp_task is an asyncio.Task shared by all devices, started
+    # BEFORE the probes begin: this way the ARP scan (~2s) runs in parallel
+    # with all the checks instead of before them in sequence (otherwise
+    # every page refresh cost the sum of the two, not the slower of the two -
+    # verified: 4.2s in sequence versus 2.2s in parallel).
     if arp_task is not None:
         arp_info = (await arp_task).get(ip)
         if arp_info:
@@ -102,15 +102,15 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     extra = {k: v for k, v in result.get("extra", {}).items() if v}
 
     scan_info = device.get("scan_info") or {}
-    # Nomi Bonjour ricordati (ascolto continuo e scansioni passate): colmano cio' che la scansione non ha trovato
-    # perche' il dispositivo dormiva. I dati della scansione, se ci sono, vincono.
+    # Remembered Bonjour names (continuous listening and past scans): they fill in what the scan did not find
+    # because the device was asleep. Scan data, if present, wins.
     from . import mdns_listener
     remembered = mdns_listener.as_scan_info(mdns_listener.lookup(mac or device.get("last_mac"), ip))
     if remembered:
         scan_info = {**remembered, **{k: v for k, v in scan_info.items() if v}}
-    from . import brands as _brands  # tardivo
+    from . import brands as _brands  # late import
     if _brands.is_bridge(scan_info.get("mdns_model")):
-        # Un proxy (AirCast, AirConnect...) annuncia i nomi di ALTRI apparecchi: non sono di questo.
+        # A proxy (AirCast, AirConnect...) announces the names of OTHER devices: they are not this one's.
         scan_info = {k: v for k, v in scan_info.items() if k not in ("mdns_name", "mdns_manufacturer")}
     if should_show_title(scan_info.get("http_title")) and "title" not in extra:
         extra["title"] = scan_info["http_title"]
@@ -137,25 +137,25 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     dhcp_name = (dhcp_entry or {}).get("hostname")
     dhcp_class = (dhcp_entry or {}).get("vendor_class")
     if dhcp_class and "dhcp_class" not in extra:
-        extra["dhcp_class"] = dhcp_class   # es. "PS3", "MSFT 5.0", "android-dhcp-13"
-    # Il nome scelto dall'utente vince; se il dispositivo e' ancora chiamato
-    # come il suo IP (o non ha nome) si usa quello che annuncia via DHCP.
+        extra["dhcp_class"] = dhcp_class   # e.g. "PS3", "MSFT 5.0", "android-dhcp-13"
+    # The name chosen by the user wins; if the device is still named
+    # after its IP (or has no name), the one it announces via DHCP is used.
     base_name = device.get("name") or result.get("name")
-    from . import naming as _naming, ha_registry  # tardivi
+    from . import naming as _naming, ha_registry  # late imports
     ha_card = ha_registry.lookup(identity_mac, ip)
-    # Un nome segnaposto del sistema ("Android_1MRKG1M7", casuale e diverso a ogni avvio) non e' un
-    # nome scelto: se un'altra fonte ne da' uno vero, lo sostituisce (e si salva, vedi state._apply).
+    # A system placeholder name ("Android_1MRKG1M7", random and different on every boot) is not a chosen
+    # name: if another source provides a real one, it replaces it (and gets saved, see state._apply).
     placeholder = (not device.get("name_source") == "user") and _naming.is_placeholder(base_name)
-    # Nome preso da Home Assistant che HA oggi non da' piu' (dispositivo agganciato per errore o rimosso da HA):
-    # si ricalcola dalle altre fonti.
+    # Name taken from Home Assistant that HA no longer provides today (device linked by mistake or removed from HA):
+    # it is recomputed from the other sources.
     ha_stale = device.get("name_source") in ("ha", "ha_user") and not ha_registry.choose_name(ha_card)[0]
-    # Nome preso dal titolo della pagina che oggi non supererebbe piu' i controlli (es. nome di un software con la versione).
+    # Name taken from the page title that would no longer pass the checks today (e.g. the name of a software with its version).
     web_stale = device.get("name_source") == "web" and not _naming.title_name(scan_info.get("http_title"))
     ha_stale = ha_stale or web_stale
     placeholder = placeholder or ha_stale
     auto_name = None
     if not base_name or base_name == ip or placeholder:
-        from . import naming, roles  # tardivi
+        from . import naming, roles  # late imports
         found, _src = naming.pick([
             ("adapter", scan_info.get("api_name")), ("mdns", scan_info.get("mdns_name")),
             ("upnp", scan_info.get("upnp_name")), ("upnp", (roles.snapshot().get("names") or {}).get(ip)),
@@ -165,30 +165,30 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         if found and not (placeholder and _naming.is_placeholder(found)):
             was_ip = not base_name or base_name == ip
             base_name = found
-            if placeholder or was_ip:   # si salva: il nome resta anche quando la fonte (es. un telefono che dorme) tace
+            if placeholder or was_ip:   # it is saved: the name stays even when the source (e.g. a sleeping phone) goes silent
                 auto_name = (found, _src, ha_stale)
         elif ha_stale:
-            base_name = None   # nessun'altra fonte: meglio il nome predefinito che uno di HA riferito a un altro dispositivo
-    # Home Assistant: il nome che vi ha dato l'utente (o quello dell'integrazione) vince sulle fonti piu' deboli e
-    # sui nomi segnaposto, mai su un nome scelto in Vedetta.
+            base_name = None   # no other source: better the default name than one from HA referring to another device
+    # Home Assistant: the name the user gave there (or the integration's one) wins over weaker sources and
+    # over placeholder names, never over a name chosen in Vedetta.
     ha_name, ha_src = ha_registry.choose_name(ha_card)
-    # Se il nome salvato era gia' preso da HA e in HA e' cambiato, il cambio si segue (anche con lo stesso peso).
+    # If the saved name was already taken from HA and it changed in HA, the change is followed (even with the same weight).
     from_ha = device.get("name_source") in ("ha", "ha_user")
     if ha_name and device.get("name_source") != "user" and ha_name != base_name \
             and (from_ha or _naming.is_better({"name": base_name, "ip": ip, "name_source": device.get("name_source")}, ha_src)):
         base_name = ha_name
         auto_name = (ha_name, ha_src, from_ha)
         placeholder = False
-    # Nome segnaposto rimasto ("Android", "iPhone"): non e' un nome, si prova prima il nome predefinito.
+    # Leftover placeholder name ("Android", "iPhone"): it is not a name, the default name is tried first.
     kept_placeholder = base_name if (device.get("name_source") != "user" and _naming.is_placeholder(base_name)) else None
     display_name = ip if kept_placeholder else (truncate_name(base_name) or ip)
     if dhcp_name and dhcp_name != display_name and "dhcp" not in extra:
         extra["dhcp"] = dhcp_name
 
-    # Marca, batteria e "mobile" si decidono in identity.py (evidenze multiple con
-    # fonte e confidenza). Il prefisso del MAC e' solo il produttore della scheda: la
-    # marca del prodotto viene dalle fonti del dispositivo stesso (UPnP/mDNS,
-    # nome, titolo web, impronta DHCP).
+    # Brand, battery and "mobile" are decided in identity.py (multiple evidences with
+    # source and confidence). The MAC prefix is only the maker of the network card: the
+    # product brand comes from the device's own sources (UPnP/mDNS,
+    # name, web title, DHCP fingerprint).
     shelly_model = (result.get("extra") or {}).get("model")
     models = [scan_info.get("mdns_model"), scan_info.get("upnp_model"), scan_info.get("onvif_hardware"),
               scan_info.get("api_model"), shelly_model, (ha_card or {}).get("model")]
@@ -200,21 +200,21 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         upnp_manufacturer=scan_info.get("upnp_manufacturer"),
         declared=[scan_info.get("api_vendor"), scan_info.get("mdns_manufacturer"), scan_info.get("onvif_manufacturer"),
                   scan_info.get("onvif_hardware"), (ha_card or {}).get("manufacturer")],
-        # Tutto cio' che il dispositivo dice di se' sul web: titolo, intestazione Server e i
-        # servizi riconosciuti da nmap sulle sue porte (es. "... REST API").
+        # Everything the device says about itself on the web: title, Server header and the
+        # services recognized by nmap on its ports (e.g. "... REST API").
         web_text=" ".join(filter(None, [scan_info.get("http_title"), scan_info.get("http_server"), scan_info.get("rtsp_server"),
                                          scan_info.get("tls_subject"), scan_info.get("api_fw")]
                                   + [p.get("label") for p in scanned_ports])) or None,
         os_family=dhcp.os_family(identity_mac),
         is_gateway=ip == default_gateway(),
     )
-    # Produttore dichiarato da Home Assistant (integrazione): vale piu' di MAC, nome e pagina web; non se e' solo il
-    # produttore del chip ("Espressif") o se il dispositivo stesso ha gia' dichiarato la sua marca.
+    # Manufacturer declared by Home Assistant (integration): it counts more than MAC, name and web page; not if it is only the
+    # chip maker ("Espressif") or if the device itself has already declared its brand.
     mfr = ((ha_card or {}).get("manufacturer") or "").strip()
     if mfr and ident.get("brand_source") not in ("declared", "user") and brands.vendor_role(mfr) != "component":
         ident = {**ident, "brand": brands.known_brand(mfr) or mfr, "brand_source": "ha", "brand_confidence": "high",
                  "brand_evidence": "confirmed"}
-    # Marca scelta a mano: vince su qualunque fonte e non cambia con le scansioni.
+    # Manually chosen brand: it wins over any source and does not change with scans.
     if (device.get("brand_user") or "").strip():
         ident = {**ident, "brand": device["brand_user"].strip(), "brand_source": "user",
                  "brand_confidence": "high", "brand_evidence": "confirmed"}
@@ -222,8 +222,8 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     battery, battery_source = battery_assess(
         api=result.get("battery"), scan=scan_info.get("battery"), model_class=model_class,
         texts=[*models, scan_info.get("snmp_descr"), scan_info.get("http_title"), display_name])
-    # La scelta esplicita salvata (device["mobile"], impostata a mano nel pop-up di
-    # modifica) vince sempre sul punteggio automatico.
+    # The saved explicit choice (device["mobile"], set by hand in the edit
+    # popup) always wins over the automatic score.
     explicit_mobile = device.get("mobile")
     if explicit_mobile is not None:
         is_mobile = explicit_mobile
@@ -238,47 +238,47 @@ async def probe_device(device: dict, arp_task=None) -> dict:
             battery=battery, battery_source=battery_source,
             churn=presence_churn(device["id"]))["mobile"]
     if explicit_mobile is None and "mobile_app" in ((ha_card or {}).get("domains") or []):
-        is_mobile = True   # l'app mobile di HA c'e' solo su telefoni e tablet
+        is_mobile = True   # the HA mobile app only exists on phones and tablets
     vendor, brand = ident["vendor"], ident["brand"]
-    # Nessun nome dichiarato: al posto dell'IP, "marca modello" ma solo se TUTTI E DUE sono certi
-    # (marca confermata e modello dichiarato dal dispositivo). Non si salva: un nome scelto
-    # dall'utente, o uno automatico migliore, prevale sempre (naming.is_better).
+    # No declared name: instead of the IP, "brand model" but only if BOTH are certain
+    # (brand confirmed and model declared by the device). It is not saved: a name chosen
+    # by the user, or a better automatic one, always prevails (naming.is_better).
     if display_name == ip and brand and ident.get("brand_evidence") == "confirmed":
         model = next((m for m in (scan_info.get("api_model"), scan_info.get("upnp_model"), scan_info.get("mdns_model"), (ha_card or {}).get("model"))
                       if m and m.lower() not in _GENERIC_MODELS and m.lower() != brand.lower()), None)
         if model:
             display_name = truncate_name(model if model.lower().startswith(brand.lower()) else f"{brand} {model}") or ip
-    # Info aggiuntive: marca del prodotto e, se diverso, produttore della scheda (chip).
+    # Additional info: product brand and, if different, the board maker (chip).
     head = {k: v for k, v in (("brand", brand), ("vendor", vendor if vendor != brand else None)) if v and k not in extra}
     extra = {**head, **extra}
-    if ha_card:   # Home Assistant: area, modello e integrazione (attributi aggiuntivi)
+    if ha_card:   # Home Assistant: area, model and integration (additional attributes)
         for key, val in (("ha_area", ha_card.get("area")), ("ha_model", ha_card.get("model")),
                          ("ha_integration", ", ".join(ha_card.get("domains") or []))):
             if val:
                 extra[key] = val
 
-    # Ancora nessun nome: marca + tipo di apparecchio ("Milesight telecamera"), solo se la marca e'
-    # nota e il tipo si capisce; altrimenti resta l'indirizzo. Mai salvato: ogni nome migliore
-    # (dichiarato dal dispositivo o scelto dall'utente) prevale.
-    generated_name = False   # nome costruito dall'app (marca + tipo...): non deve contare come indizio per il tipo
+    # Still no name: brand + device type ("Milesight telecamera"), only if the brand is
+    # known and the type is understood; otherwise the address stays. Never saved: any better name
+    # (declared by the device or chosen by the user) prevails.
+    generated_name = False   # name built by the app (brand + type...): must not count as a hint for the type
     if display_name == ip:
-        from . import i18n, ha_data  # tardivi
+        from . import i18n, ha_data  # late imports
         probe_dev = {"ip": ip, "brand": brand, "vendor": vendor, "vendor_role": ident["vendor_role"],
                      "extra": extra, "scanned_ports": scanned_ports, "is_mobile": is_mobile, "ha_registry": ha_card}
         kind = ha_data.best_kind(probe_dev)
         label = i18n.t_or("kind." + kind, "") if kind else ""
-        if not label:   # nessun tipo preciso: il nome della categoria ("Apple telefono")
+        if not label:   # no precise type: the category name ("Apple telefono")
             label = i18n.t_or("group." + ha_data.infer_type(probe_dev), "")
         if label and ha_data.kind_is_product(kind):
-            display_name = label  # "Home Assistant", "Raspberry Pi": il tipo e' gia' il prodotto
+            display_name = label  # "Home Assistant", "Raspberry Pi": the type is already the product
             generated_name = True
         elif brand and (ident["brand_source"] != "name" or ident["brand_evidence"] == "confirmed"):
-            display_name = truncate_name(f"{brand} {label}".strip()) or ip  # una marca dedotta solo da un nome non basta
+            display_name = truncate_name(f"{brand} {label}".strip()) or ip  # a brand inferred only from a name is not enough
             generated_name = display_name != ip
     if display_name == ip and not kept_placeholder:
-        # Ancora nessun nome: il ruolo che il dispositivo svolge in rete (rilevato con DNS, DHCP, UPnP, ripetitore)
-        # dice cos'e' meglio dell'indirizzo ("Server DNS").
-        from . import roles as _roles  # tardivo
+        # Still no name: the role the device plays on the network (detected via DNS, DHCP, UPnP, repeater)
+        # tells what it is better than the address ("Server DNS").
+        from . import roles as _roles  # late import
         found_roles = _roles.roles_for(ip)
         for role in ("gateway", "repeater", "ap", "dhcp", "dns"):
             if role in found_roles:

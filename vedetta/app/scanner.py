@@ -11,30 +11,30 @@ from .formatters import is_useless_title, truncate_name
 from .iface import lan_iface
 from .vendor_lookup import resolve_vendor_info
 
-# Il container gira su una CPU condivisa e limitata: scansionare -p- -sV -O su
-# piu' dispositivi IoT deboli in vero parallelo li fa contendere la stessa CPU,
-# rallentando ciascuno finche' anche il timeout di sicurezza (150s) puo'
-# scattare perdendo dati (verificato: 3 Shelly insieme, uno tagliato a 150s
-# con 0 porte trovate invece delle porte reali). Limitare i nmap pesanti
-# concorrenti rende il tempo totale piu' lungo con tanti dispositivi lenti
-# insieme, ma garantisce che ognuno finisca davvero invece di essere
-# interrotto a meta'.
+# The container runs on a shared, limited CPU: scanning -p- -sV -O on
+# several weak IoT devices in true parallel makes them contend for the same CPU,
+# slowing each one down until even the safety timeout (150s) can
+# trigger and lose data (verified: 3 Shelly together, one cut off at 150s
+# with 0 ports found instead of the real ports). Limiting concurrent heavy
+# nmaps makes the total time longer with many slow devices
+# together, but guarantees that each one actually finishes instead of being
+# interrupted halfway.
 _NMAP_SEMAPHORE = asyncio.Semaphore(2)
 
-# protocol_scan (SNMP/NetBIOS, 2 porte UDP, host-timeout 12s) e' un nmap
-# separato lanciato IN PARALLELO al nmap pesante dentro full_scan (vedi sotto):
-# condividendo lo stesso semaforo da 2, una singola scansione approfondita di
-# UN dispositivo occupava gia' entrambi gli slot, mettendo in coda ogni altro
-# dispositivo scelto nella stessa rescan finche' il primo non finiva del tutto
-# - verificato: con piu' dispositivi selezionati insieme, alcuni restavano in
-# coda per minuti pur avendo un host-timeout di 150s. Un semaforo separato,
-# piu' permissivo, e' giustificato perche' questi nmap sono leggeri (2 porte,
-# nessun -sV/-O/-p-) e non competono per le stesse risorse dei nmap pesanti.
+# protocol_scan (SNMP/NetBIOS, 2 UDP ports, host-timeout 12s) is a separate
+# nmap launched IN PARALLEL with the heavy nmap inside full_scan (see below):
+# sharing the same semaphore of 2, a single deep scan of
+# ONE device already took both slots, queuing every other
+# device chosen in the same rescan until the first one had completely finished
+# - verified: with several devices selected together, some stayed in the
+# queue for minutes despite having a host-timeout of 150s. A separate,
+# more permissive semaphore is justified because these nmaps are light (2 ports,
+# no -sV/-O/-p-) and do not compete for the same resources as the heavy nmaps.
 _LIGHT_NMAP_SEMAPHORE = asyncio.Semaphore(4)
 
 
 def _describe_nmap(args: list[str]) -> str:
-    """Etichetta leggibile per il log: cosa fa questo nmap, non i flag grezzi."""
+    """Readable label for the log: what this nmap does, not the raw flags."""
     if "broadcast-upnp-info" in args:
         return "ricerca SSDP/UPnP (tutta la LAN)"
     if "broadcast-dhcp-discover" in args:
@@ -61,13 +61,13 @@ def _configured_host_timeout(args: list[str]) -> float | None:
         return None
 
 
-# IP la cui ultima scansione nmap ha raggiunto il tempo massimo: su un dispositivo lento
-# (ESP, prese, dispositivi con poca CPU) la scansione di tutte le porte non finisce e nmap
-# scarta quelle gia' trovate. Chi la usa (pipeline) fa una scansione mirata di ripiego.
+# IPs whose last nmap scan hit the time limit: on a slow device
+# (ESP, plugs, low-CPU devices) the scan of all ports does not finish and nmap
+# discards the ones already found. Whoever uses it (pipeline) runs a targeted fallback scan.
 timed_out: set[str] = set()
 
-# Porte tipiche di casa e homelab: web, accesso remoto, file, database, domotica, media,
-# videosorveglianza, stampa, VPN, posta. Si scansionano al posto di -p- sui dispositivi lenti.
+# Typical home and homelab ports: web, remote access, files, databases, home automation, media,
+# video surveillance, printing, VPN, mail. They are scanned instead of -p- on slow devices.
 FAST_PORTS = ("21,22,23,25,53,67,80,81,82,88,110,111,123,135,139,143,161,389,443,445,465,500,514,515,554,587,631,"
               "636,873,993,995,1080,1194,1400,1433,1521,1723,1883,1900,1935,2049,2323,2375,3000,3306,3389,3478,"
               "4343,4443,4567,5000,5001,5060,5222,5353,5357,5432,5555,5683,5900,5984,6053,6379,6466,6467,6668,7000,"
@@ -75,16 +75,16 @@ FAST_PORTS = ("21,22,23,25,53,67,80,81,82,88,110,111,123,135,139,143,161,389,443
               "8888,8899,9000,9090,9100,9200,9999,10000,32400,34567,37777,49152,51820,55443")
 
 
-# Prova pilota: 1000 porte. Un dispositivo sano le scansiona in ~1 s (quindi tutte le 65535
-# in meno di 2 minuti); sopra PILOT_MAX_S la scansione completa non finirebbe nei tempi.
+# Pilot test: 1000 ports. A healthy device scans them in ~1 s (so all 65535
+# in under 2 minutes); above PILOT_MAX_S the full scan would not finish in time.
 PILOT_MAX_S = 3.0
 PILOT_TIMEOUT_S = 15
 
 
 async def pilot(ip: str) -> dict:
-    """Misura prima se il dispositivo regge la scansione di tutte le porte. Ritorna
-    {"slow": bool, "elapsed": secondi, "ports": porte aperte trovate}. nmap misura il suo
-    tempo (cosi' l'attesa in coda non conta)."""
+    """First measures whether the device can handle a scan of all ports. Returns
+    {"slow": bool, "elapsed": seconds, "ports": open ports found}. nmap measures its own
+    time (so waiting in the queue does not count)."""
     xml_text = await _run_nmap(["-T4", "--top-ports", "1000", "--host-timeout", f"{PILOT_TIMEOUT_S}s", ip],
                                semaphore=_LIGHT_NMAP_SEMAPHORE)
     elapsed = PILOT_TIMEOUT_S
@@ -96,14 +96,14 @@ async def pilot(ip: str) -> dict:
     except (ET.ParseError, ValueError):
         pass
     timed = ip in timed_out
-    timed_out.discard(ip)  # la prova pilota non decide: lo fa pipeline.scan_host
+    timed_out.discard(ip)  # the pilot test does not decide: pipeline.scan_host does
     hosts = _parse_hosts(xml_text)
     return {"slow": timed or elapsed > PILOT_MAX_S, "elapsed": elapsed, "ports": hosts[0]["ports"] if hosts else []}
 
 
 async def fast_ports(ip: str, timeout: int = 45) -> dict | None:
-    """Scansione mirata (FAST_PORTS + riconoscimento servizi leggero), per i dispositivi su cui
-    la scansione di tutte le porte e' scaduta. Ritorna l'host letto da nmap o None."""
+    """Targeted scan (FAST_PORTS + light service detection), for devices on which
+    the scan of all ports timed out. Returns the host read by nmap or None."""
     xml_text = await _run_nmap(["-T4", "-sV", "--version-light", "-p", FAST_PORTS, "--host-timeout", f"{timeout}s", ip],
                                semaphore=_LIGHT_NMAP_SEMAPHORE)
     hosts = _parse_hosts(xml_text)
@@ -132,10 +132,10 @@ async def _run_nmap(args: list[str], semaphore: asyncio.Semaphore | None = None)
             logger.info("Annullata: %s", label)
             raise
         elapsed = time.monotonic() - t0
-        # Se il tempo impiegato e' vicino all'--host-timeout configurato, nmap
-        # ha quasi certamente troncato la scansione su quell'host invece di
-        # finirla per davvero: i dati raccolti sono probabilmente parziali,
-        # merita un livello diverso da una scansione riuscita normalmente.
+        # If the elapsed time is close to the configured --host-timeout, nmap
+        # almost certainly truncated the scan on that host instead of
+        # really finishing it: the collected data is probably partial,
+        # so it deserves a different level than a normally successful scan.
         configured = _configured_host_timeout(args)
         target = args[-1] if args else ""
         if configured is not None and elapsed >= configured - 1.5:
@@ -182,12 +182,12 @@ def _parse_hosts(xml_text: str) -> list[dict]:
                 "service": service.get("name") if service is not None else None,
                 "product": service.get("product") if service is not None else None,
                 "version": service.get("version") if service is not None else None,
-                # "probed" = nmap ha davvero interrogato il servizio, "table" = ha solo
-                # indovinato dal numero di porta convenzionale (meno affidabile).
+                # "probed" = nmap really queried the service, "table" = it only
+                # guessed from the conventional port number (less reliable).
                 "confirmed": service is not None and service.get("method") == "probed",
-                # Prova diretta (non un'ipotesi sul nome del servizio) che su questa
-                # porta gira davvero un'interfaccia web: http-title ha ottenuto una
-                # pagina HTML reale con un titolo. Usato da _guess_port().
+                # Direct proof (not a guess from the service name) that a web interface
+                # really runs on this port: http-title obtained a real HTML
+                # page with a title. Used by _guess_port().
                 "has_http_title": has_title,
             })
             if has_title and not http_title:
@@ -214,7 +214,7 @@ _TLS_PORTS = {443, 8443, 4443, 9443, 10443, 5001, 5986, 8006, 8883, 993, 995, 63
 
 
 async def tls_ssh_scan(ip: str, ports: list[dict], timeout: int = 20) -> dict:
-    """ssl-cert e ssh-hostkey sulle sole porte aperte che possono parlare TLS o SSH."""
+    """ssl-cert and ssh-hostkey only on the open ports that can speak TLS or SSH."""
     chosen = sorted({p["port"] for p in ports
                      if p["port"] in _TLS_PORTS or p["port"] == 22
                      or any(s in (p.get("service") or "") for s in ("https", "ssl", "ssh"))})
@@ -229,7 +229,7 @@ async def tls_ssh_scan(ip: str, ports: list[dict], timeout: int = 20) -> dict:
 
 
 def parse_ssl_cert(output: str) -> tuple[str | None, str | None]:
-    """Soggetto ed emittente del certificato (testo di ssl-cert)."""
+    """Subject and issuer of the certificate (ssl-cert text)."""
     subject = issuer = None
     for line in output.splitlines():
         line = line.strip()
@@ -241,8 +241,8 @@ def parse_ssl_cert(output: str) -> tuple[str | None, str | None]:
 
 
 def parse_ssh_hostkey(output: str) -> str | None:
-    """Prima impronta della chiave dell'host (testo di ssh-hostkey): resta uguale anche
-    se il dispositivo cambia IP."""
+    """First fingerprint of the host key (ssh-hostkey text): it stays the same even
+    if the device changes IP."""
     for line in output.splitlines():
         line = line.strip()
         if line and line[0].isdigit():
@@ -250,20 +250,20 @@ def parse_ssh_hostkey(output: str) -> str | None:
     return None
 
 
-# IP a cui hanno risposto MAC diversi nell'ultima arp-scan (conflitto di indirizzo).
+# IPs to which different MACs responded in the last arp-scan (address conflict).
 arp_conflicts: dict[str, list[str]] = {}
 
 
 async def arp_scan() -> list[dict]:
-    """Scoperta host via ARP: solo livello 2, niente fallback ICMP/TCP come nmap
-    -sn. Su una /24 tipica gira in 1-2 secondi invece di 3-5.
+    """Host discovery via ARP: layer 2 only, no ICMP/TCP fallback like nmap
+    -sn. On a typical /24 it runs in 1-2 seconds instead of 3-5.
 
-    Niente log qui dentro: e' chiamata anche a ogni refresh di pagina (dietro
-    una cache di 15s, vedi get_cached_arp_by_ip in main.py), non solo quando
-    l'utente lancia una ricerca - loggarla comunque avrebbe riempito il buffer
-    di eventi di routine invisibili all'utente, seppellendo in pochi minuti
-    quelli utili (scansioni vere, errori). Chi la chiama per un'azione
-    esplicita (quick_scan) logga a quel livello."""
+    No logging in here: it is also called on every page refresh (behind
+    a 15s cache, see get_cached_arp_by_ip in main.py), not only when
+    the user launches a search - logging it anyway would have filled the buffer
+    with routine events invisible to the user, burying in a few minutes
+    the useful ones (real scans, errors). Whoever calls it for an
+    explicit action (quick_scan) logs at that level."""
     proc = await asyncio.create_subprocess_exec(
         "arp-scan", f"--interface={lan_iface()}", "--localnet", "-x",
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
@@ -273,8 +273,8 @@ async def arp_scan() -> list[dict]:
 
 
 def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
-    """Il computer su cui gira l'app: l'ARP non lo elenca mai (nessuno chiede a se' stesso
-    "chi ha questo IP?"), quindi si aggiunge a mano con il MAC della sua interfaccia di rete."""
+    """The computer the app runs on: ARP never lists it (nobody asks itself
+    "who has this IP?"), so it is added by hand with the MAC of its network interface."""
     if not own_ip or any(h["ip"] == own_ip for h in arp_hosts):
         return None
     try:
@@ -288,9 +288,9 @@ def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
 
 
 def parse_arp_scan(text: str) -> list[dict]:
-    """Righe di arp-scan -> host. Un indirizzo che risponde piu' volte (righe "DUP",
-    tipico di ripetitori e router con proxy ARP) compare una sola volta: si tiene la
-    prima risposta."""
+    """arp-scan lines -> hosts. An address that replies more than once ("DUP" lines,
+    typical of repeaters and routers with proxy ARP) appears only once: the
+    first reply is kept."""
     hosts, seen = [], set()
     macs_by_ip: dict[str, set[str]] = {}
     for line in text.splitlines():
@@ -301,8 +301,8 @@ def parse_arp_scan(text: str) -> list[dict]:
             seen.add(parts[0])
             vendor = parts[2].strip() if len(parts) >= 3 and not parts[2].startswith("(Unknown") else None
             hosts.append({"ip": parts[0], "mac": parts[1].upper(), "vendor": vendor})
-    # Conflitto vero: piu' MAC sullo stesso IP, e nessuno di quei MAC risponde anche per
-    # altri IP (quello sarebbe un proxy ARP o un ripetitore, non un indirizzo duplicato).
+    # Real conflict: several MACs on the same IP, and none of those MACs also answers for
+    # other IPs (that would be an ARP proxy or a repeater, not a duplicate address).
     mac_ips: dict[str, set[str]] = {}
     for ip, macs in macs_by_ip.items():
         for mac in macs:
@@ -315,23 +315,23 @@ def parse_arp_scan(text: str) -> list[dict]:
 
 
 _MDNS_NAME_KEYS = (("friendly_name", 3), ("fn", 3), ("location_name", 2))
-# Servizi il cui nome di istanza e' il nome che l'utente ha dato al dispositivo
-# (Apple, Sonos, HomeKit): meglio dell'istanza generica di un servizio qualsiasi.
+# Services whose instance name is the name the user gave to the device
+# (Apple, Sonos, HomeKit): better than the generic instance of any other service.
 _MDNS_USER_NAMED = {"_airplay._tcp", "_companion-link._tcp", "_hap._tcp", "_sonos._tcp", "_googlecast._tcp"}
 _MDNS_SLUG_RE = re.compile(r"^[0-9a-f]{6,10}-", re.IGNORECASE)
 
 
-# Modello e produttore annunciati nei record TXT mDNS, per IP: {"model", "manufacturer"}.
-# Chiavi per priorita': "model" (_device-info: MacBookPro18,1, iPhone15,2), "am" (AirPlay:
-# AppleTV6,2), "md" (Chromecast/HomeKit). Si riempie a ogni mdns_scan; chi tace conserva
-# l'ultimo valore noto (la rete e' una LAN domestica: poche decine di voci).
+# Model and manufacturer announced in the mDNS TXT records, per IP: {"model", "manufacturer"}.
+# Keys by priority: "model" (_device-info: MacBookPro18,1, iPhone15,2), "am" (AirPlay:
+# AppleTV6,2), "md" (Chromecast/HomeKit). It is filled at every mdns_scan; a device that stays silent keeps
+# its last known value (the network is a home LAN: a few dozen entries).
 mdns_meta: dict[str, dict] = {}
 _MDNS_MODEL_KEYS = ("model", "am", "md")
 _MDNS_MANUFACTURER_KEYS = ("manufacturer", "mf")
 
 
 def parse_mdns_txt(txt: str) -> dict:
-    """{"model", "manufacturer"} dalla stringa TXT (`"k=v" "k2=v2"`) costruita da _props_to_txt (`"k=v" "k2=v2"`)."""
+    """{"model", "manufacturer"} from the TXT string (`"k=v" "k2=v2"`) built by _props_to_txt (`"k=v" "k2=v2"`)."""
     pairs = dict(m.groups() for m in re.finditer(r'"([A-Za-z]+)=([^"]*)"', txt))
     out = {}
     for field, keys in (("model", _MDNS_MODEL_KEYS), ("manufacturer", _MDNS_MANUFACTURER_KEYS)):
@@ -343,14 +343,14 @@ def parse_mdns_txt(txt: str) -> dict:
 
 
 _MDNS_META_TYPE = "_services._dns-sd._udp.local."
-_MDNS_BUDGET = 6.0     # secondi totali per tutta la LAN (come con avahi-browse)
-_MDNS_TYPES_WINDOW = 3.5  # dopo questo tempo non si cercano piu' nuovi tipi di servizio
-_MDNS_INFO_TIMEOUT = 3000  # ms per la richiesta SRV/TXT/A di una singola istanza
+_MDNS_BUDGET = 6.0     # total seconds for the whole LAN (as with avahi-browse)
+_MDNS_TYPES_WINDOW = 3.5  # after this time no new service types are searched for
+_MDNS_INFO_TIMEOUT = 3000  # ms for the SRV/TXT/A request of a single instance
 
 
 def _props_to_txt(props: dict) -> str:
-    """Record TXT di zeroconf -> stringa `"k=v" "k2=v2"`, il formato che
-    parse_mdns_txt e la scelta del nome gia' sapevano leggere."""
+    """zeroconf TXT record -> string `"k=v" "k2=v2"`, the format that
+    parse_mdns_txt and the name choice already knew how to read."""
     parts = []
     for key, val in (props or {}).items():
         k = key.decode("utf-8", "replace") if isinstance(key, bytes) else str(key)
@@ -362,10 +362,10 @@ def _props_to_txt(props: dict) -> str:
 
 
 async def _mdns_browse(found: list[tuple[str, str, str, str]]) -> None:
-    """Navigazione DNS-SD con zeroconf: la meta-query _services._dns-sd._udp scopre i
-    TIPI di servizio presenti in LAN, poi ogni tipo viene navigato e ogni istanza
-    risolta (SRV+TXT+A). Riempie `found` con (tipo, istanza, ip, txt) man mano:
-    se il budget scade restano i risultati gia' raccolti."""
+    """DNS-SD browsing with zeroconf: the _services._dns-sd._udp meta-query discovers the
+    service TYPES present on the LAN, then each type is browsed and each instance
+    resolved (SRV+TXT+A). Fills `found` with (type, instance, ip, txt) as it goes:
+    if the budget runs out the results already collected remain."""
     from zeroconf import IPVersion, ServiceStateChange
     from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
@@ -397,7 +397,7 @@ async def _mdns_browse(found: list[tuple[str, str, str, str]]) -> None:
         task.add_done_callback(tasks.discard)
 
     def on_type(zeroconf, service_type, name, state_change) -> None:
-        # per la meta-query `name` e' il tipo di servizio annunciato (es. _hap._tcp.local.)
+        # for the meta-query `name` is the announced service type (e.g. _hap._tcp.local.)
         if state_change is ServiceStateChange.Removed or name in types_seen:
             return
         if time.monotonic() - t_start > _MDNS_TYPES_WINDOW:
@@ -407,8 +407,8 @@ async def _mdns_browse(found: list[tuple[str, str, str, str]]) -> None:
 
     try:
         browsers.append(AsyncServiceBrowser(azc.zeroconf, _MDNS_META_TYPE, handlers=[on_type]))
-        # Finestra intera: uscire prima per "quiete" faceva perdere dispositivi lenti
-        # (collaudato in LAN: 9 nomi su 9 con la finestra piena, 6-8 con l'uscita anticipata).
+        # Full window: exiting early on "quiet" made us lose slow devices
+        # (tested on a LAN: 9 names out of 9 with the full window, 6-8 with early exit).
         await asyncio.sleep(_MDNS_BUDGET - 0.5)
         if tasks:
             await asyncio.wait(set(tasks), timeout=0.4)
@@ -427,10 +427,10 @@ async def _mdns_browse(found: list[tuple[str, str, str, str]]) -> None:
 
 
 async def mdns_scan() -> dict[str, str]:
-    """Nomi reali via mDNS (Shelly, ESPHome, Home Assistant, Chromecast,
-    dispositivi Apple...) con la libreria zeroconf: niente demone avahi, quindi
-    gira anche dove non c'e' (add-on di Home Assistant). Una sola navigazione
-    passiva copre l'intera LAN."""
+    """Real names via mDNS (Shelly, ESPHome, Home Assistant, Chromecast,
+    Apple devices...) with the zeroconf library: no avahi daemon, so it
+    also runs where there is none (Home Assistant add-on). A single passive
+    browse covers the whole LAN."""
     found: list[tuple[str, str, str, str]] = []
     try:
         await asyncio.wait_for(_mdns_browse(found), timeout=_MDNS_BUDGET)
@@ -455,9 +455,9 @@ async def mdns_scan() -> dict[str, str]:
             seen_meta.setdefault(address, {}).setdefault(field, got)
         for key, key_score in _MDNS_NAME_KEYS:
             m = re.search(key + r'=([^"]*)', txt)
-            # Un valore tipo "5c53de3b-esphome" e' un id generato automaticamente
-            # (es. da un add-on tecnico), non un nome scelto dall'utente: va ignorato
-            # anche se compare sotto la chiave "friendly_name".
+            # A value like "5c53de3b-esphome" is an automatically generated id
+            # (e.g. from a technical add-on), not a user-chosen name: it must be ignored
+            # even if it appears under the "friendly_name" key.
             if m and m.group(1) and not _MDNS_SLUG_RE.match(m.group(1)):
                 score, value = key_score, m.group(1)
                 break
@@ -467,7 +467,7 @@ async def mdns_scan() -> dict[str, str]:
         if "services" in meta:
             meta["services"] = sorted(meta["services"])
         mdns_meta.setdefault(ip, {}).update(meta)
-    try:   # i nomi visti si ricordano per MAC (il telefono che dorme non li perde)
+    try:   # the names seen are remembered per MAC (a sleeping phone does not lose them)
         from . import mdns_listener
         mdns_listener.remember_scan(found)
     except Exception:
@@ -476,8 +476,8 @@ async def mdns_scan() -> dict[str, str]:
 
 
 def _build_ptr_query(ip: str) -> bytes:
-    """Pacchetto DNS: una domanda PTR per d.c.b.a.in-addr.arpa (classe IN, bit
-    QU/unicast-response acceso come nelle query mDNS 'legacy' dirette)."""
+    """DNS packet: a PTR question for d.c.b.a.in-addr.arpa (class IN, QU/
+    unicast-response bit set as in direct 'legacy' mDNS queries)."""
     qname = ".".join(reversed(ip.split("."))) + ".in-addr.arpa"
     header = struct.pack(">HHHHHH", 0, 0, 1, 0, 0, 0)
     labels = b"".join(bytes([len(p)]) + p.encode("ascii") for p in qname.split("."))
@@ -485,7 +485,7 @@ def _build_ptr_query(ip: str) -> bytes:
 
 
 def _read_dns_name(data: bytes, pos: int) -> tuple[str, int]:
-    """Nome DNS (con puntatori di compressione) a `pos`: (nome, posizione dopo)."""
+    """DNS name (with compression pointers) at `pos`: (name, position after)."""
     labels, end, jumped, hops = [], pos, False, 0
     while True:
         if pos >= len(data) or hops > 20:
@@ -506,7 +506,7 @@ def _read_dns_name(data: bytes, pos: int) -> tuple[str, int]:
 
 
 def _parse_ptr_answer(data: bytes) -> str | None:
-    """Primo record PTR nella sezione risposte (o aggiuntiva) di una risposta DNS."""
+    """First PTR record in the answer (or additional) section of a DNS response."""
     if len(data) < 12:
         return None
     _, flags, qd, an, ns, ar = struct.unpack(">HHHHHH", data[:12])
@@ -538,16 +538,16 @@ class _PtrProtocol(asyncio.DatagramProtocol):
 
 
 async def resolve_mdns_name(ip: str) -> str | None:
-    """Query mDNS attiva e diretta su un singolo indirizzo ("chi ha questo IP?"),
-    a differenza di mdns_scan() che e' passiva e ascolta solo chi annuncia
-    servizi Bonjour/DNS-SD. Un telefono Android/iOS o un PC Windows spesso
-    pubblica solo il proprio hostname .local senza annunciare nessun servizio:
-    la scansione passiva li perde del tutto, questa li trova. Verificato che
-    e' proprio cosi' che Advanced IP Scanner trova nomi come "MSI", "Android",
-    "iPhone-di-Caio" che prima ci mancavano completamente.
+    """Active, direct mDNS query on a single address ("who has this IP?"),
+    unlike mdns_scan() which is passive and only listens to whoever announces
+    Bonjour/DNS-SD services. An Android/iOS phone or a Windows PC often
+    publishes only its own .local hostname without announcing any service:
+    the passive scan misses them entirely, this one finds them. Verified that
+    this is exactly how Advanced IP Scanner finds names like "MSI", "Android",
+    "iPhone-di-Caio" that we were completely missing before.
 
-    Query PTR unicast spedita a ip:5353 (pacchetto costruito a mano, nessun
-    demone necessario); il dispositivo risponde all'indirizzo di origine."""
+    Unicast PTR query sent to ip:5353 (hand-built packet, no
+    daemon needed); the device replies to the source address."""
     if not is_valid_ipv4(ip):
         return None
     loop = asyncio.get_running_loop()
@@ -575,11 +575,11 @@ async def resolve_mdns_name(ip: str) -> str | None:
 
 
 async def resolve_names(ips: list[str], passive_names: dict[str, str] | None = None) -> dict[str, str]:
-    """Nomi mDNS per un elenco di indirizzi: parte dalla scansione passiva (una
-    sola chiamata per tutta la rete, nomi migliori per chi li pubblica come
-    friendly_name/location_name) e completa con una query attiva mirata solo
-    sugli indirizzi rimasti senza nome - in parallelo, costano quanto il piu'
-    lento dei singoli timeout, non la somma."""
+    """mDNS names for a list of addresses: starts from the passive scan (a
+    single call for the whole network, better names for devices that publish them as
+    friendly_name/location_name) and completes with a targeted active query only
+    on the addresses left without a name - in parallel, they cost as much as the
+    slowest of the individual timeouts, not the sum."""
     names = dict(passive_names) if passive_names is not None else await mdns_scan()
     missing = [ip for ip in ips if ip not in names]
     if missing:
@@ -596,10 +596,10 @@ _UPNP_FIELD_MAP = {"Name": "name", "Manufacturer": "manufacturer", "Model Name":
 
 
 def _parse_upnp_output(output: str) -> dict[str, dict]:
-    """Il testo aggregato di broadcast-upnp-info elenca un blocco per dispositivo
-    risposto, ma sotto l'indirizzo multicast (239.255.255.250) e non sotto il
-    vero IP del dispositivo: l'unico modo per sapere chi ha risposto e' l'IP
-    dentro l'URL della riga Location, presente in ogni blocco."""
+    """The aggregated text of broadcast-upnp-info lists one block per device that
+    replied, but under the multicast address (239.255.255.250) and not under the
+    device's real IP: the only way to know who replied is the IP
+    inside the URL of the Location line, present in every block."""
     devices: dict[str, dict] = {}
     current_ip = None
     for line in output.splitlines():
@@ -617,15 +617,15 @@ def _parse_upnp_output(output: str) -> dict[str, dict]:
 
 
 async def ssdp_scan(timeout: int = 6) -> dict[str, dict]:
-    """Scoperta SSDP/UPnP (standard IETF/UPnP Forum, richiesta multicast M-SEARCH):
-    TV, NAS, media server e router con funzioni DLNA spesso rispondono con nome,
-    produttore e modello reali - informazioni che ne' ARP ne' mDNS vedono, perche'
-    sono due protocolli diversi che coprono famiglie di dispositivi diverse.
+    """SSDP/UPnP discovery (IETF/UPnP Forum standard, M-SEARCH multicast request):
+    TVs, NAS, media servers and routers with DLNA features often reply with real name,
+    manufacturer and model - information that neither ARP nor mDNS sees, because
+    they are two different protocols covering different families of devices.
 
-    E' uno script "prerule" (nmap lo chiama broadcast-upnp-info): gira una sola
-    volta per l'intera LAN prima di processare qualunque target, quindi basta un
-    target fittizio (127.0.0.1, mai realmente scansionato) solo per far partire
-    nmap - verificato che lo script si attiva comunque."""
+    It is a "prerule" script (nmap calls it broadcast-upnp-info): it runs only once
+    for the whole LAN before processing any target, so a dummy
+    target (127.0.0.1, never actually scanned) is enough just to get
+    nmap started - verified that the script activates anyway."""
     xml_text = await _run_nmap([
         "-sn", "--script", "broadcast-upnp-info", "-e", lan_iface(),
         "--host-timeout", f"{timeout}s", "127.0.0.1",
@@ -641,7 +641,7 @@ async def ssdp_scan(timeout: int = 6) -> dict[str, dict]:
 
 
 def parse_igmp(output: str) -> dict[str, list[str]]:
-    """Testo di broadcast-igmp-discovery -> {ip: gruppi multicast}."""
+    """broadcast-igmp-discovery text -> {ip: multicast groups}."""
     out: dict[str, list[str]] = {}
     current = None
     for raw in output.splitlines():
@@ -659,9 +659,9 @@ def parse_igmp(output: str) -> dict[str, list[str]]:
 
 
 async def igmp_scan(timeout: int = 7) -> dict[str, list[str]]:
-    """Query IGMP generale: chi e' iscritto a gruppi multicast (TV, Chromecast,
-    Sonos, IPTV). Facoltativa e spenta di default: su reti con IGMP snooping o IPTV
-    del provider una query da un dispositivo estraneo puo' interferire."""
+    """General IGMP query: who is subscribed to multicast groups (TVs, Chromecast,
+    Sonos, IPTV). Optional and off by default: on networks with IGMP snooping or
+    provider IPTV a query from a foreign device can interfere."""
     xml_text = await _run_nmap([
         "-sn", "--script", "broadcast-igmp-discovery", "-e", lan_iface(),
         "--script-args", f"broadcast-igmp-discovery.timeout={timeout}s",
@@ -678,8 +678,8 @@ async def igmp_scan(timeout: int = 7) -> dict[str, list[str]]:
 
 
 def parse_dhcp_offers(output: str) -> list[dict]:
-    """Testo di broadcast-dhcp-discover -> una voce per ogni server che ha risposto
-    (DHCPOFFER): server, IP offerto, gateway, DNS, dominio, durata del lease."""
+    """broadcast-dhcp-discover text -> one entry for each server that replied
+    (DHCPOFFER): server, offered IP, gateway, DNS, domain, lease duration."""
     keys = {"server identifier": "server", "ip offered": "offered", "router": "router",
             "domain name server": "dns", "domain name": "domain", "ip address lease time": "lease",
             "subnet mask": "netmask", "dhcp message type": "type"}
@@ -702,10 +702,10 @@ def parse_dhcp_offers(output: str) -> list[dict]:
 
 
 async def dhcp_discover(timeout: int = 8) -> list[dict]:
-    """DHCP DISCOVER di prova (RFC 2131): i server DHCP rispondono con un'offerta
-    che NON viene mai accettata (nessun lease assegnato). Rivela chi distribuisce
-    gli indirizzi e cosa ricevono i client: gateway, DNS, dominio, durata del lease;
-    piu' di un server = DHCP non voluto in rete."""
+    """Test DHCP DISCOVER (RFC 2131): DHCP servers reply with an offer
+    that is NEVER accepted (no lease assigned). It reveals who hands out
+    the addresses and what clients receive: gateway, DNS, domain, lease duration;
+    more than one server = unwanted DHCP on the network."""
     xml_text = await _run_nmap([
         "-sn", "--script", "broadcast-dhcp-discover", "-e", lan_iface(),
         "--script-args", f"broadcast-dhcp-discover.timeout={timeout}s",
@@ -726,10 +726,10 @@ _SNMP_DESCR_RE = re.compile(r"(?:System description|sysDescr)\s*:\s*(.+)")
 
 
 def _parse_protocol_scripts(xml_text: str) -> dict:
-    """Estrae i risultati degli script NSE lanciati per-host (nbstat, snmp-*):
-    compaiono sotto <hostscript>, un fratello di <ports> dentro <host> - una
-    struttura diversa da quella gia' gestita in _parse_hosts() per gli script
-    di porta come http-title."""
+    """Extracts the results of the NSE scripts launched per-host (nbstat, snmp-*):
+    they appear under <hostscript>, a sibling of <ports> inside <host> - a
+    different structure from the one already handled in _parse_hosts() for port
+    scripts like http-title."""
     try:
         root = ET.fromstring(xml_text)
     except ET.ParseError:
@@ -754,12 +754,12 @@ def _parse_protocol_scripts(xml_text: str) -> dict:
 
 
 async def protocol_scan(ip: str, timeout: int = 12) -> dict:
-    """Interroga protocolli standard aggiuntivi, a bassissimo livello e aperti
-    (NetBIOS Name Service e SNMP, la stessa via usata da stampanti, switch
-    gestiti e NAS per farsi riconoscere), invece di API proprietarie legate a
-    una marca di router. Su molti dispositivi IoT/consumer non risponde nulla
-    (community SNMP disabilitata di default, NetBIOS non implementato): in tal
-    caso ritorna un dict vuoto senza errori, e' normale."""
+    """Queries additional standard protocols, very low-level and open
+    (NetBIOS Name Service and SNMP, the same way printers, managed switches
+    and NAS use to make themselves recognized), instead of proprietary APIs tied to
+    a router brand. On many IoT/consumer devices nothing answers
+    (SNMP community disabled by default, NetBIOS not implemented): in that
+    case it returns an empty dict without errors, which is normal."""
     xml_text = await _run_nmap([
         "-sU", "-p", "137,161", "-T4", "--script", "nbstat,snmp-sysdescr,snmp-info",
         "--host-timeout", f"{timeout}s", ip,
@@ -768,12 +768,12 @@ async def protocol_scan(ip: str, timeout: int = 12) -> dict:
 
 
 def format_scan_info(info: dict) -> dict:
-    """Trasforma il risultato di full_scan in campi pronti da mostrare in 'Info aggiuntive'."""
+    """Turns the result of full_scan into fields ready to be shown in 'Additional info'."""
     fields = {}
-    # Il testo che nmap mette quando la pagina non ha un <title> reale
-    # ("Site doesn't have a title (text/html; charset=...)") non e' un titolo,
-    # e' un placeholder: mostrarlo come se fosse informazione utile confonde
-    # piu' che aiutare. Meglio ometterlo del tutto.
+    # The text nmap puts when the page has no real <title>
+    # ("Site doesn't have a title (text/html; charset=...)") is not a title,
+    # it is a placeholder: showing it as if it were useful information confuses
+    # more than it helps. Better to omit it altogether.
     if info.get("http_title") and not is_useless_title(info["http_title"]):
         fields["http_title"] = info["http_title"]
     if info.get("http_server"):
@@ -806,7 +806,7 @@ def format_scan_info(info: dict) -> dict:
     if info.get("services_at"):
         fields["services_at"] = info["services_at"]
     if info.get("slow_scan"):
-        fields["slow_scan"] = True  # dispositivo lento: le prossime scansioni usano le porte mirate
+        fields["slow_scan"] = True  # slow device: the next scans use the targeted ports
 
     ports = []
     for p in info.get("ports", []):
@@ -825,13 +825,13 @@ def format_scan_info(info: dict) -> dict:
 
 WEB_SERVICE_NAMES = {"http", "https", "http-alt", "http-proxy", "https-alt", "www", "sun-answerbook"}
 
-# Categorie di servizio per colorare le "porte scansionate" in Info aggiuntive:
-# raggruppate per funzione (interfaccia web, accesso remoto, automazione/IoT,
-# infrastruttura di rete, condivisione file, database) invece che per singolo
-# protocollo - una porta O un nome di servizio riconosciuto in un gruppo bastano
-# a classificarla (il nome serve per porte non standard rilevate da -sV in
-# full_scan, il numero per deep_scan che non fa version detection). Tutto il
-# resto ricade in "other".
+# Service categories for coloring the "scanned ports" in Additional info:
+# grouped by function (web interface, remote access, automation/IoT,
+# network infrastructure, file sharing, databases) rather than by individual
+# protocol - a port OR a service name recognized in a group is enough
+# to classify it (the name is for non-standard ports detected by -sV in
+# full_scan, the number for deep_scan which does not do version detection). Everything
+# else falls into "other".
 _PORT_CATEGORY_RULES: list[tuple[str, set[int], set[str]]] = [
     ("media", {554, 1935, 7000, 8008, 8009, 1400, 8060, 32400, 8096, 8200},
      {"rtsp", "rtmp", "airplay", "airtunes", "dlna", "upnp"}),
@@ -860,10 +860,10 @@ def _categorize_port(port: int, service: str | None) -> str:
     return "other"
 
 
-EPHEMERAL_PORT_START = 49152  # range dinamico/privato IANA: mai un servizio stabile
+EPHEMERAL_PORT_START = 49152  # IANA dynamic/private range: never a stable service
 
 def _der_item(buf: bytes, pos: int) -> tuple[int, int, int]:
-    """(tag, inizio contenuto, fine contenuto) dell'elemento DER in buf[pos:]."""
+    """(tag, content start, content end) of the DER element in buf[pos:]."""
     tag, ln = buf[pos], buf[pos + 1]
     pos += 2
     if ln & 0x80:
@@ -878,17 +878,17 @@ _DER_NAME_OIDS = {bytes.fromhex("550403"): "commonName", bytes.fromhex("55040a")
 
 
 def cert_subject(der: bytes) -> str | None:
-    """Soggetto di un certificato X.509 (DER) nel formato di nmap ssl-cert:
-    "commonName=pve.local/organizationName=Proxmox Virtual Environment". Solo CN, O e OU."""
+    """Subject of an X.509 certificate (DER) in nmap's ssl-cert format:
+    "commonName=pve.local/organizationName=Proxmox Virtual Environment". Only CN, O and OU."""
     try:
         _, c, _ = _der_item(der, 0)                  # Certificate
         _, c, _ = _der_item(der, c)                  # TBSCertificate
         tag, s, e = _der_item(der, c)
-        if tag == 0xA0:                              # version [0] opzionale
+        if tag == 0xA0:                              # version [0] optional
             c = e
         for _ in range(4):                           # serial, signature, issuer, validity
             _, _, c = _der_item(der, c)
-        _, c, end = _der_item(der, c)                # subject (sequenza di RDN)
+        _, c, end = _der_item(der, c)                # subject (sequence of RDNs)
         parts = []
         while c < end:
             _, rs, re_ = _der_item(der, c)           # RDN (set)
@@ -905,8 +905,8 @@ def cert_subject(der: bytes) -> str | None:
 
 
 async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | None] | None:
-    """GET su TLS senza verifica (e' un dispositivo di casa con certificato proprio): risposta
-    e soggetto del certificato."""
+    """GET over TLS without verification (it is a home device with its own certificate): response
+    and certificate subject."""
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
@@ -931,22 +931,22 @@ async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | N
 
 
 async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | None:
-    """Prova diretta e minimale (una sola GET) che su quella porta risponde
-    davvero un server HTTP, invece di indovinare dal nome del servizio o dal
-    numero di porta. Usata in deep_scan/probe_and_classify, che non fanno
-    -sV/--script (troppo lenti li', vedi deep_scan): senza questo controllo, su
-    un host con molte porte aperte ma nessuna riconosciuta per nome (es. mqtt,
-    llmnr, servizi interni non standard) la vecchia euristica "prima porta non
-    palesemente non-web" finiva comunque per indovinare male (verificato: su una
-    VM Home Assistant con 14 porte aperte, la 8123 vera perdeva contro porte
-    piu' basse come 1884, mai riconosciute ma nemmeno escludibili a priori
-    senza un elenco infinito di eccezioni).
+    """Direct, minimal proof (a single GET) that an HTTP server really
+    answers on that port, instead of guessing from the service name or the
+    port number. Used in deep_scan/probe_and_classify, which do not run
+    -sV/--script (too slow there, see deep_scan): without this check, on
+    a host with many open ports but none recognized by name (e.g. mqtt,
+    llmnr, non-standard internal services) the old heuristic "first port not
+    obviously non-web" still ended up guessing wrong (verified: on a
+    Home Assistant VM with 14 open ports, the real 8123 lost against lower
+    ports like 1884, never recognized but not excludable a priori
+    without an endless list of exceptions).
 
-    Ritorna quanti byte di risposta sono arrivati (tetto 64KB, non serve
-    scaricare tutto) invece di un semplice si'/no: se piu' porte dello stesso
-    host risultano tutte HTTP vere (raro ma capitato: un'app principale +
-    una console interna piu' leggera), serve un modo per scegliere quale
-    proporre. None se la porta non parla HTTP."""
+    Returns how many response bytes arrived (cap 64KB, no need to
+    download everything) instead of a simple yes/no: if several ports of the same
+    host all turn out to be real HTTP (rare but it happened: a main app +
+    a lighter internal console), there must be a way to choose which one to
+    propose. None if the port does not speak HTTP."""
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
         writer.write(f"GET / HTTP/1.0\r\nHost: {ip}\r\n\r\n".encode())
@@ -958,8 +958,8 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
         except Exception:
             pass
         tls_subject = None
-        # Una porta TLS risponde male al testo in chiaro (niente HTTP, o un errore 4xx/5xx): si
-        # riprova su TLS, da cui arrivano anche pagina, titolo e certificato.
+        # A TLS port answers plain text badly (no HTTP, or a 4xx/5xx error): we
+        # retry over TLS, which also provides page, title and certificate.
         head0 = data.partition(b"\r\n\r\n")[0].lower()
         plain_ok = data.startswith(b"HTTP/") and (data[9:10] == b"2" or (data[9:10] == b"3" and b"location: https:" not in head0))
         if not plain_ok:
@@ -968,10 +968,10 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
                 data, tls_subject = tls
             elif not data.startswith(b"HTTP/"):
                 return None
-        # La risposta e' gia' qui: oltre alla dimensione si leggono, quasi
-        # gratis, l'intestazione Server e il titolo della pagina. Dicono cosa
-        # gira davvero su quella porta (es. "pve-api-daemon" = Proxmox) molto
-        # meglio del solo prefisso MAC della scheda di rete.
+        # The response is already here: besides the size we read, almost
+        # for free, the Server header and the page title. They say what
+        # is really running on that port (e.g. "pve-api-daemon" = Proxmox) much
+        # better than the MAC prefix of the network card alone.
         head, _, body = data.partition(b"\r\n\r\n")
         server = re.search(rb"\r\nServer:[ \t]*([^\r\n]+)", head, re.IGNORECASE)
         title = re.search(rb"<title[^>]*>(.*?)</title>", body, re.IGNORECASE | re.DOTALL)
@@ -986,11 +986,11 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
 
 
 async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
-    """Marca in-place (chiave 'http_body_size') ogni porta stabile su cui
-    risponde davvero un server HTTP. Tutte le porte in parallelo: il costo e'
-    quello del piu' lento singolo controllo (max ~1.5s), non la somma."""
-    # Anche le porte su cui nmap ha gia' letto un titolo: la GET serve a leggere
-    # l'intestazione Server, che nmap non ci da'.
+    """Marks in place (key 'http_body_size') every stable port on which
+    an HTTP server really answers. All ports in parallel: the cost is
+    that of the slowest single check (max ~1.5s), not the sum."""
+    # Also the ports on which nmap already read a title: the GET is needed to read
+    # the Server header, which nmap does not give us.
     stable_ports = [p for p in ports if p["port"] < EPHEMERAL_PORT_START]
     if not stable_ports:
         return
@@ -1005,45 +1005,45 @@ async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
 
 
 def _guess_port(ports: list[dict]) -> int:
-    """Sceglie la porta piu' probabile per l'interfaccia web del dispositivo.
+    """Picks the most likely port for the device's web interface.
 
-    Non tutti i servizi girano sulla 80 (es. Home Assistant sulla 8123): si
-    sceglie in base alle prove, in ordine: una porta che ha risposto davvero in
-    HTTP, una il cui servizio e' riconosciuto come web, la 80 se aperta; senza
-    prove resta la 80. L'utente puo' comunque correggerla nel pop-up di conferma.
+    Not all services run on 80 (e.g. Home Assistant on 8123): the choice
+    is based on evidence, in order: a port that really answered over
+    HTTP, one whose service is recognized as web, 80 if open; without
+    evidence it stays 80. The user can still correct it in the confirmation pop-up.
 
-    Le porte effimere (>= 49152, range dinamico IANA) sono escluse a priori: non
-    sono mai un servizio stabile, solo una porta aperta per caso nell'istante
-    dello scan (tipico di telefoni). Usarle come "porta di riferimento" dava un
-    link che smette di funzionare al prossimo giro - verificato su un iPhone
-    a cui era stata assegnata la 49152 solo perche' l'unica trovata aperta.
+    Ephemeral ports (>= 49152, IANA dynamic range) are excluded a priori: they
+    are never a stable service, just a port open by chance at the instant
+    of the scan (typical of phones). Using them as the "reference port" gave a
+    link that stops working on the next round - verified on an iPhone
+    that was assigned 49152 only because it was the only open port found.
     """
     stable_ports = [p for p in ports if p["port"] < EPHEMERAL_PORT_START]
 
-    # Prova piu' forte di tutte: nmap ha davvero ottenuto una pagina HTML con
-    # titolo da quella porta, non e' solo un'ipotesi sul nome del servizio.
-    # Risolve il caso di una VM Home Assistant dove la 80 era aperta (per
-    # qualunque altro motivo) ma senza servire nulla di reale, mentre la vera
-    # interfaccia era sulla 8123 - la regola "preferisci sempre la 80" sotto
-    # la sceglieva comunque per prima, per convenzione, scartando quella giusta.
-    # http_body_size viene da _confirm_http_ports: una GET diretta, non
-    # un'ipotesi. Tra piu' porte confermate come HTTP vero (raro: un
-    # dispositivo con due interfacce web reali, es. un'app principale + una
-    # console interna) vince quella con piu' contenuto: un frontend completo
-    # e' quasi sempre piu' "sostanzioso" di una pagina di servizio interna -
-    # verificato su Home Assistant (frontend 8123: 8.9KB, Supervisor Observer
-    # 4357: 1.1KB) e su un host con InfluxDB (8086: 19 byte, la vera app sulla
-    # 3000: 63KB). Non e' una garanzia, solo una convenzione ragionevole;
-    # resta comunque correggibile a mano.
+    # Strongest proof of all: nmap really obtained an HTML page with a
+    # title from that port, not just a guess from the service name.
+    # It solves the case of a Home Assistant VM where 80 was open (for
+    # whatever other reason) but serving nothing real, while the real
+    # interface was on 8123 - the "always prefer 80" rule below
+    # would pick it first anyway, by convention, discarding the right one.
+    # http_body_size comes from _confirm_http_ports: a direct GET, not
+    # a guess. Among several ports confirmed as real HTTP (rare: a
+    # device with two real web interfaces, e.g. a main app + an internal
+    # console) the one with more content wins: a full frontend
+    # is almost always more "substantial" than an internal service page -
+    # verified on Home Assistant (frontend 8123: 8.9KB, Supervisor Observer
+    # 4357: 1.1KB) and on a host with InfluxDB (8086: 19 bytes, the real app on
+    # 3000: 63KB). It is not a guarantee, just a reasonable convention;
+    # it can still be corrected by hand.
     confirmed = [p for p in stable_ports if p.get("has_http_title") or p.get("http_body_size")]
     if confirmed:
-        # Se la 80 o la 443 sono tra le porte confermate, vincono comunque
-        # loro prima di guardare la dimensione della risposta: sono la
-        # convenzione talmente diffusa che l'utente si aspetta di trovarci
-        # l'interfaccia principale, anche quando un servizio secondario sulla
-        # stessa macchina risponde con una pagina piu' "pesante" (verificato:
-        # un router con MiniDLNA sulla 8200 - risposta piu' grande - vinceva
-        # sulla vera interfaccia di amministrazione, che sta sulla 80).
+        # If 80 or 443 are among the confirmed ports, they win anyway
+        # before looking at the response size: they are such a widespread
+        # convention that the user expects to find the main interface there,
+        # even when a secondary service on the
+        # same machine answers with a "heavier" page (verified:
+        # a router with MiniDLNA on 8200 - larger response - was winning
+        # over the real administration interface, which is on 80).
         for p in confirmed:
             if p["port"] in (80, 443):
                 return p["port"]
@@ -1054,17 +1054,17 @@ def _guess_port(ports: list[dict]) -> int:
     if any(p["port"] == 80 for p in stable_ports):
         return 80
 
-    # Nessuna prova che una porta sia web (ne' risposta HTTP, ne' servizio
-    # riconosciuto): non se ne inventa una. Un telefono o una stampante senza
-    # interfaccia web non hanno una "porta giusta": resta la 80 di convenzione,
-    # correggibile a mano. Le interfacce su porte non standard si trovano con la
-    # conferma HTTP (_confirm_http_ports), non indovinando dal numero.
+    # No proof that a port is web (neither an HTTP response nor a recognized
+    # service): we do not invent one. A phone or a printer without a web
+    # interface has no "right port": 80 stays by convention,
+    # correctable by hand. Interfaces on non-standard ports are found with the
+    # HTTP confirmation (_confirm_http_ports), not by guessing from the number.
     return 80
 
 
 def web_identity(ports: list[dict]) -> dict:
-    """Server e titolo letti dalla porta web scelta come predefinita (se la GET
-    di conferma li ha trovati): sono la prova migliore di cosa e' il dispositivo."""
+    """Server and title read from the web port chosen as the default (if the confirmation
+    GET found them): they are the best proof of what the device is."""
     chosen = _guess_port(ports)
     for p in ports:
         if p["port"] == chosen and p.get("http_body_size"):

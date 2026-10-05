@@ -2,9 +2,9 @@ import httpx
 
 
 async def battery_probe(ip: str, port: int = 80) -> dict:
-    """Shelly di seconda generazione (API RPC): {"battery": bool, "level": %}. Il
-    componente "devicepower:0" di Shelly.GetStatus esiste solo sui modelli a
-    batteria (H&T Gen3, sensori Plus...). {} se non risponde come un Gen2+."""
+    """Second-generation Shelly (RPC API): {"battery": bool, "level": %}. The
+    "devicepower:0" component of Shelly.GetStatus exists only on battery
+    models (H&T Gen3, Plus sensors...). {} if it does not answer like a Gen2+."""
     try:
         async with httpx.AsyncClient(timeout=3) as client:
             status = (await client.get(f"http://{ip}:{port}/rpc/Shelly.GetStatus")).json()

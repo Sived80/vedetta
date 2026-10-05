@@ -1,5 +1,5 @@
-"""Verifica la regola generica del titolo pagina web (senza dipendenze extra).
-Esecuzione dalla cartella DASHBOARD:  python tests/check_titles.py"""
+"""Check the generic web page title rule (no extra dependencies).
+Run from the DASHBOARD folder:  python tests/check_titles.py"""
 import os
 import sys
 
@@ -12,8 +12,8 @@ def dev(i, title):
     return {"id": f"d{i}", "scan_info": {"http_title": title}}
 
 
-# Dispositivi simulati: i titoli generici compaiono su piu' host (anche con
-# maiuscole/spazi diversi), quelli identificativi su uno solo.
+# Simulated devices: generic titles appear on several hosts (even with
+# different capitalization/spacing), identifying ones on a single host.
 DEVICES = [
     dev(1, "Login"), dev(2, "login "), dev(3, "Login"),
     dev(4, "Index of /"), dev(5, "Index  of /"),

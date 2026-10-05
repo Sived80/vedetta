@@ -8,9 +8,9 @@ from .state import state
 
 
 def _port_numbers(ports: list[dict] | None) -> set[int]:
-    """Numeri di porta da una lista salvata (le etichette sono "80 · http" o
-    solo "18555"). Le porte effimere (49152+) sono escluse: compaiono e
-    spariscono a caso e genererebbero avvisi a ogni scansione."""
+    """Port numbers from a saved list (the labels are "80 · http" or
+    just "18555"). Ephemeral ports (49152+) are excluded: they appear and
+    disappear at random and would generate alerts on every scan."""
     numbers = set()
     for p in ports or []:
         head = str(p.get("label", "")).split(" ")[0]
@@ -20,19 +20,19 @@ def _port_numbers(ports: list[dict] | None) -> set[int]:
 
 
 def diff_ports(old_ports: list[dict] | None, new_ports: list[dict] | None) -> tuple[list[int], list[int]]:
-    """(porte nuove, porte sparite) tra due scansioni successive."""
+    """(new ports, vanished ports) between two consecutive scans."""
     old, new = _port_numbers(old_ports), _port_numbers(new_ports)
     return sorted(new - old), sorted(old - new)
 
 
 FULL_PORTS_EVERY_S = 7 * 86400
 _bg_tasks: dict[str, asyncio.Task] = {}
-_BG_NMAP_SEM = asyncio.Semaphore(1)   # una sola scansione completa in background alla volta
+_BG_NMAP_SEM = asyncio.Semaphore(1)   # only one full background scan at a time
 _FAST_SET = {int(p) for p in scanner.FAST_PORTS.split(",")}
 
 
 def _merge_ports(old: list[dict] | None, new: list[dict] | None) -> list[dict]:
-    """Unione per numero di porta (la voce nuova prevale)."""
+    """Union by port number (the new entry wins)."""
     def num(p):
         head = str(p.get("label", "")).split(" ")[0]
         return int(head) if head.isdigit() else None
@@ -42,10 +42,10 @@ def _merge_ports(old: list[dict] | None, new: list[dict] | None) -> list[dict]:
 
 
 def schedule_full_ports(device: dict) -> None:
-    """Scansione di tutte le porte in BACKGROUND per un dispositivo lento: la ricerca in
-    primo piano e' gia' finita con le porte mirate; questa gira dopo, a ritmo cauto (-T3),
-    una alla volta, e al termine aggiunge le porte in piu'. Se il servizio si riavvia
-    si perde: la prossima ricerca approfondita la rilancia."""
+    """Scan of all the ports in the BACKGROUND for a slow device: the foreground search
+    has already finished with the targeted ports; this one runs afterwards, at a cautious pace (-T3),
+    one at a time, and when done adds the extra ports. If the service restarts
+    it is lost: the next deep search relaunches it."""
     ip = device["ip"]
     if ip in _bg_tasks and not _bg_tasks[ip].done():
         return
@@ -70,8 +70,8 @@ async def _full_ports_background(device_id: str, ip: str) -> None:
         before = len(info.get("ports") or [])
         info["ports"] = _merge_ports(info.get("ports"), found)
         info["full_ports_at"] = time.time()
-        # Seconda fase: servizio e sistema operativo SOLO sulle porte aperte trovate (poche): la
-        # scansione completa non li legge, e su un dispositivo lento -sV sull'intero intervallo scade.
+        # Second phase: service and operating system ONLY on the open ports found (few): the
+        # full scan does not read them, and on a slow device -sV over the whole range times out.
         try:
             open_nums = [str(n) for n in sorted(_port_numbers(info["ports"]))][:40]
             if open_nums:
@@ -87,7 +87,7 @@ async def _full_ports_background(device_id: str, ip: str) -> None:
             raise
         except Exception:
             logger.exception("%s: riconoscimento dei servizi in background fallito", ip)
-        info["services_at"] = time.time()   # tentato: non si ripete a ogni ricerca, solo con le porte complete
+        info["services_at"] = time.time()   # attempted: not repeated on every search, only with the full ports
         devices_config.update_scan_info(device_id, info)
         await state.refresh_device(device_id, force=True)
         added = len(info["ports"]) - before
@@ -100,10 +100,10 @@ async def _full_ports_background(device_id: str, ip: str) -> None:
 
 
 async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
-    """Scansione approfondita (profilo deep) di un dispositivo: salva il
-    risultato (con data e storico), confronta le porte con la scansione
-    precedente e aggiorna la pagina. Usata sia dal pulsante sia dalla
-    manutenzione notturna. batch = pipeline.prepare_batch("deep", ips)."""
+    """Deep scan (deep profile) of a device: saves the
+    result (with date and history), compares the ports with the previous
+    scan and updates the page. Used both by the button and by the
+    nightly maintenance. batch = pipeline.prepare_batch("deep", ips)."""
     ip = device["ip"]
     label = f"{ip} ({device.get('name') or ip})"
     started = time.monotonic()
@@ -113,8 +113,8 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
     elapsed = time.monotonic() - started
 
     if not fields:
-        # Non si sovrascrive una scansione vecchia ma buona con un risultato
-        # vuoto (host momentaneamente irraggiungibile o troppo filtrato).
+        # An old but good scan is not overwritten with an empty result
+        # (host momentarily unreachable or too filtered).
         logger.warning("%s scansione completata senza alcun risultato utile (%.0fs), dati precedenti mantenuti", label, elapsed)
         return {}
 
@@ -122,8 +122,8 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
     now = time.time()
     fields["scanned_at"] = now
     if info.get("slow_scan"):
-        # Dispositivo lento: la scansione in primo piano copre solo le porte mirate. Le porte
-        # fuori da quell'elenco (trovate dalla scansione completa in background) si tengono.
+        # Slow device: the foreground scan only covers the targeted ports. The ports
+        # outside that list (found by the full background scan) are kept.
         keep = [p for p in previous.get("ports") or []
                 if str(p.get("label", "")).split(" ")[0].isdigit() and int(str(p["label"]).split(" ")[0]) not in _FAST_SET]
         if keep:
@@ -160,7 +160,7 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
 
     logger.info("%s scansionato in %.0fs", label, elapsed)
     await state.refresh_device(device["id"], force=True)
-    # Dispositivo lento: la scansione completa delle porte prosegue in background.
+    # Slow device: the full port scan continues in the background.
     if info.get("slow_scan") and (now - float(previous.get("full_ports_at") or 0) > FULL_PORTS_EVERY_S
                                   or not previous.get("services_at")):
         schedule_full_ports(device)

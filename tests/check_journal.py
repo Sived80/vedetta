@@ -1,4 +1,4 @@
-"""Registro eventi a livelli e annullamento delle ricerche associative."""
+"""Tiered event log and cancellation of the associative searches."""
 import asyncio
 import os
 import pathlib
@@ -16,7 +16,7 @@ journal.add("detail", "journal.quick", icon="magnify", seen=20, new=2)
 assert [e["key"] for e in journal.entries("normal", 10)] == ["journal.added"]
 assert [e["key"] for e in journal.entries("detail", 10)] == ["journal.quick", "journal.added"]
 assert journal.entries("min", 10) == []
-# Rilettura dal file dopo un riavvio.
+# Re-read from the file after a restart.
 journal._entries.clear()
 journal._loaded = False
 assert len(journal.entries("detail", 10)) == 2

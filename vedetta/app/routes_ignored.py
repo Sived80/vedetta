@@ -1,4 +1,4 @@
-"""API dei dispositivi ignorati."""
+"""API of the ignored devices."""
 import asyncio
 
 from fastapi import APIRouter, HTTPException, Request
@@ -38,7 +38,7 @@ async def api_ignored_add(request: Request):
 
 @router.post("/api/ignored/hosts")
 async def api_ignored_hosts(request: Request):
-    """Ignora dispositivi trovati da una ricerca: body {"hosts":[{ip, mac, hostname}]}."""
+    """Ignore devices found by a search: body {"hosts":[{ip, mac, hostname}]}."""
     body = await _json(request)
     items = await asyncio.to_thread(blocklist.list_items)
     for h in body.get("hosts", []) if isinstance(body.get("hosts"), list) else []:
@@ -56,6 +56,6 @@ async def api_ignored_remove(item_id: str, request: Request):
     if not await asyncio.to_thread(blocklist.remove, item_id):
         raise HTTPException(404, i18n.t("ignored.error.not_found"))
     logger.info("Dispositivo ignorato ripristinato: %s", item_id)
-    from . import journal  # tardivo
+    from . import journal  # late import
     journal.add("normal", "journal.unignored", icon="eye-off", name=item_id)
     return {"items": await asyncio.to_thread(blocklist.list_items)}

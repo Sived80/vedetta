@@ -1,19 +1,19 @@
-"""Chi fa cosa nella rete: gateway, server DHCP, server DNS, router, access point,
-ripetitore Wi-Fi, e quali client passano da un ripetitore.
+"""Who does what on the network: gateway, DHCP server, DNS server, router, access point,
+Wi-Fi repeater, and which clients go through a repeater.
 
-Fonti (solo protocolli standard, nessuna API di produttore):
-  gateway   percorso predefinito del sistema (/proc/net/route)
-  dhcp      DHCP DISCOVER di prova (offerta mai accettata) e opzione 54 (Server
-            Identifier) letta dall'ascolto DHCP passivo (dhcp.py)
-  dns       host della LAN che rispondono a una query DNS standard (UDP 53)
-  router/ap/repeater  tipo di dispositivo dichiarato via UPnP (deviceType:
-            InternetGatewayDevice, WLANAccessPointDevice, WFADevice) o nome/modello
-            dichiarato ("Repeater", "Extender")
-  via       stesso MAC su piu' IP nella tabella ARP: un ripetitore che non fa WDS
-            "presta" il proprio MAC ai client collegati a lui (MAC translation). Il
-            proprietario del MAC e' l'IP che si dichiara ripetitore/AP; se nessuno lo
-            fa, il ripetitore resta "non identificato".
-Ogni ruolo porta la sua fonte: nessun ruolo viene dedotto senza una di queste prove."""
+Sources (standard protocols only, no vendor API):
+  gateway   system default route (/proc/net/route)
+  dhcp      test DHCP DISCOVER (offer never accepted) and option 54 (Server
+            Identifier) read from passive DHCP listening (dhcp.py)
+  dns       LAN hosts that answer a standard DNS query (UDP 53)
+  router/ap/repeater  device type declared via UPnP (deviceType:
+            InternetGatewayDevice, WLANAccessPointDevice, WFADevice) or declared
+            name/model ("Repeater", "Extender")
+  via       same MAC on multiple IPs in the ARP table: a repeater that does not do WDS
+            "lends" its own MAC to the clients connected to it (MAC translation). The
+            owner of the MAC is the IP that declares itself repeater/AP; if nobody
+            does, the repeater remains "unidentified".
+Each role carries its source: no role is inferred without one of these proofs."""
 import asyncio
 import ipaddress
 import re
@@ -42,7 +42,7 @@ _on_alert = None
 
 def compute(*, gateway: str | None, dhcp_servers, dns_servers, upnp: dict[str, dict], arp: dict[str, dict],
             offers: list[dict] | None = None) -> dict:
-    """Pura: dalle prove raccolte ai ruoli per IP, con la fonte di ciascuno."""
+    """Pure: from the collected evidence to the roles per IP, with the source of each."""
     by_ip: dict[str, dict[str, str]] = {}
 
     def add(ip, role, source):
@@ -71,7 +71,7 @@ def compute(*, gateway: str | None, dhcp_servers, dns_servers, upnp: dict[str, d
         label = info.get("name") or info.get("model")
         if label:
             names[ip] = label
-    # Stesso MAC su piu' IP: client dietro un ripetitore con MAC translation.
+    # Same MAC on multiple IPs: clients behind a repeater with MAC translation.
     groups: dict[str, list[str]] = {}
     for ip, host in arp.items():
         mac = normalize_mac(host.get("mac"))
@@ -90,7 +90,7 @@ def compute(*, gateway: str | None, dhcp_servers, dns_servers, upnp: dict[str, d
             add(owner, "repeater", by_ip[owner].get("repeater") or by_ip[owner].get("ap") or "arp")
     ordered = {ip: {r: roles[r] for r in ROLE_ORDER if r in roles} for ip, roles in by_ip.items()}
     types = {ip: list(info.get("types") or []) for ip, info in upnp.items() if info.get("types")}
-    # Cio' che i server DHCP distribuiscono ai client (una voce per server).
+    # What the DHCP servers hand out to the clients (one entry per server).
     dhcp_cfg = [{k: o[k] for k in ("server", "router", "dns", "domain", "lease", "netmask") if o.get(k)} for o in offers or []]
     return {"by_ip": ordered, "via": via, "names": names, "types": types, "dhcp": dhcp_cfg}
 
@@ -109,13 +109,13 @@ def roles_for(ip: str | None) -> list[str]:
 
 
 def upnp_types(ip: str | None) -> list[str]:
-    """Tipi di dispositivo UPnP dichiarati da quell'IP (es. MediaRenderer, dial)."""
+    """UPnP device types declared by that IP (e.g. MediaRenderer, dial)."""
     return list((_state.get("types") or {}).get(ip or "") or [])
 
 
-# ------------------------------------------------------------------ raccolta
+# ------------------------------------------------------------------ collection
 def _dns_query(qid: int) -> bytes:
-    """Query DNS standard (RFC 1035): A per example.com, ricorsione richiesta."""
+    """Standard DNS query (RFC 1035): A for example.com, recursion desired."""
     import struct
     qname = b"".join(bytes([len(p)]) + p for p in (b"example", b"com")) + b"\x00"
     return struct.pack(">HHHHHH", qid, 0x0100, 1, 0, 0, 0) + qname + struct.pack(">HH", 1, 1)
@@ -127,8 +127,8 @@ class _DnsReply(asyncio.DatagramProtocol):
         self.ok = asyncio.get_running_loop().create_future()
 
     def datagram_received(self, data: bytes, addr) -> None:
-        # Qualunque risposta (anche NXDOMAIN o REFUSED) con lo stesso id e il bit QR
-        # prova che su quell'IP risponde un server DNS.
+        # Any reply (even NXDOMAIN or REFUSED) with the same id and the QR bit
+        # proves that a DNS server answers on that IP.
         if len(data) >= 12 and int.from_bytes(data[:2], "big") == self.qid and data[2] & 0x80 and not self.ok.done():
             self.ok.set_result(True)
 
@@ -155,14 +155,14 @@ async def answers_dns(ip: str, timeout: float = 1.0) -> bool:
 
 
 async def dns_servers(ips) -> list[str]:
-    """Gli IP che rispondono davvero a una query DNS (UDP 53)."""
+    """The IPs that actually answer a DNS query (UDP 53)."""
     ips = sorted(set(ips))
     results = await asyncio.gather(*(answers_dns(ip) for ip in ips), return_exceptions=True)
     return [ip for ip, ok in zip(ips, results) if ok is True]
 
 
 async def refresh(state) -> None:
-    from .netutil import get_local_network  # tardivo: evita cicli all'import
+    from .netutil import get_local_network  # late import: avoids cycles at import time
     try:
         _, own_ip = await get_local_network()
     except Exception:
@@ -241,7 +241,7 @@ def _is_ipv4(value: str) -> bool:
 
 
 async def _loop(state) -> None:
-    await asyncio.sleep(20)  # dopo il primo ciclo di controllo (tabella ARP pronta)
+    await asyncio.sleep(20)  # after the first check cycle (ARP table ready)
     while True:
         try:
             await refresh(state)

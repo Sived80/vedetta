@@ -1,4 +1,4 @@
-"""Endpoint di debug: perche' un dispositivo ha quel tipo, nome e marca."""
+"""Debug endpoint: why a device has that type, name and brand."""
 import asyncio
 import os
 import sys
@@ -29,14 +29,14 @@ assert any(c["source"] == "web" for c in out["name"]["candidates"]) or out["name
 assert out["mobile"]["is_mobile"] is False and set(out) >= {"type", "name", "brand", "mobile", "dhcp", "roles", "scan", "wol"}
 print("TUTTO OK")
 
-# ---- esportazione: zip con dati e stato, senza credenziali
+# ---- export: zip with data and state, without credentials
 import io, json, sqlite3, zipfile  # noqa: E402
 from app import export  # noqa: E402
 
 data_dir = Path(tempfile.mkdtemp())
 (data_dir / "settings.json").write_text(json.dumps({"poll_interval": 30, "mqtt_user": "u", "mqtt_password": "SEGRETO"}), encoding="utf-8")
 (data_dir / "devices.yaml").write_text("devices: []\n", encoding="utf-8")
-(data_dir / "api_token.json").write_text('{"x": 1}', encoding="utf-8")   # nome sospetto: escluso
+(data_dir / "api_token.json").write_text('{"x": 1}', encoding="utf-8")   # suspicious name: excluded
 (data_dir / "journal.jsonl").write_bytes(b"x" * 10 + b"\n")
 con = sqlite3.connect(data_dir / "vedetta.db"); con.execute("create table t(a)"); con.execute("insert into t values (1)"); con.commit(); con.close()
 export.paths.DATA_DIR = data_dir

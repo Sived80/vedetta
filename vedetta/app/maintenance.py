@@ -15,8 +15,8 @@ STALE_DAYS = 7
 
 
 async def run_nightly() -> None:
-    """Riscansione dei dispositivi con dati piu' vecchi di STALE_DAYS (o mai
-    scansionati), uno alla volta per non contendere la CPU del container."""
+    """Rescan devices with data older than STALE_DAYS (or never
+    scanned), one at a time so as not to compete for the container's CPU."""
     cutoff = time.time() - STALE_DAYS * 86400
     stale = [
         d for d in devices_config.load_devices()
@@ -27,7 +27,7 @@ async def run_nightly() -> None:
     logger.info("Manutenzione notturna: %d dispositivi da riscansionare", len(stale))
 
     if stale:
-        # Funzioni di lotto del profilo deep (mDNS, SSDP...) una volta sola.
+        # Batch functions of the deep profile (mDNS, SSDP...) run only once.
         batch = await pipeline.prepare_batch("deep", [d["ip"] for d in stale])
         for device in stale:
             try:
@@ -38,7 +38,7 @@ async def run_nightly() -> None:
     removed = await asyncio.to_thread(history.prune)
     logger.info("Manutenzione notturna completata (%d eventi vecchi rimossi dallo storico)", removed)
 
-    # Database prefissi MAC: se l'aggiornamento automatico e' attivo, ogni 30 giorni.
+    # MAC prefix database: if automatic update is enabled, every 30 days.
     try:
         from . import oui_update
         if await asyncio.to_thread(oui_update.auto_update_enabled) and await asyncio.to_thread(oui_update.is_due):
@@ -57,7 +57,7 @@ async def nightly_loop() -> None:
             today = now.date().isoformat()
             if await asyncio.to_thread(history.meta_get, "last_nightly") == today:
                 continue
-            # Segnato prima di partire: un riavvio durante la notte non la rifa.
+            # Marked before starting: a restart during the night does not redo it.
             await asyncio.to_thread(history.meta_set, "last_nightly", today)
             await run_nightly()
         except asyncio.CancelledError:

@@ -1,7 +1,7 @@
-"""Nome e categoria di dispositivi reali (dati letti dalla rete il 2026-10-04): PC con firewall
-(nessuna porta), telecamera senza nome, Proxmox con certificato e pagina su TLS, TV via UPnP,
-termostato Tasmota. Nessuna regola per un apparecchio: contano marca, certificato, titolo,
-servizi e porte."""
+"""Name and category of real devices (data read from the network on 2026-10-04): PC with firewall
+(no ports), unnamed camera, Proxmox with certificate and page over TLS, TV via UPnP,
+Tasmota thermostat. No rule for a specific device: what counts are brand, certificate, title,
+services and ports."""
 import asyncio
 import os
 import sys
@@ -20,7 +20,7 @@ def p(label, confirmed=False, cat="other"):
 
 
 CASES = [
-    # (ip, mac, nome salvato, scan_info, nome atteso (sottostringa), categoria attesa)
+    # (ip, mac, saved name, scan_info, expected name (substring), expected category)
     ("10.0.0.117", "74:04:F1:00:00:B6", "MSI", {"mdns_name": "MSI", "slow_scan": True}, "MSI", "pc"),
     ("10.0.0.190", "1C:C3:16:00:00:AA", "10.0.0.190",
      {"http_title": "Login", "http_server": "webserver",
@@ -36,7 +36,7 @@ CASES = [
     ("10.0.0.113", "38:B8:00:00:00:A8", "SONY XR-55X92K",
      {"upnp_name": "SONY XR-55X92K", "upnp_manufacturer": "Sony", "upnp_model": "BRAVIA 4K VH21",
       "mdns_services": "_androidtvremote2._tcp, _airplay._tcp", "ports": [p("8443", cat="other")]}, "SONY", "media"),
-    # Home Assistant con AirCast: il proxy annuncia il nome di una TV Sony, ma non e' di questo computer
+    # Home Assistant with AirCast: the proxy announces the name of a Sony TV, but it is not this computer's
     ("10.0.0.100", "BC:24:11:00:00:01", "10.0.0.100",
      {"http_title": "Home Assistant", "mdns_name": "CCCCFE0000B7@SONY XR-55X92K+", "mdns_model": "aircast",
       "mdns_services": "_esphomebuilder._tcp, _home-assistant._tcp, _raop._tcp",
@@ -60,14 +60,14 @@ async def main():
 
 asyncio.run(main())
 
-# Telefono Android: l'mDNS annuncia un hostname casuale, il DHCP il nome vero ("Pixel-7").
+# Android phone: mDNS announces a random hostname, DHCP the real name ("Pixel-7").
 from app import naming  # noqa: E402
 assert naming.pick([("mdns", "Android_MGDZ1OUL"), ("dhcp", "Pixel-7")]) == ("Pixel-7", "dhcp")
-assert naming.pick([("mdns", "Android_MGDZ1OUL")]) == ("Android_MGDZ1OUL", "weak")   # meglio dell'IP
-assert naming.pick([("mdns", "Galaxy-S23"), ("dhcp", "x1")])[1] == "mdns"           # nome vero: resta
+assert naming.pick([("mdns", "Android_MGDZ1OUL")]) == ("Android_MGDZ1OUL", "weak")   # better than the IP
+assert naming.pick([("mdns", "Galaxy-S23"), ("dhcp", "x1")])[1] == "mdns"           # real name: it stays
 assert naming.is_better({"name": "Android_MGDZ1OUL", "ip": "1", "name_source": "weak"}, "dhcp")
 
-# Il telefono e' gia' salvato con l'hostname casuale: appena il DHCP da' il nome vero lo sostituisce.
+# The phone is already saved with the random hostname: as soon as DHCP gives the real name it replaces it.
 from app import dhcp  # noqa: E402
 dhcp.seen["0c:c4:13:00:00:b0"] = {"hostname": "Pixel-7"}
 phone = {"id": "ph", "name": "Android_1MRKG1M7", "name_source": "mdns", "ip": "10.0.0.108", "port": 80, "adapter": "generic",
@@ -75,29 +75,29 @@ phone = {"id": "ph", "name": "Android_1MRKG1M7", "name_source": "mdns", "ip": "1
 res = asyncio.run(probe.probe_device(phone))
 assert res["name"] == "Pixel-7" and res["auto_name"][:2] == ("Pixel-7", "dhcp"), (res["name"], res["auto_name"])
 assert naming.is_better({"name": "Android_1MRKG1M7", "ip": "x", "name_source": "mdns"}, "dhcp")
-assert not naming.is_better({"name": "Android_1MRKG1M7", "ip": "x", "name_source": "user"}, "dhcp")  # scelto a mano
+assert not naming.is_better({"name": "Android_1MRKG1M7", "ip": "x", "name_source": "user"}, "dhcp")  # chosen by hand
 assert not naming.is_better({"name": "Mio telefono", "ip": "x", "name_source": "mdns"}, "dhcp")
 
-# Fire TV Stick: l'hostname e' solo "Android" (parola di piattaforma, non un nome): MAC Amazon + nome mDNS
-# amzn concordano sulla marca, il servizio dice il tipo -> nome predefinito "marca + tipo".
+# Fire TV Stick: the hostname is just "Android" (platform word, not a name): Amazon MAC + mDNS name
+# amzn agree on the brand, the service says the type -> default name "brand + type".
 fire = {"id": "ft", "name": "Android", "name_source": "dhcp", "ip": "10.0.0.103", "port": 80, "adapter": "generic",
         "scan_info": {"mdns_name": "amzn.dmgr:37F86A463D38E919EF206906B559C", "mdns_services": "_amzn-wplay._tcp",
                       "ports": [p("40027 · Amazon FireTV Stick", True)]}, "last_mac": "F8:54:B8:00:00:AB"}
 res = asyncio.run(probe.probe_device(fire))
 assert res["name"] == "Amazon streaming" and res["brand_evidence"] == "confirmed", (res["name"], res["brand_evidence"])
 res = asyncio.run(probe.probe_device({**fire, "name_source": "user"}))
-assert res["name"] == "Android"   # scelto a mano: mai cambiato
+assert res["name"] == "Android"   # chosen by hand: never changed
 
-# Zigbee/Matter gateway (Tasmota): un ponte di rete, non un apparecchio qualsiasi -> Apparati di rete.
+# Zigbee/Matter gateway (Tasmota): a network bridge, not just any device -> Network devices.
 gw = {"id": "gw", "name": "Tasmota_gateway_zigbee", "name_source": "dhcp", "ip": "10.0.0.101", "port": 80, "adapter": "generic",
       "scan_info": {"http_server": "Tasmota/13.0.0 (ESP8266EX)", "ports": [p("80 · http", cat="web")]}, "last_mac": "48:3F:DA:00:00:AE"}
 res = asyncio.run(probe.probe_device(gw))
 assert ha_data.infer_type(res) == "router", ha_data.type_scores(res)
-# il sistema operativo stimato da nmap non e' piu' un dato dei dispositivi
+# the operating system estimated by nmap is no longer a device datum
 assert "os" not in res["extra"] and not hasattr(naming, "os_name")
 
-# Dati di Home Assistant (registro agganciato per MAC): nome scelto dall'utente in HA, produttore, modello,
-# area e categoria dall'integrazione; sotto il nome scelto in Vedetta; i nomi tecnici non valgono.
+# Home Assistant data (registry matched by MAC): name chosen by the user in HA, manufacturer, model,
+# area and category from the integration; below the name chosen in Vedetta; technical names do not count.
 from app import ha_registry  # noqa: E402
 CARDS = {}
 ha_registry.lookup = lambda mac, ip=None: CARDS.get(str(mac or "").lower())
@@ -118,17 +118,17 @@ res = probe_ha("10.0.0.50", None, "B4:E8:42:00:00:A1", strip)
 assert res["name"] == "Strip RGB" and res["auto_name"][:2] == ("Strip RGB", "ha_user"), (res["name"], res["auto_name"])
 assert res["brand"] == "Zengge" and res["extra"]["ha_area"] == "Cameretta" and res["extra"]["ha_integration"] == "flux_led"
 assert ha_data.infer_type(res) == "iot" and ha_data.icon_for(res) == "led-strip-variant", (ha_data.infer_type(res), ha_data.icon_for(res))
-# nome tecnico di HA: si usa il titolo dell'integrazione ("Cancelletto"), mai "shelly1-8CAA..."
+# HA technical name: the integration title ("Cancelletto") is used, never "shelly1-8CAA..."
 sh = {"name": "shelly1-8CAAB50000A2", "name_by_user": False, "manufacturer": "Shelly", "model": "Shelly 1", "area": "Soggiorno",
       "domains": ["shelly"], "entry_titles": ["Cancelletto"], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "8C:AA:B5:00:00:A2", sh)
 assert res["name"] == "Cancelletto" and res["auto_name"][:2] == ("Cancelletto", "ha"), (res["name"], res["auto_name"])
-# il nome cambia in HA: la plancia lo segue (stesso peso, quindi serve la sostituzione forzata)
+# the name changes in HA: the dashboard follows it (same weight, so the forced replacement is needed)
 CARDS.clear(); CARDS["b4:e8:42:00:00:a1"] = {**strip, "name": "Strip LED camera"}
 res = asyncio.run(probe.probe_device({"id": "x", "name": "Strip RGB", "name_source": "ha_user", "ip": "10.0.0.50", "port": 80,
                                       "adapter": "generic", "scan_info": {}, "last_mac": "B4:E8:42:00:00:A1"}))
 assert res["name"] == "Strip LED camera" and res["auto_name"] == ("Strip LED camera", "ha_user", True), (res["name"], res["auto_name"])
-# in HA l'utente toglie il nome personale: resta il nome dell'integrazione; il nome scelto in Vedetta no
+# in HA the user removes the personal name: the integration name remains; the name chosen in Vedetta does not
 CARDS["b4:e8:42:00:00:a1"] = {**strip, "name": "Controller RGB", "name_by_user": False}
 res = asyncio.run(probe.probe_device({"id": "x", "name": "Strip RGB", "name_source": "ha_user", "ip": "10.0.0.50", "port": 80,
                                       "adapter": "generic", "scan_info": {}, "last_mac": "B4:E8:42:00:00:A1"}))
@@ -136,28 +136,28 @@ assert res["name"] == "Controller RGB" and res["auto_name"][1] == "ha", (res["na
 assert asyncio.run(probe.probe_device({"id": "x", "name": "Mio", "name_source": "user", "ip": "10.0.0.50", "port": 80, "adapter": "generic",
                                        "scan_info": {}, "last_mac": "B4:E8:42:00:00:A1"}))["name"] == "Mio"
 CARDS.clear()
-# nome scelto in Vedetta: mai cambiato
+# name chosen in Vedetta: never changed
 res = probe_ha("Mio nome", "user", "B4:E8:42:00:00:A1", strip)
 assert res["name"] == "Mio nome" and res["auto_name"] is None
-# nome automatico di una fonte piu' forte (mDNS 70) batte il nome HA di default (68), ma non quello scelto dall'utente in HA (95)
+# automatic name from a stronger source (mDNS 70) beats the default HA name (68), but not the one chosen by the user in HA (95)
 res = probe_ha("Salotto", "mdns", "8C:AA:B5:00:00:A2", sh)
 assert res["name"] == "Salotto"
 res = probe_ha("Salotto", "mdns", "B4:E8:42:00:00:A1", strip)
 assert res["name"] == "Strip RGB"
-# l'integrazione dichiara la categoria
+# the integration declares the category
 cam = {"name": "Camera giardino", "name_by_user": True, "manufacturer": "IPCAM", "model": "C6F0SoZ3", "area": "Giardino",
        "domains": ["onvif"], "entry_titles": [], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "00:AD:11:00:00:B1", cam)
 assert ha_data.infer_type(res) == "media" and ha_data.icon_for(res) == "cctv"
-# gateway Zigbee con integrazione Tasmota: la piattaforma (Tasmota) non decide, resta "apparato di rete"
+# Zigbee gateway with Tasmota integration: the platform (Tasmota) does not decide, it stays "network device"
 zb = {"name": "Gateway Zigbee", "name_by_user": True, "manufacturer": "Tasmota", "model": "Sonoff ZbBridge", "area": "Corridoio",
       "domains": ["tasmota"], "entry_titles": [], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "48:3F:DA:00:00:AE", zb)
 assert res["name"] == "Gateway Zigbee" and ha_data.infer_type(res) == "router", (res["name"], ha_data.type_scores(res))
-# integrazione specifica (cancello Shelly chiamato "Cancello"): resta smart-home
+# specific integration (Shelly gate called "Cancello"): stays smart-home
 CARDS.clear()
 
-# Server DNS senza nome (pagina di accesso "Login", MAC di una VM): il ruolo rilevato in rete da' il nome
+# DNS server with no name (login page "Login", MAC of a VM): the role detected on the network gives the name
 CARDS.clear()
 saved = roles.roles_for
 roles.roles_for = lambda ip: ["dns"] if ip == "10.0.0.2" else []
@@ -168,8 +168,8 @@ assert res["name"] == "Server DNS", res["name"]
 assert asyncio.run(probe.probe_device({**dns, "name": "AdGuard", "name_source": "user"}))["name"] == "AdGuard"
 roles.roles_for = saved
 
-# PlayStation 3 con webMAN: la pagina si intitola come il software ("wMAN MOD 1.47.45"), non e' il nome del
-# dispositivo; la classe DHCP dichiarata ("PS3") e il MAC Sony dicono cos'e'.
+# PlayStation 3 with webMAN: the page is titled like the software ("wMAN MOD 1.47.45"), not the name of the
+# device; the declared DHCP class ("PS3") and the Sony MAC say what it is.
 dhcp.seen["00:24:8d:00:00:b2"] = {"vendor_class": "PS3", "prl": "1,3,15,6"}
 assert naming.title_name("wMAN MOD 1.47.45") is None and naming.title_name("Pi-hole") == "Pi-hole"
 ps3 = {"id": "ps", "name": "wMAN MOD 1.47.45", "name_source": "web", "ip": "10.0.0.119", "port": 80, "adapter": "generic",
@@ -178,18 +178,18 @@ ps3 = {"id": "ps", "name": "wMAN MOD 1.47.45", "name_source": "web", "ip": "10.0
 res = asyncio.run(probe.probe_device(ps3))
 assert res["name"] == "Sony console" and ha_data.type_scores(res)["media"] >= 2 and ha_data.icon_for(res) == "gamepad-variant", (res["name"], ha_data.type_scores(res))
 
-# iPhone con indirizzo privato: nessun nome da nessuna fonte, solo la marca (dalla classe DHCP): "marca + tipo"
+# iPhone with private address: no name from any source, only the brand (from the DHCP class): "brand + type"
 dhcp.seen["42:4b:cd:00:00:a3"] = {"prl": "1,121,3,6,15,108,114,119,252"}
 ip_phone = {"id": "ip", "name": "10.0.0.112", "ip": "10.0.0.112", "port": 80, "adapter": "generic", "scan_info": {}, "last_mac": "42:4B:CD:00:00:A3"}
 res = asyncio.run(probe.probe_device(ip_phone))
 assert res["brand"] == "Apple" and res["name"] == "Apple mobile", (res["brand"], res["name"], res["is_mobile"])
-# il nome costruito dall'app non conta come indizio (non e' un telefono "perche' si chiama phone")
+# the name built by the app does not count as a clue (it is not a phone "because it is called phone")
 kinds_seen = {}
 ha_data.type_scores(res, None, kinds_seen)
 assert res["name_generated"] and "smartphone" not in kinds_seen, kinds_seen
-# un iPad e un iPhone sono indistinguibili dal solo DHCP: il nome non deve dire "telefono"
+# an iPad and an iPhone are indistinguishable from DHCP alone: the name must not say "phone"
 
-# Soggetto del certificato letto in puro Python (porte TLS non standard, es. 8006).
+# Certificate subject read in pure Python (non-standard TLS ports, e.g. 8006).
 import shutil, ssl, subprocess, tempfile  # noqa: E402
 from app import scanner  # noqa: E402
 if shutil.which("openssl"):

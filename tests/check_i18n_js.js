@@ -1,4 +1,4 @@
-// Verifica i18n dei file JS: node tests/check_i18n_js.js
+// i18n check of the JS files: node tests/check_i18n_js.js
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..", "vedetta", "app");
@@ -10,7 +10,7 @@ const fail = (m) => { console.log("ERRORE: " + m); errors++; };
 const ek = Object.keys(en).sort(), ik = Object.keys(it).sort();
 ek.filter((k) => !(k in it)).forEach((k) => fail("manca in it: " + k));
 ik.filter((k) => !(k in en)).forEach((k) => fail("manca in en: " + k));
-// segnaposto identici tra le lingue
+// identical placeholders across languages
 ek.forEach((k) => {
   if (!(k in it)) return;
   const ph = (s) => (s.match(/\{\w+\}/g) || []).sort().join(",");
@@ -24,7 +24,7 @@ for (const f of fs.readdirSync(jsDir).filter((x) => x.endsWith(".js"))) {
   const re = /(?:\bT|\bV\.t|Vedetta\.t)\(\s*["']([a-z0-9_.]+)["']/g;
   let m;
   while ((m = re.exec(src))) used.add(m[1]);
-  // chiavi passate con ternario (es. T(cond ? "a" : "b"))
+  // keys passed through a ternary (e.g. T(cond ? "a" : "b"))
   const re2 = /["'](js\.[a-z0-9_.]+)["']/g;
   while ((m = re2.exec(src))) used.add(m[1]);
   const bad = /Chiudi|Annulla|non riuscit|Salva|Elimina|Scansion|Dispositivo|Riprova|Aggiorn|Nessun|Impossibile|"it-IT"|"it"/;
@@ -37,7 +37,7 @@ for (const k of used) {
   const ok = (k in en && k in it) || (`${k}_one` in en && `${k}_other` in en && `${k}_one` in it && `${k}_other` in it);
   if (!ok) fail("chiave usata ma mancante: " + k);
 }
-// chiavi definite ma non usate (avviso)
+// keys defined but unused (warning)
 const base = (k) => k.replace(/_(one|other)$/, "");
 ek.filter((k) => !used.has(k) && !used.has(base(k))).forEach((k) => console.log("avviso: chiave non usata: " + k));
 console.log(`chiavi en=${ek.length} it=${ik.length}, usate nei js=${used.size}, errori=${errors}`);

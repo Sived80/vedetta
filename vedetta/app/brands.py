@@ -1,28 +1,28 @@
-"""Marche dei dispositivi. Due livelli, come Fing/Fingerbank: il produttore del
-PREFISSO MAC (vendor: chi ha fatto la scheda/il chip) e la marca del PRODOTTO
-(brand). Un Bouffalo Lab o un Espressif e' un chip dentro un prodotto di altri,
-una scheda TP-Link puo' stare in un server, Proxmox genera i MAC delle VM: per
-questo "vendor_roles" classifica i produttori (component, virtual, dual, brand)
-e solo i brand veri valgono come marca del prodotto; per gli altri la marca
-resta sconosciuta finche' una fonte del dispositivo non la dice (resolve).
+"""Device brands. Two levels, like Fing/Fingerbank: the manufacturer of the MAC
+PREFIX (vendor: who made the board/chip) and the brand of the PRODUCT
+(brand). A Bouffalo Lab or an Espressif is a chip inside someone else's product,
+a TP-Link board can sit in a server, Proxmox generates the MACs of VMs: for
+this reason "vendor_roles" classifies manufacturers (component, virtual, dual, brand)
+and only real brands count as the product brand; for the others the brand
+stays unknown until a source on the device itself states it (resolve).
 
-Il registro IEEE da' il nome legale dell'azienda a cui
-e' stato assegnato il prefisso ("Hong Kong Bouffalo Lab Limited", "Flextronics
-Computing(Suzhou)Co.,Ltd."): per raggruppare e ordinare serve la marca che la
-gente riconosce. Metodo come negli scanner open source (scan-m0de, KillerScan):
-un elenco di nomi "amichevoli" sopra il registro, e le fonti piu' precise del
-dispositivo stesso (UPnP, nome, titolo web, impronta DHCP) che hanno la
-precedenza sul solo prefisso del MAC.
+The IEEE registry gives the legal name of the company the prefix
+was assigned to ("Hong Kong Bouffalo Lab Limited", "Flextronics
+Computing(Suzhou)Co.,Ltd."): to group and sort, the brand
+people recognise is needed. Method as in open source scanners (scan-m0de, KillerScan):
+a list of "friendly" names on top of the registry, and the more precise sources of the
+device itself (UPnP, name, web title, DHCP fingerprint) which take
+precedence over the MAC prefix alone.
 
-Le regole stanno in app/data/brands.json (fornite con l'app). Per aggiungerne o
-correggerne senza toccare il codice basta creare config/brands.json con le
-stesse chiavi: le regole li' vengono prima e un deploy non le cancella. Il file
-si rilegge da solo quando cambia.
+The rules live in app/data/brands.json (shipped with the app). To add or
+fix some without touching the code, just create config/brands.json with the
+same keys: the rules there come first and a deploy does not delete them. The file
+is re-read by itself when it changes.
 
-Le regole create dall'interfaccia stanno nello stesso file sotto "rules":
-[{"id", "kind": vendor|name|software, "text", "brand"}] (testo semplice, senza
-maiuscole). Nel file ci sono anche "oui_meta" e "auto_update" (aggiornamento
-del database dei prefissi MAC, vedi oui_update.py)."""
+Rules created from the interface live in the same file under "rules":
+[{"id", "kind": vendor|name|software, "text", "brand"}] (plain text, case-
+insensitive). The file also holds "oui_meta" and "auto_update" (update
+of the MAC prefix database, see oui_update.py)."""
 import json
 import logging
 import os
@@ -56,7 +56,7 @@ _lock = threading.Lock()
 
 
 def _valid_rules(user: dict) -> list[dict]:
-    """Regole da interfaccia ben formate (il file puo' essere stato toccato a mano)."""
+    """Well-formed interface rules (the file may have been edited by hand)."""
     out = []
     for rule in user.get("rules", []) if isinstance(user.get("rules"), list) else []:
         if (isinstance(rule, dict) and rule.get("kind") in KINDS and isinstance(rule.get("text"), str)
@@ -67,7 +67,7 @@ def _valid_rules(user: dict) -> list[dict]:
 
 
 def _write_user(data: dict) -> None:
-    """Scrittura atomica di config/brands.json (file temporaneo + os.replace)."""
+    """Atomic write of config/brands.json (temporary file + os.replace)."""
     _USER_PATH.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=_USER_PATH.parent, prefix=".brands-", suffix=".tmp")
     try:
@@ -78,11 +78,11 @@ def _write_user(data: dict) -> None:
         if os.path.exists(tmp):
             os.unlink(tmp)
         raise
-    _cache["stamp"] = None  # ricarica subito, senza aspettare la risoluzione dell'mtime
+    _cache["stamp"] = None  # reload immediately, without waiting for the mtime resolution
 
 
 def update_user(changes: dict) -> dict:
-    """Unisce le chiavi date nel file utente preservando tutte le altre."""
+    """Merges the given keys into the user file preserving all the others."""
     with _lock:
         data = _read(_USER_PATH)
         data.update(changes)
@@ -95,8 +95,8 @@ def list_rules() -> list[dict]:
 
 
 def add_rule(kind: str, text: str, brand: str) -> dict:
-    """Aggiunge la regola; se esiste gia' la coppia kind+testo ne sostituisce la
-    marca. Validazione: ValueError("kind"|"text"|"brand")."""
+    """Adds the rule; if the kind+text pair already exists it replaces its
+    brand. Validation: ValueError("kind"|"text"|"brand")."""
     text, brand = (text or "").strip(), (brand or "").strip()
     if kind not in KINDS:
         raise ValueError("kind")
@@ -113,7 +113,7 @@ def add_rule(kind: str, text: str, brand: str) -> dict:
                 break
         else:
             rules.append({"id": uuid.uuid4().hex[:8], "kind": kind, "text": text, "brand": brand})
-        for rule in rules:  # id mancanti (file modificato a mano)
+        for rule in rules:  # missing ids (file edited by hand)
             rule["id"] = rule["id"] or uuid.uuid4().hex[:8]
         data["rules"] = rules
         _write_user(data)
@@ -157,12 +157,12 @@ def _rules() -> dict:
     if _cache["stamp"] == stamp and _cache["rules"] is not None:
         return _cache["rules"]
     base, user = _read(_DEFAULTS_PATH), _read(_USER_PATH)
-    # Regole create dall'interfaccia ("rules"): testo semplice, mai regex.
+    # Rules created from the interface ("rules"): plain text, never regex.
     ui = {"vendor": [], "name": [], "software": []}
     for rule in _valid_rules(user):
         text = rule["text"].lower()
         ui[rule["kind"]].append((text if rule["kind"] == "vendor" else re.escape(text), rule["brand"]))
-    # Le regole dell'utente vanno prima: la prima che corrisponde vince.
+    # User rules come first: the first one that matches wins.
     rules = {
         "aliases": tuple((f.lower(), b) for f, b in ui["vendor"] + user.get("aliases", []) + base.get("aliases", [])),
         "name_hints": _compile(ui["name"] + user.get("name_hints", []) + base.get("name_hints", [])),
@@ -192,7 +192,7 @@ def _clean(name: str) -> str:
 
 
 def normalize_brand(name: str | None) -> str | None:
-    """Nome legale o dichiarato -> marca riconoscibile."""
+    """Legal or declared name -> recognisable brand."""
     if not name:
         return None
     low = name.lower()
@@ -203,8 +203,8 @@ def normalize_brand(name: str | None) -> str | None:
 
 
 def known_brand(name: str | None) -> str | None:
-    """Marca solo se il nome corrisponde a una voce della tabella dei nomi; i nomi
-    liberi (es. l'autore di un software) non contano."""
+    """Brand only if the name matches an entry in the names table; free
+    names (e.g. the author of a piece of software) do not count."""
     low = (name or "").lower()
     for fragment, brand in _rules()["aliases"]:
         if fragment in low:
@@ -216,12 +216,12 @@ ROLES = ("component", "virtual", "dual")
 
 
 def vendor_role(vendor: str | None) -> str | None:
-    """Ruolo del produttore del prefisso MAC (tabella "vendor_roles"): component
-    (chip/modulo/scheda: il prodotto e' di altri), virtual (scheda virtuale di un
-    hypervisor), dual (fa schede e prodotti finiti), brand (una marca vera).
-    None se non c'e' un produttore. Si guarda il nome GIA' normalizzato, cosi' una
-    regola dell'utente che rinomina il produttore (es. Bouffalo -> Tuya) ne cambia
-    anche il ruolo."""
+    """Role of the MAC prefix manufacturer ("vendor_roles" table): component
+    (chip/module/board: the product belongs to others), virtual (virtual board of a
+    hypervisor), dual (makes boards and finished products), brand (a real brand).
+    None if there is no manufacturer. The ALREADY normalised name is used, so a
+    user rule that renames the manufacturer (e.g. Bouffalo -> Tuya) changes
+    its role too."""
     if not vendor:
         return None
     low = vendor.lower()
@@ -233,15 +233,15 @@ def vendor_role(vendor: str | None) -> str | None:
 
 
 def is_bridge(model: str | None) -> bool:
-    """True se il modello mDNS e' un software proxy/bridge (data/brands.json, bridge_software)."""
+    """True if the mDNS model is a proxy/bridge software (data/brands.json, bridge_software)."""
     m = (model or "").strip().lower()
     return bool(m) and any(b in m for b in (_rules().get("bridge_software") or ()))
 
 
 def match_model(texts) -> str | None:
-    """Classe del modello annunciato (mobile | laptop | fixed) dalla tabella
-    "model_hints"; la prima classe che corrisponde a un testo qualsiasi vince,
-    con "fixed" controllata per prima (un Mac mini non e' un portatile)."""
+    """Class of the announced model (mobile | laptop | fixed) from the
+    "model_hints" table; the first class that matches any text wins,
+    with "fixed" checked first (a Mac mini is not a laptop)."""
     table = _rules()["model_hints"]
     for text in texts:
         low = (text or "").lower()
@@ -254,8 +254,8 @@ def match_model(texts) -> str | None:
 
 
 def battery_hint(texts) -> str | None:
-    """"yes"/"no" se un testo (modello, SNMP, titolo web) e' riconosciuto dalla
-    tabella "battery_hints" come apparecchio fisso a batteria (sensore, UPS)."""
+    """"yes"/"no" if a text (model, SNMP, web title) is recognised by the
+    "battery_hints" table as a fixed battery-powered device (sensor, UPS)."""
     for text in texts:
         low = (text or "").lower()
         if not low:
@@ -269,16 +269,16 @@ def battery_hint(texts) -> str | None:
 def resolve(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str | None = None,
             declared: list[str] | tuple = (), web_text: str | None = None, os_family: str | None = None,
             is_gateway: bool = False) -> dict:
-    """Marca del PRODOTTO con fonte e confidenza. Il prefisso MAC dice chi ha
-    fatto la scheda di rete, non la marca del prodotto (Fing e Fingerbank li
-    tengono separati: "vendor" della scheda, "brand/device" del prodotto), quindi e'
-    l'ultima risorsa e vale solo se il produttore e' davvero una marca.
-    Fonti, dalla piu' diretta: dhcp (impronta iOS/macOS) > name (nome, modello
-    mDNS, hostname) > web (titolo/Server/servizi) > declared (produttore dichiarato
-    via UPnP/mDNS, solo se e' una marca della tabella dei nomi) > oui.
-    Per l'oui: marca se role=brand; dual solo se e' il gateway (un router ha la
-    scheda della propria marca); component e virtual mai (brand=None).
-    Ritorna {brand, source, confidence (high|medium|low|None), role}."""
+    """PRODUCT brand with source and confidence. The MAC prefix says who
+    made the network board, not the product brand (Fing and Fingerbank keep
+    them separate: "vendor" of the board, "brand/device" of the product), so it is
+    the last resort and counts only if the manufacturer is truly a brand.
+    Sources, from the most direct: dhcp (iOS/macOS fingerprint) > name (name, mDNS
+    model, hostname) > web (title/Server/services) > declared (manufacturer declared
+    via UPnP/mDNS, only if it is a brand in the names table) > oui.
+    For oui: brand if role=brand; dual only if it is the gateway (a router has the
+    board of its own brand); component and virtual never (brand=None).
+    Returns {brand, source, confidence (high|medium|low|None), role}."""
     rules = _rules()
     role = vendor_role(oui_brand)
 
@@ -297,9 +297,9 @@ def resolve(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str |
         for pattern, brand in rules["software_hints"]:
             if pattern.search(low):
                 return done(brand, "web", "high")
-    # Il "produttore" dichiarato (UPnP, mDNS) e' quello del servizio che risponde,
-    # non sempre del dispositivo (un router con MiniDLNA dichiara l'autore del
-    # software): si accetta solo se e' una marca della tabella dei nomi.
+    # The declared "manufacturer" (UPnP, mDNS) is that of the responding service,
+    # not always of the device (a router with MiniDLNA declares the author of the
+    # software): accepted only if it is a brand in the names table.
     for value in (upnp_manufacturer, *declared):
         brand = known_brand(value)
         if brand:
@@ -312,6 +312,6 @@ def resolve(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str |
 def refine_brand(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str | None = None,
                  web_text: str | None = None, os_family: str | None = None,
                  declared: list[str] | tuple = (), is_gateway: bool = False) -> str | None:
-    """Solo la marca di resolve() (vedi li' per fonti e priorita')."""
+    """Only the brand from resolve() (see there for sources and priority)."""
     return resolve(oui_brand, names=names, upnp_manufacturer=upnp_manufacturer, declared=declared,
                    web_text=web_text, os_family=os_family, is_gateway=is_gateway)["brand"]

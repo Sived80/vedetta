@@ -1,18 +1,18 @@
-"""Pubblicazione dello stato di Vedetta su MQTT con la discovery a "dispositivo"
-di Home Assistant (homeassistant/device/<id>/config). Spenta di default.
+"""Publishes Vedetta's state over MQTT using Home Assistant's "device"
+discovery (homeassistant/device/<id>/config). Off by default.
 
-Configurazione: settings.json (mqtt_enabled, mqtt_host, mqtt_port, mqtt_user,
-mqtt_password) oppure variabili d'ambiente VEDETTA_MQTT_HOST/PORT/USER/PASSWORD,
-che prevalgono (se c'e' l'host, l'MQTT e' attivo: e' il caso dell'app di HA).
+Configuration: settings.json (mqtt_enabled, mqtt_host, mqtt_port, mqtt_user,
+mqtt_password) or the environment variables VEDETTA_MQTT_HOST/PORT/USER/PASSWORD,
+which take precedence (if the host is set, MQTT is active: this is the HA add-on case).
 
-Struttura:
-- funzioni pure (resolve_config, slug, build_desired) e classe Sync: costruiscono
-  la mappa "topic -> payload" desiderata e ne ricavano solo le differenze
-  (provabili senza broker, vedi tests/check_mqtt_ha.py);
-- MqttService: client paho-mqtt 2.x in un thread proprio (riconnessione
-  automatica, LWT su vedetta/status) piu' un task asyncio che ascolta il bus
-  di state.subscribe() e pubblica le sole variazioni.
-Non importa state/applog a livello di modulo: arriva da start()."""
+Structure:
+- pure functions (resolve_config, slug, build_desired) and the Sync class: they build
+  the desired "topic -> payload" map and derive only the differences from it
+  (testable without a broker, see tests/check_mqtt_ha.py);
+- MqttService: paho-mqtt 2.x client in its own thread (automatic reconnection,
+  LWT on vedetta/status) plus an asyncio task that listens to the
+  state.subscribe() bus and publishes only the changes.
+Does not import state/applog at module level: it comes from start()."""
 import asyncio
 import json
 import logging
@@ -32,14 +32,14 @@ DISCOVERY_PREFIX = "homeassistant"
 SCAN_TOPIC = "vedetta/hub/scan/set"
 HUB_STATE_TOPIC = "vedetta/hub/state"
 HUB_ID = "vedetta_hub"
-PERIODIC_SECONDS = 60  # aggiornamento dei contatori anche senza eventi
+PERIODIC_SECONDS = 60  # counters refresh even without events
 WATCHED_EVENTS = ("device", "removed", "new_devices")
 
 _SLUG_RE = re.compile(r"[^a-z0-9_-]+")
 
 
 def version() -> str:
-    """Versione dall'ambiente o dal file VERSION nella radice (o nell'immagine)."""
+    """Version from the environment or from the VERSION file in the root (or in the image)."""
     env = os.environ.get("VEDETTA_VERSION", "").strip()
     if env:
         return env
@@ -49,7 +49,7 @@ def version() -> str:
         return "dev"
 
 
-# ---------------- configurazione ----------------
+# ---------------- configuration ----------------
 def _port(value, default: int = 1883) -> int:
     try:
         port = int(str(value).strip())
@@ -59,8 +59,8 @@ def _port(value, default: int = 1883) -> int:
 
 
 def resolve_config(stored: dict, env) -> dict | None:
-    """Configurazione effettiva o None se l'MQTT e' spento. L'ambiente prevale,
-    campo per campo (se manca user/password si usa quello salvato)."""
+    """Effective configuration, or None if MQTT is off. The environment wins,
+    field by field (if user/password are missing the stored one is used)."""
     host = (env.get("VEDETTA_MQTT_HOST") or "").strip()
     if host:
         return {
@@ -77,10 +77,10 @@ def resolve_config(stored: dict, env) -> dict | None:
     return None
 
 
-# ---------------- costruzione di topic e payload (pure) ----------------
+# ---------------- building topics and payloads (pure) ----------------
 def slug(device_id: str) -> str:
-    """Identificativo adatto a topic e unique_id: minuscolo, [a-z0-9_-]. Se la
-    pulizia altera l'id si aggiunge un CRC, cosi' due id diversi non collidono."""
+    """Identifier suitable for topics and unique_id: lowercase, [a-z0-9_-]. If the
+    cleanup alters the id a CRC is appended, so two different ids do not collide."""
     raw = str(device_id)
     clean = _SLUG_RE.sub("_", raw.lower()).strip("_") or "x"
     if clean != raw:
@@ -109,8 +109,8 @@ def device_topics(device_id: str) -> dict[str, str]:
 
 
 def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
-    """Payload della discovery di un dispositivo di rete: device_tracker,
-    binary_sensor connettivita' e (se la latenza e' nota) sensor latenza."""
+    """Discovery payload of a network device: device_tracker,
+    connectivity binary_sensor and (if the latency is known) latency sensor."""
     sid = slug(dev["id"])
     uid = "vedetta_" + sid
     topics = device_topics(dev["id"])
@@ -119,8 +119,8 @@ def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
         "name": dev.get("name") or dev.get("ip") or dev["id"],
         "via_device": HUB_ID,
     }
-    # Nessuna "connections" col MAC: HA unirebbe questo dispositivo a quello vero (Shelly, TV...) invece di tenerlo
-    # sotto "Vedetta". Il dispositivo di rete e' un sotto-dispositivo di Vedetta (via_device).
+    # No "connections" with the MAC: HA would merge this device with the real one (Shelly, TV...) instead of keeping it
+    # under "Vedetta". The network device is a sub-device of Vedetta (via_device).
     brand = dev.get("brand") or dev.get("vendor")
     if brand:
         device["manufacturer"] = brand
@@ -199,12 +199,12 @@ def _j(obj) -> str:
 
 def build_desired(devices: dict[str, dict], kinds: dict[str, str], new_count: int,
                   latency_seen: set[str], shared: set[str] | None = None) -> dict[str, str]:
-    """Mappa topic -> payload di tutto cio' che deve essere pubblicato adesso.
-    latency_seen: id dei dispositivi per cui la latenza e' stata nota almeno una
-    volta (resta un'entita' stabile anche quando la misura manca); si aggiorna qui.
-    shared: id dei dispositivi che l'utente ha scelto di condividere con HA (None = tutti, per i test); gli altri
-    non si pubblicano e, se erano stati pubblicati, spariscono da HA (vedi Sync.diff). I contatori di Vedetta
-    contano sempre tutti i dispositivi."""
+    """Map of topic -> payload for everything that must be published right now.
+    latency_seen: ids of the devices whose latency has been known at least
+    once (it stays a stable entity even when the measurement is missing); updated here.
+    shared: ids of the devices the user chose to share with HA (None = all, for tests); the others
+    are not published and, if they had been published, disappear from HA (see Sync.diff). Vedetta's counters
+    always count all the devices."""
     out: dict[str, str] = {config_topic(HUB_ID): _j(hub_config()),
                            HUB_STATE_TOPIC: _j(hub_state(list(devices.values()), new_count))}
     for did, dev in devices.items():
@@ -219,26 +219,26 @@ def build_desired(devices: dict[str, dict], kinds: dict[str, str], new_count: in
         out[topics["attrs"]] = _j(device_attrs(dev, kind))
         if did in latency_seen:
             out[topics["latency"]] = "None" if dev.get("latency_ms") is None else str(dev["latency_ms"])
-    latency_seen.intersection_update(devices if shared is None else {d for d in devices if d in shared})  # sparito/non condiviso: via dalla memoria
+    latency_seen.intersection_update(devices if shared is None else {d for d in devices if d in shared})  # gone/not shared: out of memory
     return out
 
 
 class Sync:
-    """Tiene l'ultimo payload inviato per topic e restituisce solo le differenze;
-    i topic spariti dalla mappa desiderata ricevono il payload vuoto (retained):
-    sui topic di config e' cosi' che HA rimuove dispositivo ed entita'."""
+    """Keeps the last payload sent per topic and returns only the differences;
+    topics that disappeared from the desired map receive the empty payload (retained):
+    on config topics this is how HA removes the device and entities."""
 
     def __init__(self) -> None:
         self._sent: dict[str, str | None] = {}
 
     def adopt(self, topic: str, payload: str) -> None:
-        """Un messaggio "retained" di Vedetta gia' presente sul broker (di una versione precedente o prima di un riavvio):
-        lo si ricorda, cosi' se non serve piu' (dispositivo non condiviso) il diff lo cancella da HA."""
+        """A "retained" Vedetta message already present on the broker (from a previous version or before a restart):
+        it is remembered, so that if it is no longer needed (device not shared) the diff deletes it from HA."""
         self._sent.setdefault(topic, payload)
 
     def reset(self) -> None:
-        """Dopo una (ri)connessione o un 'online' di HA: si rimanda tutto, ma si
-        ricordano i topic gia' usati (per poter rimuovere quelli spariti)."""
+        """After a (re)connection or an 'online' from HA: everything is resent, but the
+        topics already used are remembered (to be able to remove the ones that disappeared)."""
         for topic in self._sent:
             self._sent[topic] = None
 
@@ -251,12 +251,12 @@ class Sync:
             if self._sent.get(topic) != payload:
                 msgs.append((topic, payload))
                 self._sent[topic] = payload
-        # i config prima degli stati (HA li vuole in quest'ordine alla nascita)
+        # configs before states (HA wants them in this order at creation)
         msgs.sort(key=lambda m: 0 if m[0].endswith("/config") else 1)
         return msgs
 
 
-# ---------------- servizio ----------------
+# ---------------- service ----------------
 class MqttService:
     def __init__(self) -> None:
         self.client = None
@@ -272,9 +272,9 @@ class MqttService:
         self._new_count = 0
         self._started = False
 
-    # ---- ciclo di vita ----
+    # ---- lifecycle ----
     async def start(self, state) -> None:
-        """Avvio dal lifespan: sempre sicuro, anche con l'MQTT spento."""
+        """Start from the lifespan: always safe, even with MQTT off."""
         self._state = state
         self._loop = asyncio.get_running_loop()
         self._started = True
@@ -290,7 +290,7 @@ class MqttService:
         await self._stop_client()
 
     async def reconfigure(self) -> None:
-        """Dopo un cambio di impostazioni: riconnette con la nuova configurazione."""
+        """After a settings change: reconnects with the new configuration."""
         if not self._started:
             return
         await self._stop_client()
@@ -345,7 +345,7 @@ class MqttService:
 
         await asyncio.to_thread(close)
 
-    # ---- callback di paho (thread di rete) ----
+    # ---- paho callbacks (network thread) ----
     def _on_connect(self, client, userdata, flags, reason_code, properties=None) -> None:
         if getattr(reason_code, "is_failure", False):
             self.last_error = str(reason_code)
@@ -354,8 +354,8 @@ class MqttService:
         self.connected = True
         self.last_error = ""
         client.publish(STATUS_TOPIC, "online", qos=1, retain=True)
-        # oltre al comando e allo stato di HA, i messaggi "retained" gia' pubblicati da Vedetta: servono a ripulire cio'
-        # che non e' piu' condiviso (es. i dispositivi pubblicati prima della scelta di condivisione).
+        # besides the command and HA's status, the "retained" messages already published by Vedetta: they are needed to clean up what
+        # is no longer shared (e.g. devices published before the sharing choice).
         client.subscribe([(HA_STATUS_TOPIC, 0), (SCAN_TOPIC, 0), (DISCOVERY_PREFIX + "/device/+/config", 0), ("vedetta/dev/#", 0)])
         logger.info("MQTT: connesso")
         self._call(self._resync)
@@ -369,7 +369,7 @@ class MqttService:
     def _on_message(self, client, userdata, msg) -> None:
         payload = msg.payload.decode("utf-8", "replace").strip()
         if msg.topic == HA_STATUS_TOPIC and payload == "online":
-            self._call(self._resync)  # HA e' ripartito: ripubblica la discovery
+            self._call(self._resync)  # HA has restarted: republish the discovery
         elif msg.topic == SCAN_TOPIC and payload == "PRESS" and not msg.retain:
             self._call(self._scan)
         elif msg.retain and payload and (msg.topic.startswith("vedetta/dev/") or (
@@ -381,9 +381,9 @@ class MqttService:
         if loop is not None and not loop.is_closed():
             loop.call_soon_threadsafe(fn)
 
-    # ---- nel loop asyncio ----
+    # ---- in the asyncio loop ----
     def _scan(self) -> None:
-        """Equivale a POST /api/refresh."""
+        """Equivalent to POST /api/refresh."""
         if self._state is not None:
             self._state.trigger()
 
@@ -391,11 +391,11 @@ class MqttService:
         self.sync.adopt(topic, payload)
         if self._adopt_timer is not None:
             self._adopt_timer.cancel()
-        # a raffica finita (i retained arrivano tutti insieme) si pubblicano le differenze una volta sola
+        # once the burst is over (retained messages all arrive together) the differences are published only once
         self._adopt_timer = self._loop.call_later(2.0, self._publish_changes) if self._loop else None
 
     def refresh(self) -> None:
-        """Dopo un cambio di condivisione: ripubblica subito le differenze (da qualunque thread/contesto)."""
+        """After a sharing change: republish the differences right away (from any thread/context)."""
         self._call(self._publish_changes)
 
     def _resync(self) -> None:
@@ -423,18 +423,18 @@ class MqttService:
         queue = state.subscribe()
         try:
             while True:
-                if not state.is_subscribed(queue):  # scollegato perche' lento: si riparte
+                if not state.is_subscribed(queue):  # disconnected because it was slow: restart
                     queue = state.subscribe()
                     event: dict | None = None
                 else:
                     try:
                         event = await asyncio.wait_for(queue.get(), PERIODIC_SECONDS)
                     except asyncio.TimeoutError:
-                        event = None  # giro periodico: aggiorna i contatori
+                        event = None  # periodic round: update the counters
                 if event is not None:
                     if event.get("type") not in WATCHED_EVENTS:
                         continue
-                    await asyncio.sleep(0.5)  # raggruppa le raffiche di eventi
+                    await asyncio.sleep(0.5)  # group bursts of events
                     while not queue.empty():
                         extra = queue.get_nowait()
                         if extra.get("type") == "new_devices":
@@ -447,7 +447,7 @@ class MqttService:
         finally:
             state.unsubscribe(queue)
 
-    # ---- stato per le API (senza password) ----
+    # ---- state for the APIs (without password) ----
     def status(self) -> dict:
         stored = settings.mqtt_load()
         cfg = self.cfg or resolve_config(stored, os.environ)

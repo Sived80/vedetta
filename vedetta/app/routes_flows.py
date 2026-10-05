@@ -1,4 +1,4 @@
-"""API dei flussi di ricerca: quali funzioni (step) attiva ciascun profilo."""
+"""API of the search flows: which functions (steps) each profile enables."""
 from fastapi import APIRouter, HTTPException, Request
 
 from . import flows, i18n, settings
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 def _payload() -> dict:
-    """Registro, flussi attivi e default, con testi nella lingua della richiesta."""
+    """Registry, active flows and defaults, with texts in the request's language."""
     active = settings.flows_load()
     return {
         "steps": [

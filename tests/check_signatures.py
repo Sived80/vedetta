@@ -1,5 +1,5 @@
-"""Catalogo di firme e famiglie di indizi: validazione del file, casi reali, casi ambigui (Google Home / Chromecast),
-conteggi doppi (Cast), tetto delle porte, margine tra categorie alla pari, spiegazione degli indizi."""
+"""Signature catalogue and hint families: file validation, real cases, ambiguous cases (Google Home / Chromecast),
+double counts (Cast), port cap, margin between tied categories, hint explanation."""
 import json
 import os
 import re
@@ -11,7 +11,7 @@ from app import ha_data, roles, signatures  # noqa: E402
 roles.roles_for = lambda ip: []
 roles.upnp_types = lambda ip: []
 
-# ---- il file delle firme e' valido (id unici, categorie e tipi esistenti, espressioni compilabili, fixture dichiarata)
+# ---- the signatures file is valid (unique ids, existing categories and types, compilable expressions, declared fixture)
 data = json.load(open(signatures.DATA_PATH, encoding="utf-8"))
 kind_ids = {k["id"] for k in json.load(open(ha_data.Path(ha_data.__file__).parent / "data" / "device_kinds.json", encoding="utf-8"))["kinds"]}
 ids = [s["id"] for s in data["signatures"]]
@@ -34,7 +34,7 @@ def port(label, confirmed=False):
 
 
 def kind_of(dev):
-    """(categoria, tipo con piu' punti DENTRO quella categoria), come fa l'icona."""
+    """(category, type with the most points INSIDE that category), as the icon does."""
     group = ha_data.infer_type(dev)
     kinds = {}
     ha_data.type_scores(dev, None, kinds)
@@ -42,7 +42,7 @@ def kind_of(dev):
     return group, max(in_group, key=in_group.get) if in_group else None
 
 
-# ---- dispositivi VERI (dati letti dalla rete il 2026-10-05)
+# ---- REAL devices (data read from the network on 2026-10-05)
 real = [
     ("Proxmox", {"ip": "x", "name": "pve", "brand": "Proxmox", "extra": {"http_server": "pve-api-daemon/3.0", "title": "pve - Proxmox Virtual Environment"},
                  "scanned_ports": [port("22 · ssh"), port("8006 · wpl-analytics"), port("3128 · squid-http")]}, "server", "server"),
@@ -62,7 +62,7 @@ for label, dev, group, kind in real:
         assert got_kind == kind, (label, got_kind)
 print("ok: casi reali")
 
-# ---- Google Home e Chromecast annunciano entrambi Cast: decide il modello (dati simulati dal produttore)
+# ---- Google Home and Chromecast both announce Cast: the model decides (data simulated by the manufacturer)
 cast = {"mdns_services": "_googlecast._tcp", "api_source": "cast"}
 cast_ports = [port("8008 · http", True), port("8009 · castv2", True), port("8443 · https-alt", True)]
 home = {"ip": "x", "name": "Soggiorno", "brand": "Google", "extra": {**cast, "mdns_model": "Google Home Mini"}, "scanned_ports": cast_ports}
@@ -70,25 +70,25 @@ chrome = {"ip": "x", "name": "TV camera", "brand": "Google", "extra": {**cast, "
 nameless = {"ip": "x", "name": "Cast", "brand": "Google", "extra": dict(cast), "scanned_ports": cast_ports}
 assert kind_of(home) == ("audio", "speaker"), (kind_of(home), ha_data.type_scores(home))
 assert kind_of(chrome) == ("media", "streaming"), kind_of(chrome)
-assert ha_data.infer_type(nameless) == "media"   # senza modello: il Cast da solo dice "media"
+assert ha_data.infer_type(nameless) == "media"   # without a model: Cast alone says "media"
 print("ok: Google Home / Chromecast")
 
-# ---- il Cast conta una volta (servizio + API + porte + DIAL sono lo stesso fatto)
+# ---- Cast counts once (service + API + ports + DIAL are the same fact)
 ev = ha_data.type_evidence(nameless)
 cast_pts = [e["pts"] for e in ev if e["family"] == "cast" and e["group"] == "media"]
 media_pts = ha_data.type_scores(nameless)["media"]
-assert len(cast_pts) >= 3 and max(cast_pts) <= media_pts < sum(cast_pts), (cast_pts, media_pts)   # uno, non la somma
-# nei dati di debug ogni indizio ha gruppo, famiglia, punti e fonte
+assert len(cast_pts) >= 3 and max(cast_pts) <= media_pts < sum(cast_pts), (cast_pts, media_pts)   # one, not the sum
+# in the debug data every hint has group, family, points and source
 assert all(set(e) == {"group", "family", "pts", "source"} for e in ev)
 
-# ---- tetto delle porte: tante porte "da server" non fanno un server da sole
+# ---- port cap: many "server" ports do not make a server by themselves
 many = {"ip": "x", "name": "x", "extra": {}, "scanned_ports": [port("%d · x" % p, True) for p in (22, 2049, 3306, 5432, 6379, 27017, 1433)]}
 assert ha_data.type_scores(many)["server"] <= ha_data.W_PORTS_MAX, ha_data.type_scores(many)
 
-# ---- margine: due categorie alla pari con indizi deboli -> "generic" invece di scegliere a caso
+# ---- margin: two tied categories with weak hints -> "generic" instead of picking at random
 tie = {"ip": "x", "name": "x", "extra": {}, "scanned_ports": [port("631 · x", True), port("22 · x", True)]}
 scores = ha_data.type_scores(tie)
 assert scores.get("printer") == scores.get("server") == 4 and ha_data.infer_type(tie) == "generic", scores
 strong = {"ip": "x", "name": "x", "extra": {"mdns_services": "_googlecast._tcp"}, "scanned_ports": [port("22 · ssh", True)]}
-assert ha_data.infer_type(strong) == "media"   # un indizio dichiarato vince sempre
+assert ha_data.infer_type(strong) == "media"   # a declared hint always wins
 print("TUTTO OK")

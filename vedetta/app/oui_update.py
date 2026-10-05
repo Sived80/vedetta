@@ -1,8 +1,8 @@
-"""Aggiornamento del database dei prefissi MAC dai registri pubblici dell'IEEE
-(MA-L 24 bit, MA-M 28 bit, MA-S 36 bit e i vecchi IAB, 36 bit). La copia
-scaricata sta in config/oui-ieee.txt (un deploy sostituisce app/, config/ no)
-e ha la precedenza su quella inclusa nell'app. Usata dall'interfaccia, dalla
-manutenzione notturna e da tools/update_oui.py."""
+"""Update of the MAC prefix database from the public IEEE registries
+(MA-L 24 bit, MA-M 28 bit, MA-S 36 bit and the old IABs, 36 bit). The downloaded
+copy lives in config/oui-ieee.txt (a deploy replaces app/, not config/)
+and takes precedence over the one included in the app. Used by the interface, by
+the nightly maintenance and by tools/update_oui.py."""
 import csv
 import html
 import io
@@ -22,15 +22,15 @@ URLS = [BASE_URL + "oui/oui.csv", BASE_URL + "oui28/mam.csv",
         BASE_URL + "oui36/oui36.csv", BASE_URL + "iab/iab.csv"]
 USER_AGENT = "Vedetta (+https://github.com/Sived80/vedetta)"
 HEADER = "# generato da tools/update_oui.py (registri IEEE MA-L/MA-M/MA-S/IAB, https://standards-oui.ieee.org/)\n"
-MIN_BLOCKS = 40000          # sotto questa soglia il file e' sospetto: si rifiuta
-MAX_BYTES = 40 * 1024 * 1024  # per file: il piu' grande (MA-L) pesa circa 4 MB
+MIN_BLOCKS = 40000          # below this threshold the file is suspect: it is rejected
+MAX_BYTES = 40 * 1024 * 1024  # per file: the largest (MA-L) weighs about 4 MB
 TIMEOUT = 60
 AUTO_UPDATE_DAYS = 30
 
 
 class OuiUpdateError(Exception):
-    """code: "network" (download non riuscito), "invalid" (non e' un registro IEEE),
-    "too_small" (troppo pochi blocchi), "write" (scrittura non riuscita)."""
+    """code: "network" (download failed), "invalid" (not an IEEE registry),
+    "too_small" (too few blocks), "write" (write failed)."""
 
     def __init__(self, code: str, detail: str = ""):
         super().__init__(f"{code}: {detail}" if detail else code)
@@ -43,9 +43,9 @@ _LEGAL = {"LTD": "Ltd", "INC": "Inc", "CO": "Co", "CORP": "Corp", "GMBH": "GmbH"
 
 
 def tidy_name(name: str) -> str:
-    """Nome del registro IEEE pulito: entita' HTML (&amp;) risolte e, se e' tutto
-    in maiuscolo, scritto con le iniziali maiuscole (le sigle di 3 lettere o meno,
-    come NEC o TP, restano come sono; le forme legali diventano Ltd, Inc, GmbH...)."""
+    """Cleaned-up IEEE registry name: HTML entities (&amp;) resolved and, if it is all
+    uppercase, written with initial capitals (acronyms of 3 letters or fewer,
+    like NEC or TP, stay as they are; legal forms become Ltd, Inc, GmbH...)."""
     name = html.unescape(" ".join(name.split()))
     if not name.isupper():
         return name
@@ -59,9 +59,9 @@ def tidy_name(name: str) -> str:
 
 
 def convert_ieee(text: str) -> list[str]:
-    """Righe "PREFISSO[/bit] Nome" (prefisso esadecimale maiuscolo, es. BC2411,
-    00155D4/28) da un CSV dei registri IEEE (Registry, Assignment, Organization
-    Name, ...). I bit dipendono dalla lunghezza dell'assegnazione: 6 cifre = 24,
+    """Rows "PREFIX[/bit] Name" (uppercase hexadecimal prefix, e.g. BC2411,
+    00155D4/28) from a CSV of the IEEE registries (Registry, Assignment, Organization
+    Name, ...). The bits depend on the length of the assignment: 6 digits = 24,
     7 = 28, 9 = 36."""
     rows = []
     for rec in csv.reader(io.StringIO(text.lstrip("\ufeff"))):
@@ -76,8 +76,8 @@ def convert_ieee(text: str) -> list[str]:
 
 
 def build(texts, min_blocks: int = MIN_BLOCKS) -> tuple[str, int]:
-    """(contenuto del file, numero di blocchi) da uno o piu' CSV IEEE.
-    OuiUpdateError se non sono registri validi o hanno meno di min_blocks blocchi."""
+    """(file content, number of blocks) from one or more IEEE CSVs.
+    OuiUpdateError if they are not valid registries or have fewer than min_blocks blocks."""
     if isinstance(texts, str):
         texts = [texts]
     rows = [row for text in texts for row in convert_ieee(text)]
@@ -89,15 +89,15 @@ def build(texts, min_blocks: int = MIN_BLOCKS) -> tuple[str, int]:
 
 
 def download(urls=None) -> list[str]:
-    """Scarica i registri IEEE (uno per URL). Basta un errore per rifiutare tutto:
-    un aggiornamento a meta' lascerebbe una tabella incompleta."""
+    """Downloads the IEEE registries (one per URL). A single error is enough to reject everything:
+    a half update would leave an incomplete table."""
     texts = []
     for url in urls or URLS:
         try:
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
                 raw = resp.read(MAX_BYTES + 1)
-        except Exception as exc:  # rete assente, DNS, HTTP, timeout
+        except Exception as exc:  # network down, DNS, HTTP, timeout
             raise OuiUpdateError("network", f"{url}: {exc}") from exc
         if len(raw) > MAX_BYTES:
             raise OuiUpdateError("invalid", "file troppo grande")
@@ -119,9 +119,9 @@ def write_atomic(path, content: str) -> None:
 
 
 def install(texts, min_blocks: int = MIN_BLOCKS) -> dict:
-    """Converte, controlla e installa i registri IEEE in config/ (senza rete: e'
-    la parte testabile). Non tocca nulla se i controlli falliscono."""
-    from . import vendor_lookup  # import tardivo: tools/update_oui.py usa solo convert/build
+    """Converts, checks and installs the IEEE registries in config/ (no network: it is
+    the testable part). Touches nothing if the checks fail."""
+    from . import vendor_lookup  # late import: tools/update_oui.py only uses convert/build
     content, blocks = build(texts, min_blocks)
     try:
         write_atomic(vendor_lookup.USER_OUI_PATH, content)
@@ -137,7 +137,7 @@ def install(texts, min_blocks: int = MIN_BLOCKS) -> dict:
 
 
 def update() -> dict:
-    """Scarica e installa (bloccante: da chiamare in un thread)."""
+    """Downloads and installs (blocking: to be called in a thread)."""
     try:
         result = install(download())
     except OuiUpdateError as exc:
@@ -148,7 +148,7 @@ def update() -> dict:
 
 
 def meta() -> dict:
-    """{"updated": timestamp|None, "blocks": int|None} dal file utente."""
+    """{"updated": timestamp|None, "blocks": int|None} from the user file."""
     data = brands._read(brands._USER_PATH).get("oui_meta")
     data = data if isinstance(data, dict) else {}
     updated = data.get("updated")
@@ -161,6 +161,6 @@ def auto_update_enabled() -> bool:
 
 
 def is_due(days: int = AUTO_UPDATE_DAYS) -> bool:
-    """Vero se l'ultimo aggiornamento scaricato ha piu' di `days` giorni (o non c'e')."""
+    """True if the last downloaded update is more than `days` days old (or there is none)."""
     updated = meta()["updated"]
     return updated is None or time.time() - updated > days * 86400

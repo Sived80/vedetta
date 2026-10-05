@@ -1,12 +1,12 @@
-"""Lancia tutti i test (tests/check_*.py e il controllo delle traduzioni JS) dalla cartella vedetta/.
-Uso: python tools/run_tests.py   (esce con 1 se qualcosa fallisce)"""
+"""Run all tests (tests/check_*.py and the JS translations check) from the vedetta/ folder.
+Usage: python tools/run_tests.py   (exits with 1 if anything fails)"""
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP = {"check_phase_d.py"}   # test storico non piu' mantenuto
+SKIP = {"check_phase_d.py"}   # historical test no longer maintained
 
 
 def main() -> int:

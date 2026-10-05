@@ -5,12 +5,12 @@ MAC_RE = re.compile(r"([0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5})")
 
 
 async def _tcp_check(ip: str, port: int, timeout: float = 1.0) -> bool:
-    # Dimezzato da 2.0s: su una LAN un host raggiungibile risponde in pochi
-    # millisecondi, quindi questo timeout scatta solo per host davvero offline
-    # - e siccome la pagina aspetta tutte le probe prima di mostrare qualcosa,
-    # ogni dispositivo spento aggiungeva fino a 2s alla comparsa delle card.
-    # L'ARP scan condiviso (vedi probe.py) resta comunque la rete di sicurezza
-    # per i falsi negativi di un host lento ma presente.
+    # Halved from 2.0s: on a LAN a reachable host answers in a few
+    # milliseconds, so this timeout only fires for truly offline hosts
+    # - and since the page waits for all the probes before showing anything,
+    # every powered-off device added up to 2s to the appearance of the cards.
+    # The shared ARP scan (see probe.py) remains the safety net anyway
+    # for false negatives of a slow but present host.
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
         writer.close()
@@ -37,12 +37,12 @@ async def _get_mac(ip: str) -> str | None:
 
 
 async def probe(ip: str, port: int = 80) -> dict:
-    # Il fallback via ping e' stato tolto: un dispositivo irraggiungibile via
-    # TCP ci metteva fino a 4s (2s TCP + 2s ping in sequenza) solo per
-    # risultare comunque offline, bloccando la pagina a ogni refresh. La
-    # scansione ARP condivisa (vedi probe.py/main.py) copre gia' meglio lo
-    # stesso caso - un dispositivo senza porte aperte ma presente in rete -
-    # in un colpo solo per tutti i dispositivi, non ripetuta uno per uno.
+    # The ping fallback was removed: a device unreachable via
+    # TCP took up to 4s (2s TCP + 2s ping in sequence) just to
+    # end up offline anyway, blocking the page on every refresh. The
+    # shared ARP scan (see probe.py/main.py) already covers better the
+    # same case - a device with no open ports but present on the network -
+    # in one go for all devices, not repeated one by one.
     online = await _tcp_check(ip, port)
     mac = await _get_mac(ip)
     return {"online": online, "mac": mac}

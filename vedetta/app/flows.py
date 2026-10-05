@@ -1,14 +1,14 @@
-"""Registro delle funzioni (step) e dei profili (sottoflussi) della ricerca.
+"""Registry of the functions (steps) and profiles (sub-flows) of the search.
 
-Le ricerche sono UN SOLO flusso (vedi pipeline.py) fatto di funzioni indipendenti;
-i tre profili scelgono quali funzioni attivare:
-  initial     = ricerca iniziale (pulsante lente): scoperta host in LAN.
-  associative = ricerca associativa: scansione dei dispositivi scelti prima di aggiungerli.
-  deep        = ricerca approfondita: riscansione dei dispositivi gia' in dashboard
-                (pulsante e manutenzione notturna).
+Searches are ONE SINGLE flow (see pipeline.py) made of independent functions;
+the three profiles choose which functions to enable:
+  initial     = initial search (magnifier button): host discovery on the LAN.
+  associative = associative search: scan of the chosen devices before adding them.
+  deep        = deep search: rescan of the devices already on the dashboard
+                (button and nightly maintenance).
 
-Questo modulo e' logica pura (nessun import dal resto dell'app): registro,
-default e validazione, condivisi da settings.py, pipeline.py e dalle API."""
+This module is pure logic (no imports from the rest of the app): registry,
+defaults and validation, shared by settings.py, pipeline.py and the APIs."""
 from dataclasses import dataclass
 
 INITIAL = "initial"
@@ -20,28 +20,28 @@ PROFILES = (INITIAL, ASSOCIATIVE, DEEP)
 @dataclass(frozen=True)
 class Step:
     id: str
-    flows: tuple[str, ...]            # profili in cui lo step e' applicabile
-    locked_in: tuple[str, ...] = ()   # profili in cui e' obbligatorio
-    risk: str = "easy"                # easy (non invasivo) | invasive (invasivo) | risky (rischioso)
+    flows: tuple[str, ...]            # profiles in which the step is applicable
+    locked_in: tuple[str, ...] = ()   # profiles in which it is mandatory
+    risk: str = "easy"                # easy (not invasive) | invasive | risky
 
 
 _ALL = PROFILES
-_HOST = (ASSOCIATIVE, DEEP)  # step che lavorano su un host noto, non sulla scoperta
+_HOST = (ASSOCIATIVE, DEEP)  # steps that work on a known host, not on discovery
 
-# L'ordine qui e' l'ordine canonico con cui le liste vengono salvate e mostrate.
+# The order here is the canonical order in which the lists are saved and shown.
 #
-# Rischio di ogni funzione, da cosa fa in rete:
-#   easy     richieste standard e leggere (ARP, mDNS, UPnP, WS-Discovery, DNS inverso, HTTP/RTSP
-#            su richiesta singola): non disturbano i dispositivi.
-#   invasive interroga direttamente il dispositivo (porte, certificati, API, SNMP): puo'
-#            comparire nei suoi registri o negli avvisi di sicurezza.
-#   risky    prove aggressive o molto lunghe (tutte le porte, riconoscimento del sistema,
-#            traffico multicast): possono rallentare o bloccare dispositivi fragili.
+# Risk of each function, based on what it does on the network:
+#   easy     standard and light requests (ARP, mDNS, UPnP, WS-Discovery, reverse DNS, HTTP/RTSP
+#            as a single request): they do not disturb the devices.
+#   invasive queries the device directly (ports, certificates, APIs, SNMP): it may
+#            show up in its logs or in security alerts.
+#   risky    aggressive or very long probes (all ports, OS detection,
+#            multicast traffic): they can slow down or lock up fragile devices.
 STEPS: tuple[Step, ...] = (
     Step("arp", (INITIAL,), (INITIAL,), "easy"),
-    # I nomi non si cercano nella ricerca iniziale (con cosi' poche informazioni escono nomi
-    # a caso): l'elenco dei trovati ha solo IP e MAC. Si cercano nell'analisi dei dispositivi.
-    # Dati di Home Assistant (registro dispositivi: nome, produttore, modello, area): non tocca la rete.
+    # Names are not searched in the initial search (with so little information random
+    # names come out): the list of found hosts has only IP and MAC. They are searched in the device analysis.
+    # Home Assistant data (device registry: name, manufacturer, model, area): does not touch the network.
     Step("ha_registry", _HOST, risk="easy"),
     Step("mdns", _HOST, risk="easy"),
     Step("reverse_names", _HOST, risk="easy"),
@@ -61,10 +61,10 @@ STEPS: tuple[Step, ...] = (
 STEP_IDS = tuple(s.id for s in STEPS)
 _BY_ID = {s.id: s for s in STEPS}
 
-# Funzioni disponibili ma spente finche' l'utente non le accende (vedi la descrizione).
+# Functions available but off until the user turns them on (see the description).
 OFF_BY_DEFAULT = {"igmp"}
 
-# Default: initial = 2 funzioni, associative = 4, deep = tutte quelle applicabili.
+# Defaults: initial = 2 functions, associative = 4, deep = all the applicable ones.
 DEFAULT_FLOWS: dict[str, tuple[str, ...]] = {
     INITIAL: ("arp",),
     ASSOCIATIVE: ("ha_registry", "reverse_names", "onvif", "rtsp", "ports_fast", "http_title", "tls_ssh", "local_api", "adapter_probe"),
@@ -81,8 +81,8 @@ def get_step(step_id: str) -> Step | None:
 
 
 class FlowError(ValueError):
-    """Impostazione dei flussi non valida: key e' la chiave di traduzione del
-    messaggio (flow.error.*), params i suoi segnaposto."""
+    """Invalid flow setting: key is the translation key of the
+    message (flow.error.*), params its placeholders."""
 
     def __init__(self, key: str, **params) -> None:
         super().__init__(key)
@@ -91,8 +91,8 @@ class FlowError(ValueError):
 
 
 def validate_profile(profile: str, ids) -> list[str]:
-    """Elenco di step valido per un profilo, normalizzato (senza doppioni, in
-    ordine canonico). FlowError se non valido."""
+    """Valid list of steps for a profile, normalized (no duplicates, in
+    canonical order). FlowError if not valid."""
     if profile not in PROFILES:
         raise FlowError("flow.error.unknown_profile", profile=str(profile))
     if not isinstance(ids, list):
@@ -113,7 +113,7 @@ def validate_profile(profile: str, ids) -> list[str]:
 
 
 def validate_flows(flows) -> dict[str, list[str]]:
-    """Validazione di un dict {profilo: [step]} (anche parziale)."""
+    """Validation of a {profile: [steps]} dict (even partial)."""
     if not isinstance(flows, dict):
         raise FlowError("flow.error.invalid_body")
     return {profile: validate_profile(profile, ids) for profile, ids in flows.items()}

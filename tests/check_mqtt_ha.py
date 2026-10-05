@@ -1,7 +1,7 @@
-"""Verifica della logica pura della pubblicazione MQTT (app/mqtt_ha.py), senza broker:
-configurazione (ambiente > settings), slug, payload di discovery a dispositivo,
-deduplica, rimozione, ripubblicazione dopo reset, password mai nelle API.
-Con "python - < file" la cartella corrente deve essere la radice del progetto."""
+"""Check of the pure MQTT publishing logic (app/mqtt_ha.py), without a broker:
+configuration (environment > settings), slug, per-device discovery payload,
+deduplication, removal, republishing after reset, password never in the APIs.
+With "python - < file" the current folder must be the project root."""
 import json
 import os
 import sys
@@ -29,7 +29,7 @@ def check(cond, label):
         fails.append(label)
 
 
-# ---- configurazione ----
+# ---- configuration ----
 stored = {"mqtt_enabled": False, "mqtt_host": "", "mqtt_port": 1883, "mqtt_user": "", "mqtt_password": ""}
 check(mqtt_ha.resolve_config(stored, {}) is None, "spento di default")
 check(mqtt_ha.resolve_config({**stored, "mqtt_host": "h"}, {}) is None, "host senza enabled = spento")
@@ -41,7 +41,7 @@ check(c["source"] == "env" and c["host"] == "core-mosquitto" and c["user"] == "x
       "ambiente prevale campo per campo, porta non valida = 1883")
 check(mqtt_ha.resolve_config(stored, {"VEDETTA_MQTT_HOST": "h"}) is not None, "solo ambiente host = attivo")
 
-# ---- settings: validazione e password ----
+# ---- settings: validation and password ----
 tmp = Path(tempfile.mkdtemp())
 settings.SETTINGS_PATH = tmp / "settings.json"
 u = settings.mqtt_update({"mqtt_enabled": True, "mqtt_host": "broker.local", "mqtt_port": 1884,
@@ -63,7 +63,7 @@ check(mqtt_ha.slug("shelly-1") == "shelly-1", "slug invariato se gia' pulito")
 a, b = mqtt_ha.slug("scan.1"), mqtt_ha.slug("scan_1")
 check(a != b and a.startswith("scan_1_"), "slug: id diversi non collidono")
 
-# ---- discovery e deduplica ----
+# ---- discovery and deduplication ----
 DEVS = {
     "d1": {"id": "d1", "name": "Presa", "ip": "10.0.0.2", "mac": "AA:BB:CC:00:00:01", "online": True,
            "brand": "Shelly", "latency_ms": 12, "is_mobile": False, "last_seen": None},
@@ -87,7 +87,7 @@ cfg2 = json.loads(want[mqtt_ha.device_topics("d2")["config"]])
 check(set(cfg2["cmps"]) == {"tracker", "connectivity"} and "connections" not in cfg2["dev"], "d2: niente latenza ne' mac se ignoti")
 check(want[t1["state"]] == "home" and want[mqtt_ha.device_topics("d2")["state"]] == "not_home", "home / not_home")
 check(json.loads(want[mqtt_ha.device_topics("d2")["attrs"]])["last_seen"] is not None, "offline: ultimo visto")
-# condivisione: si pubblica solo cio' che l'utente ha scelto; i contatori contano comunque tutti
+# sharing: only what the user chose is published; the counters still count everything
 only = mqtt_ha.build_desired(DEVS, KINDS, 2, set(), {"d1"})
 check(mqtt_ha.device_topics("d1")["config"] in only and mqtt_ha.device_topics("d2")["config"] not in only, "solo i condivisi")
 check(json.loads(only["vedetta/hub/state"])["offline"] == 1, "contatori su tutti i dispositivi")
@@ -97,7 +97,7 @@ s = mqtt_ha.Sync()
 s.diff(mqtt_ha.build_desired(DEVS, KINDS, 2, set(), {"d1", "d2"}))
 removed = {tp for tp, pl in s.diff(mqtt_ha.build_desired(DEVS, KINDS, 2, set(), {"d1"})) if pl == ""}
 check(mqtt_ha.device_topics("d2")["config"] in removed, "tolto dalla condivisione: sparisce da HA")
-# messaggi retained di prima di un riavvio: se non servono piu', vengono cancellati
+# retained messages from before a restart: if no longer needed, they are deleted
 s2 = mqtt_ha.Sync()
 old_cfg, old_state = mqtt_ha.device_topics("d2")["config"], mqtt_ha.device_topics("d2")["state"]
 s2.adopt(old_cfg, "{}"); s2.adopt(old_state, "home")
@@ -124,21 +124,21 @@ check(third.get(t1["latency"]) == "None" and t1["config"] not in third, "latenza
 sync.reset()
 again = sync.diff(mqtt_ha.build_desired(DEVS, KINDS, 2, seen))
 check({m[0] for m in again} == set(mqtt_ha.build_desired(DEVS, KINDS, 2, seen)), "dopo reset si rimanda tutto")
-# rimozione
+# removal
 del DEVS["d2"]
 rem = sync.diff(mqtt_ha.build_desired(DEVS, KINDS, 1, seen))
 d2t = mqtt_ha.device_topics("d2")
 removed = {t for t, p in rem if p == ""}
 check(removed == set(d2t.values()) - {d2t["latency"]}, "dispositivo sparito: payload vuoto su config e stati")
 check(sync.diff(mqtt_ha.build_desired(DEVS, KINDS, 1, seen)) == [], "rimozione una volta sola")
-# rimozione mentre scollegati: reset poi diff
+# removal while disconnected: reset then diff
 sync.reset()
 del DEVS["d1"]
 rem2 = {t for t, p in sync.diff(mqtt_ha.build_desired(DEVS, KINDS, 0, seen)) if p == ""}
 check(t1["config"] in rem2, "rimozione ricordata anche dopo reset")
 check("d1" not in seen, "memoria latenza ripulita")
 
-# ---- stato per le API senza password ----
+# ---- status for the APIs without the password ----
 mqtt_ha.service.cfg = None
 st = mqtt_ha.service.status()
 check("password" not in st and st["password_set"] is True and st["host"] == "broker.local", "status: niente password, solo password_set")

@@ -8,10 +8,10 @@ DEVICES_PATH = CONFIG_DIR / "devices.yaml"
 
 
 def _save(data: dict) -> None:
-    """Scrittura atomica: file temporaneo nella stessa cartella + os.replace.
-    Un crash o un'interruzione a meta' scrittura lascia intatto il file
-    precedente invece di un YAML troncato che farebbe perdere tutti i
-    dispositivi."""
+    """Atomic write: temporary file in the same folder + os.replace.
+    A crash or an interruption mid-write leaves the previous file
+    intact instead of a truncated YAML that would lose all the
+    devices."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=CONFIG_DIR, prefix=".devices-", suffix=".tmp")
     try:
@@ -32,7 +32,7 @@ def load_devices() -> list[dict]:
 
 
 def add_devices(new_devices: list[dict]) -> list[dict]:
-    """Aggiunge dispositivi trovati con lo scanner, evitando duplicati per IP o id."""
+    """Add devices found with the scanner, avoiding duplicates by IP or id."""
     data = {}
     if DEVICES_PATH.exists():
         data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}
@@ -68,18 +68,18 @@ def add_devices(new_devices: list[dict]) -> list[dict]:
 
 
 def update_device(device_id: str, new_name: str, new_port: int | None = None, mobile: bool | None = None) -> dict | None:
-    """mobile=None lascia decidere l'euristica sul nome (vedi probe.py); True/False
-    e' una scelta esplicita dell'utente, che vince sempre sull'euristica e resta
-    valida anche se il nome cambia in seguito (a differenza di un riconoscimento
-    basato solo su parole chiave nel nome, che si perde appena il dispositivo ha
-    un nome generico/IP invece di uno con "iPhone"/"Pixel"/ecc.)."""
+    """mobile=None lets the name heuristic decide (see probe.py); True/False
+    is an explicit user choice, which always beats the heuristic and stays
+    valid even if the name changes later (unlike a recognition
+    based only on keywords in the name, which is lost as soon as the device has
+    a generic name/IP instead of one with "iPhone"/"Pixel"/etc.)."""
     if not DEVICES_PATH.exists():
         return None
     data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}
     for d in data.get("devices", []):
         if d["id"] == device_id:
             if new_name != d.get("name"):
-                d["name_source"] = "user"  # scelto a mano: le scansioni non lo toccano piu'
+                d["name_source"] = "user"  # chosen by hand: scans no longer touch it
             d["name"] = new_name
             if new_port is not None:
                 d["port"] = new_port
@@ -96,8 +96,8 @@ OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share")
 
 
 def set_override(device_id: str, field: str, value: str | None) -> dict | None:
-    """Marca o tipo scelti a mano dall'utente: restano finche' non li si rimette su automatico
-    (value=None) e nessuna scansione li cambia."""
+    """Brand or type chosen by hand by the user: they stay until set back to automatic
+    (value=None) and no scan changes them."""
     if field not in OVERRIDE_FIELDS or not DEVICES_PATH.exists():
         return None
     data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}
@@ -113,8 +113,8 @@ def set_override(device_id: str, field: str, value: str | None) -> dict | None:
 
 
 def update_ip(device_id: str, new_ip: str) -> str | None:
-    """Sposta il dispositivo su un nuovo IP (stesso apparecchio che ha cambiato indirizzo).
-    Ritorna il vecchio IP, None se il dispositivo non c'e' o l'IP e' gia' di un altro."""
+    """Move the device to a new IP (same appliance that changed address).
+    Returns the old IP, None if the device does not exist or the IP already belongs to another."""
     if not DEVICES_PATH.exists():
         return None
     data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}
@@ -125,7 +125,7 @@ def update_ip(device_id: str, new_ip: str) -> str | None:
         if d["id"] == device_id:
             old = d["ip"]
             d["ip"] = new_ip
-            if d.get("name") == old:  # il nome era l'IP stesso
+            if d.get("name") == old:  # the name was the IP itself
                 d["name"] = new_ip
             _save(data)
             return old
@@ -133,8 +133,8 @@ def update_ip(device_id: str, new_ip: str) -> str | None:
 
 
 def update_auto_name(device_id: str, name: str, source: str, force: bool = False) -> bool:
-    """Sostituisce un nome automatico con uno migliore (vedi naming.is_better); il
-    controllo si rifa' qui sul file, per non scavalcare una rinomina fatta nel frattempo."""
+    """Replace an automatic name with a better one (see naming.is_better); the
+    check is redone here on the file, so as not to override a rename made in the meantime."""
     from . import naming
     if not DEVICES_PATH.exists():
         return False
@@ -150,9 +150,9 @@ def update_auto_name(device_id: str, name: str, source: str, force: bool = False
 
 
 def update_scan_info(device_id: str, scan_info: dict) -> dict | None:
-    """Salva il risultato dell'ultima scansione approfondita (sistema operativo,
-    servizi, titolo pagina) cosi' resta disponibile senza dover riscansionare
-    ad ogni caricamento della dashboard."""
+    """Save the result of the last deep scan (operating system,
+    services, page title) so it stays available without having to rescan
+    on every dashboard load."""
     if not DEVICES_PATH.exists():
         return None
     data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}

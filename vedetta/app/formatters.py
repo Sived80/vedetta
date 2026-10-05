@@ -4,29 +4,29 @@ from .i18n import t
 
 MAX_NAME_LEN = 40
 
-# Unico testo tecnico da escludere per forma: il segnaposto di nmap quando la
-# pagina non ha un <title> ("Site doesn't have a title (text/html; ...)"). Non
-# e' un titolo vero. Tutto il resto si decide con regole generiche (sotto).
+# The only technical text to exclude by shape: nmap's placeholder when the
+# page has no <title> ("Site doesn't have a title (text/html; ...)"). It is not
+# a real title. Everything else is decided with generic rules (below).
 _USELESS_TITLE_RE = re.compile(r"^site doesn't have a title", re.IGNORECASE)
 
-# Segnali strutturali nell'output di http-title: redirect non seguito o seguito
-# verso un URL di accesso ("Did not follow redirect to http://x/login",
-# "Requested resource was /login.html"): il titolo e' quello della pagina di
-# login, non del dispositivo. Una pagina d'errore HTTP inizia con il codice
-# (404, 403 Forbidden...): indipendente dalla lingua.
+# Structural signals in the http-title output: a redirect not followed, or followed
+# to a login URL ("Did not follow redirect to http://x/login",
+# "Requested resource was /login.html"): the title is that of the login
+# page, not of the device. An HTTP error page starts with the code
+# (404, 403 Forbidden...): language-independent.
 _LOGIN_REDIRECT_RE = re.compile(
     r"(did not follow redirect to|requested resource was)\s+\S*(login|signin|sign-in|logon|auth|session)", re.IGNORECASE)
 _HTTP_ERROR_TITLE_RE = re.compile(r"^[1-5]\d\d\b")
 
-# Titoli (normalizzati) che compaiono su 2+ dispositivi: se lo stesso titolo e'
-# su host diversi non identifica nessuno di essi ("Login", "Index of /", "Welcome
-# to nginx!"...). Ricalcolato dalla configurazione a ogni ciclo.
+# (Normalized) titles that appear on 2+ devices: if the same title is
+# on different hosts it identifies none of them ("Login", "Index of /", "Welcome
+# to nginx!"...). Recomputed from the configuration on every cycle.
 _generic_titles: set[str] = set()
 
 
 def normalize_title(title: str | None) -> str:
-    """Solo la prima riga (nmap aggiunge righe come 'Requested resource was ...'),
-    minuscolo, spazi compressi."""
+    """First line only (nmap adds lines like 'Requested resource was ...'),
+    lowercase, whitespace collapsed."""
     if not title:
         return ""
     first = title.strip().splitlines()[0] if title.strip() else ""
@@ -34,7 +34,7 @@ def normalize_title(title: str | None) -> str:
 
 
 def update_generic_titles(devices: list[dict]) -> None:
-    """Calcola i titoli condivisi da 2+ dispositivi (scan_info.http_title)."""
+    """Compute the titles shared by 2+ devices (scan_info.http_title)."""
     global _generic_titles
     seen: dict[str, int] = {}
     for d in devices:
@@ -45,12 +45,12 @@ def update_generic_titles(devices: list[dict]) -> None:
 
 
 def is_useless_title(title: str | None) -> bool:
-    """Placeholder tecnico di nmap (non un titolo vero)."""
+    """nmap technical placeholder (not a real title)."""
     return bool(title) and bool(_USELESS_TITLE_RE.match(" ".join(title.split())))
 
 
 def should_show_title(title: str | None) -> bool:
-    """True solo se il titolo identifica davvero il dispositivo."""
+    """True only if the title really identifies the device."""
     if not title or is_useless_title(title):
         return False
     if _LOGIN_REDIRECT_RE.search(title):
@@ -62,18 +62,18 @@ def should_show_title(title: str | None) -> bool:
 
 
 def truncate_name(name: str | None) -> str | None:
-    """Alcune sorgenti (mDNS in primis) a volte restituiscono etichette tecniche
-    lunghissime (es. nomi DNS-SD con escape non decodificati): un limite
-    generoso ma fisso evita che rompano il layout delle card."""
+    """Some sources (mDNS first and foremost) sometimes return very long
+    technical labels (e.g. DNS-SD names with undecoded escapes): a
+    generous but fixed limit keeps them from breaking the card layout."""
     if not name or len(name) <= MAX_NAME_LEN:
         return name
     return name[: MAX_NAME_LEN - 1].rstrip() + "…"
 
 
 def quantize_uptime(seconds) -> int | None:
-    """Secondi interi sotto il minuto, poi a minuti pieni: l'uptime che sta nel
-    dizionario del dispositivo cambia al massimo una volta al minuto, cosi' la
-    card non viene sostituita a ogni ciclo."""
+    """Whole seconds below a minute, then full minutes: the uptime held in the
+    device dictionary changes at most once a minute, so the
+    card is not replaced on every cycle."""
     if seconds is None:
         return None
     seconds = int(seconds)
@@ -81,7 +81,7 @@ def quantize_uptime(seconds) -> int | None:
 
 
 def format_uptime(seconds) -> str | None:
-    """Testo nella lingua corrente (chiamata dai template tramite filtro)."""
+    """Text in the current language (called from the templates via a filter)."""
     if seconds is None:
         return None
     seconds = int(seconds)
@@ -96,7 +96,7 @@ def format_uptime(seconds) -> str | None:
 
 
 def format_uptime_short(seconds) -> str | None:
-    """Solo secondi, minuti o ore (per le tabelle, dove lo spazio e' poco)."""
+    """Seconds, minutes or hours only (for tables, where space is tight)."""
     if seconds is None:
         return None
     seconds = int(seconds)
@@ -107,9 +107,9 @@ def format_uptime_short(seconds) -> str | None:
     return t("uptime.short_hours", n=seconds // 3600)
 
 
-# Le qualita' sono codici neutri ("excellent"...): il testo si sceglie in
-# visualizzazione (chiave signal.<codice>), cosi' lo stato condiviso tra i
-# browser non dipende dalla lingua di nessuno.
+# Qualities are neutral codes ("excellent"...): the text is chosen at
+# display time (key signal.<code>), so the state shared among
+# browsers does not depend on anyone's language.
 def wifi_quality(rssi) -> tuple[str, str] | tuple[None, None]:
     if rssi is None:
         return None, None

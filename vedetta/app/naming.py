@@ -1,31 +1,31 @@
-"""Nomi dei dispositivi. Principi comuni agli altri progetti (NetAlertX, Home
-Assistant, Pi-hole): ogni fonte propone un nome, i nomi inutili si scartano, tra
-quelli rimasti vince la fonte piu' affidabile, il nome scelto a mano non si
-tocca mai e, se non si trova nulla, resta l'indirizzo IP.
+"""Device names. Principles shared with the other projects (NetAlertX, Home
+Assistant, Pi-hole): each source proposes a name, useless names are discarded, among
+the remaining ones the most reliable source wins, a hand-chosen name is never
+touched and, if nothing is found, the IP address remains.
 
-Il nome si salva con la sua fonte ("name_source"): "user" = scelto dall'utente
-(mai sovrascritto); le altre sono fonti automatiche, e una scansione successiva
-puo' sostituire il nome solo con uno di una fonte piu' affidabile."""
+The name is saved together with its source ("name_source"): "user" = chosen by the user
+(never overwritten); the others are automatic sources, and a later scan
+may replace the name only with one from a more reliable source."""
 import re
 
-# Piu' alto = piu' affidabile. "adapter": nome dato dal dispositivo stesso via la
-# sua API aperta (Shelly); "mdns": nome pubblicato dal dispositivo (servizio con
-# nome scelto dall'utente o hostname .local); "upnp": friendlyName; "dhcp":
-# hostname annunciato al router; "netbios": nome Windows/Samba; "nmap": DNS inverso.
-# "onvif": nome dichiarato via ONVIF (spesso generico, es. "IPCAM"), quindi per ultimo.
-# "tls": nome host nel certificato del dispositivo (solo nomi di rete locale, vedi cn_host).
-# "weak": nome segnaposto del sistema ("Android_MGDZ1OUL"): meglio dell'IP, peggio di qualunque altro.
+# Higher = more reliable. "adapter": name given by the device itself via its
+# open API (Shelly); "mdns": name published by the device (service with a
+# user-chosen name or .local hostname); "upnp": friendlyName; "dhcp":
+# hostname announced to the router; "netbios": Windows/Samba name; "nmap": reverse DNS.
+# "onvif": name declared via ONVIF (often generic, e.g. "IPCAM"), hence last.
+# "tls": host name in the device's certificate (local network names only, see cn_host).
+# "weak": system placeholder name ("Android_MGDZ1OUL"): better than the IP, worse than any other.
 PRIORITY = {"adapter": 90, "mdns": 70, "upnp": 65, "dhcp": 55, "netbios": 45, "nmap": 40, "tls": 38, "onvif": 35, "web": 30,
             "ha": 68, "ha_user": 95, "weak": 20}
 
-# Parola generica di piattaforma + codice casuale: l'hostname predefinito di un sistema, non il nome del dispositivo.
+# Generic platform word + random code: a system's default hostname, not the device's name.
 _PLACEHOLDER_RE = re.compile(r"^(android|iphone|ipad|galaxy|tablet|phone|device|esp|espressif|wlan|wifi|smart|unknown)[-_ ]?"
                              r"(?=[0-9a-z]*\d)[0-9a-z]{5,}$", re.IGNORECASE)
 
 _LOCAL_CN = (".local", ".lan", ".home", ".fritz.box", ".localdomain", ".internal", ".home.arpa", ".homenet")
 
 
-# Titoli di pagina che non sono un nome (schermate di accesso, errori, pagine di benvenuto).
+# Page titles that are not a name (login screens, errors, welcome pages).
 _GENERIC_TITLES = {"login", "log in", "sign in", "signin", "welcome", "index", "home", "default", "error", "dashboard",
                    "admin", "web interface", "webui", "web ui", "authentication", "authorization required", "status",
                    "configuration", "setup", "main menu", "untitled", "document", "page", "it works", "test page"}
@@ -38,23 +38,23 @@ _GENERIC_FIRST = {"login", "log", "sign", "signin", "welcome", "error", "index",
 
 
 def title_name(title: str | None) -> str | None:
-    """Nome dal titolo della pagina web del dispositivo ("Termostato - Main Menu" ->
-    "Termostato", "pve - Proxmox Virtual Environment" -> "pve"). None per i titoli generici
-    ("Login", "404 Not Found"): il titolo e' una fonte debole, vale solo se sembra un nome."""
+    """Name from the title of the device's web page ("Termostato - Main Menu" ->
+    "Termostato", "pve - Proxmox Virtual Environment" -> "pve"). None for generic titles
+    ("Login", "404 Not Found"): the title is a weak source, valid only if it looks like a name."""
     if not title:
         return None
     text = " ".join(str(title).split())
-    from .formatters import is_useless_title, should_show_title  # tardivo: formatters importa i18n
+    from .formatters import is_useless_title, should_show_title  # late import: formatters imports i18n
     if is_useless_title(text) or not should_show_title(text):
-        return None  # segnaposto di nmap ("Site doesn't have a title"), login, errori HTTP
+        return None  # nmap placeholder ("Site doesn't have a title"), login, HTTP errors
     cand = re.split(r"\s+[-|–—:]\s+|\s*\|\s*", text)[0].strip()
     cand = _TITLE_SUFFIX.sub("", cand).strip()
     if re.search(r"\bv?\d+(\.\d+){1,3}$", cand):
-        return None   # "software 1.47.45": titolo di un programma, non il nome dell'apparecchio
+        return None   # "software 1.47.45": the title of a program, not the appliance's name
     if not cand or len(cand) > 40 or cand.lower() in _GENERIC_TITLES or _TITLE_NOISE.search(cand):
         return None
-    # Un percorso ("/login.html") o una frase che comincia con una parola generica
-    # ("Login Requested resource...") e' una schermata, non un nome.
+    # A path ("/login.html") or a phrase that starts with a generic word
+    # ("Login Requested resource...") is a screen, not a name.
     first = re.split(r"[\s_]+", cand.lower())[0]
     if "/" in cand or first in _GENERIC_TITLES or first in _GENERIC_FIRST:
         return None
@@ -62,10 +62,10 @@ def title_name(title: str | None) -> str | None:
 
 
 def cn_host(subject: str | None) -> str | None:
-    """Nome host dal soggetto di un certificato ("commonName=pve.local/O=..."), solo se
-    e' un nome di rete locale (una parola sola o con suffisso .local/.lan/...): un
-    dominio internet (tplinkwifi.net) o un certificato jolly (*.example.com) non e' il
-    nome del dispositivo."""
+    """Host name from a certificate's subject ("commonName=pve.local/O=..."), only if
+    it is a local network name (a single word or with a .local/.lan/... suffix): an
+    internet domain (tplinkwifi.net) or a wildcard certificate (*.example.com) is not the
+    device's name."""
     m = re.search(r"commonName=([^/,]+)", subject or "")
     if not m:
         return None
@@ -85,7 +85,7 @@ _GENERIC = {"localhost", "unknown", "unnamed", "default", "device", "host", "non
 
 
 def _unescape(text: str) -> str:
-    """Sequenze di escape del DNS-SD: \\032 = spazio (decimale), \\. = punto."""
+    """DNS-SD escape sequences: \\032 = space (decimal), \\. = dot."""
     def repl(m: re.Match) -> str:
         g = m.group(1)
         return chr(int(g)) if g.isdigit() and len(g) == 3 else g
@@ -93,8 +93,8 @@ def _unescape(text: str) -> str:
 
 
 def _looks_generated(token: str) -> bool:
-    """Parte di nome che pare un codice generato (esadecimale lungo): id, hash,
-    suffissi casuali. Un numero corto ("14", "S23") non lo e'."""
+    """Part of a name that looks like a generated code (long hexadecimal): id, hash,
+    random suffixes. A short number ("14", "S23") is not one."""
     if not re.fullmatch(r"[0-9a-fA-F]+", token) or len(token) < 8:
         return False
     has_digit = any(c.isdigit() for c in token)
@@ -103,14 +103,14 @@ def _looks_generated(token: str) -> bool:
 
 
 def clean_name(raw: str | None) -> str | None:
-    """Nome normalizzato oppure None se non e' un nome utilizzabile."""
+    """Normalized name, or None if it is not a usable name."""
     if not raw:
         return None
     name = " ".join(_unescape(str(raw)).split())
-    # Un IP dentro il nome ("AFTMM@ES(192.168.1.5)") non fa parte del nome: si toglie.
+    # An IP inside the name ("AFTMM@ES(192.168.1.5)") is not part of the name: it is removed.
     name = re.sub(r"[(\[]?\b\d{1,3}(?:\.\d{1,3}){3}\b[)\]]?", "", name).strip(" -_@:,")
-    # "<id>@<nome>" (istanza di servizio AirPlay/Whisperplay): conta solo la parte dopo la chiocciola,
-    # e solo se e' abbastanza lunga da essere un nome ("ES" non lo e').
+    # "<id>@<name>" (AirPlay/Whisperplay service instance): only the part after the at sign counts,
+    # and only if it is long enough to be a name ("ES" is not).
     if "@" in name:
         name = name.split("@", 1)[1].strip(" -_@:,")
         if len(name) < 4:
@@ -121,13 +121,13 @@ def clean_name(raw: str | None) -> str | None:
             name, low = name[: -len(suffix)], low[: -len(suffix)]
     low = name.lower()
     if low.startswith("_") or "._tcp" in low or "._udp" in low or low.endswith(".arpa"):
-        return None  # tipo di servizio DNS-SD, non un nome
-    # Il codice generato va cercato prima di tagliare il dominio, altrimenti
-    # "amzn.dmgr.05837F86..." si ridurrebbe a un "amzn" apparentemente valido.
+        return None  # a DNS-SD service type, not a name
+    # The generated code must be looked for before cutting off the domain, otherwise
+    # "amzn.dmgr.05837F86..." would be reduced to an apparently valid "amzn".
     if any(_looks_generated(t) for t in _TOKEN_RE.split(name) if t):
         return None
     if " " not in name and "." in name and not _IP_RE.match(name):
-        name = name.split(".", 1)[0]  # nome di dominio completo: conta solo l'host
+        name = name.split(".", 1)[0]  # fully qualified domain name: only the host counts
     name = name.strip(" ._-")
     low = name.lower()
     if not name or low in _GENERIC or low.startswith("("):
@@ -138,7 +138,7 @@ def clean_name(raw: str | None) -> str | None:
 
 
 def pick(candidates: list[tuple[str, str | None]]) -> tuple[str | None, str | None]:
-    """(nome, fonte) migliori tra i candidati [(fonte, nome_grezzo)], o (None, None)."""
+    """Best (name, source) among the candidates [(source, raw_name)], or (None, None)."""
     best: tuple[int, str, str] | None = None
     for source, raw in candidates:
         name = clean_name(raw)
@@ -152,31 +152,31 @@ def pick(candidates: list[tuple[str, str | None]]) -> tuple[str | None, str | No
     return (best[1], best[2]) if best else (None, None)
 
 
-# Nome tecnico generato da una integrazione ("shelly1-8CAAB50000A2", "plug_4A3F21"): sigla + codice esadecimale.
+# Technical name generated by an integration ("shelly1-8CAAB50000A2", "plug_4A3F21"): abbreviation + hexadecimal code.
 _TECHNICAL_RE = re.compile(r"^[a-z][a-z0-9]*[-_][0-9a-f]{6,12}$", re.IGNORECASE)
 _PLATFORM_WORDS = {"android", "iphone", "ipad", "ipod", "tablet", "phone", "device", "smartphone"}
 
 
 def is_placeholder(name: str | None) -> bool:
-    """Nome predefinito del sistema: parola di piattaforma sola ("Android", "iPhone") o con un
-    codice casuale ("Android_MGDZ1OUL"). Non e' un nome scelto: cede a qualunque altro."""
+    """Default system name: a bare platform word ("Android", "iPhone") or one with a
+    random code ("Android_MGDZ1OUL"). It is not a chosen name: it yields to any other."""
     if not name:
         return False
-    # Anche un nome salvato che oggi non supererebbe la pulizia (es. un'istanza di servizio "ABC@ES").
+    # Also a saved name that would not pass cleaning today (e.g. a service instance "ABC@ES").
     return name.strip().lower() in _PLATFORM_WORDS or bool(_PLACEHOLDER_RE.match(name)) or bool(_TECHNICAL_RE.match(name.strip())) or (clean_name(name) is None and not _IP_RE.match(name.strip()))
 
 
 def is_better(device: dict, new_source: str) -> bool:
-    """True se un nome automatico della fonte indicata puo' sostituire quello del
-    dispositivo: mai su un nome scelto dall'utente (o di cui non si conosce
-    l'origine ed e' diverso dall'IP), si' se il nome e' ancora l'IP o viene da
-    una fonte meno affidabile."""
+    """True if an automatic name from the given source may replace the device's
+    one: never over a user-chosen name (or one whose origin is unknown
+    and which differs from the IP), yes if the name is still the IP or comes from
+    a less reliable source."""
     name = device.get("name")
     if not name or name == device.get("ip"):
         return True
     source = device.get("name_source")
     if source == "user" or (source not in PRIORITY and not is_placeholder(name)):
-        return False  # scelto a mano, o nome precedente senza origine: si presume scelto a mano
+        return False  # chosen by hand, or a previous name without origin: presumed chosen by hand
     if is_placeholder(name):
-        source = "weak"  # salvato come "mdns" prima che i segnaposto avessero poco peso
+        source = "weak"  # saved as "mdns" before placeholders were given little weight
     return PRIORITY[new_source] > PRIORITY[source]

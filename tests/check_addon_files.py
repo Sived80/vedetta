@@ -1,5 +1,5 @@
-"""I file che Home Assistant legge per mostrare l'app (config.yaml, repository.yaml) devono essere YAML validi
-e avere i campi obbligatori: un errore qui rende l'app invisibile nel negozio senza nessun messaggio."""
+"""The files Home Assistant reads to show the app (config.yaml, repository.yaml) must be valid YAML
+and have the required fields: an error here makes the app invisible in the store with no message at all."""
 import sys
 from pathlib import Path
 
@@ -33,6 +33,6 @@ for key in ("name", "url", "maintainer"):
     assert repo.get(key), f"repository.yaml: manca {key}"
 assert repo["url"].startswith("https://github.com/") and "example.invalid" not in repo["url"], repo["url"]
 
-# l'immagine del Dockerfile deve avere un riferimento di base e il file di avvio deve esistere
+# the Dockerfile image must have a base reference and the startup file must exist
 assert (APP / "Dockerfile").exists() and (APP / "run.sh").exists()
 print("TUTTO OK")

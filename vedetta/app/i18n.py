@@ -1,10 +1,10 @@
-"""Internazionalizzazione: una cartella per lingua in app/locales/<codice>/ con
-uno o piu' file JSON piatti chiave -> testo (server.json per i template e il
-Python, js.json per il browser). Aggiungere una lingua = aggiungere la cartella
-(con "lang.name" in server.json): nessun altro punto da toccare.
+"""Internationalization: one folder per language in app/locales/<code>/ with
+one or more flat JSON files key -> text (server.json for the templates and
+Python, js.json for the browser). Adding a language = adding the folder
+(with "lang.name" in server.json): nothing else to touch.
 
-La lingua e' una scelta per browser (cookie). Parte in inglese. Il nome
-dell'app ("Vedetta") non e' mai tradotto."""
+The language is a per-browser choice (cookie). It starts in English. The app
+name ("Vedetta") is never translated."""
 import contextvars
 import json
 import os
@@ -33,7 +33,7 @@ _load()
 
 
 def available() -> list[tuple[str, str]]:
-    """[(codice, nome nella propria lingua)], l'inglese per primo."""
+    """[(code, name in its own language)], English first."""
     codes = sorted(_tables, key=lambda c: (c != DEFAULT_LANG, c))
     return [(c, _tables[c].get("lang.name", c)) for c in codes]
 
@@ -56,8 +56,8 @@ def translate(lang: str, key: str, **params) -> str:
 
 
 def t(key: str, **params) -> str:
-    """Testo nella lingua della richiesta/del flusso in corso (usata anche
-    dai template Jinja come funzione globale)."""
+    """Text in the language of the current request/flow (also used
+    by the Jinja templates as a global function)."""
     return translate(current_lang.get(), key, **params)
 
 
@@ -68,22 +68,22 @@ def use(lang: str | None) -> str:
 
 
 def use_request(request) -> str:
-    """Lingua della richiesta: ?lang= nell'indirizzo, poi intestazione X-Lang, poi
-    cookie (che dentro un iframe di un altro sito il browser non rimanda)."""
+    """Language of the request: ?lang= in the address, then the X-Lang header, then
+    the cookie (which the browser does not send back inside an iframe of another site)."""
     return use(request.query_params.get("lang") or request.headers.get("x-lang") or request.cookies.get(COOKIE_NAME)
-               or os.environ.get("VEDETTA_LANGUAGE"))  # ripiego: lingua predefinita (app di HA)
+               or os.environ.get("VEDETTA_LANGUAGE"))  # fallback: default language (HA add-on)
 
 
 def js_table(lang: str) -> dict[str, str]:
-    """Le sole chiavi per il browser, con ripiego sull'inglese."""
+    """Only the keys for the browser, falling back to English."""
     merged = {k: v for k, v in _tables.get(DEFAULT_LANG, {}).items() if k.startswith("js.")}
     merged.update({k: v for k, v in _tables.get(lang, {}).items() if k.startswith("js.")})
     return merged
 
 
 def t_or(key: str, default: str) -> str:
-    """Come t(), ma se la chiave non esiste in nessuna lingua restituisce il
-    valore dato (etichette che arrivano dai dispositivi, es. 'Model')."""
+    """Like t(), but if the key does not exist in any language it returns the
+    given value (labels coming from the devices, e.g. 'Model')."""
     if key in _tables.get(current_lang.get(), {}) or key in _tables.get(DEFAULT_LANG, {}):
         return t(key)
     return default

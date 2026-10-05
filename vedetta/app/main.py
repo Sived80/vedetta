@@ -31,10 +31,10 @@ async def lifespan(_: FastAPI):
     state.start()
     nightly = asyncio.create_task(nightly_loop())
     dhcp_transport = await dhcp.start()
-    ha_registry.start()  # registro di Home Assistant (solo lettura; vuoto fuori da HA)
-    mdns_listener.start(state)  # nomi Bonjour: memoria e ascolto continuo
-    await mqtt_service.start(state)  # pubblicazione MQTT verso HA (spenta se non configurata)
-    roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert)  # chi fa cosa: gateway, DHCP, DNS, ripetitori
+    ha_registry.start()  # Home Assistant registry (read-only; empty outside HA)
+    mdns_listener.start(state)  # Bonjour names: memory and continuous listening
+    await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
+    roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert)  # who does what: gateway, DHCP, DNS, repeaters
     logger.info("Servizio avviato")
     yield
     if dhcp_transport:
@@ -54,16 +54,16 @@ app.include_router(routes_flows.router)
 app.include_router(routes_ha.router)
 app.include_router(routes_mqtt.router)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-app.add_middleware(IngressMiddleware)  # prefisso ingress -> request.state.base; opzionale 403 fuori dal Supervisor
-templates = Jinja2Templates(directory=BASE_DIR / "templates", context_processors=[template_context])  # `base` nei template
+app.add_middleware(IngressMiddleware)  # ingress prefix -> request.state.base; optional 403 outside the Supervisor
+templates = Jinja2Templates(directory=BASE_DIR / "templates", context_processors=[template_context])  # `base` in the templates
 
 
 def static_version(rel_path: str) -> str:
-    """Data di modifica del file statico, da appendere come ?v= nell'URL: il
-    browser tratta ogni valore diverso come una risorsa diversa, quindi dopo un
-    deploy scarica sempre la versione nuova invece di servire da cache quella
-    vecchia - evita di dover spiegare "fai un refresh forzato" a ogni modifica
-    di style.css (successo piu' volte in questa stessa sessione)."""
+    """Modification date of the static file, to append as ?v= in the URL: the
+    browser treats every different value as a different resource, so after a
+    deploy it always downloads the new version instead of serving the old
+    one from cache - this avoids having to explain "do a hard refresh" after every change
+    to style.css (happened several times in this very session)."""
     try:
         return str(int((BASE_DIR / "static" / rel_path).stat().st_mtime))
     except OSError:
@@ -86,13 +86,13 @@ templates.env.globals["t_or"] = i18n.t_or
 
 @app.get("/")
 async def root(request: Request):
-    """La pagina e' /ha (ingress_entry): alla radice si rimanda li'."""
+    """The page is /ha (ingress_entry): the root redirects there."""
     return RedirectResponse((getattr(request.state, "base", "") or "") + "/ha")
 
 
 @app.get("/healthz")
 async def healthz():
-    """Controllo di salute per il watchdog del Supervisor: risponde solo se il servizio e' vivo."""
+    """Health check for the Supervisor watchdog: it answers only if the service is alive."""
     return {"ok": True}
 
 
@@ -101,7 +101,7 @@ async def api_set_lang(code: str, request: Request):
     if code not in dict(i18n.available()):
         raise HTTPException(404, "Unknown language")
     response = JSONResponse({"lang": code})
-    # path del cookie = prefisso ingress (vuoto alla radice -> "/", come prima)
+    # cookie path = ingress prefix (empty at the root -> "/", as before)
     response.set_cookie(i18n.COOKIE_NAME, code, max_age=i18n.COOKIE_MAX_AGE, samesite="lax",
                         path=getattr(request.state, "base", "") or "/")
     return response
@@ -119,7 +119,7 @@ async def api_refresh():
 
 @app.post("/api/pause")
 async def api_pause(request: Request):
-    """Mette in pausa il controllo periodico: {"minutes": N}; 0 = fino alla ripresa."""
+    """Pause the periodic check: {"minutes": N}; 0 = until resumed."""
     try:
         body = await request.json()
     except ValueError:
@@ -156,10 +156,10 @@ async def _run_quick_scan() -> tuple[list[dict], int]:
         ]
         logger.info("Ricerca rapida: %d host visti, %d nuovi", len(hosts), len(new_hosts))
         journal.add("detail", "journal.quick", icon="magnify", seen=len(hosts), new=len(new_hosts))
-        # Il contatore dei nuovi dispositivi si riallinea a cio' che la ricerca ha trovato.
+        # The new-devices counter is realigned to what the search found.
         newdevices.sync_present({h["mac"] for h in hosts if h.get("mac")})
         state.set_new_devices(await asyncio.to_thread(newdevices.list_new))
-        # Gli ignorati non si mostrano; il loro numero va nell'intestazione.
+        # Ignored ones are not shown; their count goes in the header.
         visible = [h for h in new_hosts if not blocklist.matches(mac=h["mac"], ip=h["ip"], name=h["hostname"])]
         return visible, len(new_hosts) - len(visible)
     finally:
@@ -168,14 +168,14 @@ async def _run_quick_scan() -> tuple[list[dict], int]:
 
 @app.post("/api/scan/quick")
 async def api_scan_quick():
-    """Una sola ricerca alla volta: chi la chiede mentre e' in corso (anche da un altro
-    dispositivo) aspetta quella gia' avviata e ne riceve lo stesso risultato."""
+    """Only one search at a time: whoever requests it while one is running (even from another
+    device) waits for the one already started and receives the same result."""
     global _quick_scan
     if _quick_scan is None or _quick_scan.done():
         _quick_scan = asyncio.create_task(_run_quick_scan())
     else:
         logger.info("Ricerca rapida gia' in corso: la richiesta si unisce a quella")
-    # shield: se un client si disconnette la ricerca continua per gli altri.
+    # shield: if a client disconnects the search continues for the others.
     visible, ignored = await asyncio.shield(_quick_scan)
     return JSONResponse(visible, headers={"X-Ignored-Count": str(ignored)})
 
@@ -184,23 +184,23 @@ def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
 
-# Senza questi header alcuni browser/proxy possono bufferizzare la risposta
-# invece di consegnarla un pezzo alla volta, vanificando lo streaming.
+# Without these headers some browsers/proxies may buffer the response
+# instead of delivering it a piece at a time, defeating the streaming.
 SSE_HEADERS = {"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"}
 
 
 @app.post("/api/scan/deep")
 async def api_scan_deep(request: Request):
-    """Streaming (SSE): un evento 'progress' per ogni dispositivo appena finito
-    di essere approfondito, cosi' il pop-up puo' mostrare l'avanzamento reale
-    invece di un'attesa cieca."""
+    """Streaming (SSE): a 'progress' event for every device that has just finished
+    being analyzed in depth, so the pop-up can show the real progress
+    instead of a blind wait."""
     body = await request.json()
     ips = await filter_local_ips([ip for ip in body.get("ips", []) if scanner.is_valid_ipv4(ip)])
     hints = body.get("hints") or {}
 
-    # I lavori partono qui, non dentro il generatore: se il browser cambia pagina
-    # lo stream si interrompe ma le scansioni proseguono, e l'attivita' resta
-    # segnata finche' non finiscono davvero.
+    # The jobs start here, not inside the generator: if the browser changes page
+    # the stream is interrupted but the scans continue, and the activity stays
+    # flagged until they really finish.
     state.search_started()
     tasks = pipeline.start_associative(ips, hints)
     all_done = asyncio.gather(*tasks, return_exceptions=True)
@@ -218,7 +218,7 @@ async def api_scan_deep(request: Request):
             except asyncio.CancelledError:
                 me = asyncio.current_task()
                 if me is not None and getattr(me, "cancelling", lambda: 0)():
-                    raise  # e' il flusso stesso a essere chiuso, non una ricerca annullata
+                    raise  # the stream itself is being closed, not a cancelled search
                 done += 1
                 continue
             except Exception:
@@ -235,8 +235,8 @@ async def api_scan_deep(request: Request):
     return StreamingResponse(stream(), media_type="text/event-stream", headers=SSE_HEADERS)
 
 
-# Cio' che la ricerca ha capito del dispositivo e che vale la pena tenere all'aggiunta
-# (testi brevi): web, auto-dichiarazioni (UPnP, mDNS, ONVIF, interfacce locali), TLS/SSH.
+# What the search has learned about the device and that is worth keeping on adding
+# (short texts): web, self-declarations (UPnP, mDNS, ONVIF, local interfaces), TLS/SSH.
 SCAN_INFO_KEYS = ("http_title", "http_server", "mdns_name", "mdns_model", "mdns_manufacturer", "mdns_services",
                   "upnp_name", "upnp_manufacturer", "upnp_model", "netbios_name", "snmp_descr", "onvif_name",
                   "onvif_hardware", "onvif_manufacturer", "wsd_types", "rtsp_server", "tls_subject", "tls_issuer",
@@ -245,8 +245,8 @@ SCAN_INFO_KEYS = ("http_title", "http_server", "mdns_name", "mdns_model", "mdns_
 
 @app.post("/api/scan/cancel")
 async def api_scan_cancel(request: Request):
-    """Annulla le ricerche associative in corso (tutte, o solo gli IP indicati):
-    i processi nmap vengono terminati, i risultati gia' completati restano validi."""
+    """Cancel the associative searches in progress (all, or only the given IPs):
+    the nmap processes are terminated, results already completed remain valid."""
     try:
         body = await request.json()
     except ValueError:
@@ -273,8 +273,8 @@ async def api_devices_add(request: Request):
             entry["name_source"] = c["name_source"]
         if c.get("port"):
             entry["port"] = int(c["port"])
-        # Cio' che la ricerca ha gia' capito del dispositivo (server e titolo web):
-        # solo testi brevi e solo queste chiavi.
+        # What the search has already learned about the device (server and web title):
+        # only short texts and only these keys.
         info = c.get("scan_info")
         if isinstance(info, dict):
             keep = {k: str(info[k])[:200] for k in SCAN_INFO_KEYS if info.get(k)}
@@ -291,7 +291,7 @@ async def api_devices_add(request: Request):
         for d in added:
             journal.add("normal", "journal.added", icon="plus-circle", name=d.get("name") or d["ip"], ip=d["ip"])
         await asyncio.gather(*(state.refresh_device(d["id"]) for d in added))
-        await state.check_new_devices()  # un MAC 'new' appena aggiunto passa a 'known'
+        await state.check_new_devices()  # a just-added 'new' MAC becomes 'known'
     return {"added": added}
 
 
@@ -312,7 +312,7 @@ async def api_settings_set(request: Request):
         before = settings.load()["poll_interval"]
         updated = settings.update(body)
         if updated["poll_interval"] != before:
-            state.trigger()  # il nuovo intervallo vale subito: sveglia il ciclo
+            state.trigger()  # the new interval applies immediately: wake the loop
         return updated
     except ValueError as exc:
         raise HTTPException(400, f"Valore non valido: {exc}")
@@ -362,12 +362,12 @@ async def api_new_devices_ignore(request: Request):
 
 @app.post("/api/devices/{device_id}/wake")
 async def api_device_wake(device_id: str):
-    """Wake-on-LAN: magic packet in broadcast (porte 9 e 7)."""
+    """Wake-on-LAN: magic packet in broadcast (ports 9 and 7)."""
     device = next((d for d in devices_config.load_devices() if d["id"] == device_id), None)
     if device is None:
         raise HTTPException(404, "Dispositivo non trovato")
-    # Un dispositivo spento non mostra piu' il MAC al probe: si ripiega sull'ultimo
-    # MAC visto nello storico, poi su quello noto per il suo IP.
+    # A powered-off device no longer shows the MAC to the probe: fall back to the last
+    # MAC seen in the history, then to the one known for its IP.
     mac = (state.devices.get(device_id) or {}).get("mac") or device.get("mac")
     if not wol.is_valid_mac(mac):
         mac = await asyncio.to_thread(history.last_mac, device_id)
@@ -386,8 +386,8 @@ async def api_device_wake(device_id: str):
     if not sent:
         raise HTTPException(500, "Invio non riuscito")
     logger.info("Wake-on-LAN inviato a %s (%s)", device.get("name") or device["ip"], mac)
-    # Il pacchetto non ha risposta: si guarda se il dispositivo si accende entro 2 minuti e, se succede,
-    # si ricorda che la sveglia funziona (wol_ok), cosi' il pulsante resta offerto per quel dispositivo.
+    # The packet gets no reply: we check whether the device turns on within 2 minutes and, if so,
+    # we remember that wake-up works (wol_ok), so the button stays offered for that device.
     asyncio.create_task(_watch_wake(device_id))
     return {"sent": True}
 
@@ -418,8 +418,8 @@ async def api_device_rename(device_id: str, request: Request):
                 raise ValueError
         except (ValueError, TypeError):
             raise HTTPException(400, "Porta non valida")
-    # mobile: true/false = scelta esplicita dell'utente, assente/null = torna
-    # a decidere in base al nome (vedi probe.py).
+    # mobile: true/false = explicit user choice, absent/null = goes back
+    # to being decided by the name (see probe.py).
     mobile = body.get("mobile")
     mobile = bool(mobile) if isinstance(mobile, bool) else None
     try:
@@ -436,10 +436,10 @@ async def api_device_rename(device_id: str, request: Request):
 
 @app.post("/api/devices/{device_id}/override")
 async def api_device_override(device_id: str, request: Request):
-    """Marca e/o tipo scelti a mano ("brand", "type"); null = torna automatico."""
+    """Brand and/or type chosen by hand ("brand", "type"); null = back to automatic."""
     body = await request.json()
     updated = None
-    if "ha_share" in body:   # condividi con Home Assistant (true) o rimuovi da HA (false)
+    if "ha_share" in body:   # share with Home Assistant (true) or remove from HA (false)
         updated = devices_config.set_override(device_id, "ha_share", "1" if body["ha_share"] is True else None) or updated
         mqtt_service.refresh()
     for key, field in (("brand", "brand_user"), ("type", "type_user")):
@@ -461,7 +461,7 @@ async def api_device_override(device_id: str, request: Request):
 async def api_device_delete(device_id: str, ignore: bool = False):
     gone = state.devices.get(device_id) or {}
     if ignore:
-        # Prima di eliminarlo: serve cio' che si sa del dispositivo per riconoscerlo dopo.
+        # Before deleting it: what we know about the device is needed to recognize it later.
         known = state.devices.get(device_id) or {}
         name = None if known.get("name") == known.get("ip") else known.get("name")
         mac = known.get("mac") or state._last_mac.get(device_id)
@@ -485,10 +485,10 @@ async def api_device_delete(device_id: str, ignore: bool = False):
 
 @app.post("/api/devices/rescan")
 async def api_devices_rescan(request: Request):
-    """Rilancia una scansione approfondita (servizi, titolo pagina web) sui
-    dispositivi scelti dall'utente. Lenta di proposito: va lanciata a mano,
-    non ad ogni refresh automatico. Streaming (SSE): un evento per dispositivo
-    completato, per mostrare l'avanzamento reale nel pop-up."""
+    """Re-run a deep scan (services, web page title) on the
+    devices chosen by the user. Slow on purpose: it must be launched by hand,
+    not on every automatic refresh. Streaming (SSE): one event per completed
+    device, to show the real progress in the pop-up."""
     body = await request.json()
     ids = set(body.get("ids", []))
     devices = [d for d in devices_config.load_devices() if d["id"] in ids]
@@ -497,8 +497,8 @@ async def api_devices_rescan(request: Request):
     logger.info("Scansione approfondita avviata su %d dispositivi: %s", len(devices), ", ".join(d["ip"] for d in devices))
     state.rescan_started([d["id"] for d in devices])
     try:
-        # Le funzioni di lotto del profilo deep (mDNS, SSDP: broadcast unico per
-        # tutta la LAN) vanno fatte una sola volta, non ripetute per ogni dispositivo.
+        # The deep profile's batch functions (mDNS, SSDP: a single broadcast for
+        # the whole LAN) must be run only once, not repeated for every device.
         batch = await pipeline.prepare_batch("deep", [d["ip"] for d in devices])
     except Exception:
         for d in devices:
@@ -514,8 +514,8 @@ async def api_devices_rescan(request: Request):
             state.rescan_finished(d["id"])
         return d
 
-    # Task creati qui e non nel generatore: se il browser cambia pagina lo stream
-    # si interrompe ma le scansioni proseguono fino in fondo.
+    # Tasks created here and not in the generator: if the browser changes page the stream
+    # is interrupted but the scans carry on to the end.
     tasks = [asyncio.create_task(rescan_one(d)) for d in devices]
     for task in tasks:
         state.track(task)

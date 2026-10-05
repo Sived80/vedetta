@@ -9,7 +9,7 @@ from .iface import lan_iface
 
 
 async def get_local_network() -> tuple[str, str]:
-    """Ritorna (subnet CIDR, IP proprio del container)."""
+    """Returns (CIDR subnet, the container's own IP)."""
     proc = await asyncio.create_subprocess_exec(
         "ip", "-o", "-4", "addr", "show", lan_iface(),
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
@@ -24,9 +24,9 @@ async def get_local_network() -> tuple[str, str]:
 
 
 async def filter_local_ips(ips: list[str]) -> list[str]:
-    """Tiene solo gli IP della subnet del container. Senza questo controllo gli
-    endpoint di scansione accettavano qualunque IPv4: da un browser si poteva
-    far lanciare nmap dal container verso indirizzi esterni alla LAN."""
+    """Keeps only the IPs of the container's subnet. Without this check the
+    scan endpoints accepted any IPv4: from a browser one could
+    make the container launch nmap towards addresses outside the LAN."""
     subnet, _ = await get_local_network()
     network = ipaddress.ip_network(subnet)
     allowed, rejected = [], []

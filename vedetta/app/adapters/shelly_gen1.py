@@ -19,8 +19,8 @@ async def probe(ip: str, port: int = 80) -> dict:
         "name": settings.get("name") or device.get("hostname"),
         "uptime_seconds": status.get("uptime"),
         "mac": mac,
-        # Il campo "bat" di /status c'e' solo sui modelli a batteria (H&T, Flood,
-        # Door/Window, Motion...): e' una batteria di RETE, il dispositivo e' fisso.
+        # The "bat" field of /status only exists on battery-powered models (H&T, Flood,
+        # Door/Window, Motion...): it is a NETWORK-device battery, the device itself is fixed.
         "battery": "bat" in status,
         "signal_kind": "wifi",
         "signal_value": status.get("wifi_sta", {}).get("rssi"),

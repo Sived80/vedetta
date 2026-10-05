@@ -1,49 +1,49 @@
-"""Identita' di un dispositivo in un solo punto: marca del prodotto, "mobile" e
-batteria. Lo usa probe.py. Principio comune (lo stesso di Fing, Fingerbank e delle
-integrazioni di Home Assistant): niente verdetto da un solo indizio, ma piu'
-evidenze, ognuna con una fonte e una confidenza, e le fonti dirette del
-dispositivo battono quelle indirette.
+"""Identity of a device in a single place: product brand, "mobile" and
+battery. Used by probe.py. Common principle (the same as Fing, Fingerbank and the
+Home Assistant integrations): no verdict from a single clue, but multiple
+pieces of evidence, each with a source and a confidence, and the device's own
+direct sources beat the indirect ones.
 
-MARCA. Il prefisso MAC (OUI) e' il produttore della SCHEDA, non del prodotto: vedi
-brands.py (vendor_roles: component, virtual, dual, brand). Qui si espone il
-risultato a due livelli:
-  vendor            produttore del prefisso MAC (chip/scheda), ripulito
-  vendor_role       component | virtual | dual | brand | private (MAC casuale) | None
-  brand             marca del prodotto, None se non nota (mai il chip!)
+BRAND. The MAC prefix (OUI) is the manufacturer of the BOARD, not of the product: see
+brands.py (vendor_roles: component, virtual, dual, brand). Here the
+result is exposed at two levels:
+  vendor            manufacturer of the MAC prefix (chip/board), cleaned up
+  vendor_role       component | virtual | dual | brand | private (random MAC) | None
+  brand             product brand, None if unknown (never the chip!)
   brand_source      dhcp | name | web | declared | oui | None
   brand_confidence  high | medium | low | None
-  brand_evidence    confirmed | plausible | None (non determinata). Confermata solo
-                    quando il dispositivo l'ha DICHIARATA (UPnP/mDNS/ONVIF), quando il
-                    prefisso MAC reale e' di una marca; ogni deduzione (nome, web, DHCP)
-                    resta plausibile.
-  brand_declared    valore dichiarato dal dispositivo che non e' una marca nota
-                    (es. "IPCAM" di una telecamera white-label): "nessuna marca
-                    dichiarata", da non confondere con "non determinata".
-Il gateway di rete (dual + gateway = router della sua marca) e' l'unica
-conferma "di rete" per i produttori ambigui come TP-Link.
+  brand_evidence    confirmed | plausible | None (undetermined). Confirmed only
+                    when the device DECLARED it (UPnP/mDNS/ONVIF), when the real
+                    MAC prefix belongs to a brand; every inference (name, web, DHCP)
+                    stays plausible.
+  brand_declared    value declared by the device that is not a known brand
+                    (e.g. "IPCAM" of a white-label camera): "no brand
+                    declared", not to be confused with "undetermined".
+The network gateway (dual + gateway = router of its brand) is the only
+"network" confirmation for ambiguous manufacturers like TP-Link.
 
-MOBILE. "Mobile" = telefono, tablet, portatile: un oggetto che segue una persona.
-Punteggio a somma, soglia MOBILE_THRESHOLD (3); la scelta manuale dell'utente
-(devices.yaml "mobile") vince sempre, la decide probe.py:
-  +3 nome da telefono / impronta DHCP iOS / hostname iphone-ipad  (dhcp.mobile_score)
-  +2 impronta DHCP Android (serve un secondo indizio), +1 MAC privato (+1 senza porte)
-  -2 impronta Windows/macOS/Linux (dhcp.mobile_score)
-  +3 modello mobile (iPhone15,2, iPad, SM-xxxx), +2 portatile (MacBook), -3 fisso (Mac mini, HomePod)
-  +1/+2 presenza: 6/14 o piu' transizioni online/offline in 7 giorni (i telefoni
-      entrano e escono dalla rete, le apparecchiature fisse no); da sola non basta
-  -4 batteria di rete (sensore Shelly, UPS): e' a batteria ma FISSO, non mobile.
-  -4 riceve o riproduce video (mDNS Chromecast/Android TV/Whisperplay, UPnP MediaRenderer o
-      DIAL, servizio o sistema "TV" riconosciuto da nmap): TV, chiavetta, box.
-  +2 "Android" nel nome: e' il sistema, non il tipo (serve un secondo indizio).
-  +3 servizio mDNS che solo i telefoni annunciano (Android Nearby, sincronizzazione iOS).
-  +1 nessuna porta in ascolto, ma solo se c'e' gia' un altro indizio.
+MOBILE. "Mobile" = phone, tablet, laptop: an object that follows a person.
+Additive score, threshold MOBILE_THRESHOLD (3); the user's manual choice
+(devices.yaml "mobile") always wins, decided by probe.py:
+  +3 phone-like name / iOS DHCP fingerprint / iphone-ipad hostname  (dhcp.mobile_score)
+  +2 Android DHCP fingerprint (needs a second clue), +1 private MAC (+1 without ports)
+  -2 Windows/macOS/Linux fingerprint (dhcp.mobile_score)
+  +3 mobile model (iPhone15,2, iPad, SM-xxxx), +2 laptop (MacBook), -3 fixed (Mac mini, HomePod)
+  +1/+2 presence: 6/14 or more online/offline transitions in 7 days (phones
+      come and go on the network, fixed equipment does not); not enough on its own
+  -4 network battery (Shelly sensor, UPS): battery-powered but FIXED, not mobile.
+  -4 receives or plays video (mDNS Chromecast/Android TV/Whisperplay, UPnP MediaRenderer or
+      DIAL, "TV" service or system recognized by nmap): TV, stick, box.
+  +2 "Android" in the name: it is the system, not the type (needs a second clue).
+  +3 mDNS service that only phones announce (Android Nearby, iOS sync).
+  +1 no listening ports, but only if there is already another clue.
 
-BATTERIA. Attributo battery = yes | no | None (ignoto) con battery_source:
-  api     risposta del dispositivo: Shelly Gen1 /status campo "bat", Gen2
-          Shelly.GetStatus componente "devicepower:0"
-  scan    lo stesso dato salvato dall'ultima scansione
-  hint    testo (modello, SNMP, titolo web) riconosciuto da "battery_hints" (UPS, sensori)
-  model   telefono/portatile dal modello (batteria, ma anche mobile) o apparecchio fisso (no)
+BATTERY. Attribute battery = yes | no | None (unknown) with battery_source:
+  api     device response: Shelly Gen1 /status field "bat", Gen2
+          Shelly.GetStatus component "devicepower:0"
+  scan    the same data saved by the last scan
+  hint    text (model, SNMP, web title) recognized by "battery_hints" (UPS, sensors)
+  model   phone/laptop from the model (battery, but also mobile) or fixed appliance (no)
 """
 import time
 
@@ -61,8 +61,8 @@ _gateway_cache: dict = {"value": _NO_GATEWAY}
 
 
 def default_gateway(route_path: str = "/proc/net/route") -> str | None:
-    """IP del gateway predefinito (da /proc/net/route, Linux); None se non si legge.
-    Si calcola una volta sola: il gateway di una LAN domestica non cambia."""
+    """IP of the default gateway (from /proc/net/route, Linux); None if it cannot be read.
+    Computed only once: a home LAN's gateway does not change."""
     if _gateway_cache["value"] is not _NO_GATEWAY and route_path == "/proc/net/route":
         return _gateway_cache["value"]
     gateway = None
@@ -85,8 +85,8 @@ def default_gateway(route_path: str = "/proc/net/route") -> str | None:
 def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None = None, declared=(),
                    web_text: str | None = None, os_family: str | None = None, is_gateway: bool = False,
                    raw_vendor: str | None = None) -> dict:
-    """Marca a due livelli (vedi docstring del modulo). raw_vendor e' il nome
-    grezzo di nmap/arp-scan, usato solo se il database dei prefissi non conosce il MAC."""
+    """Two-level brand (see the module docstring). raw_vendor is the raw
+    name from nmap/arp-scan, used only if the prefix database does not know the MAC."""
     vendor = lookup_vendor(mac)
     if vendor is None and raw_vendor and not is_private_mac(mac):
         vendor = normalize_brand(raw_vendor)
@@ -94,13 +94,13 @@ def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None =
                            web_text=web_text, os_family=os_family, is_gateway=is_gateway)
     role = found["role"] or ("private" if is_private_mac(mac) else None)
     source = found["source"]
-    # Confermata anche quando la fonte scelta e' un'altra ma il dispositivo dichiara la
-    # stessa marca (es. nome "SONY XR-55X92K" e UPnP manufacturer "Sony").
+    # Confirmed also when the chosen source is another one but the device declares the
+    # same brand (e.g. name "SONY XR-55X92K" and UPnP manufacturer "Sony").
     declared_brands = {brands.known_brand(v) for v in (upnp_manufacturer, *declared) if v}
     if not found["brand"]:
         evidence = None
     elif source == "declared" or found["brand"] in declared_brands \
-            or (source == "oui" and role == "brand" and not is_private_mac(mac))             or (role == "brand" and not is_private_mac(mac) and brands.known_brand(vendor) == found["brand"]):  # MAC e nome concordano
+            or (source == "oui" and role == "brand" and not is_private_mac(mac))             or (role == "brand" and not is_private_mac(mac) and brands.known_brand(vendor) == found["brand"]):  # MAC and name agree
         evidence = "confirmed"
     else:
         evidence = "plausible"
@@ -114,8 +114,8 @@ def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None =
 
 def battery_assess(*, api: bool | None = None, scan: str | None = None, texts=(),
                    model_class: str | None = None) -> tuple[str | None, str | None]:
-    """(battery, fonte): dalla risposta diretta del dispositivo, poi dalla scansione
-    salvata, poi dal modello, infine dagli indizi testuali. (None, None) = ignoto."""
+    """(battery, source): from the device's direct response, then from the saved
+    scan, then from the model, finally from textual clues. (None, None) = unknown."""
     if api is not None:
         return ("yes" if api else "no"), "api"
     if scan in ("yes", "no"):
@@ -134,15 +134,15 @@ _churn: dict = {"ts": 0.0, "data": {}}
 
 
 def presence_churn(device_id: str, now: float | None = None) -> int:
-    """Transizioni online/offline del dispositivo negli ultimi 7 giorni. Una sola
-    query per tutti i dispositivi, rinfrescata ogni 10 minuti."""
+    """Online/offline transitions of the device in the last 7 days. A single
+    query for all devices, refreshed every 10 minutes."""
     now = time.time() if now is None else now
     if now - _churn["ts"] > CHURN_REFRESH_S:
         try:
-            from .history import history  # import tardivo: apre il database
+            from .history import history  # late import: opens the database
             _churn["data"] = history.presence_flaps(now - CHURN_WINDOW_DAYS * 86400)
         except Exception:
-            pass  # si tiene l'ultimo valore noto (o nessuno)
+            pass  # keep the last known value (or none)
         _churn["ts"] = now
     return _churn["data"].get(device_id, 0)
 
@@ -151,34 +151,34 @@ def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | No
                   model_class: str | None = None, battery: str | None = None,
                   battery_source: str | None = None, churn: int = 0,
                   name_weak: bool = False, media_receiver: bool = False, mobile_service: bool = False) -> dict:
-    """Punteggio "telefono/tablet/portatile" (vedi docstring del modulo).
-    Ritorna {"mobile": bool, "score": int, "reason": indizio principale}."""
+    """"Phone/tablet/laptop" score (see the module docstring).
+    Returns {"mobile": bool, "score": int, "reason": main clue}."""
     score, reason = dhcp.mobile_score(mac, name_is_mobile, has_ports)
     if name_weak and not name_is_mobile:
-        score, reason = score + 2, reason or "nome"  # "Android" nel nome: indizio debole
+        score, reason = score + 2, reason or "nome"  # "Android" in the name: weak clue
     if model_class == "mobile":
         score, reason = score + 3, reason if score > 0 and reason else "model"
     elif model_class == "laptop":
         score, reason = score + 2, reason if score > 0 and reason else "model"
     elif model_class == "fixed":
         score -= 3
-    # L'alternanza online/offline conta solo con un MAC privato (telefoni) o un portatile
-    # riconosciuto: una TV o un PC fisso, che si spengono ogni sera, hanno il MAC del produttore.
+    # Online/offline alternation counts only with a private MAC (phones) or a recognized
+    # laptop: a TV or a fixed PC, which are switched off every evening, have the manufacturer's MAC.
     if dhcp.is_private_mac(mac) or model_class == "laptop":
         if churn >= _CHURN_STRONG:
             score, reason = score + 2, reason or "presence"
         elif churn >= _CHURN_WEAK:
             score, reason = score + 1, reason or "presence"
     if mobile_service:
-        score, reason = score + 3, reason or "servizio mobile"  # annunciato solo da telefoni e tablet
-    # Nessun servizio in ascolto conferma qualunque altro indizio (i telefoni non ne hanno);
-    # da solo non conta: anche molti dispositivi IoT non hanno porte.
+        score, reason = score + 3, reason or "servizio mobile"  # announced only by phones and tablets
+    # No listening service confirms any other clue (phones have none);
+    # on its own it does not count: many IoT devices have no ports either.
     if has_ports is False and score > 0:
         score += 1
     if media_receiver:
-        score -= 4  # riceve o riproduce video (cast, mirroring, renderer): TV, chiavetta, box
+        score -= 4  # receives or plays video (cast, mirroring, renderer): TV, stick, box
         reason = None
     if battery == "yes" and battery_source in ("api", "scan", "hint"):
-        score -= 4  # a batteria ma di rete e fisso: non e' un telefono
+        score -= 4  # battery-powered but networked and fixed: not a phone
         reason = None
     return {"mobile": score >= MOBILE_THRESHOLD, "score": score, "reason": reason if score >= MOBILE_THRESHOLD else None}

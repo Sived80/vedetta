@@ -1,9 +1,9 @@
-"""Dati per la dashboard in stile Home Assistant (/ha): tipo di dispositivo
-dedotto, formato compatto per la UI, riepilogo, registro eventi.
+"""Data for the Home Assistant-style dashboard (/ha): inferred device type,
+compact format for the UI, summary, event log.
 
-Le funzioni di calcolo sono pure (prendono dizionari, restituiscono
-dizionari): si provano da sole (tests/check_ha_api.py) senza avviare il
-servizio. Le chiamate HTTP stanno in routes_ha.py."""
+The calculation functions are pure (they take dicts and return
+dicts): they can be tested on their own (tests/check_ha_api.py) without starting the
+service. The HTTP calls live in routes_ha.py."""
 import json
 import re
 from pathlib import Path
@@ -11,22 +11,22 @@ from pathlib import Path
 from . import devices_config, i18n
 from .history import History, history
 
-# Ordine in cui la UI mostra i gruppi per tipo.
+# Order in which the UI shows the groups by type.
 TYPE_ORDER = ("router", "server", "pc", "phone", "media", "audio", "iot", "printer", "generic")
-# Clima, elettrodomestici, energia, sicurezza, aperture e acqua sono apparecchi smart di casa: un solo
-# gruppo ("iot"); il tipo preciso resta nell'icona (data/device_kinds.json).
+# Climate, appliances, energy, security, openings and water are smart home devices: a single
+# group ("iot"); the precise type stays in the icon (data/device_kinds.json).
 _MERGED_GROUPS = {"climate": "iot", "appliance": "iot", "energy": "iot", "security": "iot", "cover": "iot", "water": "iot"}
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 _PORT_RE = re.compile(r"^\s*(\d+)")
 
-# Regole generiche per parola chiave: "subs" = sottostringhe (parole lunghe),
-# "toks" = parole intere (quelle corte, per non scattare dentro altre parole),
-# "ports" = porte TCP tipiche. Il testo analizzato e' nome + marca + info
-# raccolte dalle scansioni + etichette delle porte: nessun caso particolare
-# per un singolo dispositivo.
+# Generic keyword rules: "subs" = substrings (long words),
+# "toks" = whole words (the short ones, so they do not fire inside other words),
+# "ports" = typical TCP ports. The analyzed text is name + brand + info
+# collected by the scans + port labels: no special case
+# for a single device.
 _RULES = {
-    # Luci, prese, interruttori e sensori IoT: un'unica categoria.
+    # Lights, plugs, switches and IoT sensors: a single category.
     "iot": {
         "subs": ("meross", "yeelight", "tradfri", "lightbulb", "dimmer",
                  "relay", "interruttore", "sensor"),
@@ -40,13 +40,13 @@ _RULES = {
         "toks": {"ipp", "cups", "jetdirect", "canon"},
         "ports": {631, 9100},
     },
-    # Media: TV e streaming, telecamere (TVCC) e videoregistratori (NVR/DVR).
+    # Media: TV and streaming, cameras (CCTV) and video recorders (NVR/DVR).
     "media": {
         "subs": ("television", "bravia", "chromecast", "smarttv", "smart tv", "appletv", "apple tv", "firetv",
                  "fire tv", "android tv", "roku", "webos", "tizen", "hisense", "vizio",
                  "ipcam", "ip camera", "ipcamera", "webcam", "cctv", "videosorveglianza", "telecamera", "doorbell",
                  "onvif", "networkvideotransmitter"),
-        "toks": {"tv", "televisore", "cam", "nvr", "dvr", "tvcc", "rtsp"},  # "camera" no: in italiano e' anche la stanza
+        "toks": {"tv", "televisore", "cam", "nvr", "dvr", "tvcc", "rtsp"},  # not "camera": in Italian it is also the room
         "ports": {554},
     },
     "audio": {
@@ -78,11 +78,11 @@ _PC_PORTS = {3389, 445, 139}
 
 
 def _blob(device: dict) -> tuple[str, set[str], set[int]]:
-    """Testo (minuscolo), insieme di parole e numeri di porta del dispositivo."""
-    # Un nome costruito dall'app ("Apple phone") non e' un indizio: sarebbe l'app che si da' ragione da sola.
+    """Text (lowercase), set of words and port numbers of the device."""
+    # A name built by the app ("Apple phone") is not a clue: the app would just be agreeing with itself.
     parts = [None if device.get("name_generated") else device.get("name"), device.get("brand"), device.get("vendor")]
-    # Il sistema operativo ("Linux 4.14", "Windows 10") non e' un ruolo: gira su telefoni, TV,
-    # router, telecamere e server. Conta come indizio debole, a parte (vedi type_scores).
+    # The operating system ("Linux 4.14", "Windows 10") is not a role: it runs on phones, TVs,
+    # routers, cameras and servers. It counts as a weak clue, separately (see type_scores).
     parts += [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str)]
     ports: set[int] = set()
     for p in device.get("scanned_ports") or []:
@@ -99,17 +99,17 @@ def _hit(rule: dict, text: str, tokens: set[str], ports: set[int]) -> bool:
     return (any(s in text for s in rule["subs"]) or bool(tokens & rule["toks"]) or bool(ports & rule["ports"]))
 
 
-# ---- categoria a punteggio --------------------------------------------------
-# Ogni indizio da' punti a una o piu' categorie, con un peso che dipende da quanto e'
-# affidabile; vince la categoria con piu' punti (a parita', l'ordine di TYPE_ORDER),
-# sotto MIN_TYPE_SCORE il dispositivo resta "generic". Nessuna regola per una marca:
-# contano ruoli di rete, protocolli dichiarati, servizi verificati, porte e parole.
+# ---- score-based category --------------------------------------------------
+# Each clue gives points to one or more categories, with a weight that depends on how
+# reliable it is; the category with the most points wins (on a tie, TYPE_ORDER order),
+# below MIN_TYPE_SCORE the device stays "generic". No rule for a brand:
+# what counts are network roles, declared protocols, verified services, ports and words.
 W_ROLE, W_DECLARED, W_SERVICE, W_PORT_GUESS, W_WORD, W_BRAND = 10, 8, 4, 1, 2, 3
 MIN_TYPE_SCORE = 2
 W_PLATFORM_MAX = 3
-_PLATFORM_KINDS = {"microcontroller", "bluetooth"}   # tipi che dicono solo la piattaforma hardware
+_PLATFORM_KINDS = {"microcontroller", "bluetooth"}   # types that only tell the hardware platform
 
-# Servizi mDNS dichiarati (DNS-SD) -> (categoria, peso)
+# Declared mDNS services (DNS-SD) -> (category, weight)
 _MDNS_TYPE = {
     "_googlecast._tcp": ("media", W_DECLARED), "_androidtvremote2._tcp": ("media", W_DECLARED),
     "_amzn-wplay._tcp": ("media", W_DECLARED),
@@ -119,18 +119,18 @@ _MDNS_TYPE = {
     "_esphomelib._tcp": ("iot", 6), "_workstation._tcp": ("pc", 4), "_rdp._tcp": ("pc", 4),
     "_smb._tcp": ("server", 2), "_mqtt._tcp": ("server", 3), "_home-assistant._tcp": ("server", 6),
 }
-# Tipi UPnP dichiarati -> (categoria, peso)
+# Declared UPnP types -> (category, weight)
 _UPNP_TYPE = {
     "MediaRenderer": ("media", W_DECLARED), "dial": ("media", W_DECLARED),
     "InternetGatewayDevice": ("router", W_DECLARED), "WFADevice": ("router", W_DECLARED),
     "WLANAccessPointDevice": ("router", W_DECLARED), "MediaServer": ("server", 2), "Printer": ("printer", W_DECLARED),
 }
-# Interfaccia locale che ha risposto -> (categoria, peso)
-# Tasmota ed ESPHome sono firmware generici (luce, presa, sensore, termostato...): pochi punti,
-# cosi' il nome o il servizio del dispositivo decidono.
+# Local interface that answered -> (category, weight)
+# Tasmota and ESPHome are generic firmware (light, plug, sensor, thermostat...): few points,
+# so the name or the service of the device decides.
 _API_TYPE = {"shelly": ("iot", W_DECLARED), "tasmota": ("iot", 2), "esphome": ("iot", 3),
              "cast": ("media", W_DECLARED), "roku": ("media", W_DECLARED), "sonos": ("audio", W_DECLARED)}
-# Porte tipiche -> categoria (verificata da nmap: W_SERVICE; solo numero: W_PORT_GUESS)
+# Typical ports -> category (verified by nmap: W_SERVICE; number only: W_PORT_GUESS)
 _PORT_TYPE = {
     554: "media", 1935: "media", 8008: "media", 8009: "media", 7000: "media", 8060: "media",
     631: "printer", 9100: "printer", 515: "printer",
@@ -140,17 +140,17 @@ _PORT_TYPE = {
     1883: "iot", 8883: "iot", 5683: "iot", 6053: "iot",
     1400: "audio",
 }
-# Porte comuni a piu' categorie (SMB: PC, NAS e router con USB; FTP; DNS): poco peso a tutte.
+# Ports shared by several categories (SMB: PC, NAS and routers with USB; FTP; DNS): little weight to all.
 _PORT_SHARED = {139: ("pc", "server"), 445: ("pc", "server"), 21: ("server",), 53: ("server", "router")}
 
 
-# ---- tipi di dispositivo di casa (data/device_kinds.json): gruppo + icona + parole generiche
+# ---- home device types (data/device_kinds.json): group + icon + generic words
 _kinds_cache: list | None = None
 
 
 def _kinds() -> list[dict]:
-    """Tipi caricati dal file. Le parole corte (una parola, fino a 7 lettere) contano solo
-    come parola intera, con il plurale: "light" non vale dentro "lighttpd"."""
+    """Types loaded from the file. Short words (one word, up to 7 letters) count only
+    as a whole word, with the plural: "light" does not match inside "lighttpd"."""
     global _kinds_cache
     if _kinds_cache is None:
         try:
@@ -187,20 +187,20 @@ def _ha_integrations() -> dict:
     return _ha_table_cache
 
 
-# Famiglie di indizi: lo stesso fatto raccontato da piu' segnali (Cast = servizio mDNS + interfaccia + porte 8008/8009 +
-# DIAL) conta UNA volta, con il punteggio piu' alto della famiglia. Le parole nel testo (regole e tipi) sono un'unica
-# famiglia per categoria. Le porte, in totale, non superano W_PORTS_MAX per categoria.
+# Families of clues: the same fact told by several signals (Cast = mDNS service + interface + ports 8008/8009 +
+# DIAL) counts ONCE, with the highest score of the family. The words in the text (rules and types) are a single
+# family per category. Ports, in total, do not exceed W_PORTS_MAX per category.
 _FAMILY_SERVICE = {"_googlecast._tcp": "cast", "_androidtvremote2._tcp": "androidtv"}
 _FAMILY_UPNP = {"dial": "cast"}
 _FAMILY_PORT = {8008: "cast", 8009: "cast"}
 W_PORTS_MAX = 6
-MARGIN_BELOW = 5   # sotto questo punteggio, due categorie alla pari non si spareggiano: "generic"
+MARGIN_BELOW = 5   # below this score, two tied categories are not tie-broken: "generic"
 
 
 def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | None = None) -> list[dict]:
-    """Tutti gli indizi di categoria: [{"group", "family", "pts", "source"}]. Da qui type_scores ricava i punti
-    (una volta per famiglia) e la modalita' debug mostra cosa ha deciso."""
-    from . import roles, signatures  # tardivi: roles importa moduli di rete
+    """All the category clues: [{"group", "family", "pts", "source"}]. From here type_scores derives the points
+    (once per family) and debug mode shows what decided."""
+    from . import roles, signatures  # late imports: roles imports network modules
     ev: list[dict] = []
 
     def add(group: str, pts: int, family: str, source: str) -> None:
@@ -208,11 +208,11 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
 
     ip = device.get("ip")
     upnp_types = roles.upnp_types(ip)
-    # Piattaforme IoT (Shelly, Tasmota, ESPHome, chip Espressif...): dicono "e' un apparecchio smart", non cosa fa.
-    # Valgono poco e in totale (W_PLATFORM_MAX): una parola che dice la funzione vince sempre.
+    # IoT platforms (Shelly, Tasmota, ESPHome, Espressif chips...): they say "it is a smart device", not what it does.
+    # They are worth little and in total (W_PLATFORM_MAX): a word that states the function always wins.
     platform = 0
     if adapter and adapter.startswith("shelly"):
-        platform += W_ROLE  # risposta della sua API diretta
+        platform += W_ROLE  # answer from its direct API
     if {"gateway", "router", "ap", "repeater"} & set(roles.roles_for(ip)):
         add("router", W_ROLE, "role", "ruolo di rete")
     extra = device.get("extra") or {}
@@ -242,7 +242,7 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
         kind = _PORT_TYPE.get(port)
         if kind:
             fam = _FAMILY_PORT.get(port)
-            # la porta Cast e' nella famiglia Cast (conta una volta con servizio e API); le altre sono famiglie "porta"
+            # the Cast port is in the Cast family (counts once with service and API); the others are "port" families
             add(kind, W_SERVICE if p.get("confirmed") else W_PORT_GUESS, fam or "port:%s" % port, "porta %s" % port)
         for shared in _PORT_SHARED.get(port, ()):
             add(shared, W_PORT_GUESS, "port:%s:%s" % (port, shared), "porta %s" % port)
@@ -250,12 +250,12 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
     for kind, rule in _RULES.items():
         if any(s in text for s in rule["subs"]) or tokens & rule["toks"]:
             add(kind, W_WORD, "words", "parola nel testo")
-    # Marca del prodotto (o produttore del MAC se vende solo apparecchi di quel tipo); conta anche il nome (un PC
-    # chiamato "MSI"): il produttore del MAC e' spesso solo la scheda di rete, il nome lo sceglie chi installa il sistema.
+    # Product brand (or MAC manufacturer if it only sells devices of that type); the name counts too (a PC
+    # called "MSI"): the MAC manufacturer is often just the network card, the name is chosen by whoever installs the system.
     brand_tokens = set(_TOKEN_RE.findall(" ".join(filter(None, [
         device.get("brand"), device.get("name"),
         device.get("vendor") if device.get("vendor_role") == "brand" else None])).lower()))
-    # Integrazioni di Home Assistant agganciate al dispositivo: dichiarano cos'e' (onvif, braviatv...).
+    # Home Assistant integrations attached to the device: they declare what it is (onvif, braviatv...).
     for dom in ((device.get("ha_registry") or {}).get("domains") or []):
         entry = _ha_integrations().get(dom)
         if entry and entry.get("platform"):
@@ -288,21 +288,21 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
             platform += pts
         elif pts and kinds_out is not None:
             kinds_out[kd["id"]] = pts
-    # Firme dei prodotti (app/data/signatures.json): dove i segnali generici sono ambigui decide il modello dichiarato.
+    # Product signatures (app/data/signatures.json): where the generic signals are ambiguous the declared model decides.
     for sig in signatures.matches({**device, "extra": extra}, upnp_types):
         add(sig["group"], int(sig.get("weight", W_ROLE)), "sig:" + sig["id"], "firma " + sig["id"])
         if sig.get("kind") and kinds_out is not None:
             kinds_out[sig["kind"]] = kinds_out.get(sig["kind"], 0) + int(sig.get("weight", W_ROLE))
     if platform:
         add("iot", min(platform, W_PLATFORM_MAX), "platform", "piattaforma IoT")
-    # Solo porte IoT (MQTT, CoAP) e nient'altro: un dispositivo embedded.
+    # Only IoT ports (MQTT, CoAP) and nothing else: an embedded device.
     if ports and ports <= {1883, 8883, 5683}:
         add("iot", 3, "port:iot", "solo porte IoT")
     return ev
 
 
 def _aggregate(ev: list[dict]) -> dict[str, int]:
-    """Punti per categoria: per ogni famiglia il valore piu' alto, le famiglie si sommano; le porte hanno un tetto."""
+    """Points per category: for each family the highest value, families are summed; ports have a cap."""
     best: dict[tuple, int] = {}
     for e in ev:
         key = (e["group"], e["family"])
@@ -320,14 +320,14 @@ def _aggregate(ev: list[dict]) -> dict[str, int]:
 
 
 def type_scores(device: dict, adapter: str | None = None, kinds_out: dict | None = None) -> dict[str, int]:
-    """Punti per categoria (vedi sopra), per capire e per i test. kinds_out (opzionale)
-    si riempie con i punti per ogni tipo di dispositivo, da cui si sceglie l'icona."""
+    """Points per category (see above), for understanding and for tests. kinds_out (optional)
+    is filled with the points for each device type, from which the icon is chosen."""
     return _aggregate(type_evidence(device, adapter, kinds_out))
 
 
 def icon_for(device: dict, adapter: str | None = None, kind: str | None = None) -> str | None:
-    """Nome dell'icona MDI piu' adatta al dispositivo: quella del tipo (data/device_kinds.json)
-    con piu' punti dentro la categoria scelta; None = icona della categoria."""
+    """Name of the MDI icon best suited to the device: the one of the type (data/device_kinds.json)
+    with the most points within the chosen category; None = the category icon."""
     group = kind or infer_type(device, adapter)
     kinds_out: dict[str, int] = {}
     type_scores(device, adapter, kinds_out)
@@ -342,13 +342,13 @@ def icon_for(device: dict, adapter: str | None = None, kind: str | None = None) 
 
 
 def kind_is_product(kind_id: str | None) -> bool:
-    """True per i tipi che sono un prodotto preciso (Home Assistant, Raspberry Pi): il nome
-    e' il tipo stesso, senza marca davanti."""
+    """True for the types that are a specific product (Home Assistant, Raspberry Pi): the name
+    is the type itself, without a brand in front."""
     return any(kd["id"] == kind_id and kd.get("product") for kd in _kinds())
 
 
 def best_kind(device: dict, adapter: str | None = None) -> str | None:
-    """Id del tipo di dispositivo (data/device_kinds.json) con piu' punti, nella categoria scelta."""
+    """Id of the device type (data/device_kinds.json) with the most points, in the chosen category."""
     group = infer_type(device, adapter)
     kinds_out: dict[str, int] = {}
     type_scores(device, adapter, kinds_out)
@@ -360,8 +360,8 @@ def best_kind(device: dict, adapter: str | None = None) -> str | None:
 
 
 def infer_type(device: dict, adapter: str | None = None) -> str:
-    """Categoria del dispositivo a punteggio (type_scores). Il flag is_mobile (scelta
-    dell'utente o punteggio "mobile" del probe) vince su tutto."""
+    """Device category by score (type_scores). The is_mobile flag (user choice
+    or the probe "mobile" score) wins over everything."""
     if device.get("is_mobile"):
         return "phone"
     scores = type_scores(device, adapter)
@@ -371,14 +371,14 @@ def infer_type(device: dict, adapter: str | None = None) -> str:
     best = ranked[0]
     if best[1] < MIN_TYPE_SCORE:
         return "generic"
-    # Due categorie alla pari con indizi deboli: non si sceglie a caso (come Nmap quando i due migliori sono vicini).
+    # Two tied categories with weak clues: no random pick (like Nmap when the two best are close).
     if len(ranked) > 1 and best[1] < MARGIN_BELOW and ranked[1][1] >= MIN_TYPE_SCORE and best[1] - ranked[1][1] < 1:
         return "generic"
     return best[0]
 
 
 def effective_type(device: dict, cfg: dict | None = None) -> str:
-    """Categoria scelta a mano (cfg["type_user"]) oppure quella a punteggio."""
+    """Category chosen by hand (cfg["type_user"]) or the scored one."""
     cfg = cfg or {}
     chosen = cfg.get("type_user")
     if chosen in TYPE_ORDER or chosen == "generic":
@@ -386,14 +386,14 @@ def effective_type(device: dict, cfg: dict | None = None) -> str:
     return infer_type(device, cfg.get("adapter"))
 
 
-# ---- configurazione (adapter, scelta "mobile") con cache sul file ----
+# ---- configuration (adapter, "mobile" choice) with file cache ----
 _cfg_cache: dict = {"mtime": None, "map": {}}
 
 
 def config_map() -> dict[str, dict]:
-    """{id: configurazione} da devices.yaml, riletta solo se il file cambia
-    (serve a conoscere adapter e scelta manuale di ogni dispositivo senza
-    leggere il disco a ogni evento)."""
+    """{id: configuration} from devices.yaml, re-read only if the file changes
+    (needed to know the adapter and manual choice of each device without
+    reading the disk on every event)."""
     try:
         mtime = devices_config.DEVICES_PATH.stat().st_mtime
     except OSError:
@@ -425,8 +425,8 @@ def _signal(device: dict) -> dict | None:
 
 
 def compact_device(device: dict, cfg: dict | None = None) -> dict:
-    """Dispositivo dello stato condiviso -> formato compatto per la UI /ha.
-    Testi e nomi dei campi nella lingua corrente (i18n.use)."""
+    """Device from the shared state -> compact format for the /ha UI.
+    Texts and field names in the current language (i18n.use)."""
     cfg = cfg or {}
     extra = device.get("extra") or {}
     _t = effective_type(device, cfg)
@@ -438,8 +438,8 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "ip": device.get("ip"),
         "port": device.get("port", 80),
         "mac": device.get("mac"),
-        # Due livelli: vendor = produttore del MAC (chip/scheda), brand = marca del
-        # prodotto (None se non nota); brand_source/confidence dicono da dove viene.
+        # Two levels: vendor = MAC manufacturer (chip/board), brand = product
+        # brand (None if unknown); brand_source/confidence say where it comes from.
         "vendor": device.get("vendor"),
         "vendor_role": device.get("vendor_role"),
         "brand": device.get("brand"),
@@ -447,14 +447,14 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "brand_confidence": device.get("brand_confidence"),
         "brand_evidence": device.get("brand_evidence"),
         "brand_declared": device.get("brand_declared"),
-        # battery: "yes" | "no" | None (ignoto), con la fonte; un apparecchio di rete
-        # a batteria (sensore) non e' "mobile".
+        # battery: "yes" | "no" | None (unknown), with the source; a battery-powered
+        # network device (sensor) is not "mobile".
         "battery": device.get("battery"),
         "battery_source": device.get("battery_source"),
         "type": _t,
         "icon": icon_for(device, cfg.get("adapter"), _t),
         "is_mobile": bool(device.get("is_mobile")),
-        # "auto" = decide il nome/le scansioni; "yes"/"no" = scelta fatta a mano.
+        # "auto" = the name/scans decide; "yes"/"no" = choice made by hand.
         "mobile_mode": "auto" if mobile_cfg is None else ("yes" if mobile_cfg else "no"),
         "name_source": cfg.get("name_source"),
         "wol_ok": bool(cfg.get("wol_ok")),
@@ -492,16 +492,16 @@ def _avg_latency(devices: list[dict]) -> int | None:
 
 
 def build_summary(devices: list[dict], poll: dict, activity: dict, new_devices: dict, rev: int = 0) -> dict:
-    """Conteggi, marche, tipi e stato della ricerca. Prende i dispositivi
-    dello stato condiviso (non compatti): e' pura, senza accesso al disco."""
+    """Counts, brands, types and search status. Takes the devices
+    from the shared state (not compact): it is pure, with no disk access."""
     online = sum(1 for d in devices if d.get("online"))
     mobile = [d for d in devices if d.get("is_mobile")]
     brands: dict[str | None, int] = {}
-    chips: dict[str, int] = {}  # produttore del MAC dei dispositivi senza marca nota
+    chips: dict[str, int] = {}  # MAC manufacturer of devices with no known brand
     types: dict[str, int] = {}
     cfg = config_map()
     for d in devices:
-        brand = d.get("brand") or None  # la marca del PRODOTTO, mai il produttore della scheda
+        brand = d.get("brand") or None  # the PRODUCT brand, never the board manufacturer
         brands[brand] = brands.get(brand, 0) + 1
         if brand is None:
             chip = d.get("vendor") or None
@@ -527,7 +527,7 @@ def build_summary(devices: list[dict], poll: dict, activity: dict, new_devices: 
                                 key=lambda r: (-r["count"], r["vendor"].lower())),
         "battery": sum(1 for d in devices if d.get("battery") == "yes"),
         "types": {k: types[k] for k in TYPE_ORDER if k in types},
-        # Tempo di risposta medio dei dispositivi online che lo hanno misurato.
+        # Average response time of the online devices that measured it.
         "latency_avg_ms": _avg_latency(devices),
         "poll": {
             "interval_ms": poll.get("interval_ms"), "next_in_ms": poll.get("next_in_ms"),
@@ -538,11 +538,11 @@ def build_summary(devices: list[dict], poll: dict, activity: dict, new_devices: 
     }
 
 
-# ---- registro eventi (logbook) ----
+# ---- event log (logbook) ----
 def recent_presence(limit: int, hist: History = history) -> list[dict]:
-    """Ultimi eventi online/offline dello storico, i piu' recenti per primi.
-    Legge presence_events senza toccare history.py (stessa connessione e lo
-    stesso lock degli altri metodi)."""
+    """Latest online/offline events from the history, most recent first.
+    Reads presence_events without touching history.py (same connection and the
+    same lock as the other methods)."""
     limit = max(1, min(int(limit), 200))
     with hist._lock:
         rows = hist._db.execute(
@@ -554,8 +554,8 @@ def recent_presence(limit: int, hist: History = history) -> list[dict]:
 
 
 def logbook_entries(rows: list[dict], devices: dict[str, dict], cfg: dict[str, dict] | None = None) -> list[dict]:
-    """Eventi grezzi + nome e tipo del dispositivo (se non c'e' piu' in
-    configurazione resta l'ultimo IP noto) + frase nella lingua corrente."""
+    """Raw events + name and type of the device (if it is no longer in the
+    configuration the last known IP remains) + sentence in the current language."""
     cfg = cfg or {}
     out = []
     for r in rows:
@@ -576,8 +576,8 @@ def logbook_entries(rows: list[dict], devices: dict[str, dict], cfg: dict[str, d
 
 
 def slim_history(window: dict) -> dict:
-    """Finestra di history.presence_segments con i tempi a secondo intero:
-    meno byte nelle risposte che coprono tutti i dispositivi."""
+    """Window of history.presence_segments with times as whole seconds:
+    fewer bytes in the responses that cover all devices."""
     return {
         "from": int(window["from"]), "to": int(window["to"]),
         "segments": [{"from": int(s["from"]), "to": int(s["to"]), "online": s["online"]} for s in window["segments"]],

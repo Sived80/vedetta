@@ -7,22 +7,22 @@ from . import blocklist, devices_config, dhcp, latency, netutil, newdevices, pro
 from .applog import logger
 from .history import history
 
-# L'intervallo di controllo e' una impostazione (settings.poll_interval, 10-300 s),
-# riletta a ogni ciclo: vedi _interval().
+# The check interval is a setting (settings.poll_interval, 10-300 s),
+# re-read on every cycle: see _interval().
 ARP_MAX_AGE = 10
 _MAX_TOMBSTONES = 200
 _QUEUE_SIZE = 200
 
-# Un dispositivo risulta offline solo dopo questo numero di controlli falliti
-# consecutivi (~90s a 30s di intervallo). Telefoni in standby e dispositivi con
-# il WiFi a risparmio energetico saltano ogni tanto un controllo: senza questa
-# tolleranza le loro card cambiavano stato (e venivano sostituite) a ogni ciclo.
-# Il ritardo di rilevamento offline scala con l'intervallo scelto (3 x intervallo).
+# A device is reported offline only after this number of consecutive failed
+# checks (~90s at a 30s interval). Phones in standby and devices with
+# WiFi power saving occasionally skip a check: without this
+# tolerance their cards changed state (and were replaced) on every cycle.
+# The offline detection delay scales with the chosen interval (3 x interval).
 MISS_LIMIT = 3
 
-# Campi che il probe OSSERVA sul dispositivo (non derivano dalla configurazione):
-# se un controllo fallisce ma il dispositivo e' ancora "tollerato" come online,
-# si tengono quelli dell'ultimo controllo riuscito invece di svuotarli.
+# Fields the probe OBSERVES on the device (not derived from configuration):
+# if a check fails but the device is still "tolerated" as online,
+# those from the last successful check are kept instead of being cleared.
 _OBSERVED = ("mac", "vendor", "vendor_role", "brand", "brand_source", "brand_confidence", "battery", "battery_source", "uptime", "signal_kind", "signal_value", "signal_band", "signal_label", "signal_color")
 
 
@@ -31,24 +31,24 @@ def _ip_key(device: dict) -> tuple[int, ...]:
 
 
 class DeviceState:
-    """Stato dei dispositivi tenuto in memoria e aggiornato da un poller in
-    background. Le pagine lo leggono senza fare probe sincroni, e ogni cambiamento
-    viene inviato ai browser aperti come evento (SSE)."""
+    """Device state kept in memory and updated by a background poller. Pages
+    read it without doing synchronous probes, and every change
+    is sent to open browsers as an event (SSE)."""
 
     def __init__(self) -> None:
         self.devices: dict[str, dict] = {}
         self.rev = 0
         self.ready = asyncio.Event()
-        # Ultimo MAC visto per dispositivo: da spento il probe non lo vede piu',
-        # ma serve ancora a riconoscerne nome e marca (impronta DHCP, prefisso).
+        # Last MAC seen per device: when powered off the probe no longer sees it,
+        # but it is still needed to recognise its name and brand (DHCP fingerprint, prefix).
         self._last_mac: dict[str, str] = {}
         self._rev_of: dict[str, int] = {}
         self._removed: dict[str, int] = {}
         self._subscribers: set[asyncio.Queue] = set()
         self._wake = asyncio.Event()
-        self._force = False  # un aggiornamento chiesto a mano vale anche in pausa
+        self._force = False  # a manually requested refresh also applies while paused
         self._conflicts_reported: set = set()
-        self._paused_until: float | None = self._load_pause()  # epoch; inf = fino alla ripresa; None = attivo
+        self._paused_until: float | None = self._load_pause()  # epoch; inf = until resumed; None = active
         self._task: asyncio.Task | None = None
         self._next_at = 0.0
         self._arp: tuple[float, dict[str, dict]] | None = None
@@ -57,9 +57,9 @@ class DeviceState:
         self._last_seen: dict[str, float] = {}
         self._db_state: dict[str, bool] = {}
         self._bg: set[asyncio.Future] = set()
-        # Scansioni in corso: stanno qui (e non solo nel browser che le ha
-        # avviate) cosi' cambiando pagina e tornando il led lampeggiante e
-        # l'effetto sul pulsante di ricerca si ritrovano com'erano.
+        # Scans in progress: kept here (and not only in the browser that
+        # started them) so that after changing page and coming back the blinking LED and
+        # the effect on the search button are found as they were.
         self.rescanning: set[str] = set()
         self._search_running = 0
         self._search_hold_until = 0.0
@@ -67,10 +67,10 @@ class DeviceState:
         self._newdev_lock = asyncio.Lock()
         self._own_ip: str | None = None
 
-    # ---- ciclo di vita ----
+    # ---- lifecycle ----
     async def load_history(self) -> None:
-        """Riparte dallo stato salvato: senza, dopo ogni riavvio si
-        perderebbe "visto l'ultima volta" dei dispositivi offline."""
+        """Restarts from the saved state: without it, after every restart the
+        "last seen" of offline devices would be lost."""
         try:
             last = await asyncio.to_thread(history.last_presence)
         except Exception:
@@ -96,19 +96,19 @@ class DeviceState:
                 pass
 
     def trigger(self, force: bool = False) -> None:
-        """Forza un ciclo di aggiornamento immediato (force: anche in pausa)."""
+        """Forces an immediate update cycle (force: even while paused)."""
         if force:
             self._force = True
         self._wake.set()
 
-    # ---- pausa del controllo periodico ----
+    # ---- pause of the periodic check ----
     @staticmethod
     def _pause_file():
         return settings.CONFIG_DIR / "pause.json"
 
     @classmethod
     def _load_pause(cls) -> float | None:
-        """La pausa sopravvive al riavvio del servizio (come tutte le impostazioni)."""
+        """The pause survives a service restart (like all settings)."""
         try:
             raw = json.loads(cls._pause_file().read_text(encoding="utf-8")).get("until")
         except (OSError, ValueError, AttributeError):
@@ -132,7 +132,7 @@ class DeviceState:
             logger.exception("Pausa non salvata su disco")
 
     def paused_remaining(self) -> float | None:
-        """Secondi alla fine della pausa (inf = senza scadenza); None se non in pausa."""
+        """Seconds until the pause ends (inf = no expiry); None if not paused."""
         if self._paused_until is None:
             return None
         left = self._paused_until - time.time()
@@ -142,8 +142,8 @@ class DeviceState:
         return left
 
     def pause(self, minutes: int = 0) -> None:
-        """Sospende i controlli periodici per N minuti (0 = finche' non si riprende).
-        Le azioni chieste a mano (aggiorna, ricerca) restano possibili."""
+        """Suspends periodic checks for N minutes (0 = until resumed).
+        Manually requested actions (refresh, search) remain possible."""
         self._paused_until = time.time() + minutes * 60 if minutes else float("inf")
         self._save_pause()
         logger.info("Controllo periodico in pausa (%s)", f"{minutes} min" if minutes else "fino alla ripresa")
@@ -158,7 +158,7 @@ class DeviceState:
         self._emit(self.poll_info())
         self._wake.set()
 
-    # ---- lettura ----
+    # ---- reading ----
     def sorted_devices(self) -> list[dict]:
         return sorted(self.devices.values(), key=_ip_key)
 
@@ -174,7 +174,7 @@ class DeviceState:
 
     @staticmethod
     def _miss_limit() -> int:
-        """Controlli falliti di fila prima dell'offline (impostazione dell'utente)."""
+        """Consecutive failed checks before going offline (user setting)."""
         try:
             return settings.miss_limit()
         except Exception:
@@ -182,13 +182,13 @@ class DeviceState:
 
     @staticmethod
     def _interval() -> int:
-        """Intervallo corrente in secondi (impostazione dell'utente)."""
+        """Current interval in seconds (user setting)."""
         try:
             return settings.poll_interval()
         except Exception:
             return settings.DEFAULTS["poll_interval"]
 
-    # ---- eventi ----
+    # ---- events ----
     def subscribe(self) -> asyncio.Queue:
         q: asyncio.Queue = asyncio.Queue(maxsize=_QUEUE_SIZE)
         self._subscribers.add(q)
@@ -200,10 +200,10 @@ class DeviceState:
     def is_subscribed(self, q: asyncio.Queue) -> bool:
         return q in self._subscribers
 
-    # ---- attivita' in corso ----
+    # ---- activities in progress ----
     def track(self, future: asyncio.Future) -> None:
-        """Tiene un riferimento forte a un lavoro in background: un task senza
-        riferimenti puo' essere eliminato dal garbage collector a meta'."""
+        """Holds a strong reference to a background job: a task without
+        references can be garbage collected midway."""
         self._bg.add(future)
         future.add_done_callback(self._bg.discard)
 
@@ -228,21 +228,21 @@ class DeviceState:
 
     def search_finished(self) -> None:
         self._search_running = max(0, self._search_running - 1)
-        # La ricerca e' in due richieste (rapida, poi approfondita): una breve
-        # tenuta evita che l'effetto si spenga e riaccenda tra l'una e l'altra.
+        # The search is made of two requests (quick, then in-depth): a short
+        # hold keeps the effect from switching off and on again between the two.
         self._search_hold_until = time.monotonic() + 2.5
         self._emit_activity()
         asyncio.get_running_loop().call_later(2.6, self._emit_activity)
 
     def emit_event(self, event: dict) -> None:
-        """Evento generico verso i browser aperti (es. ruoli di rete aggiornati)."""
+        """Generic event to open browsers (e.g. network roles updated)."""
         self._emit(event)
 
     def emit_alert(self, log_message: str, key: str, **params) -> None:
-        """Avviso (es. nuova porta aperta): al log il testo cosi' com'e', ai
-        browser aperti chiave e parametri, tradotti nella lingua di ciascuno."""
+        """Notice (e.g. new open port): to the log the text as is, to
+        open browsers the key and parameters, translated into each one's language."""
         logger.warning(log_message)
-        from . import journal  # tardivo: evita cicli all'import
+        from . import journal  # late import: avoids import cycles
         journal.add("normal", key, icon="alert", **params)
         self._emit({"type": "alert", "level": "warning", "key": key, "params": params})
 
@@ -252,13 +252,13 @@ class DeviceState:
             try:
                 q.put_nowait(event)
             except asyncio.QueueFull:
-                # Client troppo lento: lo si scollega, si riconnettera' da solo
-                # e ricevera' le differenze mancanti tramite catch_up.
+                # Client too slow: it is disconnected, it will reconnect by itself
+                # and receive the missing differences through catch_up.
                 self._subscribers.discard(q)
 
     def catch_up(self, since: int) -> list[dict]:
-        """Eventi persi da un client rimasto indietro (o appena collegato con la
-        revisione della pagina che ha ricevuto)."""
+        """Events missed by a client that fell behind (or just connected with the
+        revision of the page it received)."""
         events = []
         for device_id, rev in self._rev_of.items():
             if rev > since and device_id in self.devices:
@@ -268,9 +268,9 @@ class DeviceState:
                 events.append({"type": "removed", "id": device_id, "rev": rev})
         return events
 
-    # ---- aggiornamento ----
+    # ---- update ----
     async def arp_snapshot(self) -> dict[str, dict]:
-        """Tabella ARP recente (riusa quella del ciclo di controllo se fresca)."""
+        """Recent ARP table (reuses the one from the check cycle if fresh)."""
         return await self._arp_by_ip(120)
 
     async def _arp_by_ip(self, max_age: float) -> dict[str, dict]:
@@ -287,7 +287,7 @@ class DeviceState:
             return self._arp[1]
 
     def _record_presence(self, result: dict, online: bool, ts: float) -> None:
-        """Salva nello storico solo le transizioni online/offline."""
+        """Saves only online/offline transitions to the history."""
         device_id = result["id"]
         if self._db_state.get(device_id) == online:
             return
@@ -304,11 +304,11 @@ class DeviceState:
 
     def _apply(self, config: dict, result: dict, current: dict[str, dict], sample: float | None = None,
                force: bool = False) -> None:
-        """sample = tempo di risposta misurato in questo ciclo (ms, None se la
-        misura non ha avuto risposta)."""
-        # Se la configurazione del dispositivo e' cambiata mentre il probe era in
-        # corso (rinomina, nuova scansione...), il risultato e' gia' obsoleto:
-        # applicarlo farebbe tornare per un attimo il nome vecchio.
+        """sample = response time measured in this cycle (ms, None if the
+        measurement got no response)."""
+        # If the device configuration changed while the probe was
+        # running (rename, new scan...), the result is already stale:
+        # applying it would briefly bring back the old name.
         if current.get(config["id"]) != config:
             return
 
@@ -336,15 +336,15 @@ class DeviceState:
                     **{k: previous.get(k) for k in _OBSERVED},
                 }
             else:
-                # L'evento porta l'istante dell'ultima volta visto online, non
-                # quello in cui ci si e' accorti: il grafico parte dal momento
-                # reale della caduta.
+                # The event carries the instant the device was last seen online, not
+                # the moment it was noticed: the chart starts from the real
+                # moment of the drop.
                 self._record_presence(result, False, self._last_seen.get(device_id, now))
-        # Solo da offline: per un dispositivo online cambierebbe a ogni ciclo e
-        # farebbe sostituire la card ogni 30 secondi senza motivo.
+        # Only from offline: for an online device it would change on every cycle and
+        # make the card be replaced every 30 seconds for no reason.
         result["last_seen"] = None if result["online"] else self._last_seen.get(device_id)
-        # Tempo di risposta: media mobile a gradini (cambia raramente, quindi non
-        # genera un evento a ogni ciclo). Un dispositivo offline non ne ha.
+        # Response time: stepped moving average (changes rarely, so it does not
+        # generate an event on every cycle). An offline device has none.
         if result["online"]:
             result["latency_ms"] = latency.tracker.value(device_id)
         else:
@@ -352,16 +352,16 @@ class DeviceState:
             result["latency_ms"] = None
         result["latency_color"] = latency.color(result["latency_ms"])
 
-        # force: dopo una ricerca l'evento parte comunque, anche se i dati grezzi sono uguali:
-        # categoria e icona si calcolano all'invio (ruoli di rete, regole) e la pagina deve rifarle.
+        # force: after a search the event is sent anyway, even if the raw data are equal:
+        # category and icon are computed at send time (network roles, rules) and the page must redo them.
         if not force and self.devices.get(result["id"]) == result:
             return
         self.devices[result["id"]] = result
         self.rev += 1
         self._rev_of[result["id"]] = self.rev
         self._removed.pop(result["id"], None)
-        # Il dispositivo viaggia grezzo: card e riga HTML le rende il flusso di
-        # ogni browser nella sua lingua (vedi api_events in main.py).
+        # The device travels raw: the card and HTML row are rendered by each
+        # browser's stream in its own language (see api_events in main.py).
         self._emit({"type": "device", "id": result["id"], "device": result})
 
     def remove(self, device_id: str) -> None:
@@ -382,7 +382,7 @@ class DeviceState:
         snapshot = devices_config.load_devices()
         update_generic_titles(snapshot)
         arp_task = asyncio.create_task(self._arp_by_ip(0))
-        # Tempo di risposta misurato in parallelo ai probe, nello stesso ciclo.
+        # Response time measured in parallel with the probes, in the same cycle.
         lat_task = asyncio.create_task(
             latency.measure_many([(d["id"], d["ip"], d.get("port", 80)) for d in snapshot]))
         results = await asyncio.gather(
@@ -403,7 +403,7 @@ class DeviceState:
             self.remove(device_id)
         await self._save_latency()
         try:
-            arp = await arp_task  # gia' completata dai probe: nessuna nuova scansione
+            arp = await arp_task  # already completed by the probes: no new scan
         except Exception:
             arp = {}
         await self.follow_ip_changes(arp)
@@ -412,7 +412,7 @@ class DeviceState:
         self.ready.set()
 
     def report_ip_conflicts(self) -> None:
-        """Avvisa una volta per ogni IP a cui rispondono MAC diversi (scanner.arp_conflicts)."""
+        """Warns once for each IP answered by different MACs (scanner.arp_conflicts)."""
         for ip, macs in scanner.arp_conflicts.items():
             key = (ip, tuple(macs))
             if key in self._conflicts_reported:
@@ -421,9 +421,9 @@ class DeviceState:
             self.emit_alert(f"IP duplicato {ip}: risponde da {', '.join(macs)}", "alert.ip_conflict", ip=ip, macs=", ".join(macs))
 
     async def follow_ip_changes(self, arp: dict[str, dict]) -> None:
-        """Un dispositivo offline il cui MAC (gia' noto) risponde ora a UN solo altro
-        IP non assegnato ad altri dispositivi ha cambiato indirizzo (DHCP): lo si segue
-        invece di darlo per spento. Nessuna azione se i candidati sono ambigui."""
+        """An offline device whose (already known) MAC now answers at exactly ONE other
+        IP not assigned to other devices has changed address (DHCP): it is followed
+        instead of being given up as off. No action if the candidates are ambiguous."""
         if not arp:
             return
         by_mac: dict[str, list[str]] = {}
@@ -438,9 +438,9 @@ class DeviceState:
             mac = newdevices.normalize_mac(self._last_mac.get(config["id"]))
             if not device or device.get("online") or not mac or config["ip"] in arp:
                 continue
-            # Un MAC su piu' IP e' quello di un ripetitore Wi-Fi che "presta" il proprio
-            # indirizzo ai client collegati a lui (MAC translation): non identifica un
-            # dispositivo, quindi non si segue nulla.
+            # A MAC on multiple IPs belongs to a Wi-Fi repeater that "lends" its own
+            # address to the clients connected to it (MAC translation): it does not identify a
+            # device, so nothing is followed.
             if len(by_mac.get(mac, [])) != 1:
                 continue
             candidates = [ip for ip in by_mac[mac] if ip not in used]
@@ -459,7 +459,7 @@ class DeviceState:
             self.trigger()
 
     async def _save_latency(self) -> None:
-        """Un campione medio al minuto per dispositivo, in una sola transazione."""
+        """One average sample per minute per device, in a single transaction."""
         rows = latency.tracker.take_minute()
         if not rows:
             return
@@ -468,10 +468,10 @@ class DeviceState:
         except Exception:
             logger.exception("Salvataggio dello storico latenza fallito")
 
-    # ---- nuovi dispositivi in rete ----
+    # ---- new devices on the network ----
     def set_new_devices(self, devices: list[dict]) -> None:
-        """Memorizza l'elenco dei 'new' ed emette l'evento solo se l'insieme
-        dei MAC e' cambiato."""
+        """Stores the list of 'new' devices and emits the event only if the set
+        of MACs has changed."""
         macs = frozenset(d["mac"] for d in devices)
         changed = macs != self._newdev_macs
         self._newdev_macs = macs
@@ -479,13 +479,13 @@ class DeviceState:
             self._emit(newdevices.event(devices))
 
     async def new_devices_event(self) -> dict:
-        """Evento con l'elenco corrente (frame iniziale di api_events)."""
+        """Event with the current list (initial frame of api_events)."""
         devices = await asyncio.to_thread(newdevices.list_new)
         return newdevices.event(devices)
 
     async def check_new_devices(self, arp: dict[str, dict] | None = None) -> None:
-        """Confronta i MAC visti (ARP gia' disponibile, nessuna nuova scansione)
-        con quelli noti; avvisa per i mai visti."""
+        """Compares the seen MACs (ARP already available, no new scan)
+        with the known ones; warns about never-seen ones."""
         if arp is None:
             arp = self._arp[1] if self._arp else {}
         async with self._newdev_lock:
@@ -520,8 +520,8 @@ class DeviceState:
             self.set_new_devices(current)
 
     async def refresh_device(self, device_id: str, force: bool = False) -> None:
-        """Aggiorna subito un solo dispositivo (dopo una modifica o una
-        scansione), senza aspettare il prossimo ciclo."""
+        """Immediately updates a single device (after an edit or a
+        scan), without waiting for the next cycle."""
         all_configs = devices_config.load_devices()
         update_generic_titles(all_configs)
         config = next((c for c in all_configs if c["id"] == device_id), None)
@@ -538,8 +538,8 @@ class DeviceState:
 
     async def _loop(self) -> None:
         while True:
-            # clear all'inizio: un trigger arrivato durante il ciclo fa partire
-            # subito il successivo invece di andare perso.
+            # clear at the start: a trigger that arrives during the cycle starts
+            # the next one immediately instead of being lost.
             self._wake.clear()
             if self.paused_remaining() is None or self._force:
                 self._force = False
@@ -552,11 +552,11 @@ class DeviceState:
                     self.ready.set()
             else:
                 self.ready.set()
-            # Riletto a ogni ciclo: un cambio dalle Impostazioni vale subito
-            # (l'API sveglia il ciclo con trigger()).
+            # Re-read on every cycle: a change from Settings applies immediately
+            # (the API wakes the cycle with trigger()).
             interval = self._interval()
             left = self.paused_remaining()
-            # In pausa si riparte appena finisce, non un intervallo dopo.
+            # While paused, restart as soon as it ends, not one interval later.
             wait = interval if left is None else min(interval, left + 0.2)
             self._next_at = time.monotonic() + wait
             self._emit(self.poll_info())

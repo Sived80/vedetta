@@ -1,6 +1,6 @@
-"""Verifica di isteresi, storico e confronto porte con dati simulati.
-Si esegue nell'ambiente dell'app: python tests/check_phase_d.py
-Usa un database temporaneo, non tocca config/vedetta.db."""
+"""Check of hysteresis, history and port comparison with simulated data.
+Run in the app environment: python tests/check_phase_d.py
+Uses a temporary database, does not touch config/vedetta.db."""
 import asyncio
 import tempfile
 import time
@@ -10,7 +10,7 @@ from app import state as state_mod
 from app.history import History
 from app.rescan import diff_ports
 
-# ---- confronto porte ----
+# ---- port comparison ----
 old = [{"label": "80 · http"}, {"label": "22 · OpenSSH"}, {"label": "49200"}]
 new = [{"label": "80 · http"}, {"label": "8883 · mqtt"}, {"label": "50000"}]
 assert diff_ports(old, new) == ([8883], [22]), diff_ports(old, new)
@@ -37,38 +37,38 @@ async def main():
     st._emit = lambda e: events.append(e)
     st.render = lambda d: {"card": "c", "row": "r"}
 
-    # 1) primo controllo online
+    # 1) first check online
     st._apply(cfg, result(True), current)
     assert st.devices["d1"]["online"] is True and st.devices["d1"]["last_seen"] is None
 
-    # 2) due controlli falliti: resta online (tolleranza), mac conservato
+    # 2) two failed checks: stays online (tolerance), mac kept
     st._apply(cfg, result(False), current)
     st._apply(cfg, result(False), current)
     assert st.devices["d1"]["online"] is True, "deve restare online entro la tolleranza"
     assert st.devices["d1"]["mac"] == "AA:BB", "i dati osservati non vanno persi"
     n_events = len([e for e in events if e["type"] == "device"])
 
-    # 3) terzo fallimento: offline, con 'visto l'ultima volta'
+    # 3) third failure: offline, with 'last seen'
     st._apply(cfg, result(False), current)
     assert st.devices["d1"]["online"] is False
     assert st.devices["d1"]["last_seen"] is not None
     assert len([e for e in events if e["type"] == "device"]) == n_events + 1
 
-    # 4) torna online: azzera i fallimenti
+    # 4) comes back online: resets the failures
     st._apply(cfg, result(True), current)
     assert st.devices["d1"]["online"] is True and st._misses["d1"] == 0
 
-    # 5) un solo fallimento dopo il ritorno non lo fa cadere
+    # 5) a single failure after the return does not make it drop
     st._apply(cfg, result(False), current)
     assert st.devices["d1"]["online"] is True
 
-    # storico: solo transizioni (online, offline, online) - nessun evento per i fallimenti tollerati
+    # history: only transitions (online, offline, online) - no event for the tolerated failures
     await asyncio.sleep(0.3)
     rows = hist._db.execute("SELECT online FROM presence_events ORDER BY id").fetchall()
     assert [bool(r["online"]) for r in rows] == [True, False, True], [dict(r) for r in rows]
     print("ok: isteresi (3 controlli), last_seen, storico solo sulle transizioni")
 
-    # 6) ripartenza: riprende lo stato dallo storico
+    # 6) restart: resumes the state from the history
     st2 = state_mod.DeviceState()
     await st2.load_history()
     assert st2._db_state["d1"] is True

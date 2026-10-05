@@ -1,8 +1,8 @@
-// Percorso base (ingress di Home Assistant). L'ingress serve l'app sotto un
-// prefisso (/api/hassio_ingress/<token>) ma lo toglie prima di inoltrare: le
-// route restano /api/..., solo gli URL che il browser costruisce vanno
-// prefissati. Il server inietta window.VEDETTA_BASE (e carica questo file) solo
-// se c'e' un prefisso: alla radice non cambia nulla.
+// Base path (Home Assistant ingress). Ingress serves the app under a
+// prefix (/api/hassio_ingress/<token>) but strips it before forwarding: the
+// routes stay /api/..., only the URLs the browser builds must be
+// prefixed. The server injects window.VEDETTA_BASE (and loads this file) only
+// if there is a prefix: at the root nothing changes.
 (function () {
   var BASE = window.VEDETTA_BASE || "";
   if (!BASE) return;

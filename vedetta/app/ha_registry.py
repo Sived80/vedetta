@@ -1,13 +1,13 @@
-"""Registro di Home Assistant come fonte di nome, marca, modello e area dei dispositivi di rete.
+"""Home Assistant registry as a source of name, brand, model and area of the network devices.
 
-Solo LETTURA, solo comandi WebSocket documentati e non riservati agli amministratori
+Read-ONLY, only documented WebSocket commands not reserved to administrators
 (config/device_registry/list, config/entity_registry/list, config/area_registry/list, config_entries/get),
-tramite il proxy del Supervisor (richiede `homeassistant_api: true` e la variabile SUPERVISOR_TOKEN).
-Senza token (fuori da Home Assistant) o con HA spento la fonte e' semplicemente vuota: l'app continua con le
-altre. La copia si salva in /data per avere qualcosa anche quando HA e' irraggiungibile.
+through the Supervisor proxy (requires `homeassistant_api: true` and the SUPERVISOR_TOKEN variable).
+Without a token (outside Home Assistant) or with HA down the source is simply empty: the app carries on with the
+others. The copy is saved in /data to have something even when HA is unreachable.
 
-Il join e' per MAC (connections["mac"]). I dispositivi creati da Vedetta stessa (MQTT, identificativi
-"vedetta_*") sono esclusi: sarebbero i suoi stessi dati che tornano indietro."""
+The join is by MAC (connections["mac"]). Devices created by Vedetta itself (MQTT, identifiers
+"vedetta_*") are excluded: they would be its own data coming back."""
 import asyncio
 import json
 import os
@@ -21,7 +21,7 @@ REFRESH_S = 600
 TIMEOUT_S = 20
 CACHE_PATH = paths.data_path("ha_registry.json")
 OWN_PREFIX = "vedetta_"
-# Titoli di integrazione che non sono il nome di un apparecchio (nome del servizio o del router).
+# Integration titles that are not the name of a device (name of the service or of the router).
 GENERIC_TITLES = {"mqtt", "fritz!box", "fritzbox", "home assistant", "shelly", "tasmota", "esphome", "mobile app"}
 
 _state: dict = {"by_mac": {}, "by_ip": {}, "at": 0.0, "error": None, "counts": {}}
@@ -38,7 +38,7 @@ def norm_mac(mac) -> str | None:
 
 
 def host_of(url) -> str | None:
-    """Indirizzo IPv4 dell'indirizzo di configurazione di un dispositivo ("http://192.168.1.2:3000/"), se e' un IP."""
+    """IPv4 address of the configuration address of a device ("http://192.168.1.2:3000/"), if it is an IP."""
     from urllib.parse import urlparse
     try:
         host = urlparse(str(url or "")).hostname
@@ -49,9 +49,9 @@ def host_of(url) -> str | None:
 
 
 def build_index(devices: list, entities: list, areas: list, entries: list) -> dict:
-    """Pura (testabile): registri grezzi di HA -> {"by_mac": {mac: scheda}, "by_ip": {ip: scheda}}. Esclude i dispositivi
-    di Vedetta e quelli disabilitati. L'IP viene dall'indirizzo di configurazione (configuration_url) quando il
-    dispositivo non ha un MAC (es. AdGuard Home, Proxmox)."""
+    """Pure (testable): raw HA registries -> {"by_mac": {mac: record}, "by_ip": {ip: record}}. Excludes the devices
+    of Vedetta and the disabled ones. The IP comes from the configuration address (configuration_url) when the
+    device has no MAC (e.g. AdGuard Home, Proxmox)."""
     area_name = {a.get("area_id"): a.get("name") for a in areas}
     domain_of = {e.get("entry_id"): e.get("domain") for e in entries}
     title_of = {e.get("entry_id"): e.get("title") for e in entries}
@@ -73,7 +73,7 @@ def build_index(devices: list, entities: list, areas: list, entries: list) -> di
         entry_ids = dev.get("config_entries") or []
         domains = sorted({domain_of.get(e) for e in entry_ids if domain_of.get(e)})
         idents = [i for i in dev.get("identifiers") or [] if len(i) == 2]
-        # creato da Vedetta (MQTT con identificativo "vedetta_*") e da nessun altro: va escluso
+        # created by Vedetta (MQTT with "vedetta_*" identifier) and by nobody else: it must be excluded
         own = bool(idents) and all(i[0] == "mqtt" and str(i[1]).startswith(OWN_PREFIX) for i in idents) \
             and all(d == "mqtt" for d in domains)
         if own:
@@ -95,8 +95,8 @@ def build_index(devices: list, entities: list, areas: list, entries: list) -> di
         if ip:
             ip_count[ip] = ip_count.get(ip, 0) + 1
             out_ip.setdefault(ip, card)
-    # Lo stesso indirizzo condiviso da piu' dispositivi di HA (un host Proxmox con le sue macchine virtuali,
-    # tutte con la stessa pagina di gestione) non identifica nessuno di loro: si scarta.
+    # The same address shared by several HA devices (a Proxmox host with its virtual machines,
+    # all with the same management page) does not identify any of them: it is discarded.
     out_ip = {k: v for k, v in out_ip.items() if ip_count.get(k) == 1}
     return {"by_mac": out, "by_ip": out_ip}
 
@@ -143,7 +143,7 @@ async def refresh() -> bool:
             pass
         logger.info("Registro di Home Assistant letto: %d dispositivi, %d con MAC, %d con IP", len(raw["devices"]), len(index["by_mac"]), len(index["by_ip"]))
         return True
-    except Exception as exc:   # HA spento, permesso mancante, rete: mai un errore per l'utente
+    except Exception as exc:   # HA down, missing permission, network: never an error for the user
         _state["error"] = f"{type(exc).__name__}: {exc}"[:200]
         logger.info("Registro di Home Assistant non letto (%s)", _state["error"])
         return False
@@ -160,7 +160,7 @@ def _load_cache() -> None:
 async def _loop() -> None:
     while True:
         if not active():
-            await asyncio.sleep(30)   # funzione spenta nei flussi: si ricontrolla spesso, parte appena la si accende
+            await asyncio.sleep(30)   # function off in the flows: it rechecks often, starts as soon as it is turned on
             continue
         await refresh()
         await asyncio.sleep(REFRESH_S if _state["error"] is None else REFRESH_S / 2)
@@ -179,7 +179,7 @@ async def stop() -> None:
 
 
 def active() -> bool:
-    """True se la funzione "Dati di Home Assistant" e' accesa in almeno un flusso di ricerca (impostazioni)."""
+    """True if the "Home Assistant data" function is on in at least one search flow (settings)."""
     try:
         from . import settings
         fl = settings.flows_load()
@@ -189,8 +189,8 @@ def active() -> bool:
 
 
 def lookup(mac, ip: str | None = None) -> dict | None:
-    """Scheda di HA per quel MAC o, se non c'e', per quell'IP (None se HA non lo conosce o la funzione e' spenta
-    nei flussi di ricerca). Il MAC e' piu' sicuro dell'IP, che puo' cambiare."""
+    """HA record for that MAC or, if there is none, for that IP (None if HA does not know it or the function is off
+    in the search flows). The MAC is safer than the IP, which can change."""
     if not active():
         return None
     m = norm_mac(mac)
@@ -198,8 +198,8 @@ def lookup(mac, ip: str | None = None) -> dict | None:
 
 
 def choose_name(card: dict | None) -> tuple[str | None, str | None]:
-    """(nome, fonte) da una scheda di HA: il nome scelto dall'utente in HA vale piu' di tutto (ha_user);
-    altrimenti il nome del dispositivo o, se e' tecnico ("shelly1-8CAA..."), il titolo della sua integrazione (ha)."""
+    """(name, source) from an HA record: the name chosen by the user in HA counts above everything (ha_user);
+    otherwise the device name or, if it is technical ("shelly1-8CAA..."), the title of its integration (ha)."""
     from . import naming
     if not card:
         return None, None

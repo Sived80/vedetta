@@ -9,8 +9,8 @@ LOG_PATH = CONFIG_DIR / "dashboard.log"
 _MAX_ENTRIES = 500
 _SEP = "\t"
 
-# Il container ha il fuso UTC: l'ora dei log va scritta esplicitamente in ora
-# italiana, altrimenti risulta sfasata di 1-2 ore rispetto all'orologio reale.
+# The container has the UTC time zone: the log time must be written explicitly in
+# Italian time, otherwise it is 1-2 hours off from the real clock.
 TZ = ZoneInfo("Europe/Rome")
 
 
@@ -19,8 +19,8 @@ def _display_time(timestamp: float) -> str:
 
 
 def _parse_stored_time(text: str) -> str:
-    """Le righe scritte prima di questa correzione sono senza fuso e in UTC (19
-    caratteri); quelle nuove portano l'offset (es. +02:00)."""
+    """Lines written before this fix have no time zone and are in UTC (19
+    characters); the new ones carry the offset (e.g. +02:00)."""
     try:
         if len(text) == 19:
             moment = datetime.strptime(text, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
@@ -38,8 +38,8 @@ logger.setLevel(logging.INFO)
 
 
 def _load_previous() -> None:
-    """Ricarica nel buffer le ultime righe del file: la pagina /log mostra
-    anche gli eventi precedenti a un riavvio o a un deploy."""
+    """Reloads the last lines of the file into the buffer: the /log page also shows
+    events from before a restart or a deploy."""
     try:
         lines = LOG_PATH.read_text(encoding="utf-8").splitlines()[-_MAX_ENTRIES:]
     except OSError:
@@ -80,15 +80,15 @@ def _setup() -> None:
         handler.setFormatter(_FileFormatter())
         logger.addHandler(handler)
     except OSError:
-        # Senza scrittura su disco il log resta solo in memoria: meglio
-        # cosi' che impedire l'avvio del servizio.
+        # Without writing to disk the log stays in memory only: better
+        # that than preventing the service from starting.
         pass
-    logger.propagate = True  # arriva comunque anche a systemd/journalctl
+    logger.propagate = True  # it still reaches systemd/journalctl too
 
 
 _setup()
 
 
 def get_entries() -> list[dict]:
-    """Piu' recente prima."""
+    """Most recent first."""
     return list(reversed(_entries))

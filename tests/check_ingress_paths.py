@@ -1,10 +1,10 @@
-"""Percorso base (ingress di HA), cartella dati e interfaccia di rete.
- - con prefisso vuoto l'HTML reso e' IDENTICO a quello dei template di git HEAD
-   (se git non e' disponibile quel confronto si salta);
- - con prefisso /api/hassio_ingress/abc ogni link/asset e' prefissato;
+"""Base path (HA ingress), data folder and network interface.
+ - with an empty prefix the rendered HTML is IDENTICAL to that of the git HEAD templates
+   (if git is not available that comparison is skipped);
+ - with prefix /api/hassio_ingress/abc every link/asset is prefixed;
  - middleware: X-Ingress-Path, VEDETTA_BASE_PATH, VEDETTA_INGRESS_ONLY (403);
- - VEDETTA_DATA_DIR e VEDETTA_IFACE.
-Si lancia dalla radice del progetto: python tests/check_ingress_paths.py"""
+ - VEDETTA_DATA_DIR and VEDETTA_IFACE.
+Run from the project root: python tests/check_ingress_paths.py"""
 import asyncio
 import importlib
 import json
@@ -61,25 +61,25 @@ def render(env, name, **extra):
 
 new_env = make_env(FileSystemLoader(str(TPL)))
 
-# 1) prefisso vuoto: identico ai template di git HEAD
+# 1) empty prefix: identical to the git HEAD templates
 try:
     old = {}
     for rel in ("ha.html",):
         old[rel] = subprocess.run(["git", "show", "HEAD:vedetta/app/templates/" + rel], capture_output=True, check=True).stdout.decode("utf-8")
     head_env = make_env(DictLoader(old))
     for name in CTX:
-        # i template di HEAD non usano `base`: con base="" il risultato deve combaciare
+        # the HEAD templates do not use `base`: with base="" the result must match
         before = render(head_env, name)
         after = render(new_env, name, base="")
         assert before == after, "HTML con prefisso vuoto diverso da HEAD: " + name
-        # e anche passando un contesto senza `base` (variabile indefinita = stringa vuota)
+        # and also when passing a context without `base` (undefined variable = empty string)
         assert render(new_env, name) == before, "base indefinito: " + name
     print("ok: prefisso vuoto identico a HEAD")
 except (FileNotFoundError, subprocess.CalledProcessError):
     print("saltato: confronto con git HEAD (git non disponibile)")
 
-# 2) con prefisso: ogni URL interno prefissato
-URL_ATTR = re.compile(r'(?<!\(<a )(?:href|src|action)="(/[^"]*)"')  # esclude l'esempio nel commento JS di log.html
+# 2) with prefix: every internal URL prefixed
+URL_ATTR = re.compile(r'(?<!\(<a )(?:href|src|action)="(/[^"]*)"')  # excludes the example in the JS comment of log.html
 for name in CTX:
     html = render(new_env, name, base=PREFIX)
     for url in URL_ATTR.findall(html):
@@ -90,7 +90,7 @@ for name in CTX:
 assert "VEDETTA_BASE" not in render(new_env, "ha.html", base="")
 print("ok: URL dei template prefissati")
 
-# 3) nessun URL assoluto interno nei sorgenti statici fuori dai punti coperti dal wrapper
+# 3) no internal absolute URL in the static sources outside the points covered by the wrapper
 for js in list(Path("app/static/js").glob("*.js")) + [Path("app/static/ha/ha.js")]:
     text = js.read_text(encoding="utf-8")
     for m in re.finditer(r"""(?:href|src|action)=\\?["']\s*\+?\s*["']?/""", text):
@@ -99,7 +99,7 @@ for css in (Path("app/static/ha/ha.css"),):
     assert "url(/" not in css.read_text(encoding="utf-8").replace("url( /", "url(/"), "url(/...) assoluto in " + str(css)
 print("ok: sorgenti statici senza URL assoluti nascosti")
 
-# 4) normalizzazione e intestazioni
+# 4) normalisation and headers
 assert normalize_base("/abc/") == "/abc" and normalize_base("") == "" and normalize_base("/") == ""
 assert normalize_base("abc") == "" and normalize_base('/a"b') == "" and normalize_base("//evil.com") != "//evil.com/"
 assert base_from_headers({b"x-ingress-path": b"/api/hassio_ingress/abc"}) == PREFIX
@@ -110,7 +110,7 @@ assert base_from_headers({}) == "/envbase"
 assert base_from_headers({b"x-ingress-path": b"/hdr"}) == "/hdr"
 del os.environ["VEDETTA_BASE_PATH"]
 
-# 5) middleware ASGI
+# 5) ASGI middleware
 seen = {}
 
 
@@ -146,11 +146,11 @@ assert asyncio.run(call("192.168.1.9")) == 200
 assert template_context(types.SimpleNamespace(state=types.SimpleNamespace(base="/x"))) == {"base": "/x"}
 print("ok: middleware ingress")
 
-# 6) cartella dati
+# 6) data folder
 import app.paths as paths
 default = Path("config").resolve()
 assert paths.DATA_DIR.resolve() == default or "VEDETTA_DATA_DIR" in os.environ
-with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # Windows: il .db resta aperto
+with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # Windows: the .db stays open
     target = Path(tmp) / "nuova" / "dati"
     os.environ["VEDETTA_DATA_DIR"] = str(target)
     for mod in ("app.paths", "app.devices_config", "app.settings", "app.history", "app.dhcp", "app.blocklist",
@@ -167,7 +167,7 @@ with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # Windows:
     del os.environ["VEDETTA_DATA_DIR"]
 print("ok: VEDETTA_DATA_DIR")
 
-# 7) interfaccia di rete
+# 7) network interface
 from app import iface
 ROUTES = ("Iface\tDestination\tGateway\tFlags\tRefCnt\tUse\tMetric\tMask\n"
           "wlan0\t00000000\t0100A8C0\t0003\t0\t0\t600\t00000000\n"
@@ -180,10 +180,10 @@ os.environ["VEDETTA_IFACE"] = "end0"
 assert iface.lan_iface() == "end0"
 del os.environ["VEDETTA_IFACE"]
 iface.lan_iface.cache_clear()
-assert iface.lan_iface()  # rilevata o ripiego eth0
+assert iface.lan_iface()  # detected or eth0 fallback
 print("ok: interfaccia di rete")
 
-# 8) pacchetti DNS della risoluzione inversa
+# 8) DNS packages of the reverse resolution
 from app import scanner
 q = scanner._build_ptr_query("192.168.50.44")
 assert q[12:].startswith(b"\x0244\x0250\x03168\x03192\x07in-addr\x04arpa\x00")

@@ -1,9 +1,9 @@
-"""Verifica del flusso unico di ricerca: composizione nmap, validazione delle
-impostazioni, default, dipendenze saltate, traduzioni, pipeline con primitive finte.
-Nel container: python tests/check_pipeline.py
-In locale (Windows) funziona anche senza zoneinfo: se app.applog non si
-importa lo si simula. Usa una cartella config temporanea.
-Con "python - < file" la cartella corrente deve essere la radice del progetto."""
+"""Check of the single search flow: nmap composition, settings validation,
+defaults, skipped dependencies, translations, pipeline with fake primitives.
+In the container: python tests/check_pipeline.py
+Locally (Windows) it also works without zoneinfo: if app.applog cannot be
+imported it is simulated. Uses a temporary config folder.
+With "python - < file" the current folder must be the project root."""
 import asyncio
 import json
 import sys
@@ -22,7 +22,7 @@ except Exception:
 
 try:
     import httpx  # noqa: F401
-except ImportError:  # in locale puo' mancare: gli adapter qui sono comunque simulati
+except ImportError:  # it may be missing locally: the adapters here are simulated anyway
     sys.modules["httpx"] = types.ModuleType("httpx")
 
 from app import flows, i18n, pipeline, scanner, settings
@@ -40,10 +40,10 @@ assert d["associative"] == ["ha_registry", "reverse_names", "onvif", "rtsp", "po
 assert d["deep"] == [s.id for s in flows.STEPS if "deep" in s.flows and s.id not in flows.OFF_BY_DEFAULT] and "arp" not in d["deep"]
 assert "igmp" not in d["deep"]
 assert len(d["deep"]) == 14
-assert settings.flows_load() == d  # file assente = default
+assert settings.flows_load() == d  # missing file = default
 print("ok: default")
 
-# 2) composizione nmap: una sola invocazione, equivalente alle vecchie
+# 2) nmap composition: a single invocation, equivalent to the old ones
 assert compose(d["deep"], IP) == ["-T4", "-sV", "--version-light", "--host-timeout", "150s",
                                   "--script", "http-title", "-p-", IP]
 assert compose(d["associative"], IP) == ["-T4", "--host-timeout", "30s", "-p-", IP]
@@ -56,7 +56,7 @@ for none in ([], ["mdns"], ["http_title", "adapter_probe", "netbios_snmp", "ssdp
     assert compose(none, IP) is None
 print("ok: composizione nmap")
 
-# 3) dipendenze: http_title e adapter_probe senza porte -> saltati
+# 3) dependencies: http_title and adapter_probe without ports -> skipped
 run, skipped = pipeline.resolve_plan(["http_title", "adapter_probe", "netbios_snmp"])
 assert run == ["netbios_snmp"] and [s for s, _ in skipped] == ["http_title", "adapter_probe"]
 run, skipped = pipeline.resolve_plan(d["deep"])
@@ -65,9 +65,9 @@ run, skipped = pipeline.resolve_plan(["service_os", "adapter_probe"])
 assert skipped == []
 print("ok: dipendenze saltate")
 
-# 4) validazione
+# 4) validation
 v = flows.validate_profile
-assert v("associative", ["http_title", "mdns", "mdns"]) == ["mdns", "http_title"]  # ordine canonico, senza doppioni
+assert v("associative", ["http_title", "mdns", "mdns"]) == ["mdns", "http_title"]  # canonical order, without duplicates
 for profile, ids, key in (
     ("initial", [], "flow.error.required"),
     ("initial", ["mdns"], "flow.error.not_applicable"),
@@ -88,13 +88,13 @@ for profile, ids, key in (
         assert exc.key == key, (profile, ids, exc.key)
 print("ok: validazione")
 
-# 5) impostazioni: parziale, persistenza, alerts non perso, reset, file corrotto
+# 5) settings: partial, persistence, alerts not lost, reset, corrupted file
 assert settings.flows_update({"deep": ["ports_all", "netbios_snmp"]}) == {**d, "deep": ["netbios_snmp", "ports_all"]}
 assert settings.flows_load()["associative"] == d["associative"]
 assert settings.update({"alerts": False}) == {"alerts": False, "poll_interval": 30, "miss_limit": 3}
 saved = json.loads(settings.SETTINGS_PATH.read_text(encoding="utf-8"))
 assert saved == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "flows": {"deep": ["netbios_snmp", "ports_all"]}}, saved
-assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3}  # load() delle impostazioni semplici invariato
+assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3}  # load() of the simple settings unchanged
 try:
     settings.flows_update({"initial": ["mdns"], "deep": ["ports_fast"]})
     raise SystemExit("doveva rifiutare")
@@ -107,7 +107,7 @@ assert settings.flows_reset() == d
 assert "flows" not in json.loads(settings.SETTINGS_PATH.read_text(encoding="utf-8"))
 print("ok: impostazioni flussi")
 
-# 6) traduzioni complete in entrambe le lingue
+# 6) complete translations in both languages
 for lang in ("en", "it"):
     for s in flows.STEPS:
         for part in ("label", "description"):
@@ -121,7 +121,7 @@ for lang in ("en", "it"):
         assert i18n.translate(lang, "flow.error." + key, profile="p", step="s") != "flow.error." + key
 print("ok: traduzioni")
 
-# 7) pipeline con primitive finte: nessun nmap/avahi veri
+# 7) pipeline with fake primitives: no real nmap/avahi
 calls = []
 
 
@@ -176,18 +176,18 @@ pipeline.shelly_gen1.probe = fake_shelly
 
 
 async def main():
-    # deep di default: UN solo nmap, ssdp e mdns una volta, protocolli in parallelo
+    # default deep: ONE single nmap, ssdp and mdns once, protocols in parallel
     batch = await pipeline.prepare_batch("deep", [IP])
     info = await pipeline.run_deep(IP, batch)
     assert [c for c in calls if c[0] == "nmap"] == [("nmap", compose(d["deep"], IP))]
-    assert ("pilot", IP) in calls  # prima di tutte le porte si misura se il dispositivo regge
+    assert ("pilot", IP) in calls  # before scanning all ports we measure whether the device can handle it
     assert info["mdns_name"] == "" or info["mdns_name"] is None or info["mdns_name"] == "salotto"
     assert info["netbios_name"] == "PC" and info["upnp_name"] == "TV" and info["adapter"] == "shelly_gen1"
     fields = scanner.format_scan_info(info)
     assert fields["ports"][0]["label"].startswith("80") and fields["netbios_name"] == "PC"
     calls.clear()
 
-    # profilo deep ridotto: letto a ogni esecuzione, nessun nmap, http_title saltato
+    # reduced deep profile: read on every run, no nmap, http_title skipped
     settings.flows_update({"deep": ["netbios_snmp", "http_title"]})
     batch = await pipeline.prepare_batch("deep", [IP])
     info = await pipeline.run_deep(IP, batch)
@@ -195,7 +195,7 @@ async def main():
     assert info["netbios_name"] == "PC" and info["ports"] == [] and info["adapter"] == "generic"
     calls.clear()
 
-    # associativa di default: nmap rapido + conferma web + adapter Shelly, nome dallo Shelly
+    # default associative: quick nmap + web confirmation + Shelly adapter, name from the Shelly
     settings.flows_reset()
     r = await pipeline.run_associative(IP, "hint")
     assert [c for c in calls if c[0] == "nmap"] == [("nmap", compose(d["associative"], IP))]
@@ -203,14 +203,14 @@ async def main():
     assert set(r) >= {"ip", "mac", "hostname", "ports", "adapter", "suggested_name", "suggested_port", "shelly_extra"}
     calls.clear()
 
-    # associativa senza porte: http_title/adapter saltati, nome dal suggerimento
+    # associative without ports: http_title/adapter skipped, name from the hint
     settings.flows_update({"associative": ["reverse_names", "http_title", "adapter_probe"]})
     r = await pipeline.run_associative(IP, "hint")
     assert not [c for c in calls if c[0] in ("nmap", "confirm", "shelly")]
     assert r["adapter"] == "generic" and r["suggested_name"] == "hint" and r["ports"] == []
     calls.clear()
 
-    # iniziale: solo ARP (IP e MAC), nessuna ricerca di nomi (ne' mDNS ne' nomi inversi)
+    # initial: ARP only (IP and MAC), no name search (neither mDNS nor reverse names)
     async def fake_arp():
         return [{"ip": IP, "mac": "AA:BB:CC:00:00:01", "vendor": None}]
     scanner.arp_scan = fake_arp
@@ -218,13 +218,13 @@ async def main():
     hosts = await pipeline.run_initial()
     assert hosts[0]["ip"] == IP and hosts[0]["mac"] == "AA:BB:CC:00:00:01" and hosts[0]["ports"] == []
     assert not [c for c in calls if c[0] in ("resolve", "mdns")]
-    # il computer che esegue l'app non compare in ARP: si aggiunge con il MAC della sua interfaccia
+    # the computer running the app does not appear in ARP: it is added with its interface's MAC
     assert scanner.own_host(None, []) is None
     assert scanner.own_host("10.0.0.5", [{"ip": "10.0.0.5", "mac": "AA:BB:CC:00:00:09"}]) is None
 
 
 asyncio.run(main())
-# Dispositivo lento: la prova pilota lo segnala e si scansionano le porte mirate (60 s).
+# Slow device: the pilot test flags it and the targeted ports are scanned (60 s).
 async def slow_case():
     calls.clear()
     PILOT.update(slow=True, elapsed=11.0)

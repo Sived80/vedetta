@@ -1,4 +1,4 @@
-"""Verifica: un indirizzo che risponde piu' volte all'ARP compare una sola volta."""
+"""Check: an address that answers ARP several times appears only once."""
 import logging
 import sys
 import types
@@ -20,5 +20,5 @@ text = TAB.join(["192.168.1.1", "aa:bb:cc:00:00:01", "TP-Link"]) + "\n" \
 hosts = scanner.parse_arp_scan(text)
 assert [h["ip"] for h in hosts] == ["192.168.1.1", "192.168.1.9"], hosts
 assert hosts[0]["vendor"] == "TP-Link" and hosts[1]["vendor"] is None
-assert hosts[1]["mac"] == "AA:BB:CC:00:00:09"  # si tiene la prima risposta
+assert hosts[1]["mac"] == "AA:BB:CC:00:00:09"  # the first reply is kept
 print("OK")

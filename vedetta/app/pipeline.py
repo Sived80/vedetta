@@ -1,26 +1,26 @@
-"""Flusso unico delle ricerche: funzioni (step) indipendenti attivate dai profili.
+"""Single search flow: independent functions (steps) enabled by profiles.
 
-Registro e default in flows.py, scelte dell'utente in settings.json (chiave
-"flows"), letti a ogni esecuzione: cambiare impostazione vale dalla scansione
-successiva, senza riavvio.
+Registry and defaults in flows.py, user choices in settings.json (key
+"flows"), read on every run: changing a setting takes effect from the next
+scan, without a restart.
 
-Mappa funzione -> primitive in scanner.py:
-  arp            scanner.arp_scan             scoperta host (solo profilo initial)
-  mdns           scanner.mdns_scan            nomi Bonjour/Avahi passivi
-  reverse_names  scanner.resolve_mdns_name    risoluzione inversa avahi, per IP senza nome
-  ssdp           scanner.ssdp_scan            UPnP (una volta per l'intero lotto)
-  netbios_snmp   scanner.protocol_scan        NetBIOS/SNMP (nmap -sU leggero)
-  ports_fast     (flag nmap)                  -p- con host-timeout 30s
-  ports_all      (flag nmap)                  -p- con host-timeout 150s
-  service_os     (flag nmap)                  -sV --version-light
-  http_title     (flag nmap + GET diretta)    --script http-title (con service_os) e
-                                              conferma HTTP delle porte (_confirm_http_ports)
-  adapter_probe  adapter shelly_gen1.probe    riconoscimento Shelly sulla porta 80
+Function -> primitive map in scanner.py:
+  arp            scanner.arp_scan             host discovery (initial profile only)
+  mdns           scanner.mdns_scan            passive Bonjour/Avahi names
+  reverse_names  scanner.resolve_mdns_name    avahi reverse resolution, for IPs without a name
+  ssdp           scanner.ssdp_scan            UPnP (once for the whole batch)
+  netbios_snmp   scanner.protocol_scan        NetBIOS/SNMP (light nmap -sU)
+  ports_fast     (nmap flag)                  -p- with host-timeout 30s
+  ports_all      (nmap flag)                  -p- with host-timeout 150s
+  service_os     (nmap flag)                  -sV --version-light
+  http_title     (nmap flag + direct GET)     --script http-title (with service_os) and
+                                              HTTP confirmation of ports (_confirm_http_ports)
+  adapter_probe  adapter shelly_gen1.probe    Shelly detection on port 80
 
-Gli step che sono flag dello stesso nmap si compongono in UNA sola invocazione
-(compose_nmap_args). Uno step che dipende dall'output di un altro (http_title e
-adapter_probe hanno bisogno delle porte) se manca la dipendenza si salta con un
-log INFO, senza errori."""
+Steps that are flags of the same nmap are composed into ONE single invocation
+(compose_nmap_args). A step that depends on the output of another (http_title and
+adapter_probe need the ports) is skipped with an INFO log, without errors,
+when the dependency is missing."""
 import asyncio
 import time
 from dataclasses import dataclass, field
@@ -32,35 +32,35 @@ from .formatters import truncate_name
 from .netutil import get_local_network
 from .vendor_lookup import resolve_vendor_info
 
-# Step che producono l'elenco delle porte (una invocazione nmap TCP).
+# Steps that produce the list of ports (one TCP nmap invocation).
 NMAP_PORT_STEPS = ("ports_fast", "ports_all", "service_os")
-# Step che hanno bisogno delle porte gia' trovate.
+# Steps that need the ports already found.
 NEEDS_PORTS = ("http_title", "adapter_probe", "tls_ssh")
 
 _EMPTY_HOST = {"mac": None, "hostname": None, "ports": [], "http_title": None}
 
 
 def active_steps(profile: str) -> list[str]:
-    """Step attivi del profilo, riletti dalle impostazioni a ogni chiamata."""
+    """Active steps of the profile, re-read from the settings on every call."""
     return settings.flows_load()[profile]
 
 
 def compose_nmap_args(steps, ip: str, slow: bool = False) -> list[str] | None:
-    """UNA sola invocazione nmap per gli step attivi, oppure None se nessuno
-    step ne richiede una (nessuna scansione TCP).
+    """ONE single nmap invocation for the active steps, or None if no step
+    requires one (no TCP scan).
 
-    Con tutti gli step ottiene esattamente la vecchia scansione approfondita
+    With all steps it yields exactly the old deep scan
     (-T4 -sV --version-light --host-timeout 150s --script http-title -p-),
-    con ports_fast da solo la vecchia scansione rapida (-T4 -p- --host-timeout 30s).
-    -T4 e' la velocita' raccomandata da nmap per LAN affidabili; -sV senza
-    --version-light puo' impiegare quasi 100s su una singola porta difficile
-    (verificato), e senza -sV la scansione -p- costa quanto un elenco fisso,
-    quindi si usa sempre -p- e mai --top-ports (che escluderebbe porte da
-    homelab come 8006/Proxmox o 8123/Home Assistant). Il timeout e' lungo (150s)
-    se c'e' una scansione pesante (ports_all/service_os), breve (30s) per il
-    solo rilevamento rapido. --script http-title viaggia insieme a service_os
-    (come nella vecchia scansione approfondita): da sola sulle porte rapide
-    costerebbe tempo che la ricerca associativa non ha mai speso."""
+    with ports_fast alone the old quick scan (-T4 -p- --host-timeout 30s).
+    -T4 is the speed nmap recommends for reliable LANs; -sV without
+    --version-light can take almost 100s on a single difficult port
+    (verified), and without -sV the -p- scan costs as much as a fixed list,
+    so -p- is always used and never --top-ports (which would exclude
+    homelab ports such as 8006/Proxmox or 8123/Home Assistant). The timeout is long (150s)
+    if there is a heavy scan (ports_all/service_os), short (30s) for
+    quick detection only. --script http-title travels together with service_os
+    (as in the old deep scan): on its own on the quick ports it
+    would cost time that the associative search never spent."""
     chosen = set(steps)
     if not chosen & set(NMAP_PORT_STEPS):
         return None
@@ -74,8 +74,8 @@ def compose_nmap_args(steps, ip: str, slow: bool = False) -> list[str] | None:
     if chosen & {"ports_fast", "ports_all"}:
         args.append("-p-")
     if slow and "-p-" in args:
-        # Dispositivo lento (la scansione di tutte le porte e' scaduta in passato): porte
-        # mirate e tempo massimo ridotto, invece di restare in coda per minuti.
+        # Slow device (the all-ports scan timed out in the past): targeted ports
+        # and reduced maximum time, instead of sitting in the queue for minutes.
         args[args.index("-p-"):args.index("-p-") + 1] = ["-p", scanner.FAST_PORTS]
         args[args.index("--host-timeout") + 1] = "60s"
     args.append(ip)
@@ -83,8 +83,8 @@ def compose_nmap_args(steps, ip: str, slow: bool = False) -> list[str] | None:
 
 
 def resolve_plan(steps) -> tuple[list[str], list[tuple[str, str]]]:
-    """(step eseguibili, [(step saltato, motivo)]): salta chi dipende da un
-    output che nessuno step attivo produce."""
+    """(runnable steps, [(skipped step, reason)]): skips whatever depends on an
+    output that no active step produces."""
     chosen = set(steps)
     has_ports = bool(chosen & set(NMAP_PORT_STEPS))
     run, skipped = [], []
@@ -105,8 +105,8 @@ def _log_skipped(skipped: list[tuple[str, str]], where: str) -> None:
 
 @dataclass
 class Batch:
-    """Risultati condivisi da un lotto di dispositivi (calcolati una sola volta:
-    mDNS e SSDP sono broadcast di tutta la LAN, non per singolo host)."""
+    """Results shared by a batch of devices (computed only once:
+    mDNS and SSDP are LAN-wide broadcasts, not per single host)."""
     steps: list[str]
     mdns_names: dict[str, str] = field(default_factory=dict)
     upnp_info: dict[str, dict] = field(default_factory=dict)
@@ -115,8 +115,8 @@ class Batch:
 
 
 async def _names_for(steps, ips: list[str]) -> dict[str, str]:
-    """Nomi da mdns (passivo, una chiamata per tutta la rete) e/o reverse_names
-    (query attiva mirata sugli IP rimasti senza nome)."""
+    """Names from mdns (passive, one call for the whole network) and/or reverse_names
+    (targeted active query on the IPs left without a name)."""
     chosen = set(steps)
     if "mdns" in chosen and "reverse_names" in chosen:
         return await scanner.resolve_names(ips)
@@ -128,9 +128,9 @@ async def _names_for(steps, ips: list[str]) -> dict[str, str]:
 
 
 async def prepare_batch(profile: str, ips: list[str], steps: list[str] | None = None) -> Batch:
-    """Parte "di lotto" del profilo: nomi mDNS/inversi e SSDP, una volta sola
-    per tutti gli IP, in parallelo. Un errore qui non ferma la scansione: si
-    prosegue senza quel dato."""
+    """The "batch" part of the profile: mDNS/reverse names and SSDP, once
+    for all IPs, in parallel. An error here does not stop the scan: it
+    continues without that data."""
     steps = list(steps) if steps is not None else active_steps(profile)
     batch = Batch(steps=steps)
     jobs = {}
@@ -169,19 +169,19 @@ async def _wsd() -> dict[str, dict]:
 
 
 async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
-    """Funzioni "per host" del profilo (nmap composto, NetBIOS/SNMP, conferma
-    porte web, adapter) e unione con i dati di lotto. Ritorna lo stesso dict che
-    produceva full_scan (piu' le chiavi 'adapter'/'adapter_extra')."""
+    """The profile's "per host" functions (composed nmap, NetBIOS/SNMP, web
+    port confirmation, adapter) merged with the batch data. Returns the same dict that
+    full_scan produced (plus the 'adapter'/'adapter_extra' keys)."""
     steps = batch.steps
     run, skipped = resolve_plan(steps)
     _log_skipped(skipped, ip)
     chosen = set(run)
 
-    # Il nmap TCP e il nmap UDP (NetBIOS/SNMP) sono processi separati lanciati in
-    # parallelo, non uno dopo l'altro: non si sommano ai tempi gia' lunghi di -p- -sV.
+    # The TCP nmap and the UDP nmap (NetBIOS/SNMP) are separate processes launched in
+    # parallel, not one after the other: they do not add to the already long times of -p- -sV.
     nmap_args = compose_nmap_args(run, ip, slow)
-    # Prima si misura se il dispositivo regge la scansione di tutte le porte (prova pilota
-    # su 1000): se e' lento si passa subito alle porte mirate, senza aspettare i 150 s.
+    # First we measure whether the device can handle the all-ports scan (pilot test
+    # on 1000): if it is slow we switch straight to targeted ports, without waiting for the 150 s.
     if nmap_args and "-p-" in nmap_args:
         try:
             probe = await scanner.pilot(ip)
@@ -203,8 +203,8 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
 
     hosts = scanner._parse_hosts(xml_text) if xml_text is not None else []
     info = hosts[0] if hosts else {"ip": ip, **_EMPTY_HOST}
-    # La scansione e' scaduta e nmap ha scartato le porte: scansione mirata di ripiego, e
-    # il dispositivo si segna come lento per le volte successive.
+    # The scan timed out and nmap discarded the ports: fallback targeted scan, and
+    # the device is marked as slow for subsequent runs.
     if ip in scanner.timed_out:
         scanner.timed_out.discard(ip)
         info["slow_scan"] = True
@@ -221,7 +221,7 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
     elif slow:
         info["slow_scan"] = True
     info["mdns_name"] = batch.mdns_names.get(ip)
-    # Modello/produttore annunciati via mDNS TXT (_device-info, AirPlay, Chromecast...).
+    # Model/manufacturer announced via mDNS TXT (_device-info, AirPlay, Chromecast...).
     meta = scanner.mdns_meta.get(ip) or {}
     if meta.get("model"):
         info["mdns_model"] = meta["model"]
@@ -237,7 +237,7 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
         if upnp.get("model"):
             info["upnp_model"] = upnp["model"]
 
-    # Auto-dichiarazione ONVIF/WS-Discovery e intestazione Server di RTSP.
+    # ONVIF/WS-Discovery self-declaration and RTSP Server header.
     wsd = batch.wsd_info.get(ip) if "onvif" in chosen else None
     if wsd:
         for key in ("name", "hardware", "manufacturer"):
@@ -251,16 +251,16 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
         info["mdns_services"] = ", ".join(meta["services"])[:200]
     if "igmp" in chosen and batch.igmp_info.get(ip):
         info["igmp_groups"] = ", ".join(batch.igmp_info[ip][:6])
-    # Certificato TLS e chiave SSH: un secondo nmap leggero solo sulle porte gia' trovate
-    # aperte (dentro la scansione -p- gli script la allungavano oltre il suo timeout).
+    # TLS certificate and SSH key: a second light nmap only on the ports already found
+    # open (inside the -p- scan the scripts stretched it beyond its timeout).
     if "tls_ssh" in chosen and info["ports"]:
         try:
             info.update(await scanner.tls_ssh_scan(ip, info["ports"]))
         except Exception as exc:
             logger.info("%s: certificato/chiave non letti (%r)", ip, exc)
     if "local_api" in chosen:
-        # Senza porte note (dispositivi lenti che superano il timeout di nmap) si prova
-        # comunque la porta 80: e' una sola GET documentata, con timeout breve.
+        # Without known ports (slow devices that exceed the nmap timeout) port 80 is
+        # tried anyway: it is a single documented GET, with a short timeout.
         try:
             info.update(await localapi.probe(ip, [p["port"] for p in info["ports"]] or [80]))
         except Exception as exc:
@@ -268,8 +268,8 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
 
     if "http_title" in chosen:
         await scanner._confirm_http_ports(ip, info["ports"])
-        # Server e titolo trovati dalla GET: servono a riconoscere cosa e'
-        # (titolo di nmap, se c'e', ha la precedenza).
+        # Server and title found by the GET: they help recognize what it is
+        # (nmap's title, if present, takes precedence).
         found = scanner.web_identity(info["ports"])
         if found.get("http_server"):
             info["http_server"] = found["http_server"]
@@ -284,14 +284,14 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
             result = await shelly_gen1.probe(ip, 80)
         except Exception:
             result = {}
-        # Solo se la risposta ha davvero la forma dell'API Shelly (mac + uptime),
-        # altrimenti un qualunque webserver su porta 80 finirebbe classificato come Shelly.
+        # Only if the response really has the shape of the Shelly API (mac + uptime),
+        # otherwise any web server on port 80 would end up classified as Shelly.
         if result.get("mac") and result.get("uptime_seconds") is not None:
             adapter = "shelly_gen1"
             extra = result
             info["battery"] = "yes" if result.get("battery") else "no"
         elif result.get("mac") is None:
-            # Non e' un Gen1: forse un Gen2+ (API RPC), dove "devicepower" rivela la batteria.
+            # Not a Gen1: maybe a Gen2+ (RPC API), where "devicepower" reveals the battery.
             try:
                 gen2 = await shelly_gen2.battery_probe(ip, 80)
             except Exception:
@@ -303,15 +303,15 @@ async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
     return info
 
 
-# ---- profilo initial: ricerca iniziale ----
+# ---- initial profile: initial search ----
 def _dhcp_hostname(mac: str | None) -> str | None:
     return (dhcp.seen.get((mac or "").lower()) or {}).get("hostname")
 
 
 async def run_initial() -> list[dict]:
-    """Scoperta host: solo ARP, quindi IP e MAC (e il produttore del MAC). Nessuna ricerca di
-    nomi: l'unico nome che passa e' quello DHCP gia' ascoltato, tenuto come suggerimento
-    interno per l'analisi che parte all'aggiunta (non si mostra)."""
+    """Host discovery: ARP only, hence IP and MAC (and the MAC vendor). No name
+    search: the only name that gets through is the DHCP one already heard, kept as an internal
+    hint for the analysis that starts on adding (it is not shown)."""
     logger.info("Avviata: scansione ARP (tutta la LAN)")
     t0 = time.monotonic()
     arp_hosts = await scanner.arp_scan()
@@ -336,12 +336,12 @@ async def run_initial() -> list[dict]:
     return hosts
 
 
-# ---- profilo associative: scansione dei dispositivi scelti prima di aggiungerli ----
+# ---- associative profile: scan of the chosen devices before adding them ----
 async def run_associative(ip: str, name_hint: str | None = None, batch: Batch | None = None) -> dict:
-    """Scansione di un singolo host + riconoscimento adapter. Deve restare
-    veloce (vedi compose_nmap_args). name_hint e' il nome gia' trovato dalla
-    ricerca iniziale: va preservato, altrimenti si perderebbe (nmap da solo
-    raramente trova un hostname su una LAN domestica senza DNS locale)."""
+    """Scan of a single host + adapter detection. It must stay
+    fast (see compose_nmap_args). name_hint is the name already found by the
+    initial search: it must be preserved, otherwise it would be lost (nmap alone
+    rarely finds a hostname on a home LAN without local DNS)."""
     if batch is None:
         batch = await prepare_batch(flows.ASSOCIATIVE, [ip])
     info = await scan_host(ip, batch)
@@ -349,7 +349,7 @@ async def run_associative(ip: str, name_hint: str | None = None, batch: Batch | 
     mac = info["mac"] or extra.get("mac")
     name, name_source = naming.pick([
         ("adapter", extra.get("name") if adapter == "shelly_gen1" else None),
-        ("adapter", info.get("api_name")),  # interfaccia locale (Tasmota, ESPHome, Roku, Sonos...)
+        ("adapter", info.get("api_name")),  # local interface (Tasmota, ESPHome, Roku, Sonos...)
         ("mdns", name_hint), ("mdns", batch.mdns_names.get(ip)), ("onvif", info.get("onvif_name")),
         ("tls", naming.cn_host(info.get("tls_subject"))), ("web", naming.title_name(info.get("http_title"))),
         ("upnp", info.get("upnp_name")), ("dhcp", _dhcp_hostname(mac)),
@@ -367,7 +367,7 @@ async def run_associative(ip: str, name_hint: str | None = None, batch: Batch | 
         "name_source": name_source if name else None,
         "suggested_port": suggested_port,
         "shelly_extra": extra.get("extra") if adapter == "shelly_gen1" else None,
-        # Dati delle funzioni facoltative (os, titolo, NetBIOS/SNMP, UPnP...).
+        # Data from the optional functions (os, title, NetBIOS/SNMP, UPnP...).
         "scan_info": scanner.format_scan_info(info),
     }
 
@@ -376,7 +376,7 @@ _running: dict[str, asyncio.Task] = {}
 
 
 def cancel_associative(ips: list[str] | None = None) -> int:
-    """Annulla le ricerche associative in corso (None = tutte). Ritorna quante."""
+    """Cancel the associative searches in progress (None = all). Returns how many."""
     n = 0
     for ip, task in list(_running.items()):
         if (ips is None or ip in ips) and not task.done():
@@ -386,9 +386,9 @@ def cancel_associative(ips: list[str] | None = None) -> int:
 
 
 def start_associative(ips: list[str], hints: dict) -> list[asyncio.Task]:
-    """Avvia la ricerca associativa su piu' IP: i task partono qui (fuori dal
-    generatore SSE), cosi' proseguono anche se il browser si disconnette. Le
-    funzioni di lotto (mDNS, SSDP) girano una volta sola, condivise."""
+    """Start the associative search on several IPs: the tasks start here (outside the
+    SSE generator), so they carry on even if the browser disconnects. The
+    batch functions (mDNS, SSDP) run only once, shared."""
     batch_task = asyncio.create_task(prepare_batch(flows.ASSOCIATIVE, ips))
 
     async def one(ip: str) -> dict:
@@ -403,8 +403,8 @@ def start_associative(ips: list[str], hints: dict) -> list[asyncio.Task]:
     return tasks
 
 
-# ---- profilo deep: ricerca approfondita ----
+# ---- deep profile: deep search ----
 async def run_deep(ip: str, batch: Batch, slow: bool = False) -> dict:
-    """Scansione approfondita di un host, con i dati di lotto gia' pronti
-    (prepare_batch('deep', ips)). Usata dal pulsante e dalla manutenzione notturna."""
+    """Deep scan of a host, with the batch data already ready
+    (prepare_batch('deep', ips)). Used by the button and by nightly maintenance."""
     return await scan_host(ip, batch, slow)

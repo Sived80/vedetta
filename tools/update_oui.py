@@ -1,12 +1,12 @@
-"""Rigenera app/data/oui-ieee.txt dai registri pubblici dell'IEEE (MA-L 24 bit,
-MA-M 28 bit, MA-S 36 bit e IAB). La logica sta in app/oui_update.py (la usa
-anche l'aggiornamento dal web, che scrive pero' in config/).
+"""Regenerates app/data/oui-ieee.txt from the public IEEE registries (MA-L 24 bit,
+MA-M 28 bit, MA-S 36 bit and IAB). The logic lives in app/oui_update.py (also used by
+the update from the web, which however writes to config/).
 
-Uso:  python tools/update_oui.py                 (scarica i registri aggiornati)
-      python tools/update_oui.py a.csv b.csv...  (usa copie gia' scaricate)
+Usage:  python tools/update_oui.py                 (downloads the updated registries)
+      python tools/update_oui.py a.csv b.csv...  (uses already downloaded copies)
 
-Formato di uscita, una riga per blocco:  PREFISSO[/bit] Nome registrato
-con il prefisso in esadecimale maiuscolo senza due punti (es. BC2411,
+Output format, one line per block:  PREFIX[/bit] Registered name
+with the prefix in uppercase hexadecimal without colons (e.g. BC2411,
 00155D4/28)."""
 import sys
 from pathlib import Path

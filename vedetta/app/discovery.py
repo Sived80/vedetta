@@ -1,16 +1,16 @@
-"""Protocolli di auto-dichiarazione non coperti da nmap/zeroconf, in Python puro.
+"""Self-declaration protocols not covered by nmap/zeroconf, in pure Python.
 
-WS-Discovery (UDP multicast 239.255.255.250:3702, OASIS WS-Discovery 1.1, usato da
-ONVIF per le telecamere e da Windows/stampanti WSD): una Probe senza filtri, ogni
-dispositivo risponde con un ProbeMatch che contiene Types, Scopes e XAddrs. Per
-ONVIF gli Scopes dicono nome, hardware (modello) e a volte produttore:
+WS-Discovery (UDP multicast 239.255.255.250:3702, OASIS WS-Discovery 1.1, used by
+ONVIF for cameras and by Windows/WSD printers): an unfiltered Probe, each
+device answers with a ProbeMatch containing Types, Scopes and XAddrs. For
+ONVIF the Scopes give name, hardware (model) and sometimes manufacturer:
   onvif://www.onvif.org/name/IPCAM, .../hardware/C6F0SgZ3N0PdL2, .../location/...
 
-RTSP (TCP 554, RFC 2326/7826): una richiesta OPTIONS non autenticata restituisce
-l'intestazione Server (es. "Hipcam RealServer/V1.0") e i metodi supportati.
+RTSP (TCP 554, RFC 2326/7826): an unauthenticated OPTIONS request returns
+the Server header (e.g. "Hipcam RealServer/V1.0") and the supported methods.
 
-Nessuna credenziale, nessun tentativo di accesso: solo richieste standard che i
-dispositivi accettano per progetto."""
+No credentials, no access attempts: only standard requests that the
+devices accept by design."""
 import asyncio
 import re
 import socket
@@ -39,7 +39,7 @@ def _local(tag: str) -> str:
 
 
 def parse_probe_match(data: bytes) -> dict | None:
-    """Campi di un ProbeMatch WS-Discovery; None se non e' un ProbeMatch valido."""
+    """Fields of a WS-Discovery ProbeMatch; None if it is not a valid ProbeMatch."""
     try:
         root = ET.fromstring(data)
     except ET.ParseError:
@@ -86,8 +86,8 @@ class _Collector(asyncio.DatagramProtocol):
 
 
 async def wsd_scan(own_ip: str | None = None, timeout: float = 3.0) -> dict[str, dict]:
-    """Probe WS-Discovery in multicast; {ip: campi} per ogni dispositivo che risponde.
-    Endpoint datagram di asyncio (funziona anche con uvloop, che non ha sock_recvfrom)."""
+    """WS-Discovery Probe in multicast; {ip: fields} for each device that answers.
+    asyncio datagram endpoint (it also works with uvloop, which has no sock_recvfrom)."""
     loop = asyncio.get_running_loop()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     transport = None
@@ -102,7 +102,7 @@ async def wsd_scan(own_ip: str | None = None, timeout: float = 3.0) -> dict[str,
         sock.setblocking(False)
         transport, proto = await loop.create_datagram_endpoint(_Collector, sock=sock)
         msg = _PROBE.format(mid=uuid.uuid4()).encode()
-        for _ in range(2):  # UDP: due invii per sicurezza
+        for _ in range(2):  # UDP: two sends to be safe
             transport.sendto(msg, WSD_ADDR)
             await asyncio.sleep(0.1)
         await asyncio.sleep(timeout)
@@ -137,7 +137,7 @@ def parse_rtsp_response(text: str) -> dict | None:
 
 
 async def rtsp_probe(ip: str, port: int = 554, timeout: float = 2.5) -> dict:
-    """OPTIONS RTSP non autenticato: {} se la porta non risponde come RTSP."""
+    """Unauthenticated RTSP OPTIONS: {} if the port does not answer as RTSP."""
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout)
     except (OSError, asyncio.TimeoutError):
@@ -179,8 +179,8 @@ class _Locations(asyncio.DatagramProtocol):
 
 
 def parse_description(xml_text: str) -> dict:
-    """Tipi di dispositivo (deviceType, anche annidati) e nome/produttore/modello del
-    descrittore UPnP."""
+    """Device types (deviceType, also nested) and name/manufacturer/model of the
+    UPnP descriptor."""
     out: dict = {"types": []}
     for m in re.finditer(r"<deviceType>([^<]+)</deviceType>", xml_text):
         parts = m.group(1).strip().split(":")
@@ -194,8 +194,8 @@ def parse_description(xml_text: str) -> dict:
 
 
 async def ssdp_devices(own_ip: str | None = None, timeout: float = 3.0) -> dict[str, dict]:
-    """M-SEARCH ssdp:all e lettura dei descrittori: {ip: {types, name, manufacturer, model}}."""
-    import httpx  # tardivo: serve solo qui
+    """M-SEARCH ssdp:all and reading of the descriptors: {ip: {types, name, manufacturer, model}}."""
+    import httpx  # late: only needed here
 
     loop = asyncio.get_running_loop()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)

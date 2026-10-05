@@ -1,6 +1,6 @@
-"""Interfaccia di rete della LAN: da VEDETTA_IFACE, altrimenti dall'instradamento
-predefinito (/proc/net/route, nessun comando esterno: funziona anche con BusyBox).
-Ripiego "eth0" (il container LXC attuale)."""
+"""LAN network interface: from VEDETTA_IFACE, otherwise from the default
+routing (/proc/net/route, no external command: it also works with BusyBox).
+Fallback "eth0" (the current LXC container)."""
 import os
 from functools import lru_cache
 
@@ -9,7 +9,7 @@ FALLBACK = "eth0"
 
 
 def parse_default_route(text: str) -> str | None:
-    """Interfaccia della rotta con destinazione 0.0.0.0/0 e metrica minore."""
+    """Interface of the route with destination 0.0.0.0/0 and lowest metric."""
     best: tuple[int, str] | None = None
     for line in text.splitlines()[1:]:
         f = line.split()

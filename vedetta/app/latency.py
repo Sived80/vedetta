@@ -1,14 +1,14 @@
-"""Tempo di risposta dei dispositivi, misurato nello stesso ciclo di controllo.
+"""Device response time, measured in the same check cycle.
 
-Misura: ICMP echo tramite il comando `ping` se presente nel container (nessun
-raw socket in Python); altrimenti tempo di connessione TCP alla porta del
-dispositivo (anche un RST "connessione rifiutata" e' una risposta valida: il
-tempo e' comunque quello di andata e ritorno). Timeout ~1 s per dispositivo, tutti
-in parallelo con un tetto di processi contemporanei (container da 1 CPU).
+Measurement: ICMP echo through the `ping` command if present in the container (no
+raw socket in Python); otherwise TCP connection time to the device's
+port (even an RST "connection refused" is a valid response: the
+time is still the round-trip one). Timeout ~1 s per device, all
+in parallel with a cap on concurrent processes (1-CPU container).
 
-Il valore mostrato e' una media mobile semplice, arrotondata a gradini grossolani:
-un valore che cambia a ogni ciclo farebbe sostituire la scheda (evento SSE) a ogni
-controllo. Le funzioni di calcolo sono pure e si provano senza rete
+The displayed value is a simple moving average, rounded to coarse steps:
+a value that changes on every cycle would make the card be replaced (SSE event) on every
+check. The calculation functions are pure and can be tested without network
 (tests/check_interval_latency.py)."""
 import asyncio
 import re
@@ -17,17 +17,17 @@ import time
 from collections import deque
 
 TIMEOUT = 1.0
-MAX_CONCURRENT = 12   # processi ping / connessioni contemporanee
-WINDOW = 5            # campioni della media mobile
+MAX_CONCURRENT = 12   # concurrent ping processes / connections
+WINDOW = 5            # moving average samples
 MAX_SERIES_POINTS = 120
 
 _TIME_RE = re.compile(r"time[=<]\s*([0-9.]+)\s*ms")
 
 
-# ---- funzioni pure ----
+# ---- pure functions ----
 def quantize(ms: float | None) -> int | None:
-    """Arrotonda a gradini: <10 ms passo 1, <50 passo 5, oltre passo 25.
-    Minimo 1 ms (sotto il millisecondo non e' un dato utile)."""
+    """Rounds to steps: <10 ms step 1, <50 step 5, beyond step 25.
+    Minimum 1 ms (below a millisecond is not a useful value)."""
     if ms is None or ms < 0:
         return None
     if ms < 10:
@@ -38,8 +38,8 @@ def quantize(ms: float | None) -> int | None:
 
 
 def color(ms: int | float | None) -> str | None:
-    """Qualita' discreta (stessi nomi dei colori del segnale): green < 20 ms,
-    yellow < 100 ms, red oltre."""
+    """Discrete quality (same names as the signal colours): green < 20 ms,
+    yellow < 100 ms, red beyond."""
     if ms is None:
         return None
     if ms < 20:
@@ -55,9 +55,9 @@ def quality(ms: int | float | None) -> str | None:
 
 def reduce_series(points: list[tuple[float, float]], since: float, until: float,
                   max_points: int = MAX_SERIES_POINTS) -> dict:
-    """Serie [(ts, ms)] ridotta a al piu' max_points punti: la finestra e' divisa
-    in fasce uguali e di ogni fascia si tiene la media. Restituisce anche media e
-    massimo complessivi (None se non ci sono dati)."""
+    """Series [(ts, ms)] reduced to at most max_points points: the window is divided
+    into equal buckets and the average of each bucket is kept. Also returns the overall average and
+    maximum (None if there is no data)."""
     points = sorted(points)
     if not points:
         return {"from": int(since), "to": int(until), "points": [], "avg": None, "max": None}
@@ -78,17 +78,17 @@ def reduce_series(points: list[tuple[float, float]], since: float, until: float,
 
 
 class Tracker:
-    """Media mobile per dispositivo e accumulo del campione medio al minuto."""
+    """Per-device moving average and accumulation of the average per-minute sample."""
 
     def __init__(self, window: int = WINDOW) -> None:
         self._window = window
         self._win: dict[str, deque] = {}
-        self._acc: dict[str, list[float]] = {}   # id -> [somma, n] del minuto corrente
+        self._acc: dict[str, list[float]] = {}   # id -> [sum, n] of the current minute
         self._minute: int | None = None
 
     def add(self, device_id: str, ms: float | None) -> None:
-        """Nuovo campione. ms None = nessuna risposta: la finestra si svuota piano
-        piano (un valore vecchio non resta per sempre)."""
+        """New sample. ms None = no response: the window empties slowly
+        (an old value does not stay forever)."""
         win = self._win.setdefault(device_id, deque(maxlen=self._window))
         if ms is None:
             if win:
@@ -100,7 +100,7 @@ class Tracker:
         acc[1] += 1
 
     def value(self, device_id: str) -> int | None:
-        """Media mobile arrotondata a gradini (None se non ci sono campioni)."""
+        """Moving average rounded to steps (None if there are no samples)."""
         win = self._win.get(device_id)
         return quantize(sum(win) / len(win)) if win else None
 
@@ -109,9 +109,9 @@ class Tracker:
         self._acc.pop(device_id, None)
 
     def take_minute(self, now: float | None = None) -> list[tuple[str, float, float]]:
-        """Se e' cambiato il minuto restituisce [(device_id, ts, ms_medio)] del minuto
-        appena concluso (un solo campione per dispositivo) e riparte da zero;
-        altrimenti lista vuota."""
+        """If the minute has changed returns [(device_id, ts, avg_ms)] of the minute
+        just ended (a single sample per device) and starts again from zero;
+        otherwise an empty list."""
         now = time.time() if now is None else now
         minute = int(now // 60)
         if self._minute is None:
@@ -129,7 +129,7 @@ class Tracker:
 tracker = Tracker()
 
 
-# ---- misura ----
+# ---- measurement ----
 _PING = shutil.which("ping")
 
 
@@ -157,7 +157,7 @@ async def _tcp_ms(ip: str, port: int, timeout: float) -> float | None:
     try:
         _, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
     except ConnectionRefusedError:
-        return (time.perf_counter() - start) * 1000.0  # RST: l'host ha risposto
+        return (time.perf_counter() - start) * 1000.0  # RST: the host responded
     except Exception:
         return None
     ms = (time.perf_counter() - start) * 1000.0
@@ -170,15 +170,15 @@ async def _tcp_ms(ip: str, port: int, timeout: float) -> float | None:
 
 
 async def measure(ip: str, port: int = 80, timeout: float = TIMEOUT) -> float | None:
-    """Tempo di risposta in ms (None se non risponde): ICMP se c'e' `ping`,
-    altrimenti TCP. Niente doppio tentativo: un host spento costerebbe 2 timeout."""
+    """Response time in ms (None if it does not respond): ICMP if `ping` exists,
+    otherwise TCP. No second attempt: a powered-off host would cost 2 timeouts."""
     if _PING:
         return await _icmp_ms(ip, timeout)
     return await _tcp_ms(ip, port, timeout)
 
 
 async def measure_many(targets: list[tuple[str, str, int]]) -> dict[str, float | None]:
-    """targets: [(device_id, ip, port)] -> {device_id: ms | None}, in parallelo."""
+    """targets: [(device_id, ip, port)] -> {device_id: ms | None}, in parallel."""
     sem = asyncio.Semaphore(MAX_CONCURRENT)
 
     async def one(ip: str, port: int) -> float | None:

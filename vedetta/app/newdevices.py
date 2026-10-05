@@ -1,11 +1,11 @@
-"""Nuovi dispositivi in rete: confronta i MAC visti via ARP (e DHCP) con quelli
-gia' noti, salvati nella tabella known_macs dello storico SQLite.
+"""New devices on the network: compares the MACs seen via ARP (and DHCP) with the
+already known ones, stored in the known_macs table of the SQLite history.
 
-Stati: 'known' (configurato o gia' visto), 'new' (mai visto dopo la baseline,
-da segnalare), 'ignored' (scartato dall'utente). Al primissimo ciclo (chiave
-meta 'newdev_baseline' assente) tutti i MAC presenti diventano 'known' senza
-avvisi: altrimenti l'intera LAN risulterebbe "nuova". La funzione evaluate e'
-sincrona e senza dipendenze dallo stato dell'app, cosi' si prova da sola."""
+States: 'known' (configured or already seen), 'new' (never seen after the baseline,
+to be reported), 'ignored' (discarded by the user). On the very first cycle (meta
+key 'newdev_baseline' missing) all the MACs present become 'known' without
+alerts: otherwise the whole LAN would appear "new". The evaluate function is
+synchronous and has no dependencies on the app state, so it can be tested on its own."""
 import logging
 import re
 import time
@@ -18,16 +18,16 @@ logger = logging.getLogger("dashboard")
 
 BASELINE_KEY = "newdev_baseline"
 
-# MAC visti nell'ultimo ciclo. Un "nuovo dispositivo" che non c'e' piu' in rete
-# non e' una cosa su cui l'utente possa agire (la scansione non lo trova): resta
-# registrato ma sparisce da contatore ed elenco finche' non ricompare.
+# MACs seen in the last cycle. A "new device" that is no longer on the network is
+# not something the user can act on (the scan does not find it): it stays
+# recorded but disappears from the counter and the list until it reappears.
 _present: set[str] | None = None
 _MAC_RE = re.compile(r"^([0-9A-F]{2}:){5}[0-9A-F]{2}$")
 
 
 def normalize_mac(mac: str | None) -> str | None:
-    """MAC in maiuscolo con i due punti, None se non valido o non utilizzabile
-    (tutto zero, tutto F, multicast)."""
+    """MAC in uppercase with colons, None if invalid or unusable
+    (all zeros, all F, multicast)."""
     if not mac:
         return None
     mac = mac.strip().upper().replace("-", ":")
@@ -39,7 +39,7 @@ def normalize_mac(mac: str | None) -> str | None:
 
 
 def own_macs() -> set[str]:
-    """MAC delle interfacce del container (non e' un dispositivo "nuovo")."""
+    """MACs of the container's interfaces (not a "new" device)."""
     macs = set()
     try:
         for p in Path("/sys/class/net").iterdir():
@@ -52,17 +52,17 @@ def own_macs() -> set[str]:
 
 
 def observed_macs(arp_by_ip: dict[str, dict], dhcp_seen: dict[str, dict], skip_ips: set[str] = frozenset()) -> dict[str, dict]:
-    """{MAC: {"ip", "hostname", "vendor"}} da ARP e DHCP. L'ARP da' l'IP; dal
-    DHCP (anche per MAC non visti in ARP) arriva il nome."""
+    """{MAC: {"ip", "hostname", "vendor"}} from ARP and DHCP. ARP gives the IP; the
+    name comes from DHCP (also for MACs not seen in ARP)."""
     result: dict[str, dict] = {}
     for ip, host in arp_by_ip.items():
         mac = normalize_mac(host.get("mac"))
         if not mac or ip in skip_ips:
             continue
         result[mac] = {"ip": ip, "hostname": None, "vendor": resolve_vendor_info(mac, host.get("vendor"))["vendor"]}
-    # Il DHCP serve solo a dare il nome ai MAC visti ora in rete: una richiesta
-    # DHCP rimane nel file per sempre, ma il dispositivo puo' essere andato via da
-    # un pezzo, e un MAC "presente" solo per quello non si trova con la ricerca.
+    # DHCP is only used to give the name to the MACs currently seen on the network: a DHCP
+    # request stays in the file forever, but the device may have been gone for
+    # a while, and a MAC "present" only because of that cannot be found by the search.
     for raw, info in dhcp_seen.items():
         mac = normalize_mac(raw)
         if mac in result:
@@ -71,8 +71,8 @@ def observed_macs(arp_by_ip: dict[str, dict], dhcp_seen: dict[str, dict], skip_i
 
 
 def _brand_fields(mac: str, hostname: str | None) -> dict:
-    """Marca del prodotto (None se non nota) e ruolo del produttore del MAC: il
-    "vendor" di un dispositivo nuovo e' il produttore della scheda, non la marca."""
+    """Product brand (None if unknown) and role of the MAC manufacturer: the
+    "vendor" of a new device is the board manufacturer, not the brand."""
     info = resolve_vendor_info(mac, None, [hostname] if hostname else [])
     return {"brand": info["brand"], "vendor_role": info["vendor_role"]}
 
@@ -83,8 +83,8 @@ def readable_label(row: dict) -> str:
 
 def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_macs: set[str],
              ignore_macs: set[str] = frozenset(), hist: History = history, now: float | None = None) -> tuple[list[dict], list[dict]]:
-    """Aggiorna known_macs con i MAC osservati. Ritorna (nuovi_da_avvisare,
-    elenco_completo_dei_new). Un MAC gia' 'new' non viene riavvisato."""
+    """Updates known_macs with the observed MACs. Returns (new_to_alert,
+    full_list_of_the_new). A MAC that is already 'new' is not alerted again."""
     global _present
     now = time.time() if now is None else now
     observed = {m: o for m, o in observed.items() if m not in ignore_macs}
@@ -93,7 +93,7 @@ def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_mac
 
     if hist.meta_get(BASELINE_KEY) is None:
         if not observed:
-            return [], []  # ARP vuoto (errore o rete spenta): la baseline aspetta
+            return [], []  # empty ARP (error or network off): the baseline waits
         for mac, obs in observed.items():
             hist.known_set(mac, now, obs["ip"], obs["vendor"] or lookup_vendor(mac), obs["hostname"], "known")
         hist.meta_set(BASELINE_KEY, str(int(now)))
@@ -122,14 +122,14 @@ def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_mac
 
 
 def sync_present(macs: set[str]) -> None:
-    """Dopo una ricerca: presenti sono solo i MAC che la ricerca ha davvero trovato
-    (cosi' il contatore non segnala cio' che il pulsante poi non trova)."""
+    """After a search: the only MACs present are those the search actually found
+    (so the counter does not report what the button then does not find)."""
     global _present
     _present = {m for m in (normalize_mac(x) for x in macs) if m}
 
 
 def list_new(hist: History = history) -> list[dict]:
-    """I dispositivi 'new', nel formato dell'API."""
+    """The 'new' devices, in the API format."""
     out = []
     for r in hist.known_all().values():
         if r["status"] == "new" and (_present is None or r["mac"] in _present):
@@ -141,17 +141,17 @@ def list_new(hist: History = history) -> list[dict]:
 
 
 def ignore(macs: list[str] | None, hist: History = history) -> list[dict]:
-    """Segna come 'ignored' i MAC dati (lista vuota/assente = tutti i 'new');
-    ritorna l'elenco aggiornato dei 'new'."""
+    """Marks the given MACs as 'ignored' (empty/missing list = all the 'new');
+    returns the updated list of the 'new'."""
     wanted = {normalize_mac(m) for m in macs or []} - {None}
     if macs and not wanted:
-        return list_new(hist)  # solo MAC non validi: niente da fare (non "tutti")
+        return list_new(hist)  # only invalid MACs: nothing to do (not "all")
     hist.known_ignore(sorted(wanted) if wanted else None)
     return list_new(hist)
 
 
 def list_ignored(hist: History = history) -> list[dict]:
-    """I MAC rilevati in rete che l'utente ha ignorato."""
+    """The MACs detected on the network that the user has ignored."""
     out = [{"mac": r["mac"], "ip": r["ip"], "vendor": lookup_vendor(r["mac"]) or r["vendor"], "hostname": r["hostname"],
             "first_seen": r["first_seen"]}
            for r in hist.known_all().values() if r["status"] == "ignored"]
@@ -159,7 +159,7 @@ def list_ignored(hist: History = history) -> list[dict]:
 
 
 def unignore(mac: str, hist: History = history) -> bool:
-    """Riporta un MAC ignorato tra i nuovi (ricompare se e' in rete)."""
+    """Moves an ignored MAC back among the new ones (it reappears if it is on the network)."""
     mac = normalize_mac(mac)
     row = next((r for k, r in hist.known_all().items() if mac and k.upper() == mac), None)
     if not row or row["status"] != "ignored":

@@ -1,6 +1,6 @@
 # Changelog
 
-## Non ancora rilasciato
+## 0.3.1
 - Ricerca approfondita: nel menu accanto a "Scan network" c'e' una seconda voce, "solo mancanti", che analizza a fondo soltanto i dispositivi mai analizzati (quelli senza data di "Ultima ricerca approfondita"). Con tutti gia' analizzati la voce e' disattivata.
 
 ## 0.3.0

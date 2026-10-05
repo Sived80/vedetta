@@ -5,7 +5,7 @@
 <br>
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white)](#install)
-[![Version](https://img.shields.io/badge/version-0.3.0-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.1-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge)](#privacy--safety)
 [![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge)](LICENSE)

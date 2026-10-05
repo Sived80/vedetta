@@ -148,6 +148,20 @@ A generated name is never counted as evidence for the category — the app does 
 > [!NOTE]
 > ✅ A checked box means it is built, tested and released; the date is when it was done.
 
+### ✅ Done
+- [x] Runs as a Home Assistant app: sidebar panel, own data, backed up with Home Assistant — *2026-10-02*
+- [x] Recognition by clue families, product signature catalog and a debug view that explains every decision — *2026-10-05*
+- [x] Names, brands, models and areas from the Home Assistant registry (read-only) — *2026-10-05*
+- [x] Share chosen devices with Home Assistant through MQTT, one button per device — *2026-10-05*
+- [x] Phones that sleep keep their name (Bonjour and DHCP memory) — *2026-10-05*
+- [x] MAC vendor names generated from the public IEEE registries — *2026-10-05*
+- [x] Open source (MIT), public on GitHub, installable from the App store with one button — *2026-10-05*
+- [x] Deep search of only the devices never analysed in depth — *2026-10-05*
+- [x] Pause bar under the first card: orange and filling for a timed pause, solid red when stopped — *2026-10-05*
+- [x] "Open web interface" only where a real page answers — *2026-10-05*
+- [x] Response time through ARP when a device does not answer ping — *2026-10-05*
+- [x] Brand logos on cards, in the device sheet and in the list (58 brands) — *2026-10-05*
+
 ### 🧠 Trust and explanation
 - [ ] Evidence card with a certainty bar and the rejected hypotheses
 - [ ] Recognition of randomized (private) MAC addresses, merging duplicates of the same phone

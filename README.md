@@ -213,15 +213,18 @@ Pick **one** of the two ways below. Both end the same way: Vedetta appears in yo
 > [!IMPORTANT]
 > This works once the repository is public. Until then, use **Option B**.
 
-1. Click the button. It opens your Home Assistant and asks to add this repository (the first time it asks for your Home Assistant address, usually `http://homeassistant.local:8123`):
-
-   [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
-
-   *The button only opens the App store and nothing else happens? Do it by hand, it takes four clicks:* **Settings → Apps → App store** (bottom right) → **⋮** (top right) → **Repositories**, paste the address below, press **Add**, then **Close**:
+1. **Add the repository.** Open **Settings → Apps → App store** (bottom right), press **⋮** (top right) and choose **Repositories**, then **Add**. Paste the address below, press **Add**, then **Close**:
 
    ```text
    https://github.com/Sived80/vedetta
    ```
+
+   > [!NOTE]
+   > In an Italian Home Assistant these are called **Raccolta delle app → ⋮ → Archivi digitali → Aggiungi**.
+
+   *Prefer a shortcut?* This button opens your Home Assistant (the first time it asks for its address, usually `http://homeassistant.local:8123`; press **Open link**). On recent versions it may land on the App store without showing the add dialog. If so, use the steps above.
+
+   [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
 
 2. In the App store, search for **Vedetta**, open it and press **Install**.
 3. When it finishes, switch on **Show in sidebar**, then press **Start**.

@@ -260,6 +260,18 @@
   [
    "foxconn",
    "Foxconn"
+  ],
+  [
+   "zengge",
+   "Magic Home"
+  ],
+  [
+   "magic home",
+   "Magic Home"
+  ],
+  [
+   "magichome",
+   "Magic Home"
   ]
  ],
  "name_hints": [
@@ -314,6 +326,10 @@
   [
    "\\bps[2345]\\b|playstation",
    "Sony"
+  ],
+  [
+   "magic ?home|magichome|ledenet",
+   "Magic Home"
   ]
  ],
  "software_hints": [
@@ -360,6 +376,14 @@
   [
    "grafana",
    "Grafana"
+  ],
+  [
+   "tasmota",
+   "Tasmota"
+  ],
+  [
+   "esphome",
+   "ESPHome"
   ]
  ],
  "os_family_brand": {

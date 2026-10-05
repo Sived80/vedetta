@@ -116,7 +116,7 @@ strip = {"name": "Strip RGB", "name_by_user": True, "manufacturer": "Zengge", "m
          "area": "Cameretta", "domains": ["flux_led"], "entry_titles": ["Controller RGB with MIC 0000A1"], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "B4:E8:42:00:00:A1", strip)
 assert res["name"] == "Strip RGB" and res["auto_name"][:2] == ("Strip RGB", "ha_user"), (res["name"], res["auto_name"])
-assert res["brand"] == "Zengge" and res["extra"]["ha_area"] == "Cameretta" and res["extra"]["ha_integration"] == "flux_led"
+assert res["brand"] == "Magic Home" and res["extra"]["ha_area"] == "Cameretta" and res["extra"]["ha_integration"] == "flux_led"
 assert ha_data.infer_type(res) == "iot" and ha_data.icon_for(res) == "led-strip-variant", (ha_data.infer_type(res), ha_data.icon_for(res))
 # HA technical name: the integration title ("Cancelletto") is used, never "shelly1-8CAA..."
 sh = {"name": "shelly1-8CAAB50000A2", "name_by_user": False, "manufacturer": "Shelly", "model": "Shelly 1", "area": "Soggiorno",

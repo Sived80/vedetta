@@ -5,7 +5,7 @@
 <br>
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white)](#install)
-[![Version](https://img.shields.io/badge/version-0.3.4-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.5-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge)](#privacy--safety)
 [![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge)](LICENSE)
@@ -59,6 +59,7 @@ names and rooms you already chose, and publishes back **only what you decide to 
 | 📊 **Presence & latency** | Online/offline history (24 h / 7 days), response time, signal quality, uptime, open ports colored by category. |
 | 🧭 **Network roles** | Detects gateway, DHCP and DNS servers, repeaters, access points, double NAT / CGNAT and your public IP. |
 | 🛡️ **Careful by design** | Wake-on-LAN only where it makes sense, pause and resume, an ignore list, nothing written to your devices. |
+| 🏷️ **Brand logos** | A faint logo of the recognized brand on each card and in the device sheet (in the circle, in list view). Logos ship with the app: no request to the Internet. A brand without a free logo shows none. |
 | 🎨 **Home Assistant native look** | Same palette, light/dark, tiles or list, English and Italian, works in the mobile app. |
 
 <h2 id="how-it-recognizes-a-device"><img src="docs/images/section-recognition.svg" alt="How it recognizes a device" width="100%"></h2>
@@ -324,6 +325,12 @@ is a few conditions on what a device declares:
 
 `fixture` says whether the signature comes from a **real** device or from the manufacturer’s published data. Export your
 device with *Export for analysis*, find the clue that sets it apart, add a row, run the tests.
+
+**Brand logos** work the same way. [`vedetta/app/data/brand_logos.json`](vedetta/app/data/brand_logos.json) lists, for each
+brand, the names it may appear with and its logo file. The logo is worked out from the brand a device shows *now*, so it
+follows a brand you change by hand. Add a brand to the list in `tools/update_logos.py`, run it, and the files and the table
+are regenerated (logos come from [Simple Icons](https://simpleicons.org) and
+[Dashboard Icons](https://github.com/homarr-labs/dashboard-icons)). Only logos that may be redistributed belong here.
 
 <h2 id="development"><img src="docs/images/section-dev.svg" alt="Development" width="100%"></h2>
 

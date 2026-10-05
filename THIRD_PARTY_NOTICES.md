@@ -34,6 +34,11 @@ versions pinned there and everything they pull in. Licenses were read from the i
 - **MAC vendor names** (`vedetta/app/data/oui-ieee.txt`): generated from the public registries published by the
   IEEE Registration Authority (MA-L, MA-M, MA-S and IAB, <https://standards-oui.ieee.org/>) with
   `tools/update_oui.py`. Names are cleaned only for case and HTML entities.
+- **Brand logos** (`vedetta/app/static/ha/logos/`, table in `vedetta/app/data/brand_logos.json`): silhouettes cleaned
+  by `tools/update_logos.py` from [Simple Icons](https://simpleicons.org) (CC0-1.0) and from
+  [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons) (Apache-2.0,
+  <https://www.apache.org/licenses/LICENSE-2.0>, modified: reduced to a single-colour shape). The logos remain
+  trademarks of their owners and are shown only to identify the brand of a device, with no claim of affiliation.
 - **Icons** (`vedetta/app/static/ha/icons.js`): path data from
   [Material Design Icons](https://pictogrammers.com/library/mdi/) by Pictogrammers, licensed under the
   Apache License 2.0 (<https://www.apache.org/licenses/LICENSE-2.0>).

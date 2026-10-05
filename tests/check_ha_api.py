@@ -86,7 +86,7 @@ d = dev(
     scanned_at=1000.0, online=False, last_seen=1234.5,
 )
 c = ha_data.compact_device(d, {"adapter": "shelly_gen1", "mobile": None})
-keys = {"id", "name", "ip", "port", "mac", "vendor", "vendor_role", "brand", "brand_source", "brand_confidence", "brand_evidence", "brand_declared", "battery", "battery_source", "type", "icon", "is_mobile", "mobile_mode", "name_source", "wol_ok", "ha_share", "type_user", "brand_user", "online", "last_seen", "uptime",
+keys = {"id", "name", "ip", "port", "mac", "vendor", "vendor_role", "brand", "brand_source", "brand_confidence", "brand_evidence", "brand_declared", "logo", "logo_color", "battery", "battery_source", "type", "icon", "is_mobile", "mobile_mode", "name_source", "wol_ok", "ha_share", "type_user", "brand_user", "online", "last_seen", "uptime",
         "signal", "latency_ms", "latency_color", "ports", "url", "title", "scanned_at", "web_open", "deep_empty_at", "attrs"}
 assert set(c) == keys, set(c) ^ keys
 assert c["type"] == "iot" and c["mobile_mode"] == "auto" and c["online"] is False and c["last_seen"] == 1234.5

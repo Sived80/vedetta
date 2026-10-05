@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.5
+- Brand logos: a big faint logo on the right of each card, cut by the edge, and in the device sheet; in list view the logo replaces the icon in the circle, tinted with the brand colour. 58 brands to start with (Simple Icons and Dashboard Icons, shipped with the app, no Internet request). A brand without a free logo shows none; chip makers never get one. The logo follows the brand shown now, so a brand changed by hand or by a new clue changes it.
+- New brand "Magic Home" (the maker is Zengge): recognized from the name, the MAC prefix or the manufacturer declared by Home Assistant.
+- The software running on a device now wins over the maker of its hardware: Tasmota and ESPHome are recognized from the web page, so a Sonoff flashed with Tasmota is a Tasmota device.
+
 ## 0.3.4
 - Pause: the bar under the first card now follows the pause. A timed pause turns it orange and it fills while the pause runs, full when the service resumes; stopped until resumed it is solid red.
 - "Open web interface" only appears when an open port really serves a page for people (a normal page, a redirect or a login). Ports that answer 404, 400 or a few bytes of API output (a TV's control service, a streaming stick) no longer get the button, and the button opens the port that does serve the page, with https where needed. Devices analysed before this version keep the old rule until their next deep search.

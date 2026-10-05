@@ -1078,6 +1078,28 @@
   .progress.pause-stop .bar { background: var(--error-color); }
 }
 
+/* Brand logos. Cards and device sheet: a big faint logo on the right, cut by the edge and fading to the left.
+   List: the logo replaces the icon in the circle, tinted with the brand colour. No logo, nothing shown. */
+@layer overrides {
+  .brand-big, .brand-sheet { position: absolute; pointer-events: none; color: var(--primary-text-color);
+    -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%); mask-image: linear-gradient(to left, #000 40%, transparent 100%); }
+  .brand-big i, .brand-sheet i { display: block; width: 100%; height: 100%; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .brand-big { right: -36px; top: 50%; transform: translateY(-50%); width: 170px; height: 170px; opacity: 0.14; }
+  .brand-big[hidden] { display: none; }
+  .brand-sheet { right: -110px; top: 30px; width: 340px; height: 340px; opacity: 0.08; }
+  .crow .brand-big, [data-view="list"] .brand-big { display: none; }
+  .crow .tile-icon.has-logo { background: color-mix(in srgb, var(--bc) 22%, transparent); color: var(--bc); }
+  [data-view="list"] .tile .tile-icon.has-logo { background: color-mix(in srgb, var(--bc) 22%, transparent); color: var(--bc); }
+  [data-view="list"] .tile.offline .tile-icon.has-logo { background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); color: var(--disabled-text-color); }
+  [data-view="list"] .tile .tile-icon.has-logo .ic svg { display: none; }
+  [data-view="list"] .tile .tile-icon.has-logo .ic { display: block; width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .crow.offline .tile-icon.has-logo { background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); color: var(--disabled-text-color); }
+  .crow .tile-icon.has-logo .ic { display: block; width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+}
+
 /* LED della pill di stato: pausa a tempo = arancione lampeggiante; fermo in attesa di
    ripresa = rosso lampeggiante; connessione persa = rosso fisso. */
 @layer overrides {

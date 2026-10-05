@@ -44,6 +44,13 @@ average latency) and the "Scan now" button. A network device appears in Home Ass
 without merging into the real device that may already exist in Home Assistant. **Remove from HA** takes it
 away. Availability is on `vedetta/status`.
 
+## Brand logos
+
+When the brand of a device is known and has a free logo, a faint logo appears on its card and in its sheet (in list view it
+replaces the icon in the circle). Logos ship with the app, so nothing is requested from the Internet. The logo follows the
+brand shown at that moment: if you change the brand by hand, or a new clue changes it, the logo changes too. Brands without
+a logo (and chip makers such as Espressif) show none.
+
 ## How it recognizes devices
 
 Every source proposes a name or a clue and the most reliable one wins; a name you chose by hand is never changed.

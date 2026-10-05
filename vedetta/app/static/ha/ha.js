@@ -77,6 +77,32 @@
     return d && d.icon && I.paths[d.icon] ? d.icon : typeIcon(d && d.type);
   }
   // A web interface can be opened only if the scan found one (web port or page title).
+  // ---- Brand logos. The server sends d.logo (file id) and d.logo_color for the brand the device shows now; nothing is
+  // stored, so a brand changed by hand or by a new clue changes the logo at the next update, and no logo means none shown.
+  function logoVar(d) { return 'url("' + BASE + "/static/ha/logos/" + encodeURIComponent(d.logo) + '.svg")'; }
+  // Colour of the small logo in the list: very dark brand colours (Apple, Sony) would disappear on a dark theme.
+  function logoTint(d) {
+    var m = /^#([0-9a-f]{6})$/i.exec(d.logo_color || "");
+    if (!m) return "var(--primary-text-color)";
+    var n = parseInt(m[1], 16), lum = (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
+    return lum < 0.28 ? "var(--primary-text-color)" : "#" + m[1];
+  }
+  // Big faint logo on the device sheet, cut by the edge of the window.
+  function brandSheetSync(d) {
+    var mi = dlg.querySelector(".mi");
+    if (!mi) return;
+    var el = mi.querySelector(".brand-sheet");
+    if (!d || !d.logo) { if (el) el.remove(); return; }
+    if (!el) {
+      el = document.createElement("span");
+      el.className = "brand-sheet";
+      el.setAttribute("aria-hidden", "true");
+      el.innerHTML = "<i></i>";
+      mi.insertBefore(el, mi.firstChild);
+    }
+    el.style.setProperty("--logo", logoVar(d));
+  }
+
   // The button only appears where a page for people really answers. web_open: true/false once the open ports have been
   // requested; null for devices analysed before that check existed (old rule until the next deep search).
   function canOpen(d) {
@@ -1168,13 +1194,14 @@
     el.dataset.id = d.id;
     el.style.animationDelay = Math.min(index || 0, 14) * 22 + "ms";
     el.innerHTML =
+      '<span class="brand-big" aria-hidden="true" hidden><i></i></span>' +
       '<span class="tile-icon"><span class="ic"></span><span class="ring"></span></span>' +
       '<span class="tile-body"><span class="tile-name"></span><span class="tile-ip"></span><span class="tile-state"></span><span class="tile-sub"><span class="tile-sub-txt"></span><span class="tile-batt" role="img" style="display:inline-flex;vertical-align:-2px;margin-left:.35em;opacity:.65"></span></span></span>' +
       '<button type="button" class="icon-btn small tile-open touch rp" title="' + esc(t("js.ha.act.open")) + '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</button>" +
       '<button type="button" class="icon-btn small tile-wake touch rp" hidden>' + icon("power") + "</button>" +
       '<span class="hbar" role="img"></span>';
     el._r = {
-      ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
+      big: el.querySelector(".brand-big"), box: el.querySelector(".tile-icon"), ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
       sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
     };
     el._r.wake.title = t("js.ha.act.wake");
@@ -1204,6 +1231,20 @@
     el.dataset.type = d.type;
     el.classList.toggle("scanning", S.activity.rescanning.has(id));
     if (el._type !== d.type + "|" + d.icon) { el._type = d.type + "|" + d.icon; r.ic.innerHTML = icon(devIcon(d)); }
+    if (el._logo !== (d.logo || "")) {
+      el._logo = d.logo || "";
+      r.big.hidden = !el._logo;
+      r.box.classList.toggle("has-logo", !!el._logo);    // used by the list view: the logo replaces the icon in the circle
+      if (el._logo) {
+        r.big.style.setProperty("--logo", logoVar(d));
+        r.box.style.setProperty("--logo", logoVar(d));
+        r.box.style.setProperty("--bc", logoTint(d));
+      } else {
+        r.big.style.removeProperty("--logo");
+        r.box.style.removeProperty("--logo");
+        r.box.style.removeProperty("--bc");
+      }
+    }
     if (r.name.textContent !== d.name) r.name.textContent = d.name;
     var st = stateText(d);
     if (r.state.textContent !== st) r.state.textContent = st;
@@ -1336,7 +1377,9 @@
     if (!shown.length) html += '<div class="crow-empty">' + esc(t("js.ha.empty.title")) + "</div>";
     shown.forEach(function (d) {
       html += '<div class="crow rp ' + (d.online ? "online" : "offline") + '" data-type="' + esc(d.type) + '" role="button" tabindex="0" data-id="' + esc(d.id) + '">' +
-        '<span class="tile-icon"><span class="ic">' + icon(devIcon(d)) + '</span></span>' +
+        (d.logo
+          ? '<span class="tile-icon has-logo" style="--logo:' + esc(logoVar(d)) + ";--bc:" + logoTint(d) + '"><span class="ic"></span></span>'
+          : '<span class="tile-icon"><span class="ic">' + icon(devIcon(d)) + "</span></span>") +
         '<span class="crow-body"><span class="tile-name">' + esc(d.name) + '</span><span class="tile-state">' + esc(stateText(d)) + "</span></span></div>";
     });
     html += "</div>";
@@ -1870,6 +1913,7 @@
   }
 
   function miHero(d) {
+    brandSheetSync(d);
     var el = $("mi-hero");
     if (!el) return;
     el.className = "mi-hero " + (d.online ? "online" : "offline");

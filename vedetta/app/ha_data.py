@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from . import devices_config, i18n
+from . import brand_logo, devices_config, i18n
 from .history import History, history
 
 # Order in which the UI shows the groups by type.
@@ -428,6 +428,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
     """Device from the shared state -> compact format for the /ha UI.
     Texts and field names in the current language (i18n.use)."""
     cfg = cfg or {}
+    logo = brand_logo.logo_for(device.get("brand"))
     extra = device.get("extra") or {}
     _t = effective_type(device, cfg)
     mobile_cfg = cfg.get("mobile")
@@ -447,6 +448,9 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "brand_confidence": device.get("brand_confidence"),
         "brand_evidence": device.get("brand_evidence"),
         "brand_declared": device.get("brand_declared"),
+        # Logo of the brand shown now (None if it has none): worked out here every time, never stored.
+        "logo": logo and logo["id"],
+        "logo_color": logo and logo["color"],
         # battery: "yes" | "no" | None (unknown), with the source; a battery-powered
         # network device (sensor) is not "mobile".
         "battery": device.get("battery"),

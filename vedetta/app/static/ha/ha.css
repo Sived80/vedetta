@@ -1070,6 +1070,12 @@
 /* Controllo fermato (pausa): LED rosso, come quando la connessione e' persa. */
 @layer overrides {
   .live.paused .live-dot { background: var(--error-color); }
+  /* Bar under the first card while the service is paused: orange and filling for a timed pause,
+     solid red when stopped until resumed. */
+  .progress.pause-timed { background: color-mix(in srgb, var(--warning-color) 22%, transparent); }
+  .progress.pause-timed .bar { background: var(--warning-color); }
+  .progress.pause-stop { background: color-mix(in srgb, var(--error-color) 22%, transparent); }
+  .progress.pause-stop .bar { background: var(--error-color); }
 }
 
 /* LED della pill di stato: pausa a tempo = arancione lampeggiante; fermo in attesa di

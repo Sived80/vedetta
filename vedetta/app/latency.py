@@ -131,6 +131,28 @@ tracker = Tracker()
 
 # ---- measurement ----
 _PING = shutil.which("ping")
+_NMAP = shutil.which("nmap")
+_NMAP_LATENCY_RE = re.compile(r"\(([0-9.]+)s latency\)")
+ARP_TABLE = "/proc/net/arp"
+
+
+def parse_nmap_latency(text: str) -> float | None:
+    """Milliseconds from the line nmap prints for a host that answered ("Host is up (0.00042s latency).")."""
+    m = _NMAP_LATENCY_RE.search(text)
+    return float(m.group(1)) * 1000.0 if m else None
+
+
+def arp_known(ip: str, table: str = ARP_TABLE) -> bool:
+    """True if the host has a complete entry in the ARP table: it answered recently, so it is on the network."""
+    try:
+        with open(table, encoding="ascii", errors="ignore") as f:
+            for line in f.read().splitlines()[1:]:
+                cols = line.split()
+                if len(cols) >= 3 and cols[0] == ip and cols[2] == "0x2":
+                    return True
+    except OSError:
+        pass
+    return False
 
 
 async def _icmp_ms(ip: str, timeout: float) -> float | None:
@@ -150,6 +172,29 @@ async def _icmp_ms(ip: str, timeout: float) -> float | None:
         return None
     m = _TIME_RE.search(out.decode(errors="ignore"))
     return float(m.group(1)) if m else None
+
+
+async def _arp_ms(ip: str, timeout: float = 3.0) -> float | None:
+    """Response time of a host that does not answer ping (a PC with the Windows firewall, a sleepy IoT device):
+    an ARP request, which every host on the same network must answer. Only for hosts the ARP table already knows,
+    so a powered-off device does not cost a second timeout."""
+    if not _NMAP or not arp_known(ip):
+        return None
+    proc = None
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            _NMAP, "-sn", "-PR", "-n", "--max-retries", "1", "--host-timeout", "2s", ip,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+        )
+        out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+    except Exception:
+        if proc is not None and proc.returncode is None:
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                pass
+        return None
+    return parse_nmap_latency(out.decode(errors="ignore"))
 
 
 async def _tcp_ms(ip: str, port: int, timeout: float) -> float | None:
@@ -173,7 +218,10 @@ async def measure(ip: str, port: int = 80, timeout: float = TIMEOUT) -> float | 
     """Response time in ms (None if it does not respond): ICMP if `ping` exists,
     otherwise TCP. No second attempt: a powered-off host would cost 2 timeouts."""
     if _PING:
-        return await _icmp_ms(ip, timeout)
+        ms = await _icmp_ms(ip, timeout)
+        if ms is None:
+            ms = await _arp_ms(ip)   # ping dropped by a firewall: try the ARP round trip
+        return ms
     return await _tcp_ms(ip, port, timeout)
 
 

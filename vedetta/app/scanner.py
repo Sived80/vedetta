@@ -813,11 +813,15 @@ def format_scan_info(info: dict) -> dict:
         label = f"{p['port']} · {p['product']}" if p.get("product") else (
             f"{p['port']} · {p['service']}" if p.get("service") else str(p["port"])
         )
-        ports.append({
+        item = {
             "label": label,
             "confirmed": bool(p.get("confirmed")),
             "category": _categorize_port(p["port"], p.get("service")),
-        })
+        }
+        if "web_ui" in p:   # the page was really requested: does it answer with something a person can open?
+            item["web_ui"] = bool(p["web_ui"])
+            item["web_scheme"] = p.get("web_scheme") or "http"
+        ports.append(item)
     if ports:
         fields["ports"] = ports
     return fields
@@ -930,7 +934,7 @@ async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | N
         return None
 
 
-async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | None:
+async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> dict | None:
     """Direct, minimal proof (a single GET) that an HTTP server really
     answers on that port, instead of guessing from the service name or the
     port number. Used in deep_scan/probe_and_classify, which do not run
@@ -952,12 +956,23 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
         writer.write(f"GET / HTTP/1.0\r\nHost: {ip}\r\n\r\n".encode())
         await writer.drain()
         data = await asyncio.wait_for(reader.read(65536), timeout=timeout)
+        # Many small servers send the headers and the page in separate packets: keep reading (briefly) until the
+        # connection closes, otherwise a real page looks empty.
+        while data.startswith(b"HTTP/") and len(data) < 65536:
+            try:
+                chunk = await asyncio.wait_for(reader.read(65536 - len(data)), timeout=0.4)
+            except asyncio.TimeoutError:
+                break
+            if not chunk:
+                break
+            data += chunk
         writer.close()
         try:
             await writer.wait_closed()
         except Exception:
             pass
         tls_subject = None
+        used_tls = False
         # A TLS port answers plain text badly (no HTTP, or a 4xx/5xx error): we
         # retry over TLS, which also provides page, title and certificate.
         head0 = data.partition(b"\r\n\r\n")[0].lower()
@@ -966,6 +981,7 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
             tls = await _https_get(ip, port, max(timeout, 4.0))
             if tls and tls[0].startswith(b"HTTP/"):
                 data, tls_subject = tls
+                used_tls = True
             elif not data.startswith(b"HTTP/"):
                 return None
         # The response is already here: besides the size we read, almost
@@ -975,14 +991,35 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> int | 
         head, _, body = data.partition(b"\r\n\r\n")
         server = re.search(rb"\r\nServer:[ \t]*([^\r\n]+)", head, re.IGNORECASE)
         title = re.search(rb"<title[^>]*>(.*?)</title>", body, re.IGNORECASE | re.DOTALL)
+        status_line = re.match(rb"HTTP/[0-9.]+ (\d{3})", data)
+        status = int(status_line.group(1)) if status_line else None
+        page_title = " ".join(title.group(1).decode("utf-8", "ignore").split())[:120] if title else None
         return {
             "tls_subject": tls_subject,
             "size": len(data),
             "server": server.group(1).decode("latin-1").strip()[:120] if server else None,
-            "title": " ".join(title.group(1).decode("utf-8", "ignore").split())[:120] if title else None,
+            "title": page_title,
+            "status": status,
+            "scheme": "https" if used_tls else "http",
+            "usable": is_web_ui(status, page_title, len(body)),
         }
     except Exception:
         return None
+
+
+def is_web_ui(status: int | None, title: str | None, body_len: int) -> bool:
+    """True if what answers on `/` is a page a person can open: a normal page (2xx/3xx with a title or some content),
+    or a login (401/403). A 404/400/5xx, an empty answer or a few bytes of API output (the REST service of a TV,
+    the control port of a streaming stick) is not a web interface, even if a web server is running."""
+    if status is None:
+        return False
+    if status in (401, 403):
+        return True
+    if 300 <= status < 400:
+        return True
+    if 200 <= status < 300:
+        return bool(title and not is_useless_title(title)) or body_len >= 60
+    return False
 
 
 async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
@@ -997,6 +1034,8 @@ async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
     results = await asyncio.gather(*(_confirm_http_port(ip, p["port"]) for p in stable_ports))
     for p, found in zip(stable_ports, results):
         p["http_body_size"] = found["size"] if found else None
+        p["web_ui"] = bool(found and found["usable"])
+        p["web_scheme"] = found["scheme"] if found else "http"
         if found:
             p["http_server"] = found["server"]
             p["http_page_title"] = found["title"]

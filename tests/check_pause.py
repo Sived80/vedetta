@@ -52,6 +52,16 @@ a.pause(0)
 assert DeviceState().paused_remaining() == float("inf"), "senza scadenza dopo il riavvio"
 a.pause(30)
 assert 1700 < DeviceState().paused_remaining() <= 1800, "a tempo dopo il riavvio"
+# the page draws how far a timed pause has gone: it needs the total length, also after a restart
+info = a.poll_info()
+assert info["paused_total_ms"] == 30 * 60 * 1000 and 0 < info["paused_in_ms"] <= info["paused_total_ms"], info
+assert DeviceState().poll_info()["paused_total_ms"] == 30 * 60 * 1000
+a.pause(0)
+assert a.poll_info()["paused_total_ms"] is None and a.poll_info()["paused_in_ms"] is None   # stopped: red, no countdown
+a.pause(15)
+a.resume()
+assert a.poll_info()["paused_total_ms"] is None
+a.pause(30)
 a.resume()
 assert DeviceState().paused_remaining() is None and not (settings.CONFIG_DIR / "pause.json").exists()
 (settings.CONFIG_DIR / "pause.json").write_text(json.dumps({"until": time.time() - 5}))

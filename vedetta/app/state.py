@@ -49,6 +49,9 @@ class DeviceState:
         self._force = False  # a manually requested refresh also applies while paused
         self._conflicts_reported: set = set()
         self._paused_until: float | None = self._load_pause()  # epoch; inf = until resumed; None = active
+        # Length of the timed pause in seconds (None = stopped until resumed or not paused): the page needs it to
+        # draw how far the pause has gone.
+        self._paused_total: float | None = self._load_pause_total() if self._paused_until not in (None, float("inf")) else None
         self._task: asyncio.Task | None = None
         self._next_at = 0.0
         self._arp: tuple[float, dict[str, dict]] | None = None
@@ -119,6 +122,14 @@ class DeviceState:
             return float(raw)
         return None
 
+    @classmethod
+    def _load_pause_total(cls) -> float | None:
+        try:
+            raw = json.loads(cls._pause_file().read_text(encoding="utf-8")).get("total")
+        except (OSError, ValueError, AttributeError):
+            return None
+        return float(raw) if isinstance(raw, (int, float)) and raw > 0 else None
+
     def _save_pause(self) -> None:
         try:
             path = self._pause_file()
@@ -127,7 +138,7 @@ class DeviceState:
                 return
             path.parent.mkdir(parents=True, exist_ok=True)
             until = "forever" if self._paused_until == float("inf") else self._paused_until
-            path.write_text(json.dumps({"until": until}), encoding="utf-8")
+            path.write_text(json.dumps({"until": until, "total": self._paused_total}), encoding="utf-8")
         except OSError:
             logger.exception("Pausa non salvata su disco")
 
@@ -138,6 +149,7 @@ class DeviceState:
         left = self._paused_until - time.time()
         if left <= 0:
             self._paused_until = None
+            self._paused_total = None
             return None
         return left
 
@@ -145,6 +157,7 @@ class DeviceState:
         """Suspends periodic checks for N minutes (0 = until resumed).
         Manually requested actions (refresh, search) remain possible."""
         self._paused_until = time.time() + minutes * 60 if minutes else float("inf")
+        self._paused_total = minutes * 60.0 if minutes else None
         self._save_pause()
         logger.info("Controllo periodico in pausa (%s)", f"{minutes} min" if minutes else "fino alla ripresa")
         self._emit(self.poll_info())
@@ -152,6 +165,7 @@ class DeviceState:
 
     def resume(self) -> None:
         self._paused_until = None
+        self._paused_total = None
         self._save_pause()
         logger.info("Controllo periodico ripreso")
         self._force = True
@@ -170,6 +184,8 @@ class DeviceState:
             "type": "poll", "rev": self.rev, "interval_ms": interval * 1000, "next_in_ms": int(next_in * 1000),
             "paused": left is not None,
             "paused_in_ms": int(left * 1000) if left is not None and left != float("inf") else None,
+            "paused_total_ms": int(self._paused_total * 1000)
+            if left is not None and left != float("inf") and self._paused_total else None,
         }
 
     @staticmethod

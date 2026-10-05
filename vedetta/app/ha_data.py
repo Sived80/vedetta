@@ -474,6 +474,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "url": device.get("url"),
         "title": extra.get("title"),
         "scanned_at": device.get("scanned_at"),
+        "web_open": device.get("web_open"),
         "deep_empty_at": device.get("deep_empty_at"),
         "attrs": [
             {"key": k, "label": i18n.t_or("extra." + k, k), "value": str(v)}
@@ -533,6 +534,7 @@ def build_summary(devices: list[dict], poll: dict, activity: dict, new_devices: 
         "poll": {
             "interval_ms": poll.get("interval_ms"), "next_in_ms": poll.get("next_in_ms"),
             "paused": bool(poll.get("paused")), "paused_in_ms": poll.get("paused_in_ms"),
+            "paused_total_ms": poll.get("paused_total_ms"),
         },
         "activity": {"search": bool(activity.get("search")), "rescanning": list(activity.get("rescanning") or [])},
         "new_devices": {"count": new_devices.get("count", 0), "devices": new_devices.get("devices", [])},

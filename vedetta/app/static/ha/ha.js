@@ -77,8 +77,12 @@
     return d && d.icon && I.paths[d.icon] ? d.icon : typeIcon(d && d.type);
   }
   // A web interface can be opened only if the scan found one (web port or page title).
+  // The button only appears where a page for people really answers. web_open: true/false once the open ports have been
+  // requested; null for devices analysed before that check existed (old rule until the next deep search).
   function canOpen(d) {
-    return !!(d.title || (d.ports || []).some(function (p) { return p.category === "web"; }));
+    if (d.title || d.web_open === true) return true;
+    if (d.web_open === false) return false;
+    return (d.ports || []).some(function (p) { return p.category === "web"; });
   }
   // Origin and reliability of brand and name: data for analysis, not for the user. Enabled with
   // 3 consecutive taps on the network card title (or ?debug=1); while enabled a fixed
@@ -1059,7 +1063,18 @@
     renderLive();
     var prog = $("progress"), bar = $("progress-bar");
     prog.classList.toggle("indet", busy);
-    if (!busy) {
+    // Pause: the bar is no longer the countdown to the next check. Timed pause = orange, it fills while the pause
+    // runs and is full when the service resumes; stopped until resumed = solid red. A busy search keeps the moving bar.
+    var pausedNow = S.poll.paused && !busy, pauseRest = pausedNow ? pauseLeft() : null;
+    prog.classList.toggle("pause-timed", pausedNow && pauseRest !== Infinity);
+    prog.classList.toggle("pause-stop", pausedNow && pauseRest === Infinity);
+    if (pausedNow) {
+      var pauseAll = S.poll.pausedTotal || Math.max(pauseRest === Infinity ? 0 : pauseRest, S.poll.pausedSeen || 0);
+      S.poll.pausedSeen = pauseAll;
+      var filled = pauseRest === Infinity || !pauseAll ? 1 : Math.min(1, Math.max(0, 1 - pauseRest / pauseAll));
+      bar.style.transform = "scaleX(" + filled.toFixed(3) + ")";
+    } else if (!busy) {
+      S.poll.pausedSeen = 0;
       var pct = Math.min(1, Math.max(0, 1 - (S.poll.nextAt - Date.now()) / S.poll.interval));
       bar.style.transform = "scaleX(" + pct.toFixed(3) + ")";
     } else {
@@ -2460,6 +2475,7 @@
     S.poll.nextAt = Date.now() + (ev.next_in_ms == null ? S.poll.interval : ev.next_in_ms);
     S.poll.paused = !!ev.paused;
     S.poll.pausedAt = ev.paused_in_ms == null ? null : Date.now() + ev.paused_in_ms;
+    S.poll.pausedTotal = ev.paused_total_ms || null;
     refreshDone();
     updateScan();
   }
@@ -2566,7 +2582,8 @@
       S.rev = dev.rev || 0;
       if (sum.poll && sum.poll.interval_ms) {
         S.poll = { known: true, interval: sum.poll.interval_ms, nextAt: Date.now() + (sum.poll.next_in_ms || 0),
-          paused: !!sum.poll.paused, pausedAt: sum.poll.paused_in_ms == null ? null : Date.now() + sum.poll.paused_in_ms };
+          paused: !!sum.poll.paused, pausedAt: sum.poll.paused_in_ms == null ? null : Date.now() + sum.poll.paused_in_ms,
+          pausedTotal: sum.poll.paused_total_ms || null };
       }
       S.mqtt = sum.mqtt || null;
       S.activity.search = !!(sum.activity && sum.activity.search);

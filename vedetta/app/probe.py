@@ -39,6 +39,32 @@ _MOBILE_SERVICES = {"_nearbypresence._tcp", "_apple-mobdev2._tcp"}
 _MEDIA_TEXT = re.compile(r"tv\b|\btv|television", re.I)  # FireTV, AndroidTV, SmartTV, TV, tvOS: no brand
 
 
+def _port_number(entry: dict) -> int | None:
+    head = str(entry.get("label", "")).split(" ")[0]
+    return int(head) if head.isdigit() else None
+
+
+def _web_open(scanned_ports: list[dict]) -> bool | None:
+    """True if an open port really serves a page for people, False if the ports were checked and none does,
+    None if they were never checked (devices analysed before this check existed)."""
+    checked = [p for p in scanned_ports if "web_ui" in p]
+    if not checked:
+        return None
+    return any(p["web_ui"] for p in checked)
+
+
+def _web_url(ip: str, port: int, scanned_ports: list[dict]) -> str:
+    """Address of the "open web interface" button: the device's own port when it serves a real page, otherwise the
+    best port that does (80 and 443 first), with https where the page needs it."""
+    pages = [(p, _port_number(p)) for p in scanned_ports if p.get("web_ui")]
+    pages = [(p, n) for p, n in pages if n is not None]
+    if not pages:
+        return f"http://{ip}:{port}"
+    chosen = next((x for x in pages if x[1] == port), None) or min(pages, key=lambda x: (x[1] not in (80, 443), x[1]))
+    entry, number = chosen
+    return f"{entry.get('web_scheme') or 'http'}://{ip}:{number}"
+
+
 def _media_receiver(ip: str, scan_info: dict, ports: list[dict]) -> bool:
     from . import roles  # late import
     services = set((scan_info.get("mdns_services") or "").replace(" ", "").split(","))
@@ -298,7 +324,8 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         "is_mobile": is_mobile,
         "ip": ip,
         "port": port,
-        "url": f"http://{ip}:{port}",
+        "url": _web_url(ip, port, scanned_ports),
+        "web_open": _web_open(scanned_ports),
         "online": result.get("online", False),
         "uptime": quantize_uptime(result.get("uptime_seconds")),
         "mac": mac,

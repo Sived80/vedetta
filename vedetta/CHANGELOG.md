@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4
+- Pause: the bar under the first card now follows the pause. A timed pause turns it orange and it fills while the pause runs, full when the service resumes; stopped until resumed it is solid red.
+- "Open web interface" only appears when an open port really serves a page for people (a normal page, a redirect or a login). Ports that answer 404, 400 or a few bytes of API output (a TV's control service, a streaming stick) no longer get the button, and the button opens the port that does serve the page, with https where needed. Devices analysed before this version keep the old rule until their next deep search.
+- Response time: when a device does not answer ping (a PC with the Windows firewall, a sleepy IoT device) the app now measures the ARP round trip, which every device on the same network must answer. If nothing answers, the value stays empty.
+- The page check now reads the whole answer instead of the first packet, so small servers that send headers and page separately are no longer taken for empty.
+
 ## 0.3.3
 - Deep search "not yet analysed": a device that answers nothing useful (a phone with every port closed) is no longer listed again and again. The search now remembers it was tried ("Deep search: nothing found" on the device card), and the nightly run waits as long as for any other device.
 - A deep search no longer erases what a device announced earlier (Bonjour name and model, UPnP, NetBIOS). A phone that was asleep during the scan keeps its identity instead of falling into "Other devices". If the scan finds no open port at all, every previous clue is kept.

@@ -87,7 +87,7 @@ d = dev(
 )
 c = ha_data.compact_device(d, {"adapter": "shelly_gen1", "mobile": None})
 keys = {"id", "name", "ip", "port", "mac", "vendor", "vendor_role", "brand", "brand_source", "brand_confidence", "brand_evidence", "brand_declared", "battery", "battery_source", "type", "icon", "is_mobile", "mobile_mode", "name_source", "wol_ok", "ha_share", "type_user", "brand_user", "online", "last_seen", "uptime",
-        "signal", "latency_ms", "latency_color", "ports", "url", "title", "scanned_at", "deep_empty_at", "attrs"}
+        "signal", "latency_ms", "latency_color", "ports", "url", "title", "scanned_at", "web_open", "deep_empty_at", "attrs"}
 assert set(c) == keys, set(c) ^ keys
 assert c["type"] == "iot" and c["mobile_mode"] == "auto" and c["online"] is False and c["last_seen"] == 1234.5
 assert c["signal"]["display"] == "-58 dBm · 2.4 GHz" and c["signal"]["text"] == "Good", c["signal"]
@@ -115,7 +115,7 @@ assert (s["total"], s["online"], s["offline"], s["mobile"], s["mobile_online"]) 
 assert s["online_pct"] == 50.0 and s["rev"] == 7
 assert s["brands"][0] == {"brand": "Shelly", "count": 2}
 assert s["brands"][-1] == {"brand": None, "count": 1}, "senza marca in fondo"
-assert s["poll"] == {"interval_ms": 30000, "next_in_ms": 12000, "paused": False, "paused_in_ms": None}
+assert s["poll"] == {"interval_ms": 30000, "next_in_ms": 12000, "paused": False, "paused_in_ms": None, "paused_total_ms": None}
 assert s["activity"] == {"search": True, "rescanning": ["a"]}
 assert s["new_devices"]["count"] == 1
 assert s["types"].get("phone") == 2

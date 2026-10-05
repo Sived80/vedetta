@@ -231,7 +231,7 @@ Pick **one** of the two ways below. Both end the same way: Vedetta appears in yo
 
 2. Back in the App store, type **Vedetta** in the search box. It shows up under its own heading. Open it: the page shows the version and an **Install** button. Press **Install**.
 3. When it finishes, switch on **Show in sidebar**, then press **Start**.
-4. Click **Vedetta** in the left sidebar. Done: go to [First launch](#first-launch).
+4. Click **Vedetta** in the left sidebar (or open `http://homeassistant.local:8123/app/468cebee_vedetta`). Done: go to [First launch](#first-launch).
 
 ### Option B · Local app (works today)
 
@@ -255,13 +255,13 @@ You copy the app folder into Home Assistant's `addons` folder, using the **Samba
 
    | Go to | Link |
    |---|---|
-   | The Vedetta page | [`http://homeassistant.local:8123/hassio/ingress/local_vedetta`](http://homeassistant.local:8123/hassio/ingress/local_vedetta) |
-   | The app's settings page (Start, Stop, Log) | [`http://homeassistant.local:8123/hassio/addon/local_vedetta/info`](http://homeassistant.local:8123/hassio/addon/local_vedetta/info) |
+   | The Vedetta page | [`http://homeassistant.local:8123/app/local_vedetta`](http://homeassistant.local:8123/app/local_vedetta) |
+   | The app's settings page (Start, Stop, Log) | [`http://homeassistant.local:8123/config/app/local_vedetta/info`](http://homeassistant.local:8123/config/app/local_vedetta/info) |
    | The Vedetta page, through My Home Assistant (asks for your address once) | [open Vedetta](https://my.home-assistant.io/redirect/supervisor_ingress/?addon=local_vedetta) |
    | The app's settings page, through My Home Assistant | [open the app page](https://my.home-assistant.io/redirect/supervisor_app/?app=local_vedetta) |
 
    > [!TIP]
-   > Bookmark the first link. These links are for **Option B**: with Option A the app name contains a short code that depends on the repository, so open Vedetta from the sidebar instead.
+   > Bookmark the first link. These links are for **Option B**. With Option A the app is named `468cebee_vedetta` (the code comes from the repository address, so it is the same for everyone): use `http://homeassistant.local:8123/app/468cebee_vedetta`.
 
 > [!TIP]
 > For developers: `tools/deploy_addon.sh` does steps 4-6 over SSH.

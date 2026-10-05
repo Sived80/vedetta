@@ -1,65 +1,66 @@
 # Vedetta
 
-Vedetta trova i dispositivi della rete locale, li riconosce (nome, marca, categoria), ne segue presenza e
-latenza e li mostra in una pagina nella barra laterale di Home Assistant (ingress: nessuna porta da aprire).
-Tutto resta in casa: nessun dato viene inviato fuori dalla rete.
+Vedetta finds the devices on your local network, recognizes them (name, brand, category), follows their presence
+and latency, and shows them on a page in the Home Assistant sidebar (ingress: no port to open).
+Everything stays at home: no data is sent outside your network.
 
-## Come si usa
+## How to use it
 
-- **Ricerca** (lente): trova gli indirizzi IP e MAC presenti. Si scelgono i dispositivi da aggiungere alla plancia.
-- **Scheda del dispositivo**: IP, MAC, tempo di risposta e porte sono sempre visibili; "Altri attributi" apre il
-  resto (marca, tipo, area...). Marca e tipo si possono scegliere a mano e non vengono più cambiati. Il
-  pulsante **Condividi con HA** mostra il dispositivo in Home Assistant (vedi sotto).
-- **Ricerca approfondita** (freccia accanto a "Scan network"): due voci, "tutti i dispositivi" oppure "solo mancanti", cioe' quelli mai analizzati a fondo.
-- **Flussi di ricerca** (menu): quali metodi usano le tre ricerche (iniziale, associativa, approfondita). Il
-  pallino indica il rischio: verde non invasivo, arancione invasivo, rosso rischioso.
-- **Esporta per l'analisi** (menu, voce discreta): crea un file zip con configurazione, storico e il motivo di
-  nome, marca e categoria di ogni dispositivo. Le password sono escluse e il file non viene inviato da nessuna parte.
-- **Modalità debug**: 3 tocchi consecutivi sul titolo della card in alto (o Ctrl+Maiusc+D). Un distintivo
-  arancione DEBUG resta visibile finché è attiva; la scheda mostra indizi, punteggi e fonti di nome e marca.
+- **Search** (magnifier): finds the IP and MAC addresses that are present. You pick the devices to add to the board.
+- **Device card**: IP, MAC, response time and ports are always visible; "More attributes" opens the rest
+  (brand, type, area...). Brand and type can be chosen by hand and are never changed again. The
+  **Share with HA** button shows the device in Home Assistant (see below).
+- **Deep search** (arrow next to "Scan network"): two items, "Deep search…" for all devices, or "Deep search: not
+  yet analysed…" for only the devices never analysed in depth.
+- **Search methods** (menu): which methods the three searches use (initial, associative, deep). The dot shows the
+  risk: green non-intrusive, orange intrusive, red risky.
+- **Export for analysis** (menu, discreet item): builds a zip file with the configuration, the history and the reason
+  behind the name, brand and category of every device. Passwords are excluded and the file is not sent anywhere.
+- **Debug mode**: 3 consecutive taps on the title of the top card (or Ctrl+Shift+D). An orange DEBUG badge stays
+  visible while it is on; the card shows the clues, scores and sources of name and brand.
 
-## Opzioni
+## Options
 
-- `language`: lingua predefinita (`en` o `it`); ogni browser può sceglierne un'altra.
+- `language`: default language (`en` or `it`); each browser can pick another one.
 - `log_level`: `debug`, `info`, `warning`, `error`.
-- `interface`: interfaccia di rete da scansionare (vuoto = automatica, es. `enp0s18`).
-- `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: broker MQTT manuale. Se vuoti si usa il servizio
-  MQTT di Home Assistant (app Mosquitto), se presente.
+- `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).
+- `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant
+  MQTT service (Mosquitto app) is used, if present.
 
-## Permessi e cosa fa con ciascuno
+## Permissions and what each one is for
 
-| Permesso | A cosa serve |
+| Permission | What it is for |
 |---|---|
-| Rete dell'host (`host_network`) e `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS e ascolto DHCP passivo (porta UDP 67). Solo richieste locali, mai verso Internet (salvo l'aggiornamento periodico dei prefissi MAC e il controllo dell'IP pubblico dal pannello della rete). |
-| `homeassistant_api` | **Sola lettura** dei registri di Home Assistant (dispositivi, entità, aree, integrazioni) per dare nome, marca, modello, area e categoria ai dispositivi. Non scrive e non chiama servizi. Si può spegnere dai flussi di ricerca (passo "Dati di Home Assistant"). |
-| Servizio MQTT (`mqtt:want`) | Pubblica verso HA solo ciò che si sceglie di condividere. |
-| Ingress | L'interfaccia accetta connessioni solo dal Supervisor. |
+| Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the periodic update of the MAC prefixes and the public IP check from the network panel). |
+| `homeassistant_api` | **Read-only** access to the Home Assistant registries (devices, entities, areas, integrations) to give devices a name, brand, model, area and category. It writes nothing and calls no services. It can be turned off in the search methods ("Home Assistant data" step). |
+| MQTT service (`mqtt:want`) | Publishes to Home Assistant only what you choose to share. |
+| Ingress | The interface only accepts connections from the Supervisor. |
 
-## Condivisione con Home Assistant (MQTT)
+## Sharing with Home Assistant (MQTT)
 
-Per impostazione predefinita Home Assistant vede un solo dispositivo, **Vedetta**, con i contatori (online,
-offline, mobili, nuovi, latenza media) e il pulsante "Scansiona ora". Ogni dispositivo di rete compare in HA
-solo se premi **Condividi con HA** nella sua scheda: diventa un sotto-dispositivo di Vedetta con tracker,
-connettività e latenza, senza unirsi al dispositivo vero eventualmente già presente in HA. **Rimuovi da HA** lo
-toglie. Disponibilità su `vedetta/status`.
+By default Home Assistant sees a single device, **Vedetta**, with the counters (online, offline, mobile, new,
+average latency) and the "Scan now" button. A network device appears in Home Assistant only if you press
+**Share with HA** on its card: it becomes a sub-device of Vedetta with a tracker, connectivity and latency,
+without merging into the real device that may already exist in Home Assistant. **Remove from HA** takes it
+away. Availability is on `vedetta/status`.
 
-## Come riconosce i dispositivi
+## How it recognizes devices
 
-Ogni fonte propone un nome o un indizio e vince la più affidabile; un nome scelto a mano non si cambia mai.
-Le fonti sono: HA (nome scelto in HA), API del dispositivo, mDNS/Bonjour (con memoria e ascolto continuo),
-UPnP, DHCP (nome e classe), NetBIOS, certificato TLS, pagina web, ruolo di rete. La categoria somma indizi
-per famiglia (lo stesso fatto non conta due volte) e usa un catalogo di firme dei prodotti
-(`app/data/signatures.json`) dove i segnali generici sono ambigui. Se due categorie sono alla pari con indizi
-deboli il dispositivo resta in "Altri dispositivi".
+Every source proposes a name or a clue and the most reliable one wins; a name you chose by hand is never changed.
+The sources are: Home Assistant (a name chosen there), the device's own API, mDNS/Bonjour (with memory and
+continuous listening), UPnP, DHCP (name and class), NetBIOS, TLS certificate, web page, network role. The category
+adds up clues by family (the same fact does not count twice) and uses a catalog of product signatures
+(`app/data/signatures.json`) where generic signals are ambiguous. If two categories are tied on weak clues the
+device stays in "Other devices".
 
-## Dati e backup
+## Data and backups
 
-I dati stanno in `/data` (dispositivi, impostazioni, memoria DHCP e mDNS, storico, registro) ed entrano nei
-backup di Home Assistant. **Disinstallare l'app cancella `/data`**: prima si può usare "Esporta per l'analisi".
+Data lives in `/data` (devices, settings, DHCP and mDNS memory, history, log) and is included in Home Assistant
+backups. **Uninstalling the app deletes `/data`**: use "Export for analysis" first if you want to keep a copy.
 
-## Limiti noti
+## Known limits
 
-- I dispositivi con indirizzo MAC privato (iPhone/iPad) non annunciano sempre il nome: restano "marca mobile"
-  finché un nome non arriva da Bonjour, DHCP, HA o dalla scelta a mano.
-- Un dispositivo lento (es. console) viene analizzato con le porte mirate e, in seconda battuta, in background.
-- Le scansioni approfondite usano CPU: sulle macchine piccole conviene evitarle in contemporanea con carichi pesanti.
+- Devices with a private MAC address (iPhone/iPad) do not always announce their name: they stay "brand mobile"
+  until a name arrives from Bonjour, DHCP, Home Assistant or your own choice.
+- A slow device (e.g. a console) is analysed with targeted ports first and, afterwards, in the background.
+- Deep searches use CPU: on small machines avoid running them together with heavy loads.

@@ -8,18 +8,18 @@ arch:
   - aarch64
 startup: application
 boot: auto
-# Il Supervisor controlla questo indirizzo e riavvia l'add-on se non risponde.
+# The Supervisor checks this address and restarts the app if it does not answer.
 watchdog: http://[HOST]:[PORT:8765]/healthz
 init: false
-# Lettura (sola) dei registri di Home Assistant per nome, marca, modello e area dei dispositivi.
+# Read-only access to the Home Assistant registries, for the name, brand, model and area of devices.
 homeassistant_api: true
-# Serve la rete dell'host per arp-scan, nmap, ping, SSDP/mDNS e il server DHCP passivo (UDP 67).
+# The host network is needed for arp-scan, nmap, ping, SSDP/mDNS and the passive DHCP listener (UDP 67).
 host_network: true
 privileged:
   - NET_ADMIN
   - NET_RAW
-# Interfaccia web solo tramite ingress (barra laterale di HA). Con host_network la
-# porta e' sull'host: 8765 e' libera nell'installazione collaudata.
+# Web interface through ingress only (Home Assistant sidebar). With host_network the
+# port is on the host: 8765 was free on the tested installation.
 ingress: true
 ingress_port: 8765
 ingress_entry: ha

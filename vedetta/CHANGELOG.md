@@ -1,23 +1,23 @@
 # Changelog
 
 ## 0.3.1
-- Ricerca approfondita: nel menu accanto a "Scan network" c'e' una seconda voce, "solo mancanti", che analizza a fondo soltanto i dispositivi mai analizzati (quelli senza data di "Ultima ricerca approfondita"). Con tutti gia' analizzati la voce e' disattivata.
+- Deep search: the menu next to "Scan network" has a second item, "Deep search: not yet analysed…", that analyses in depth only the devices that never were (the ones with no "Last deep scan" date). When every device has already been analysed, the item is disabled.
 
 ## 0.3.0
-- Riconoscimento piu' solido: gli indizi si sommano per famiglia (lo stesso fatto, come Cast, conta una volta), le porte hanno un tetto, due categorie alla pari con indizi deboli restano "Altri dispositivi".
-- Catalogo di firme dei prodotti (`app/data/signatures.json`): il modello dichiarato decide dove i segnali generici sono ambigui (Google Home e Chromecast, Fire TV, PlayStation, Proxmox...).
-- Modalita' debug: elenco degli indizi con famiglia e punti; documentazione dell'app aggiornata.
+- More solid recognition: clues add up by family (the same fact, like Cast, counts once), ports have a cap, and two categories tied on weak clues stay in "Other devices".
+- Product signature catalog (`app/data/signatures.json`): the declared model decides where generic signals are ambiguous (Google Home vs Chromecast, Fire TV, PlayStation, Proxmox...).
+- Debug mode: list of the clues with their family and points; app documentation updated.
 
 ## 0.2.1
-- Memoria dei nomi Bonjour (mDNS) per MAC e ascolto continuo degli annunci: i telefoni che dormono (iPhone con indirizzo privato) non perdono il nome una volta visto.
-- Titoli di pagina che sono il nome di un software con la versione non diventano il nome del dispositivo; la classe DHCP dichiarata (es. PS3) vale come indizio di tipo e marca; console tra i tipi.
+- Memory of Bonjour (mDNS) names per MAC and continuous listening for announcements: sleeping phones (iPhones with a private address) keep the name once it has been seen.
+- Page titles that are a software name with a version no longer become the device name; the declared DHCP class (e.g. PS3) counts as a clue for type and brand; consoles added to the types.
 
 ## 0.2.0
-- Dati di Home Assistant (registro dispositivi, sola lettura) come fonte di nome, marca, modello, area e categoria; passo "Dati di Home Assistant" nei flussi di ricerca. Richiede il permesso `homeassistant_api`.
-- Condivisione con HA a scelta: nella scheda di ogni dispositivo "Condividi con HA" / "Rimuovi da HA". In HA compare il dispositivo "Vedetta" con i dispositivi condivisi come sotto-dispositivi, senza unirsi a quelli esistenti.
-- Categorie ridotte a 9; nomi dal ruolo di rete (Server DNS, Ripetitore...), segnaposto riconosciuti, marca e tipo modificabili a mano.
-- Scheda: attributi fissi e tendina "Altri attributi"; modalita' debug (3 tocchi sul titolo) ed esportazione per l'analisi.
-- Rimossa la pagina classica: resta solo la dashboard `/ha` in ingress.
+- Home Assistant data (device registry, read-only) as a source of name, brand, model, area and category; new "Home Assistant data" step in the search methods. Needs the `homeassistant_api` permission.
+- Sharing with HA by choice: each device card has "Share with HA" / "Remove from HA". Home Assistant shows a "Vedetta" device with the shared devices as sub-devices, without merging into existing ones.
+- Categories reduced to 9; names from the network role (DNS server, Repeater...), placeholders recognized, brand and type editable by hand.
+- Device card: fixed attributes and a "More attributes" drop-down; debug mode (3 taps on the title) and export for analysis.
+- Classic page removed: only the `/ha` dashboard through ingress remains.
 
 ## 0.1.0
-- Prima versione come app di Home Assistant: ingress, dati in /data, discovery MQTT.
+- First version as a Home Assistant app: ingress, data in /data, MQTT discovery.

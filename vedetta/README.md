@@ -1,7 +1,8 @@
 # Vedetta
 
-Dashboard di rete locale per Home Assistant: trova e riconosce i dispositivi della LAN (nome, marca, categoria),
-ne segue presenza e latenza e li mostra nella barra laterale. Legge in sola lettura i registri di Home Assistant
-per riconoscerli meglio e condivide con HA, a scelta, i dispositivi che vuoi. Nessun dato esce dalla rete.
+Local network dashboard for Home Assistant: it finds and recognizes the devices on your LAN (name, brand, category),
+follows their presence and latency, and shows them in the sidebar. It reads Home Assistant's registries
+(read-only) to recognize them better and shares with Home Assistant only the devices you choose. No data leaves
+your network.
 
-Funziona su Home Assistant OS e Supervised (usa la rete dell'host). Dettagli, permessi e opzioni in **DOCS.md**.
+It runs on Home Assistant OS and Supervised (it uses the host network). Details, permissions and options are in **DOCS.md**.

@@ -1,12 +1,12 @@
-# Immagine multi-architettura: l'architettura la sceglie il Supervisor (chiave "arch").
+# Multi-architecture image: the Supervisor picks the architecture (the "arch" key).
 FROM ghcr.io/home-assistant/base:latest
 
 RUN apk add --no-cache python3 py3-pip arp-scan nmap nmap-scripts iputils curl bash
 
 WORKDIR /app
 
-# Dipendenze in un venv (Alpine non permette pip nel Python di sistema).
-# requirements.txt, VERSION e app/ li prepara tools/build_addon.py.
+# Dependencies go in a venv (Alpine does not allow pip in the system Python).
+# requirements.txt, VERSION and app/ sit next to this file.
 COPY requirements.txt /app/requirements.txt
 RUN python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir -r /app/requirements.txt

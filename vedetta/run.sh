@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bashio
-# Avvio di Vedetta come app di Home Assistant: legge le opzioni, ricava il broker MQTT
-# (opzioni manuali prima, poi il servizio mqtt di HA) ed esegue un solo worker uvicorn.
+# Starts Vedetta as a Home Assistant app: reads the options, works out the MQTT broker
+# (manual options first, then the Home Assistant mqtt service) and runs a single uvicorn worker.
 set -e
 
 export VEDETTA_DATA_DIR=/data
@@ -14,24 +14,24 @@ if bashio::config.has_value 'interface'; then
     export VEDETTA_IFACE="$(bashio::config 'interface')"
 fi
 
-# MQTT: le opzioni manuali prevalgono su quelle del servizio.
+# MQTT: manual options win over the service ones.
 if bashio::config.has_value 'mqtt_host'; then
     export VEDETTA_MQTT_HOST="$(bashio::config 'mqtt_host')"
     export VEDETTA_MQTT_PORT="$(bashio::config 'mqtt_port')"
     export VEDETTA_MQTT_USER="$(bashio::config 'mqtt_username')"
     export VEDETTA_MQTT_PASSWORD="$(bashio::config 'mqtt_password')"
-    bashio::log.info "MQTT: broker manuale ${VEDETTA_MQTT_HOST}"
+    bashio::log.info "MQTT: manual broker ${VEDETTA_MQTT_HOST}"
 elif bashio::services.available 'mqtt'; then
     export VEDETTA_MQTT_HOST="$(bashio::services mqtt 'host')"
     export VEDETTA_MQTT_PORT="$(bashio::services mqtt 'port')"
     export VEDETTA_MQTT_USER="$(bashio::services mqtt 'username')"
     export VEDETTA_MQTT_PASSWORD="$(bashio::services mqtt 'password')"
-    bashio::log.info "MQTT: servizio di HA ${VEDETTA_MQTT_HOST}"
+    bashio::log.info "MQTT: Home Assistant service ${VEDETTA_MQTT_HOST}"
 else
-    bashio::log.info "MQTT non configurato: pubblicazione verso HA disattivata"
+    bashio::log.info "MQTT not configured: publishing to Home Assistant is off"
 fi
 
 cd /app
-bashio::log.info "Avvio Vedetta sulla porta ${VEDETTA_PORT}"
+bashio::log.info "Starting Vedetta on port ${VEDETTA_PORT}"
 exec /opt/venv/bin/python -m uvicorn app.main:app \
     --host 0.0.0.0 --port "${VEDETTA_PORT}" --workers 1 --log-level "${LOG_LEVEL}"

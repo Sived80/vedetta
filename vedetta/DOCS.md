@@ -15,7 +15,7 @@ Everything stays at home: no data is sent outside your network.
 - **Search methods** (menu): which methods the three searches use (initial, associative, deep). The dot shows the
   risk: green non-intrusive, orange intrusive, red risky.
 - **Export for analysis** (menu, discreet item): builds a zip file with the configuration, the history and the reason
-  behind the name, brand and category of every device. Passwords are excluded and the file is not sent anywhere.
+  behind the name, brand and category of every device. IPs (the last number is kept), MAC addresses (the manufacturer prefix is kept) and device names (`iPhone-1`, `TV-2`...) are anonymised **only inside the file**, the same value always getting the same placeholder; passwords are excluded and the file is not sent anywhere. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`). Anonymised does not mean public: hand the file over privately, never in a public issue.
 - **Debug mode**: 3 consecutive taps on the title of the top card (or Ctrl+Shift+D). An orange DEBUG badge stays
   visible while it is on; the card shows the clues, scores and sources of name and brand.
 

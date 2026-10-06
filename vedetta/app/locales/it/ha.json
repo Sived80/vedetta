@@ -307,7 +307,7 @@
   "js.ha.dbg.roles": "Ruoli",
   "js.ha.dbg.scan": "Scansione",
   "js.ha.export.title": "Esporta per l'analisi",
-  "js.ha.export.text": "Crea un file zip con configurazione, storico e il motivo di nome, marca e categoria di ogni dispositivo, per analizzare e correggere gli errori. Contiene indirizzi IP e MAC della tua rete; le password sono escluse. Non viene inviato da nessuna parte: lo scarichi tu.",
+  "js.ha.export.text": "Crea un file zip con configurazione, storico e il motivo di nome, marca e categoria di ogni dispositivo, per analizzare e correggere gli errori. Indirizzi IP, MAC e nomi sono anonimizzati (lo stesso valore ha sempre lo stesso segnaposto, così le relazioni restano leggibili) e le password sono escluse. Non pubblicarlo in luoghi pubblici: consegnalo in privato. Non viene inviato da nessuna parte: lo scarichi tu.",
   "js.ha.export.start": "Esporta",
   "js.ha.export.working": "Preparo il file…",
   "js.ha.export.done": "File esportato",

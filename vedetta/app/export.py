@@ -1,6 +1,6 @@
 """Export for analysis: a zip file with the data needed to understand why a name, a brand or a
-category is wrong. No passwords (the MQTT one is replaced) and no upload: the user downloads the file
-and hands it over themselves."""
+category is wrong. No passwords (the MQTT one is replaced), IPs, MACs and names anonymised only inside the
+file (anonymize.py), and no upload: the user downloads the file and hands it over themselves."""
 import io
 import json
 import platform
@@ -10,9 +10,10 @@ import time
 import zipfile
 from pathlib import Path
 
-from . import dhcp, ha_registry, journal, mdns_listener, mqtt_ha, paths, roles, settings
+from . import anonymize, dhcp, ha_registry, journal, mdns_listener, mqtt_ha, paths, roles, settings
 from .state import state
 
+MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by the export (see below)
 MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
 MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
 SKIP_WORDS = ("key", "token", "secret", "pass")   # files that might contain credentials
@@ -25,6 +26,79 @@ def _redact(obj):
     if isinstance(obj, list):
         return [_redact(v) for v in obj]
     return obj
+
+
+def _collect(devices: list[dict]) -> anonymize.Anonymizer:
+    """Everything that identifies the user or the household, before the file is written."""
+    from . import ha_data
+    anon = anonymize.Anonymizer()
+    for d in devices:                                   # the main network is found first: it becomes 10.0.0.x
+        anon.add_ip(d.get("ip"))
+    for d in devices:
+        mac, ip = d.get("mac"), d.get("ip")
+        anon.add_mac(mac)
+        reg, mdns = ha_registry.lookup(mac, ip) or {}, mdns_listener.lookup(mac, ip) or {}
+        anon.add_area(reg.get("area"))
+        try:
+            hint = ha_data.effective_type(d, None)
+        except Exception:
+            hint = None
+        try:
+            icon = ha_data.icon_for(d, None, hint)
+        except Exception:
+            icon = None
+        name = d.get("name")
+        aliases = [name if name != ip else None, (dhcp.seen.get(str(mac or "").lower()) or {}).get("hostname"),
+                   mdns.get("name"), reg.get("name")]
+        anon.add_device(aliases, hint, d.get("brand"), icon)
+    for table in (dhcp.seen, mdns_listener.by_mac, ha_registry._state["by_mac"]):   # devices known but not on the board
+        for mac in table:
+            anon.add_mac(mac)
+    for area in {c.get("area") for c in list(ha_registry._state["by_mac"].values()) + list(ha_registry._state["by_ip"].values())}:
+        anon.add_area(area)
+    for table in (mdns_listener.by_ip, ha_registry._state["by_ip"]):
+        for ip in table:
+            anon.add_ip(ip)
+    net = (roles.snapshot().get("internet") or {})
+    anon.add_public_ip(net.get("public_ip"))
+    for hop in net.get("hops") or []:
+        anon.add_public_ip(hop)
+    return anon
+
+
+def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:
+    """JSON and JSON lines are walked (the fields that describe the device stay as they are); the rest is plain text."""
+    try:
+        if name.endswith(".json"):
+            return json.dumps(anon.data(json.loads(text)), ensure_ascii=False, indent=1)
+        if name.endswith(".jsonl"):
+            return chr(10).join(json.dumps(anon.data(json.loads(line)), ensure_ascii=False) if line.strip() else line for line in text.split(chr(10)))
+    except ValueError:
+        pass
+    return anon.text(text)
+
+
+def _anonymize_db(path: Path, anon: anonymize.Anonymizer) -> None:
+    """Every text value of the copy of the database goes through the same replacement."""
+    con = sqlite3.connect(path)
+    try:
+        con.create_function("anon", 1, lambda v: anon.text(v) if isinstance(v, str) else v)
+        tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
+        for tb in tables:
+            for _, col, *_rest in con.execute(f'PRAGMA table_info("{tb}")').fetchall():
+                con.execute(f"UPDATE \"{tb}\" SET \"{col}\" = anon(\"{col}\") WHERE typeof(\"{col}\") = 'text'")
+        con.commit()
+        con.execute("VACUUM")
+    finally:
+        con.close()
+
+
+def _save_mapping(anon: anonymize.Anonymizer) -> None:
+    """Placeholder -> real value, kept on this machine only (never in the zip): it tells which device is "iPhone-2"."""
+    try:
+        (paths.DATA_DIR / MAPPING_FILE).write_text(json.dumps(anon.mapping(), ensure_ascii=False, indent=1), encoding="utf-8")
+    except OSError:
+        pass
 
 
 def _tail(path: Path, limit: int) -> bytes:
@@ -42,9 +116,17 @@ def build_zip() -> bytes:
     data_dir = paths.DATA_DIR
     manifest = {"created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
                 "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
+    anon = _collect(state.sorted_devices())
+    manifest["notes"].append("anonymised: IP (same last number), MAC (same manufacturer prefix), names (iPhone-1, TV-2...)")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
-        def put(name: str, content: bytes | str):
+        def put(name: str, content: bytes | str, text: bool = True):
+            if text:
+                try:
+                    content = _anonymize_text(name, content if isinstance(content, str) else content.decode("utf-8"), anon)
+                except UnicodeDecodeError:       # not text: it cannot be anonymised, so it is left out
+                    manifest["notes"].append(f"{name}: binary file not included")
+                    return
             raw = content.encode("utf-8") if isinstance(content, str) else content
             z.writestr(name, raw)
             manifest["files"][name] = len(raw)
@@ -52,7 +134,7 @@ def build_zip() -> bytes:
         # data files: configuration, DHCP memory, journal, log (tail only)
         if data_dir.exists():
             for f in sorted(data_dir.iterdir()):
-                if not f.is_file() or f.name.startswith("vedetta.db") or any(w in f.name.lower() for w in SKIP_WORDS):
+                if not f.is_file() or f.name.startswith("vedetta.db") or f.name == MAPPING_FILE or any(w in f.name.lower() for w in SKIP_WORDS):
                     continue
                 try:
                     if f.suffix == ".json":
@@ -76,7 +158,8 @@ def build_zip() -> bytes:
                         dst = sqlite3.connect(copy)
                         src.backup(dst)
                         dst.close(); src.close()
-                        put("data/vedetta.db", copy.read_bytes())
+                        _anonymize_db(copy, anon)
+                        put("data/vedetta.db", copy.read_bytes(), text=False)
                 except Exception as exc:
                     manifest["notes"].append(f"vedetta.db: {exc!r}")
         # the current state: why each device is the way it is
@@ -98,4 +181,5 @@ def build_zip() -> bytes:
         except Exception as exc:
             manifest["notes"].append(f"journal: {exc!r}")
         put("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=1))
+    _save_mapping(anon)
     return buf.getvalue()

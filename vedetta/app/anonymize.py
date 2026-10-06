@@ -38,6 +38,8 @@ _NEVER = {"unknown", "localhost", "homeassistant", "home assistant", "none", "nu
 _WORD = re.compile(r"[^\W_]+", re.U)   # letters and digits: "_" is a separator
 
 _IPV4 = re.compile(r"(?<![\d.])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?!\d|\.\d)")
+# the same address written with dashes or underscores, as in the device ids ("scan-192-168-1-5")
+_IPV4_SEP = re.compile(r"(?<![\d])(\d{1,3})([-_])(\d{1,3})\2(\d{1,3})\2(\d{1,3})(?!\d)")
 _MAC = re.compile(r"(?<![0-9A-Fa-f:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])")
 
 
@@ -160,6 +162,13 @@ class Anonymizer:
             return f"203.0.113.{self._pub.setdefault(ip, len(self._pub) + 1)}"
         return ip                                    # other public numbers are mostly versions or well-known servers
 
+    def _ip_sep(self, m: re.Match) -> str:
+        """192-168-1-5 -> 10-0-0-5, only for the networks that really exist here (so "10-06-12-30" in a date is safe)."""
+        a, sep, b, c, d = m.groups()
+        if ".".join((a, b, c)) not in self._nets or int(d) > 255:
+            return m.group(0)
+        return self._private_ip(f"{a}.{b}.{c}.{d}").replace(".", sep)
+
     def _mac(self, m: re.Match) -> str:
         raw = m.group(0)
         low = raw.lower().replace("-", ":")
@@ -183,6 +192,7 @@ class Anonymizer:
                 s = re.sub(r"(?<![0-9A-Fa-f])" + flat + r"(?![0-9A-Fa-f])", fake, s, flags=re.I)
         s = _MAC.sub(self._mac, s)
         s = _IPV4.sub(self._ip, s)
+        s = _IPV4_SEP.sub(self._ip_sep, s)
         if self._name_re is None:
             self._name_re = self._compile()
         if self._name_re is not None:

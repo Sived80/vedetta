@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.8
+- Export for analysis: the device ids (`scan-192-168-1-5`) carried the real network written with dashes and were not masked; they are now masked like any other address (`scan-10-0-0-5`), in every file and in the history database.
+
 ## 0.3.7
 - Export for analysis is anonymised: IPs keep the last number (`10.0.0.x`), MAC addresses keep the manufacturer prefix, names of devices, areas, DHCP and Bonjour hostnames become `iPhone-1`, `Thermostat-1`, `Area-2`... The same value always gets the same placeholder in every file (JSON, log, history database), brand, type, ports, times and scores are left as they are, and the real devices are not touched. The table placeholder → real value stays on your machine and is never in the zip.
 - Two ways to export: the button makes an **encrypted** `.txt` (sealed with the author's public key, safe to attach to a public GitHub issue), the arrow next to it a **plain** `.zip` for you or someone you trust. The dialog explains what each one is for. If encryption is unavailable nothing is exported: it never falls back to a plain file.

@@ -31,6 +31,9 @@ assert a.add_device(["ab"], None) is None and a.add_device(["12345"], None) is N
 
 out = a.text("host 192.168.50.10 and 192.168.50.23, other net 10.9.8.7, gateway 127.0.0.1, firmware 2.4.1.0.5, public 93.184.216.34")
 assert out == "host 10.0.0.10 and 10.0.0.23, other net 10.1.0.7, gateway 127.0.0.1, firmware 2.4.1.0.5, public 203.0.113.1", out
+# the same address in a device id ("scan-192-168-50-10"): only for networks that exist here, so dates and versions are safe
+assert a.text("id scan-192-168-50-10, scan_192_168_50_23, net 10-9-8-7") == "id scan-10-0-0-10, scan_10_0_0_23, net 10-1-0-7"
+assert a.text("date 2026-10-06 10-06-12-30 and 192-168-77-1") == "date 2026-10-06 10-06-12-30 and 192-168-77-1"
 assert a.text("mac f0:18:98:aa:bb:cc / F0-18-98-AA-BB-CC / 3C:22:FB:11:22:33") == \
     "mac f0:18:98:00:00:01 / F0-18-98-00-00-01 / 3C:22:FB:00:00:02"      # prefix kept, case and separator kept
 assert a.text("flat f018 98aabbcc? f01898aabbcc tail aabbcc") == "flat f018 98aabbcc? f01898000001 tail 000001"

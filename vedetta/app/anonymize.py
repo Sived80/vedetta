@@ -40,6 +40,14 @@ _WORD = re.compile(r"[^\W_]+", re.U)   # letters and digits: "_" is a separator
 _IPV4 = re.compile(r"(?<![\d.])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?!\d|\.\d)")
 # the same address written with dashes or underscores, as in the device ids ("scan-192-168-1-5")
 _IPV4_SEP = re.compile(r"(?<![\d])(\d{1,3})([-_])(\d{1,3})\2(\d{1,3})\2(\d{1,3})(?!\d)")
+_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# "password=abc", "token": "abc", "Authorization: Bearer abc" -> the value is hidden
+_SECRET_PAIR = re.compile(r"(?i)\b(pass(?:word|wd)?|token|secret|api[_-]?key|authorization)(\W{0,3}[:=]\W{0,2})(?:bearer\s+)?([^\s\"',;&<>]{4,})")
+_URL_CREDS = re.compile(r"(://)[^/\s:@]+:[^/\s@]+@")
+_SECRET_KEY = re.compile(r"pass|token|secret|api_?key|credential|authorization", re.I)
+_PRIVATE_KEYS = {"user", "username", "mqtt_user", "mqtt_username", "mqtt_host"}
+# whatever still looks like a real home network or a person after the masking: used to refuse the export
+_REAL_NET = re.compile(r"(?<![\d])(?:192[.\-_]168|172[.\-_](?:1[6-9]|2\d|3[01]))[.\-_]\d{1,3}[.\-_]\d{1,3}(?![\d])")
 _MAC = re.compile(r"(?<![0-9A-Fa-f:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])")
 
 
@@ -86,6 +94,7 @@ class Anonymizer:
         self._counts: dict[str, int] = {}
         self._literal: dict[str, str] = {}   # other forms of a mac: 12 hex, last 6 hex
         self._public_known: set[str] = set()
+        self._emails: dict[str, str] = {}
         self._name_re: re.Pattern | None = None
 
     # ------------------------------------------------------------------ collection
@@ -108,6 +117,11 @@ class Anonymizer:
         self._literal[flat] = fake.replace(":", "")
         if re.search(r"[a-f]", tail):
             self._literal[tail] = fake[9:].replace(":", "")
+
+    def add_names(self, names: list, brand: str | None = None, skip: tuple = ()) -> None:
+        """Names that appear in the registries of the house (Home Assistant, Bonjour, DHCP) even if the device is not on the board."""
+        keep = {_norm(s) for s in skip if s}
+        self.add_device([n for n in names if _norm(str(n or "")) not in keep], None, brand)
 
     def add_area(self, name: str | None) -> None:
         if name and _norm(name) and _norm(name) not in self._areas:
@@ -169,6 +183,10 @@ class Anonymizer:
             return m.group(0)
         return self._private_ip(f"{a}.{b}.{c}.{d}").replace(".", sep)
 
+    def _email(self, m: re.Match) -> str:
+        key = m.group(0).lower()
+        return f"email-{self._emails.setdefault(key, len(self._emails) + 1)}@masked.invalid" if not key.endswith("@masked.invalid") else m.group(0)
+
     def _mac(self, m: re.Match) -> str:
         raw = m.group(0)
         low = raw.lower().replace("-", ":")
@@ -190,6 +208,9 @@ class Anonymizer:
         for flat, fake in self._literal.items():
             if flat in s.lower():
                 s = re.sub(r"(?<![0-9A-Fa-f])" + flat + r"(?![0-9A-Fa-f])", fake, s, flags=re.I)
+        s = _EMAIL.sub(self._email, s)
+        s = _URL_CREDS.sub(r"\1***:***@", s)
+        s = _SECRET_PAIR.sub(r"\1\2***", s)
         s = _MAC.sub(self._mac, s)
         s = _IPV4.sub(self._ip, s)
         s = _IPV4_SEP.sub(self._ip_sep, s)
@@ -206,13 +227,59 @@ class Anonymizer:
             return {self.text(k) if isinstance(k, str) else k: self.data(v, k if isinstance(k, str) else "") for k, v in obj.items()}
         if isinstance(obj, list):
             return [self.data(v, key) for v in obj]
+        if isinstance(obj, str) and obj and (_SECRET_KEY.search(key) or key in _PRIVATE_KEYS):
+            return "***"
         if isinstance(obj, str) and key not in _KEEP:
             return self.text(obj)
         return obj
 
+    def leaks(self, text: str) -> list[str]:
+        """What is still readable in already masked text (kinds only, never the values). Empty list = clean."""
+        found = set()
+        low = text.lower()
+        if _REAL_NET.search(text):
+            found.add("home network address")
+        if any(ip in text for ip in self._public_known):
+            found.add("public address")
+        for mac in self._macs:
+            if mac in low or mac.replace(":", "-") in low or mac.replace(":", "") in low:
+                found.add("MAC address")
+                break
+        if any(not m.group(0).endswith("@masked.invalid") for m in _EMAIL.finditer(text)):
+            found.add("email address")
+        if any(m.group(3) != "***" for m in _SECRET_PAIR.finditer(text)) or re.search(r"://[^/\s:@*]+:[^/\s@*]+@", text):
+            found.add("password or token")
+        table = {**self._areas, **self._names}
+        if table:
+            rest = text
+            for label in sorted(set(table.values()), key=len, reverse=True):
+                rest = rest.replace(label, " ")
+            if self._compile_for(table).search(rest):
+                found.add("name")
+        return sorted(found)
+
+    def leaks_data(self, obj, key: str = "") -> list[str]:
+        """Same check over parsed JSON, skipping the fields that describe the device (kept on purpose)."""
+        if isinstance(obj, dict):
+            out = set(self.leaks(" ".join(str(k) for k in obj)))
+            for k, v in obj.items():
+                out |= set(self.leaks_data(v, k if isinstance(k, str) else ""))
+            return sorted(out)
+        if isinstance(obj, list):
+            return sorted({x for v in obj for x in self.leaks_data(v, key)})
+        if isinstance(obj, str) and key not in _KEEP and obj != "***":
+            return self.leaks(obj)
+        return []
+
+    def _compile_for(self, table: dict) -> re.Pattern:
+        if getattr(self, "_leak_re", None) is None or self._leak_re[0] != len(table):
+            self._leak_re = (len(table), re.compile("|".join(_pattern(k.replace("-", " ")) for k in sorted(table, key=len, reverse=True)), re.I | re.U))
+        return self._leak_re[1]
+
     def mapping(self) -> dict:
         """Placeholder -> original value: for the owner only, never put in the zip."""
-        return {"ip_networks": {f"10.{i}.0.x": f"{net}.x" for net, i in self._nets.items()},
+        return {"emails": {f"email-{i}@masked.invalid": e for e, i in self._emails.items()},
+                "ip_networks": {f"10.{i}.0.x": f"{net}.x" for net, i in self._nets.items()},
                 "public_ips": {f"203.0.113.{i}": ip for ip, i in self._pub.items()},
                 "macs": {v: k for k, v in self._macs.items()},
                 "names": {v: sorted(k for k, x in {**self._names, **self._areas}.items() if x == v)

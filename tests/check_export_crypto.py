@@ -58,5 +58,14 @@ def broken(data, key=None):
 report_crypto.seal = broken
 r = asyncio.run(routes_ha.api_export())
 assert r.status_code == 501 and r.body != raw and b"PK" not in r.body
+# masking that cannot be guaranteed: an error for the person, never a file (encrypted or plain)
+def refused():
+    raise export.MaskingFailed("data/x.log: home network address")
+good_build = export.build_zip
+export.build_zip = refused
+for plain in (False, True):
+    r = asyncio.run(routes_ha.api_export(plain=plain))
+    assert r.status_code == 422 and b"masking_failed" in r.body and b"192" not in r.body
+export.build_zip = good_build
 report_crypto.seal = real_seal
 print("TUTTO OK")

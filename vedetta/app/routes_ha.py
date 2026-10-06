@@ -14,6 +14,8 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+
+from .applog import logger
 from . import applog, ha_data, i18n, journal, latency, roles
 from .history import history
 from .ingress import template_context
@@ -146,8 +148,12 @@ async def api_export(plain: bool = False):
     downloaded by accident through a link."""
     from fastapi.responses import JSONResponse, Response
     from . import export, report_crypto
-    data = await asyncio.to_thread(export.build_zip)
     headers = {"Cache-Control": "no-store"}
+    try:
+        data = await asyncio.to_thread(export.build_zip)
+    except export.MaskingFailed as exc:
+        logger.warning("Export refused: the masking left something readable (%s)", exc)    # kinds and file only, never values
+        return JSONResponse({"error": "masking_failed"}, status_code=422, headers=headers)
     if plain:
         name = "vedetta-analisi-" + time.strftime("%Y%m%d-%H%M%S") + ".zip"
         return Response(content=data, media_type="application/zip", headers={**headers, "Content-Disposition": f'attachment; filename="{name}"'})

@@ -316,7 +316,7 @@
   "js.ha.share.added": "Condiviso con Home Assistant",
   "js.ha.share.removed": "Rimosso da Home Assistant",
   "js.ha.dbg.evidence": "Indizi",
-  "js.ha.export.safe": "Prima di creare il file, gli indirizzi IP e MAC e i nomi dei dispositivi vengono mascherati e le password sono escluse. Non viene inviato niente: il file lo scarichi tu.",
+  "js.ha.export.safe": "Prima di creare il file, gli indirizzi IP e MAC, i nomi dei dispositivi e gli indirizzi email vengono mascherati e le password sono escluse. Se resta qualcosa di leggibile, non viene esportato niente. Non viene inviato niente: il file lo scarichi tu.",
   "js.ha.export.enc_title": "Export cifrato (il pulsante)",
   "js.ha.export.enc_text": "Per segnalare un errore: allega il file a una issue su GitHub. Solo l'autore di Vedetta può aprirlo, anche se la issue è pubblica.",
   "js.ha.export.plain_title": "Export in chiaro (la freccia)",
@@ -325,5 +325,6 @@
   "js.ha.export.start_enc": "Export cifrato",
   "js.ha.export.more": "Altre opzioni di export",
   "js.ha.export.done_plain": "File in chiaro esportato (non cifrato)",
-  "js.ha.export.no_crypto": "La cifratura non è disponibile in questa versione dell'app: non è stato esportato niente."
+  "js.ha.export.no_crypto": "La cifratura non è disponibile in questa versione dell'app: non è stato esportato niente.",
+  "js.ha.export.masking_failed": "Non esportato: non è stato possibile garantire il mascheramento. Non è stato salvato niente."
 }

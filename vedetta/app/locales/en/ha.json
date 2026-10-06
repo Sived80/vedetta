@@ -316,7 +316,7 @@
   "js.ha.share.added": "Shared with Home Assistant",
   "js.ha.share.removed": "Removed from Home Assistant",
   "js.ha.dbg.evidence": "Evidence",
-  "js.ha.export.safe": "Before the file is created, IP addresses, MAC addresses and device names are masked, and passwords are left out. Nothing is sent anywhere: you download the file yourself.",
+  "js.ha.export.safe": "Before the file is created, IP addresses, MAC addresses, device names and email addresses are masked, and passwords are left out. If anything readable is left, nothing is exported. Nothing is sent anywhere: you download the file yourself.",
   "js.ha.export.enc_title": "Encrypted export (the button)",
   "js.ha.export.enc_text": "To report a mistake: attach the file to an issue on GitHub. Only the author of Vedetta can open it, even if the issue is public.",
   "js.ha.export.plain_title": "Plain export (the arrow)",
@@ -325,5 +325,6 @@
   "js.ha.export.start_enc": "Encrypted export",
   "js.ha.export.more": "More export options",
   "js.ha.export.done_plain": "Plain file exported (not encrypted)",
-  "js.ha.export.no_crypto": "Encryption is not available in this version of the app: nothing was exported."
+  "js.ha.export.no_crypto": "Encryption is not available in this version of the app: nothing was exported.",
+  "js.ha.export.masking_failed": "Not exported: the masking could not be guaranteed. Nothing was saved."
 }

@@ -54,6 +54,14 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
     for table in (dhcp.seen, mdns_listener.by_mac, ha_registry._state["by_mac"]):   # devices known but not on the board
         for mac in table:
             anon.add_mac(mac)
+    # names that only live in the registries (a device removed from the board, one Home Assistant knows and the app does not)
+    for card in dhcp.seen.values():
+        anon.add_names([card.get("hostname")])
+    for card in list(mdns_listener.by_mac.values()) + list(mdns_listener.by_ip.values()):
+        anon.add_names([card.get("name")], skip=(card.get("model"), card.get("manufacturer")))
+    for card in list(ha_registry._state["by_mac"].values()) + list(ha_registry._state["by_ip"].values()):
+        anon.add_names([card.get("name")] + list(card.get("entry_titles") or []), card.get("manufacturer"),
+                       skip=(card.get("model"), card.get("manufacturer")))
     for area in {c.get("area") for c in list(ha_registry._state["by_mac"].values()) + list(ha_registry._state["by_ip"].values())}:
         anon.add_area(area)
     for table in (mdns_listener.by_ip, ha_registry._state["by_ip"]):
@@ -66,16 +74,30 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
     return anon
 
 
+class MaskingFailed(RuntimeError):
+    """Something readable was left in a file after the masking: the export is refused, never delivered half masked."""
+
+
 def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:
-    """JSON and JSON lines are walked (the fields that describe the device stay as they are); the rest is plain text."""
+    """JSON and JSON lines are walked (the fields that describe the device stay as they are); the rest is plain text.
+    The result is checked: if anything readable is left, the file is masked again as plain text and, if it still
+    is not clean, the whole export is refused."""
     try:
         if name.endswith(".json"):
-            return json.dumps(anon.data(json.loads(text)), ensure_ascii=False, indent=1)
-        if name.endswith(".jsonl"):
-            return chr(10).join(json.dumps(anon.data(json.loads(line)), ensure_ascii=False) if line.strip() else line for line in text.split(chr(10)))
+            data = anon.data(json.loads(text))
+            if not anon.leaks_data(data):
+                return json.dumps(data, ensure_ascii=False, indent=1)
+        elif name.endswith(".jsonl"):
+            rows = [anon.data(json.loads(line)) if line.strip() else None for line in text.split(chr(10))]
+            if not any(anon.leaks_data(r) for r in rows if r is not None):
+                return chr(10).join(json.dumps(r, ensure_ascii=False) if r is not None else "" for r in rows)
     except ValueError:
         pass
-    return anon.text(text)
+    out = anon.text(text)
+    left = anon.leaks(out)
+    if left:
+        raise MaskingFailed(f"{name}: {', '.join(left)}")
+    return out
 
 
 def _anonymize_db(path: Path, anon: anonymize.Anonymizer) -> None:
@@ -89,6 +111,12 @@ def _anonymize_db(path: Path, anon: anonymize.Anonymizer) -> None:
                 con.execute(f"UPDATE \"{tb}\" SET \"{col}\" = anon(\"{col}\") WHERE typeof(\"{col}\") = 'text'")
         con.commit()
         con.execute("VACUUM")
+        for tb in tables:                                # nothing readable may be left in the copy either
+            for _, col, *_rest in con.execute(f'PRAGMA table_info("{tb}")').fetchall():
+                for (value,) in con.execute(f"SELECT DISTINCT \"{col}\" FROM \"{tb}\" WHERE typeof(\"{col}\") = 'text'"):
+                    left = anon.leaks(value)
+                    if left:
+                        raise MaskingFailed(f"vedetta.db {tb}.{col}: {', '.join(left)}")
     finally:
         con.close()
 
@@ -143,6 +171,8 @@ def build_zip() -> bytes:
                         put(f"data/{f.name}", _tail(f, MAX_LOG_BYTES))
                     else:
                         put(f"data/{f.name}", f.read_bytes())
+                except MaskingFailed:
+                    raise
                 except Exception as exc:   # an unreadable file must not stop the export
                     manifest["notes"].append(f"{f.name}: {exc!r}")
         # history database: consistent copy (SQLite backup) unless it is huge
@@ -160,6 +190,8 @@ def build_zip() -> bytes:
                         dst.close(); src.close()
                         _anonymize_db(copy, anon)
                         put("data/vedetta.db", copy.read_bytes(), text=False)
+                except MaskingFailed:
+                    raise
                 except Exception as exc:
                     manifest["notes"].append(f"vedetta.db: {exc!r}")
         # the current state: why each device is the way it is

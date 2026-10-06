@@ -231,8 +231,9 @@ Vedetta got a device wrong? Open an issue on GitHub and attach an export, **all 
 **Both are masked before the file is created**, so nothing personal is in them to start with:
 
 - IP addresses keep only the last number (`10.0.0.x`); MAC addresses keep only the manufacturer prefix, which is what shows the brand.
-- Names of devices, areas, DHCP and Bonjour hostnames become `iPhone-1`, `Thermostat-1`, `Area-2`… The same value always gets the same placeholder, so the relations stay readable.
-- Your public IP is masked too, and every password or token is left out. Nothing is sent anywhere: you download the file yourself.
+- Names of devices, areas, DHCP and Bonjour hostnames, and the names Home Assistant knows for your devices become `iPhone-1`, `Thermostat-1`, `Area-2`… Email addresses become `email-1@masked.invalid`. The same value always gets the same placeholder, so the relations stay readable.
+- Your public IP is masked too, and every password, token or key found in a file or in a log line is replaced by `***`. Nothing is sent anywhere: you download the file yourself.
+- **Safety check:** once the files are masked, Vedetta looks again for anything that is still readable (home network addresses in any spelling, real MACs, names, emails, passwords). If it finds something, **it exports nothing** and tells you.
 
 How it is encrypted: the file is sealed with the public key in [`vedetta/app/data/report_key.pub`](vedetta/app/data/report_key.pub) (fingerprint `84ba-bfcc-4706-163d`), and only the private key, which never leaves the author’s computer, can open it. The table that says which placeholder is which device stays in your own `/data`. If the encryption is not available in your version, Vedetta tells you and exports nothing: it never falls back to a plain file by mistake. The author opens the file with [`tools/open_report.py`](tools/open_report.py).
 

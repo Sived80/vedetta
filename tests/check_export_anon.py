@@ -45,6 +45,25 @@ m = a.mapping()
 assert m["macs"]["f0:18:98:00:00:01"] == "f0:18:98:aa:bb:cc" and m["public_ips"]["203.0.113.1"] == "93.184.216.34"
 assert "annas-iphone" in m["names"]["iPhone-1"] and m["ip_networks"]["10.0.0.x"] == "192.168.50.x"
 
+
+# --- emails, passwords and tokens in free text and in JSON fields
+b = anonymize.Anonymizer()
+masked = b.text("owner Dev.Name@Gmail.com and dev.name@gmail.com, other x@y.it; password=Hunter22 token: abc123xyz Authorization: Bearer abcdef12 mqtt://usr:pw99@10.1.1.1:1883")
+assert "gmail" not in masked.lower() and "hunter22" not in masked.lower() and "abc123xyz" not in masked and "abcdef12" not in masked and "pw99" not in masked, masked
+assert masked.count("email-1@masked.invalid") == 2 and "email-2@masked.invalid" in masked          # same address, same placeholder
+assert b.data({"mqtt_password": "zzzzzz", "api_token": "tttttt", "mqtt_user": "someone", "name_by_user": True, "ok": "fine"}) ==     {"mqtt_password": "***", "api_token": "***", "mqtt_user": "***", "name_by_user": True, "ok": "fine"}
+# the safety net: what is left readable is found, and a clean text is not flagged
+c = anonymize.Anonymizer(); c.add_ip("192.168.7.5"); c.add_mac("f0:18:98:aa:bb:cc"); c.add_device(["Anna's iPhone"], "phone"); c.add_public_ip("93.184.216.34")
+assert set(c.leaks("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) ==     {"home network address", "MAC address", "name", "public address", "email address", "password or token"}
+assert c.leaks(c.text("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) == []
+assert c.leaks_data({"brand": "Anna's iPhone", "ssh_hostkey": "192.168.7.5"}) == []                   # fields kept on purpose are not judged
+# a file that cannot be masked is refused, never delivered
+try:
+    export._anonymize_text("data/x.log", "host 192.168.7.5", type("Broken", (anonymize.Anonymizer,), {"text": lambda self, s: s})())
+    raise AssertionError("a leaking file was accepted")
+except export.MaskingFailed:
+    pass
+
 # --- the whole zip, on a fake network
 tmp = Path(tempfile.mkdtemp())
 paths.DATA_DIR = tmp

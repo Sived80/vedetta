@@ -609,6 +609,7 @@
     snack(t("js.ha.export.working"), { ms: 4000 });
     fetch("/api/export" + (plain ? "?plain=1" : ""), { method: "POST", headers: { "X-Lang": LANG }, cache: "no-store" }).then(function (r) {
       if (r.status === 501) { var e = new Error("crypto"); e.crypto = true; throw e; }
+      if (r.status === 422) { var m2 = new Error("masking"); m2.masking = true; throw m2; }
       if (!r.ok) throw new Error("HTTP " + r.status);
       var m = /filename="([^"]+)"/.exec(r.headers.get("Content-Disposition") || "");
       return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-report.txt" }; });
@@ -618,7 +619,7 @@
       document.body.appendChild(a); a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
       snack(t(plain ? "js.ha.export.done_plain" : "js.ha.export.done"), { kind: "success" });
-    }).catch(function (err) { snack(t(err && err.crypto ? "js.ha.export.no_crypto" : "js.ha.export.failed"), { kind: "error" }); });
+    }).catch(function (err) { snack(t(err && err.crypto ? "js.ha.export.no_crypto" : err && err.masking ? "js.ha.export.masking_failed" : "js.ha.export.failed"), { kind: "error" }); });
   }
   exportDlg.addEventListener("click", function (e) {
     if (e.target === exportDlg) return closeExport();

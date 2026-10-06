@@ -162,6 +162,8 @@ A generated name is never counted as evidence for the category — the app does 
 - ✅ Response time through ARP when a device does not answer ping — *2026-10-05*
 - ✅ Brand logos on cards, in the device sheet and in the list (58 brands) — *2026-10-05*
 - ✅ Certainty bars on name, brand and type, with a pop-up for the evidence and the rejected hypotheses — *2026-10-06*
+- ✅ A badge on the arrow of the scan button says how many devices were never analysed in depth, and the deep-search menu has two tiles — *2026-10-06*
+- ✅ The nightly maintenance (03:00) and the log use the time zone of Home Assistant — *2026-10-06*
 - ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *2026-10-06*
 
 ### 🛡️ New devices and safety *(passive, no credential tests, nothing leaves your network)*

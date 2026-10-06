@@ -10,8 +10,7 @@ Everything stays at home: no data is sent outside your network.
 - **Device card**: IP, MAC, response time and ports are always visible; "More attributes" opens the rest
   (brand, type, area...). Brand and type can be chosen by hand and are never changed again. The
   **Share with HA** button shows the device in Home Assistant (see below).
-- **Deep search** (arrow next to "Scan network"): two items, "Deep search…" for all devices, or "Deep search: not
-  yet analysed…" for only the devices never analysed in depth.
+- **Deep search** (arrow next to "Scan network"): two tiles, **All** devices or only those **To analyse** (never analysed in depth). The orange badge on the arrow says how many they are, and it disappears when there are none. The search also starts by itself every night at 03:00, in the time zone of Home Assistant, for the devices never analysed or analysed more than 7 days ago.
 - **Search methods** (menu): which methods the three searches use (initial, associative, deep). The dot shows the
   risk: green non-intrusive, orange intrusive, red risky.
 - **Export for analysis** (menu, discreet item): builds a file with the configuration, the history and the reason behind the name, brand and

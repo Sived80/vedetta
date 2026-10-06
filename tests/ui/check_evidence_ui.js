@@ -90,6 +90,8 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   check(q('[data-ev-bar="brand"]').className.includes("lvl-mid") && q('[data-ev-bar="group"]').className.includes("lvl-high"), "colore per livello");
   check(qa("[data-ev-i]").length === 3 && qa("[data-ev-i]").every((b) => b.closest(".ev-line") && b.previousElementSibling.classList.contains("ev-pct")), "la (i) sta subito dopo la percentuale, sulla stessa riga");
 
+  check(qa("[data-ev-i] path").every((p) => (p.getAttribute("d") || "").startsWith("M11,9H13V7H11")), "la (i) ha il disegno di 'informazioni', non un'icona generica");
+
   // --- it does not move: the space of percentage and (i) is fixed in the CSS, a longer number takes no extra width
   const rule = (sel) => (css.match(new RegExp(sel.replace(/[.]/g, "\\.") + "\\s*\\{([^}]*)\\}")) || [, ""])[1];
   check(/width:\s*3\.4em/.test(rule(".ev-pct")) && /text-align:\s*right/.test(rule(".ev-pct")) && /tabular-nums/.test(rule(".ev-pct")), "percentuale: larghezza fissa, allineata a destra, cifre tabulari");

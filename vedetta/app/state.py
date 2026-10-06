@@ -3,7 +3,7 @@ import json
 import time
 
 from .formatters import update_generic_titles
-from . import blocklist, devices_config, dhcp, latency, netutil, newdevices, probe, scanner, settings
+from . import blocklist, devices_config, dhcp, latency, mac_shadow, netutil, newdevices, probe, scanner, settings
 from .applog import logger
 from .history import history
 
@@ -308,6 +308,17 @@ class DeviceState:
                         self._arp = (time.monotonic(), {})
             return self._arp[1]
 
+    def _shadow(self, device_id: str, previous: dict | None, result: dict, now: float) -> None:
+        """Data per MAC for later analysis (mac_shadow.py). Never decides anything shown, never raises."""
+        try:
+            job = mac_shadow.observe(device_id, previous, result, self._last_mac.get(device_id), now)
+            if job:
+                task = asyncio.create_task(asyncio.to_thread(job))
+                self._bg.add(task)
+                task.add_done_callback(self._bg.discard)
+        except Exception:
+            logger.debug("mac_shadow failed for %s", device_id, exc_info=True)
+
     def _record_presence(self, result: dict, online: bool, ts: float) -> None:
         """Saves only online/offline transitions to the history."""
         device_id = result["id"]
@@ -341,6 +352,8 @@ class DeviceState:
         previous = self.devices.get(device_id)
         now = time.time()
         if result.get("mac"):
+            if result["online"]:
+                self._shadow(device_id, previous, result, now)
             self._last_mac[device_id] = result["mac"]
         if result["online"]:
             latency.tracker.add(device_id, sample)

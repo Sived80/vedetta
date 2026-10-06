@@ -10,6 +10,7 @@ DB_PATH = CONFIG_DIR / "vedetta.db"
 PRESENCE_RETENTION_DAYS = 90
 SCANS_KEPT_PER_DEVICE = 30
 LATENCY_RETENTION_DAYS = 7
+SHADOW_RETENTION_DAYS = 90
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS presence_events (
@@ -50,6 +51,41 @@ CREATE TABLE IF NOT EXISTS known_macs (
     hostname TEXT,
     status TEXT NOT NULL
 );
+
+-- Shadow data (nothing reads it to decide what a card shows): what each MAC looked like, and what a card carried over
+-- when another MAC started answering at the same address. Only for analysis, see mac_shadow.py.
+CREATE TABLE IF NOT EXISTS mac_memory (
+    mac TEXT PRIMARY KEY,
+    first_seen REAL NOT NULL,
+    last_seen REAL NOT NULL,
+    device_id TEXT,
+    ip TEXT,
+    name TEXT,
+    brand TEXT,
+    grp TEXT,
+    mobile_score INTEGER,
+    dhcp_name TEXT,
+    dhcp_class TEXT,
+    hits INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS mac_takeover (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts REAL NOT NULL,
+    device_id TEXT NOT NULL,
+    ip TEXT,
+    old_mac TEXT,
+    new_mac TEXT,
+    carried_name TEXT,
+    carried_brand TEXT,
+    carried_grp TEXT,
+    old_dhcp_class TEXT,
+    new_dhcp_class TEXT,
+    old_dhcp_name TEXT,
+    new_dhcp_name TEXT,
+    new_known INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_mac_takeover_ts ON mac_takeover (ts);
 """
 
 
@@ -258,6 +294,34 @@ class History:
             )
             self._db.commit()
 
+    # ---- shadow data per MAC (analysis only) ----
+    def mac_memory_set(self, mac: str, device_id: str, ip: str | None, fields: dict, ts: float) -> None:
+        with self._lock:
+            self._db.execute(
+                """INSERT INTO mac_memory (mac, first_seen, last_seen, device_id, ip, name, brand, grp, mobile_score, dhcp_name, dhcp_class)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(mac) DO UPDATE SET last_seen = excluded.last_seen, device_id = excluded.device_id, ip = excluded.ip,
+                       name = excluded.name, brand = excluded.brand, grp = excluded.grp, mobile_score = excluded.mobile_score,
+                       dhcp_name = excluded.dhcp_name, dhcp_class = excluded.dhcp_class, hits = hits + 1""",
+                (mac, ts, ts, device_id, ip, fields.get("name"), fields.get("brand"), fields.get("grp"), fields.get("mobile_score"),
+                 fields.get("dhcp_name"), fields.get("dhcp_class")))
+            self._db.commit()
+
+    def mac_known(self, mac: str) -> bool:
+        with self._lock:
+            return self._db.execute("SELECT 1 FROM mac_memory WHERE mac = ?", (mac,)).fetchone() is not None
+
+    def mac_takeover_add(self, ts: float, device_id: str, ip: str | None, old_mac: str, new_mac: str, carried: dict,
+                         old_dhcp: dict, new_dhcp: dict, new_known: bool) -> None:
+        with self._lock:
+            self._db.execute(
+                """INSERT INTO mac_takeover (ts, device_id, ip, old_mac, new_mac, carried_name, carried_brand, carried_grp,
+                       old_dhcp_class, new_dhcp_class, old_dhcp_name, new_dhcp_name, new_known) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (ts, device_id, ip, old_mac, new_mac, carried.get("name"), carried.get("brand"), carried.get("grp"),
+                 old_dhcp.get("vendor_class"), new_dhcp.get("vendor_class"), old_dhcp.get("hostname"), new_dhcp.get("hostname"),
+                 int(new_known)))
+            self._db.commit()
+
     # ---- maintenance ----
     def prune(self) -> int:
         cutoff = time.time() - PRESENCE_RETENTION_DAYS * 86400
@@ -271,6 +335,8 @@ class History:
             )
             # Latency: only the last 7 days (one sample per minute per device).
             self._db.execute("DELETE FROM latency WHERE ts < ?", (time.time() - LATENCY_RETENTION_DAYS * 86400,))
+            self._db.execute("DELETE FROM mac_memory WHERE last_seen < ?", (time.time() - SHADOW_RETENTION_DAYS * 86400,))
+            self._db.execute("DELETE FROM mac_takeover WHERE ts < ?", (time.time() - SHADOW_RETENTION_DAYS * 86400,))
             self._db.commit()
             return cur.rowcount
 

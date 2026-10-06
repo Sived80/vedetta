@@ -174,6 +174,7 @@ def _rules() -> dict:
                         for k in ("fixed", "mobile", "laptop")},
         "battery_hints": _compile(user.get("battery_hints", []) + base.get("battery_hints", [])),
         "bridge_software": tuple(w.lower() for w in base.get("bridge_software", []) + user.get("bridge_software", [])),
+        "phone_only": tuple(w.lower() for w in base.get("phone_only_brands", []) + user.get("phone_only_brands", [])),
         "strip_words": set(base.get("strip_words", [])) | {w.lower() for w in user.get("strip_words", [])},
         "places": set(base.get("strip_leading_places", [])) | {w.lower() for w in user.get("strip_leading_places", [])},
     }
@@ -200,6 +201,12 @@ def normalize_brand(name: str | None) -> str | None:
         if fragment in low:
             return brand
     return _clean(name)
+
+
+def is_phone_only(brand: str | None) -> bool:
+    """True for a maker that only sells phones (data/brands.json, "phone_only_brands"): its brand alone says "phone"."""
+    low = (brand or "").lower()
+    return bool(low) and any(w in low for w in _rules()["phone_only"])
 
 
 def known_brand(name: str | None) -> str | None:

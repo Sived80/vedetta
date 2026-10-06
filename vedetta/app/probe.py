@@ -26,10 +26,6 @@ def _is_mobile(name: str | None) -> bool:
     return bool(name) and any(k in name.lower() for k in _MOBILE_NAME_KEYWORDS)
 
 
-# Makers that only sell phones: the brand alone says "phone" (Xiaomi, Huawei... also sell TVs and routers: not here).
-_PHONE_ONLY_BRANDS = ("fairphone", "murena")
-
-
 def _phone_brand(brand: str | None) -> bool:
     return bool(brand) and any(k in brand.lower() for k in _PHONE_ONLY_BRANDS)
 
@@ -188,14 +184,21 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     ha_stale = ha_stale or web_stale
     placeholder = placeholder or ha_stale
     auto_name = None
-    if not base_name or base_name == ip or placeholder:
-        from . import naming, roles  # late imports
-        found, _src = naming.pick([
-            ("adapter", scan_info.get("api_name")), ("mdns", scan_info.get("mdns_name")),
-            ("upnp", scan_info.get("upnp_name")), ("upnp", (roles.snapshot().get("names") or {}).get(ip)),
-            ("dhcp", dhcp_name), ("netbios", scan_info.get("netbios_name")), ("onvif", scan_info.get("onvif_name")),
-            ("tls", naming.cn_host(scan_info.get("tls_subject"))), ("web", naming.title_name(scan_info.get("http_title"))),
-        ])
+    from . import naming, roles  # late imports
+    name_candidates = [
+        ("adapter", scan_info.get("api_name")), ("mdns", scan_info.get("mdns_name")),
+        ("upnp", scan_info.get("upnp_name")), ("upnp", (roles.snapshot().get("names") or {}).get(ip)),
+        ("dhcp", dhcp_name), ("netbios", scan_info.get("netbios_name")), ("onvif", scan_info.get("onvif_name")),
+        ("tls", naming.cn_host(scan_info.get("tls_subject"))), ("web", naming.title_name(scan_info.get("http_title"))),
+    ]
+    # A name found automatically earlier is replaced as soon as a better one is available (same ranking as when it was chosen)
+    upgrade = None if (not base_name or base_name == ip or placeholder) else naming.upgrade(
+        {"name": base_name, "ip": ip, "name_source": device.get("name_source")}, name_candidates)
+    if upgrade:
+        base_name = upgrade[0]
+        auto_name = (upgrade[0], upgrade[1], False)
+    elif not base_name or base_name == ip or placeholder:
+        found, _src = naming.pick(name_candidates)
         if found and not (placeholder and _naming.is_placeholder(found)):
             was_ip = not base_name or base_name == ip
             base_name = found
@@ -265,7 +268,7 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     else:
         scanned = bool(scan_info.get("scanned_at"))
         assessment = mobile_assess(
-            mac=identity_mac, name_is_mobile=_is_mobile(display_name) or _phone_brand(ident.get("brand")),
+            mac=identity_mac, name_is_mobile=_is_mobile(display_name) or _is_mobile(dhcp_name) or brands.is_phone_only(ident.get("brand")),
             name_weak=any(k in (display_name or "").lower() for k in _MOBILE_NAME_WEAK),
             media_receiver=_media_receiver(ip, scan_info, scanned_ports),
             mobile_service=bool(_MOBILE_SERVICES & set((scan_info.get("mdns_services") or "").replace(" ", "").split(","))),

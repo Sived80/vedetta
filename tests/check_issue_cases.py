@@ -22,14 +22,14 @@ device = {"id": "c1", "ip": "10.0.0.9", "name": "10.0.0.9", "extra": {"dhcp_clas
 assert ha_data.infer_type(device) == "pc", ha_data.type_scores(device)
 
 # --- #2: Fairphone (Android class, factory MAC, no phone word in the name FP3) is a phone through its brand
-assert probe._phone_brand("Fairphone") and probe._phone_brand("Murena") and not probe._phone_brand("Xiaomi") and not probe._phone_brand(None)
+assert brands.is_phone_only("Fairphone") and brands.is_phone_only("Murena") and not brands.is_phone_only("Xiaomi") and not brands.is_phone_only(None)    # the list is data (brands.json)
 assert probe._is_mobile("Fairphone 3") and not probe._is_mobile("FP3")
 factory = "d4:f5:47:00:00:02"
 dhcp.seen[factory] = {"prl": "1,3,6,15,26,28,51,58,59,43", "vendor_class": "android-dhcp-15", "hostname": "FP3"}
 assert not identity.mobile_assess(mac=factory, name_is_mobile=False, has_ports=None)["mobile"]                        # the Android class alone is not enough
-assert identity.mobile_assess(mac=factory, name_is_mobile=probe._phone_brand("Fairphone"), has_ports=None)["mobile"]  # with the brand it is
+assert identity.mobile_assess(mac=factory, name_is_mobile=brands.is_phone_only("Fairphone"), has_ports=None)["mobile"]  # with the brand it is
 # a TV box that is also Android is not turned into a phone by this
-assert not identity.mobile_assess(mac=factory, name_is_mobile=probe._phone_brand("Sony"), has_ports=None, media_receiver=True)["mobile"]
+assert not identity.mobile_assess(mac=factory, name_is_mobile=brands.is_phone_only("Sony"), has_ports=None, media_receiver=True)["mobile"]
 
 # --- Sky boxes and Amazon Echo, read from a real export (their evidence.json): Sky Q was a tie audio/media, Echo devices with only
 # the Matter service were "Network equipment" because "matter" was a word of the hub kind
@@ -49,4 +49,6 @@ matter = {"mdns_services": "_I163C04EE3B7C500E._sub._matter._tcp, _matter._tcp"}
 assert ha_data.infer_type(box("Amazon", "Amazon", matter, [(4070, "Nagios NSCA"), (55443, "unknown")])) != "router"
 assert ha_data.infer_type(box("Alexa", "Amazon", {"mdns_services": "_spotify-connect._tcp, _matter._tcp"}, [])) == "audio"
 assert ha_data.infer_type(box("Zigbee bridge", "Tasmota", {}, [])) == "router"        # the hub kind keeps its real words
+# --- a Xiaomi announced as "expiscor" by mDNS and "Xiaomi-14" by DHCP: the hostname says phone even if it is not the displayed name
+assert probe._is_mobile("Xiaomi-14") and not probe._is_mobile("expiscor")
 print("TUTTO OK")

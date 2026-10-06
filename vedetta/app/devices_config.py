@@ -141,7 +141,7 @@ def update_auto_name(device_id: str, name: str, source: str, force: bool = False
     data = yaml.safe_load(DEVICES_PATH.read_text(encoding="utf-8")) or {}
     for d in data.get("devices", []):
         if d["id"] == device_id:
-            if (not force and not naming.is_better(d, source)) or d.get("name") == name or d.get("name_source") == "user":
+            if (not force and not naming.is_better(d, source, name)) or d.get("name") == name or d.get("name_source") == "user":
                 return False
             d["name"], d["name_source"] = name, source
             _save(data)

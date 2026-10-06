@@ -137,6 +137,24 @@ def clean_name(raw: str | None) -> str | None:
     return name
 
 
+# A name that says WHAT the device is (a known brand and a model number: "Xiaomi-14", "Galaxy-S23") is worth more than an
+# opaque label from a more reliable source (the instance name of an Alexa service, "expiscor"): it can overtake the next
+# source, never a name chosen by hand and never a model-like name of a better source.
+MODEL_BONUS = 20
+
+
+def model_like(name: str | None) -> bool:
+    from . import brands, probe   # late imports: the brand rules and the phone product lines (iPhone, Galaxy, Pixel, Redmi...)
+    if not name or not any(c.isdigit() for c in name):
+        return False
+    low = name.lower()
+    return bool(brands.known_brand(name)) or any(k in low for k in probe._MOBILE_NAME_KEYWORDS)
+
+
+def rank(source: str, name: str | None) -> int:
+    return PRIORITY.get(source, 0) + (MODEL_BONUS if model_like(name) else 0)
+
+
 def pick(candidates: list[tuple[str, str | None]]) -> tuple[str | None, str | None]:
     """Best (name, source) among the candidates [(source, raw_name)], or (None, None)."""
     best: tuple[int, str, str] | None = None
@@ -146,9 +164,9 @@ def pick(candidates: list[tuple[str, str | None]]) -> tuple[str | None, str | No
             continue
         if is_placeholder(name):
             source = "weak"
-        rank = PRIORITY.get(source, 0)
-        if best is None or rank > best[0]:
-            best = (rank, name, source)
+        score = rank(source, name)
+        if best is None or score > best[0]:
+            best = (score, name, source)
     return (best[1], best[2]) if best else (None, None)
 
 
@@ -166,7 +184,19 @@ def is_placeholder(name: str | None) -> bool:
     return name.strip().lower() in _PLATFORM_WORDS or bool(_PLACEHOLDER_RE.match(name)) or bool(_TECHNICAL_RE.match(name.strip())) or (clean_name(name) is None and not _IP_RE.match(name.strip()))
 
 
-def is_better(device: dict, new_source: str) -> bool:
+def upgrade(device: dict, candidates: list[tuple[str, str | None]]) -> tuple[str, str] | None:
+    """A better automatic name among the candidates than the saved one, or None. The same ranking as pick() and is_better():
+    so a rule that improves the choice of names reaches the devices already named at the next check, not only at the next deep
+    search. Never over a name chosen by hand (here or in Home Assistant)."""
+    if device.get("name_source") not in PRIORITY or device.get("name_source") in ("ha", "ha_user"):
+        return None
+    name, source = pick(candidates)
+    if name and name != device.get("name") and is_better(device, source, name):
+        return name, source
+    return None
+
+
+def is_better(device: dict, new_source: str, new_name: str | None = None) -> bool:
     """True if an automatic name from the given source may replace the device's
     one: never over a user-chosen name (or one whose origin is unknown
     and which differs from the IP), yes if the name is still the IP or comes from
@@ -179,4 +209,4 @@ def is_better(device: dict, new_source: str) -> bool:
         return False  # chosen by hand, or a previous name without origin: presumed chosen by hand
     if is_placeholder(name):
         source = "weak"  # saved as "mdns" before placeholders were given little weight
-    return PRIORITY[new_source] > PRIORITY[source]
+    return rank(new_source, new_name) > rank(source, name)

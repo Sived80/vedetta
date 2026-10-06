@@ -181,7 +181,7 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
         ("dhcp", ((dhcp.seen.get((mac or "").lower())) or {}).get("hostname")),
         ("netbios", info.get("netbios_name")), ("nmap", info.get("hostname")),
     ])
-    if name and naming.is_better(device, source):
+    if name and naming.is_better(device, source, name):
         if await asyncio.to_thread(devices_config.update_auto_name, device["id"], name, source):
             logger.info("%s nome aggiornato: \"%s\" (%s)", label, name, source)
 

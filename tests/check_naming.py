@@ -33,3 +33,23 @@ assert naming.is_better({"ip": ip, "name": "pc", "name_source": "nmap"}, "mdns")
 assert not naming.is_better({"ip": ip, "name": "Salotto", "name_source": "mdns"}, "dhcp")
 assert not naming.is_better({"ip": ip, "name": "Salotto", "name_source": "mdns"}, "mdns")
 print("OK")
+
+# a name that says what the device is (known brand + model number) overtakes an opaque label of a more reliable source:
+# an Android phone announced "expiscor" through the Alexa app service and "Xiaomi-14" through DHCP
+assert naming.model_like("Xiaomi-14") and naming.model_like("Galaxy S23") and not naming.model_like("expiscor") and not naming.model_like("Samsung TV") and not naming.model_like(None)
+assert naming.pick([("mdns", "expiscor"), ("dhcp", "Xiaomi-14")]) == ("Xiaomi-14", "dhcp")
+assert naming.pick([("mdns", "Cucina"), ("dhcp", "Samsung-TV")]) == ("Cucina", "mdns")                # no model number: the chosen label stays
+assert naming.pick([("mdns", "Galaxy-S23"), ("dhcp", "Xiaomi-14")]) == ("Galaxy-S23", "mdns")        # both say what they are: the usual order
+assert naming.pick([("adapter", "shelly1-AB12"), ("dhcp", "Xiaomi-14")])[1] == "adapter"              # the device's own API still wins by far
+phone = {"name": "expiscor", "name_source": "mdns", "ip": "10.0.0.9"}
+assert naming.is_better(phone, "dhcp", "Xiaomi-14") and not naming.is_better(phone, "dhcp", "Samsung-TV") and not naming.is_better(phone, "dhcp")
+assert not naming.is_better({**phone, "name_source": "user"}, "dhcp", "Xiaomi-14")                     # never over a name chosen by hand
+assert not naming.is_better({"name": "Galaxy-S23", "name_source": "mdns", "ip": "10.0.0.9"}, "dhcp", "Xiaomi-14")
+# devices already named: the same rule corrects the saved automatic name at the next check
+cands = [("mdns", "expiscor"), ("dhcp", "Xiaomi-14")]
+assert naming.upgrade(phone, cands) == ("Xiaomi-14", "dhcp")
+assert naming.upgrade({**phone, "name": "Xiaomi-14", "name_source": "dhcp"}, cands) is None             # already the best
+assert naming.upgrade({**phone, "name_source": "user"}, cands) is None
+assert naming.upgrade({**phone, "name_source": "ha_user"}, cands) is None
+assert naming.upgrade({**phone, "name_source": None}, cands) is None
+print("TUTTO OK")

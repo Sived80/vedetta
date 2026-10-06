@@ -583,5 +583,10 @@
   "librespot",
   "mopidy"
  ],
- "_comment_bridge": "Software che annuncia in mDNS servizi a nome di ALTRI dispositivi (proxy AirPlay per Chromecast, bridge HomeKit...): nome e marca di quegli annunci non sono del computer che li manda."
+ "_comment_bridge": "Software che annuncia in mDNS servizi a nome di ALTRI dispositivi (proxy AirPlay per Chromecast, bridge HomeKit...): nome e marca di quegli annunci non sono del computer che li manda.",
+ "phone_only_brands": [
+  "Fairphone",
+  "Murena"
+ ],
+ "_comment_phone_only_brands": "Marchi che vendono solo telefoni: il marchio da solo dice 'telefono' (Xiaomi, Huawei... vendono anche TV e router: non vanno qui). Si aggiunge una riga, senza toccare il codice."
 }

@@ -9,3 +9,4 @@ config/
 backups/
 archive/
 vedetta/app/static/models/
+node_modules/

@@ -56,9 +56,9 @@ replaces the icon in the circle). Logos ship with the app, so nothing is request
 brand shown at that moment: if you change the brand by hand, or a new clue changes it, the logo changes too. Brands without
 a logo (and chip makers such as Espressif) show none.
 
-## Evidence card
+## Certainty bars
 
-In a device sheet, below the history, the card shows for the name, the brand and the group: what decided it, a certainty bar and the hypotheses that were rejected. A choice you made by hand is 100% and never changes. For the group, the bar is the lead of the best group over the second one weighted by how much evidence there is (a tie or too little evidence is 0% and the device stays in "Other devices"); for the brand, high when the MAC maker and the name agree or the device declares it; for the name, the weight of the source.
+In a device sheet, the rows Name, Brand and Type have a thin certainty bar with its percentage and an (i): pressing it opens a small pop-up with what decided it and the hypotheses that were rejected (pressing outside closes it). A choice you made by hand is 100% and never changes. For the group, the bar is the lead of the best group over the second one weighted by how much evidence there is (a tie or too little evidence is 0% and the device stays in "Other devices"); for the brand, high when the MAC maker and the name agree or the device declares it; for the name, the weight of the source.
 
 ## Phones that change address
 

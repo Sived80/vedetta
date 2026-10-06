@@ -401,5 +401,7 @@
   "js.ha.ev.clue.ha": "Home Assistant integration {k}",
   "js.ha.ev.clue.platform": "IoT platform",
   "js.ha.ev.clue.iotports": "only IoT ports",
-  "js.ha.ev.n.brand": "No real name found: the brand is shown instead."
+  "js.ha.ev.n.brand": "No real name found: the brand is shown instead.",
+  "js.ha.attr.name": "Name",
+  "js.ha.ev.info": "How sure is Vedetta: {what}"
 }

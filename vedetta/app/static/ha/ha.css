@@ -1262,23 +1262,33 @@
   .exp-split .exp-menu[hidden] { display: none; }
 }
 
-/* Scheda delle prove: barra di certezza e ipotesi respinte. */
+/* Prove nelle righe Nome, Marca e Tipo: barra sottile, certezza e (i) con spazio fisso, cosi' nulla si muove quando il valore cambia. */
 @layer overrides {
-  .mi-section.evc { margin-top: 12px; }
-  .ev-row { padding: 10px 0; border-top: 1px solid var(--divider-color); }
-  .ev-head { display: flex; align-items: baseline; gap: 8px; }
-  .ev-label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); min-width: 56px; }
-  .ev-value { font-size: 15px; font-weight: 500; flex: 1; min-width: 0; overflow-wrap: anywhere; }
-  .ev-pct { font-size: 12px; color: var(--secondary-text-color); white-space: nowrap; }
-  .ev-bar { height: 6px; margin: 6px 0; border-radius: 3px; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); overflow: hidden; }
-  .ev-bar i { display: block; height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+  .attr.ev-attr { align-items: flex-start; padding: 8px 0; }
+  .attr.ev-attr dt { padding-top: 6px; }
+  .attr.ev-attr dd { align-items: flex-start; }
+  .attr.ev-attr .attr-val { flex: 1; min-width: 0; }
+  .ev-cell { display: block; width: 100%; }
+  .ev-line { display: flex; align-items: center; gap: 4px; min-height: 32px; }
+  .ev-v { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .ev-pct { flex: none; width: 3.4em; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); white-space: nowrap; }
+  .ev-i { flex: none; width: 32px; height: 32px; margin: 0 -4px 0 0; color: var(--secondary-text-color); }
+  .ev-i .mdi { width: 18px; height: 18px; }
+  .ev-bar { display: block; height: 4px; margin: 0 36px 4px 0; border-radius: 2px; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); overflow: hidden; }
+  .ev-bar i { display: block; width: 0; height: 100%; border-radius: 2px; transition: width 0.4s ease; }
   .ev-bar.lvl-high i { background: var(--success-color); }
   .ev-bar.lvl-mid i { background: var(--warning-color); }
   .ev-bar.lvl-low i { background: var(--error-color); }
-  .ev-why { font-size: 13px; line-height: 1.45; color: var(--secondary-text-color); }
-  .ev-rej { margin-top: 4px; font-size: 13px; color: var(--secondary-text-color); }
-  .ev-rej summary { cursor: pointer; padding: 4px 0; }
-  .ev-rej ul { margin: 2px 0 4px 18px; padding: 0; }
-  .ev-rej li { margin: 2px 0; line-height: 1.4; }
-  @media (prefers-reduced-motion: reduce) { .ev-bar i { transition: none; } }
+  .mi { position: relative; }
+  .ev-pop {
+    position: absolute; z-index: 20; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.45;
+    background: var(--card-background-color); color: var(--primary-text-color); border: 1px solid var(--divider-color);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); animation: pop-in 0.12s ease-out;
+  }
+  .ev-pop-h { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+  .ev-pop-h span, .ev-pop-r { color: var(--secondary-text-color); }
+  .ev-pop-r { margin-top: 6px; font-size: 12px; }
+  .ev-pop ul { margin: 2px 0 0 16px; list-style: disc; color: var(--secondary-text-color); }
+  .ev-pop li { margin: 2px 0; }
+  @media (prefers-reduced-motion: reduce) { .ev-bar i, .ev-pop { transition: none; animation: none; } }
 }

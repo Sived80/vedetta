@@ -1923,12 +1923,10 @@
       '<button type="button" class="rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
       '<button type="button" class="rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
       '<div class="mi-graph" id="mi-graph"><div class="skeleton sk-graph"></div></div></section>' +
-      '<section class="mi-section evc" id="mi-evidence" hidden></section>' +
       '<section class="mi-section attrs"><dl class="attr-list" id="mi-attrs"></dl></section><div id="mi-debug"></div></div>' +
       '<div class="mi-actions" id="mi-actions"></div></div>';
     miHero(d);
     miAttrs(d);
-    miEvidence(d);
     miDebug(d);
     miActions(d);
     loadGraph();
@@ -1949,8 +1947,7 @@
     return d.last_seen ? t("js.ha.more.seen_at", { ago: ago(d.last_seen), time: fmtStamp(d.last_seen, true) }) : "";
   }
 
-  // Evidence card: what decided name, brand and group, how sure the app is and which hypotheses it rejected.
-  var evFetch = { id: null, at: 0, data: null };
+  // Text of a translation keyed by a technical value; the value itself if there is no translation.
   function evKey(prefix, raw) {
     var key = prefix + String(raw || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
     var text = t(key);
@@ -1965,53 +1962,110 @@
     }
     return src;    // mDNS, UPnP, API names are the technical names
   }
-  function miEvidence(d) {
-    var el = $("mi-evidence");
-    if (!el) return;
-    function level(n) { return n >= 70 ? "high" : n >= 40 ? "mid" : "low"; }
-    function row(label, value, ev, why, rejected) {
-      var n = ev.certainty;
-      return '<div class="ev-row"><div class="ev-head"><span class="ev-label">' + esc(label) + '</span><b class="ev-value">' + esc(value) + '</b>' +
-        '<span class="ev-pct">' + (n > 0 ? esc(t("js.ha.ev.sure", { n: n })) : "—") + "</span></div>" +
-        '<div class="ev-bar lvl-' + level(n) + '" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + n + '" aria-label="' + esc(label + " " + n + "%") + '"><i style="width:' + n + '%"></i></div>' +
-        '<p class="ev-why">' + esc(why) + "</p>" +
-        (rejected.length ? '<details class="ev-rej"><summary>' + esc(t("js.ha.ev.rejected", { n: rejected.length })) + "</summary><ul>" +
-          rejected.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></details>" : "") + "</div>";
-    }
-    function draw(x) {
-      if (!x || S.open !== d.id) return;
-      var g = x.group, b = x.brand, nm = x.name;
-      var clues = (g.clues || []).map(function (c) { return evClue(c.source) + " +" + c.points; }).join(", ");
-      var gWhy = g.basis === "manual" ? t("js.ha.ev.g.manual")
-        : g.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", g.reason) })
-        : g.basis === "scored" ? t("js.ha.ev.g.scored", { clues: clues || "-" })
-        : t("js.ha.ev.g." + g.basis);
-      var gRej = (g.rejected || []).map(function (r) {
-        return typePlural(r.value) + " — " + t("js.ha.ev.points", { n: r.points }) + ": " + t("js.ha.ev.why." + r.why, { chosen: typePlural(g.value) });
+  // Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with
+  // what decided it and what was rejected. The numbers come from the server (/evidence); the rows are drawn without them and
+  // only filled in later, so nothing moves when they arrive or change.
+  var evData = { id: null, at: 0, sig: "", data: null };
+  var EV_KEYS = ["name", "brand", "group"];
+  function evLevel(n) { return n >= 70 ? "high" : n >= 40 ? "mid" : "low"; }
+  function evRowCells(key, label) {
+    return '<span class="ev-cell"><span class="ev-line"><span class="ev-v" data-ev-v="' + key + '"></span><span class="ev-pct" data-ev-pct="' + key + '">\u2014</span>' +
+      '<button type="button" class="icon-btn small touch rp ev-i" data-ev-i="' + key + '" aria-haspopup="dialog" aria-expanded="false" title="' + esc(t("js.ha.ev.info", { what: label })) +
+      '" aria-label="' + esc(t("js.ha.ev.info", { what: label })) + '">' + icon("information-outline") + "</button></span>" +
+      '<span class="ev-bar" data-ev-bar="' + key + '" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span></span>';
+  }
+  function evText(x, key) {
+    var e = x[key], why = "", rej = [];
+    if (key === "group") {
+      var clues = (e.clues || []).map(function (c) { return evClue(c.source) + " +" + c.points; }).join(", ");
+      why = e.basis === "manual" ? t("js.ha.ev.g.manual") : e.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", e.reason) })
+        : e.basis === "scored" ? t("js.ha.ev.g.scored", { clues: clues || "-" }) : t("js.ha.ev.g." + e.basis);
+      rej = (e.rejected || []).map(function (r) {
+        return typePlural(r.value) + " \u2014 " + t("js.ha.ev.points", { n: r.points }) + ": " + t("js.ha.ev.why." + r.why, { chosen: typePlural(e.value) });
       });
-      var bWhy = b.basis === "manual" ? t("js.ha.ev.b.manual") : b.basis === "found" ? t("js.ha.ev.b.found", { source: evKey("js.ha.ev.bsrc.", b.source) }) : t("js.ha.ev.b.none");
-      var bRej = (b.rejected || []).map(function (r) {
+    } else if (key === "brand") {
+      why = e.basis === "manual" ? t("js.ha.ev.b.manual") : e.basis === "found" ? t("js.ha.ev.b.found", { source: evKey("js.ha.ev.bsrc.", e.source) }) : t("js.ha.ev.b.none");
+      rej = (e.rejected || []).map(function (r) {
         return r.value + ": " + (r.kind === "vendor" ? t("js.ha.ev.vendor", { role: evKey("js.ha.ev.role.", r.role || "other") }) : t("js.ha.ev.declared"));
       });
-      var nWhy = nm.basis === "ip" ? t("js.ha.ev.n.ip") : nm.basis === "manual" ? t("js.ha.ev.n.manual") : nm.basis === "placeholder" ? t("js.ha.ev.n.placeholder") : nm.basis === "brand" ? t("js.ha.ev.n.brand")
-        : nm.basis === "source" ? t("js.ha.ev.n.source", { source: evKey("js.ha.ev.nsrc.", nm.source) }) : t("js.ha.ev.n.unknown");
-      var nRej = (nm.rejected || []).map(function (r) {
-        return evKey("js.ha.ev.nsrc.", r.source) + ": " + r.value + " — " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical");
+    } else {
+      why = e.basis === "ip" ? t("js.ha.ev.n.ip") : e.basis === "manual" ? t("js.ha.ev.n.manual") : e.basis === "placeholder" ? t("js.ha.ev.n.placeholder")
+        : e.basis === "brand" ? t("js.ha.ev.n.brand") : e.basis === "source" ? t("js.ha.ev.n.source", { source: evKey("js.ha.ev.nsrc.", e.source) }) : t("js.ha.ev.n.unknown");
+      rej = (e.rejected || []).map(function (r) {
+        return evKey("js.ha.ev.nsrc.", r.source) + ": " + r.value + " \u2014 " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical");
       });
-      el.innerHTML = '<div class="mi-sec-head"><h3>' + esc(t("js.ha.ev.title")) + "</h3></div>" +
-        row(t("js.ha.ev.name"), nm.value || t("js.ha.ev.unknown"), nm, nWhy, nRej) +
-        row(t("js.ha.ev.brand"), b.value || t("js.ha.ev.unknown"), b, bWhy, bRej) +
-        row(t("js.ha.ev.group"), typePlural(g.value), g, gWhy, gRej);
-      el.hidden = false;
     }
-    if (evFetch.id === d.id && evFetch.data) draw(evFetch.data);
-    if (evFetch.id === d.id && Date.now() - evFetch.at < 5000) return;
-    evFetch.id = d.id; evFetch.at = Date.now();
-    api("/api/ha/devices/" + encodeURIComponent(d.id) + "/evidence").then(function (x) {
-      evFetch.data = x;
-      draw(x);
-    }).catch(function () { /* the card is extra: it must never get in the way of the sheet */ });
+    return { why: why, rej: rej, certainty: e.certainty };
   }
+  function evPaint(x) {
+    var root = $("mi-attrs");
+    if (!root || !x) return;
+    EV_KEYS.forEach(function (key) {
+      var n = x[key].certainty, pct = root.querySelector('[data-ev-pct="' + key + '"]'), bar = root.querySelector('[data-ev-bar="' + key + '"]');
+      if (!pct || !bar) return;
+      pct.textContent = n > 0 ? n + "%" : "\u2014";
+      bar.className = "ev-bar" + (n > 0 ? " lvl-" + evLevel(n) : "");
+      bar.setAttribute("aria-valuenow", String(n));
+      bar.firstChild.style.width = n + "%";
+    });
+  }
+  function evApply(d) {
+    var sig = [d.name, d.brand, d.type, d.type_user, d.brand_user].join("|");
+    if (evData.id !== d.id || evData.sig !== sig) evData.data = null;       // the value changed: the old numbers are not for it
+    if (evData.data) evPaint(evData.data);
+    if (evData.id === d.id && evData.sig === sig && Date.now() - evData.at < 5000) return;
+    evData.id = d.id; evData.sig = sig; evData.at = Date.now();
+    api("/api/ha/devices/" + encodeURIComponent(d.id) + "/evidence").then(function (x) {
+      evData.data = x;
+      if (S.open === d.id) evPaint(x);
+    }).catch(function () { /* the numbers are extra: the rows work without them */ });
+  }
+  // The pop-up: small, inside the sheet, closed by pressing anywhere outside it (or Escape, or scrolling the sheet).
+  var evPop = { el: null, key: null, btn: null };
+  function evPopClose() {
+    if (!evPop.el) return;
+    evPop.el.remove();
+    if (evPop.btn) evPop.btn.setAttribute("aria-expanded", "false");
+    evPop.el = evPop.key = evPop.btn = null;
+    document.removeEventListener("pointerdown", evPopOutside, true);
+    document.removeEventListener("mousedown", evPopOutside, true);
+    document.removeEventListener("keydown", evPopKey, true);
+  }
+  function evPopOutside(e) {
+    if (evPop.el && !evPop.el.contains(e.target) && !(evPop.btn && evPop.btn.contains(e.target))) evPopClose();
+  }
+  function evPopKey(e) {
+    if (e.key === "Escape" && evPop.el) { e.preventDefault(); e.stopPropagation(); evPopClose(); }
+  }
+  function evPopOpen(key, btn) {
+    var x = evData.data, host = dlg.querySelector(".mi");
+    if (!x || !host) return;
+    evPopClose();
+    var info = evText(x, key), label = btn.closest(".attr").querySelector("dt").textContent;
+    var el = document.createElement("div");
+    el.className = "ev-pop"; el.id = "ev-pop"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", label);
+    el.innerHTML = '<div class="ev-pop-h"><b>' + esc(label) + "</b><span>" + (info.certainty > 0 ? esc(t("js.ha.ev.sure", { n: info.certainty })) : "\u2014") + "</span></div>" +
+      "<p>" + esc(info.why) + "</p>" +
+      (info.rej.length ? '<div class="ev-pop-r">' + esc(t("js.ha.ev.rejected", { n: info.rej.length })) + "</div><ul>" + info.rej.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>" : "");
+    host.appendChild(el);
+    var hr = host.getBoundingClientRect(), br = btn.getBoundingClientRect(), w = Math.min(300, hr.width - 16);
+    el.style.width = w + "px";
+    el.style.top = Math.round(br.bottom - hr.top + 6) + "px";
+    el.style.left = Math.round(Math.max(8, Math.min(br.right - hr.left - w + 12, hr.width - w - 8))) + "px";
+    evPop.el = el; evPop.key = key; evPop.btn = btn;
+    btn.setAttribute("aria-expanded", "true");
+    document.addEventListener("pointerdown", evPopOutside, true);
+    document.addEventListener("mousedown", evPopOutside, true);
+    document.addEventListener("keydown", evPopKey, true);
+  }
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest && e.target.closest("[data-ev-i]");
+    if (!btn) return;
+    if (evPop.btn === btn) evPopClose(); else evPopOpen(btn.getAttribute("data-ev-i"), btn);
+  });
+  dlg.addEventListener("cancel", function (e) { if (evPop.el) { e.preventDefault(); evPopClose(); } });
+  dlg.addEventListener("close", evPopClose);
+  dlg.addEventListener("scroll", evPopClose, true);
 
   // Debug mode: why the device has this type, name and brand (data from the server, not in the normal list).
   var dbgFetch = { id: null, at: 0, data: null };
@@ -2060,6 +2114,8 @@
     // Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown.
     var rows = [], fixedRows = [];
     function row(label, value, extra, fixed, cls) { (fixed ? fixedRows : rows).push({ label: label, html: value, extra: extra || "", cls: cls || "" }); }
+    row(t("js.ha.attr.name"), evRowCells("name", t("js.ha.attr.name")), '<button type="button" class="icon-btn small touch rp" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
+      '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>", true, "ev-attr");
     row(t("js.ha.attr.ip"), esc(d.ip + (d.port && d.port !== 80 ? ":" + d.port : "")),
       d.url && canOpen(d) ? '<a class="icon-btn small touch rp" href="' + esc(d.url) + '" target="_blank" rel="noopener" title="' + esc(t("js.ha.act.open")) +
         '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</a>" : "", true);
@@ -2067,13 +2123,14 @@
       '<button type="button" class="icon-btn small touch rp" data-copy="' + esc(d.mac) + '" title="' + esc(t("js.ha.act.copy_mac")) + '" aria-label="' + esc(t("js.ha.act.copy_mac")) + '">' + icon("content-copy") + "</button>", true);
     // Two levels: product brand (with the source) and MAC manufacturer (chip/board).
     var ev = DEBUG && d.brand_evidence ? '<span class="ev ev-' + esc(d.brand_evidence) + '">' + esc(t("js.ha.ev." + d.brand_evidence)) + "</span>" : "";
-    row(t("js.ha.attr.brand"), d.brand
+    var brandShown = d.brand
       ? esc(d.brand) + (DEBUG && d.brand_source ? ' <span class="dbg-txt">· ' + esc(t("js.ha.brand_src." + d.brand_source)) + "</span>" : "") + ev
       : d.brand_declared
         ? '<span style="opacity:.75">' + esc(t("js.ha.brand_declared", { value: d.brand_declared })) + "</span>"
-        : '<span style="opacity:.65">' + esc(t("js.ha.brand_unknown")) + "</span>",
+        : '<span style="opacity:.65">' + esc(t("js.ha.brand_unknown")) + "</span>";
+    row(t("js.ha.attr.brand"), evRowCells("brand", t("js.ha.attr.brand")),
       '<button type="button" class="icon-btn small touch rp" data-act="brand-edit" title="' + esc(t("js.ha.act.edit_brand")) +
-        '" aria-label="' + esc(t("js.ha.act.edit_brand")) + '">' + icon("pencil") + "</button>");
+        '" aria-label="' + esc(t("js.ha.act.edit_brand")) + '">' + icon("pencil") + "</button>", true, "ev-attr");
     if (DEBUG && d.name_source) row(t("js.ha.attr.name_src"), esc(d.name_source), "", false, "dbg");
     var rr = (S.roles.by_ip || {})[d.ip];
     if (rr) row(t("js.ha.attr.roles"), Object.keys(rr).map(function (k) {
@@ -2097,9 +2154,10 @@
     });
     if (d.vendor && d.vendor !== d.brand) row(t("js.ha.attr.chip"), esc(chipText({ vendor: d.vendor, vendor_role: d.vendor_role })));
     if (DEBUG && d.battery === "yes") row(t("js.ha.attr.battery"), '<span class="batt-line">' + icon("battery") + "<span>" + esc(batteryTitle(d)) + "</span></span>", "", false, "dbg");
-    row(t("js.ha.attr.type"), esc(typeLabel(d.type)) + (d.type_user ? ' <span style="opacity:.65">· ' + esc(t("js.ha.type.manual")) + "</span>" : ""),
+    var typeShown = esc(typeLabel(d.type)) + (d.type_user ? ' <span style="opacity:.65">· ' + esc(t("js.ha.type.manual")) + "</span>" : "");
+    row(t("js.ha.attr.type"), evRowCells("group", t("js.ha.attr.type")),
       '<button type="button" class="icon-btn small touch rp" data-act="type-menu" aria-haspopup="true" title="' + esc(t("js.ha.act.edit_type")) +
-        '" aria-label="' + esc(t("js.ha.act.edit_type")) + '">' + icon("chevron-down") + "</button>");
+        '" aria-label="' + esc(t("js.ha.act.edit_type")) + '">' + icon("chevron-down") + "</button>", true, "ev-attr");
     if (d.signal) {
       row(t("js.ha.attr.signal"), '<span class="sig sig-' + esc(d.signal.color || "none") + '">' + icon(d.signal.kind === "wifi" ? "wifi" : "lan") + "</span> " +
         esc(d.signal.display) + (d.signal.text ? " · " + esc(d.signal.text) : ""));
@@ -2120,6 +2178,7 @@
         return '<span class="pill cat-' + esc(p.category) + (p.confirmed ? "" : " guess") + '" title="' + esc(label) + '">' + esc(label) + "</span>";
       }).join("") + "</span>", "", true);
     }
+    fixedRows.sort(function (a, b) { return (a.cls === "ev-attr" ? 0 : 1) - (b.cls === "ev-attr" ? 0 : 1); });    // stable: name, brand, type first
     function html(list) {
       return list.map(function (r) {
         return '<div class="attr' + (r.cls ? " " + r.cls : "") + '"><dt>' + esc(r.label) + '</dt><dd><span class="attr-val">' + r.html + "</span>" + r.extra + "</dd></div>";
@@ -2132,6 +2191,14 @@
       : "");
     var det = $("attr-more");
     if (det) det.addEventListener("toggle", function () { S.mi.moreOpen = det.open; });
+    // the values of the three rows (kept out of the string above: they are text, not markup) and then the numbers
+    var vals = { name: d.name, brand: null, group: typeLabel(d.type) + (d.type_user ? " \u00b7 " + t("js.ha.type.manual") : "") };
+    EV_KEYS.forEach(function (key) {
+      var cell = el.querySelector('[data-ev-v="' + key + '"]');
+      if (!cell) return;
+      if (key === "brand") cell.innerHTML = brandShown; else cell.textContent = vals[key];
+    });
+    evApply(d);
   }
 
   // All actions are inline (pencil and eye next to the name, power on next to the

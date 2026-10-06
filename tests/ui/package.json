@@ -1,0 +1,6 @@
+{
+  "name": "vedetta-ui-tests",
+  "private": true,
+  "description": "Browser-less UI checks (jsdom). Run: npm install in this folder, then node check_evidence_ui.js",
+  "devDependencies": { "jsdom": "^26.0.0" }
+}

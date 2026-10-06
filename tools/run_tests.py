@@ -1,4 +1,4 @@
-"""Run all tests (tests/check_*.py and the JS translations check) from the vedetta/ folder.
+"""Run all tests (tests/check_*.py, the JS translations check and the UI checks in tests/ui) from the vedetta/ folder.
 Usage: python tools/run_tests.py   (exits with 1 if anything fails)"""
 import shutil
 import subprocess
@@ -23,6 +23,15 @@ def main() -> int:
         if proc.returncode:
             failed.append("check_i18n_js.js")
             print(proc.stdout[-600:], proc.stderr[-600:])
+    # UI checks in a simulated browser (jsdom): skipped by themselves when jsdom is not installed (npm install in tests/ui)
+    if shutil.which("node"):
+        for ui in sorted((ROOT / "tests" / "ui").glob("check_*.js")):
+            for lang in ("it", "en"):
+                proc = subprocess.run(["node", str(ui), lang], cwd=ROOT / "vedetta", capture_output=True, text=True,
+                                      env={**__import__("os").environ, "PYTHON": sys.executable})
+                if proc.returncode:
+                    failed.append(f"{ui.name} ({lang})")
+                    print(proc.stdout[-1500:], proc.stderr[-600:])
     print("TUTTO OK" if not failed else "FALLITI: " + ", ".join(failed))
     return 1 if failed else 0
 

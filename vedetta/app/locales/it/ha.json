@@ -401,5 +401,7 @@
   "js.ha.ev.clue.ha": "integrazione di Home Assistant {k}",
   "js.ha.ev.clue.platform": "piattaforma IoT",
   "js.ha.ev.clue.iotports": "solo porte IoT",
-  "js.ha.ev.n.brand": "Nessun nome vero trovato: al suo posto si vede la marca."
+  "js.ha.ev.n.brand": "Nessun nome vero trovato: al suo posto si vede la marca.",
+  "js.ha.attr.name": "Nome",
+  "js.ha.ev.info": "Quanto è sicura Vedetta: {what}"
 }

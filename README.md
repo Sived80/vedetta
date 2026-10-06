@@ -161,7 +161,7 @@ A generated name is never counted as evidence for the category — the app does 
 - ✅ "Open web interface" only where a real page answers — *2026-10-05*
 - ✅ Response time through ARP when a device does not answer ping — *2026-10-05*
 - ✅ Brand logos on cards, in the device sheet and in the list (58 brands) — *2026-10-05*
-- ✅ Evidence card in the device sheet: a certainty bar for name, brand and group, and the hypotheses it rejected — *2026-10-06*
+- ✅ Certainty bars on name, brand and type, with a pop-up for the evidence and the rejected hypotheses — *2026-10-06*
 - ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *2026-10-06*
 
 ### 🛡️ New devices and safety *(passive, no credential tests, nothing leaves your network)*
@@ -217,9 +217,9 @@ A generated name is never counted as evidence for the category — the app does 
 - 🚪 The ingress panel only accepts the Supervisor. Passwords are never exported.
 - 📦 *Export for analysis* (menu) builds a local zip with IPs, MAC addresses and names **masked before the file is created**; it is never sent anywhere. See [Report a mistake](#report-a-mistake) just below.
 
-### Evidence card
+### Certainty bars
 
-Open any device and, under the history, the **Evidence** card shows for its **name**, **brand** and **group**: what decided it, a **certainty bar** and the **hypotheses it rejected** (for example "Espressif: the MAC maker, it makes chips, not this product", or "IoT, 3 points: fewer than Network equipment"). The bar is not a mystery number:
+Open any device: the rows **Name**, **Brand** and **Type** have a thin **certainty bar** with its percentage and an **(i)**. Press the (i) and a small pop-up says what decided it and which **hypotheses it rejected** (for example "Espressif: the MAC maker, it makes chips, not this product", or "IoT, 3 points: fewer than Network equipment"); press anywhere outside it to close it. The bar is not a mystery number:
 
 - **Chosen by you:** 100%. It is never changed by itself.
 - **Group:** how far the best group is from the second one, weighted by how much evidence there is. 12 points against 3 is 75%; 2 points and nothing else is 20%; a tie or too little evidence is 0% and the device stays in *Other devices*. A phone or tablet recognised by its signals is measured against the threshold of the mobile score.

@@ -3,5 +3,6 @@
   "error.no_mac": "Nessun indirizzo MAC noto per questo dispositivo",
   "alert.ip_changed": "{label} ha cambiato indirizzo: {old} → {new}",
   "alert.dhcp_multiple": "Più server DHCP in rete: {servers}. Uno potrebbe non essere voluto.",
-  "alert.ip_conflict": "IP duplicato: {ip} risponde da più dispositivi ({macs})"
+  "alert.ip_conflict": "IP duplicato: {ip} risponde da più dispositivi ({macs})",
+  "alert.duplicate_merged": "{label}: unite due schede dello stesso telefono ({old} → {new})"
 }

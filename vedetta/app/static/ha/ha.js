@@ -1923,10 +1923,12 @@
       '<button type="button" class="rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
       '<button type="button" class="rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
       '<div class="mi-graph" id="mi-graph"><div class="skeleton sk-graph"></div></div></section>' +
+      '<section class="mi-section ev" id="mi-evidence" hidden></section>' +
       '<section class="mi-section attrs"><dl class="attr-list" id="mi-attrs"></dl></section><div id="mi-debug"></div></div>' +
       '<div class="mi-actions" id="mi-actions"></div></div>';
     miHero(d);
     miAttrs(d);
+    miEvidence(d);
     miDebug(d);
     miActions(d);
     loadGraph();
@@ -1945,6 +1947,61 @@
   function heroSub(d) {
     if (d.online) return d.uptime != null ? t("js.ha.more.up_for", { uptime: fmtUptime(d.uptime) }) : "";
     return d.last_seen ? t("js.ha.more.seen_at", { ago: ago(d.last_seen), time: fmtStamp(d.last_seen, true) }) : "";
+  }
+
+  // Evidence card: what decided name, brand and group, how sure the app is and which hypotheses it rejected.
+  var evFetch = { id: null, at: 0, data: null };
+  function evKey(prefix, raw) {
+    var key = prefix + String(raw || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    var text = t(key);
+    return text === key ? String(raw || "") : text;
+  }
+  function miEvidence(d) {
+    var el = $("mi-evidence");
+    if (!el) return;
+    function level(n) { return n >= 70 ? "high" : n >= 40 ? "mid" : "low"; }
+    function row(label, value, ev, why, rejected) {
+      var n = ev.certainty;
+      return '<div class="ev-row"><div class="ev-head"><span class="ev-label">' + esc(label) + '</span><b class="ev-value">' + esc(value) + '</b>' +
+        '<span class="ev-pct">' + (n > 0 ? esc(t("js.ha.ev.sure", { n: n })) : "—") + "</span></div>" +
+        '<div class="ev-bar lvl-' + level(n) + '" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + n + '" aria-label="' + esc(label + " " + n + "%") + '"><i style="width:' + n + '%"></i></div>' +
+        '<p class="ev-why">' + esc(why) + "</p>" +
+        (rejected.length ? '<details class="ev-rej"><summary>' + esc(t("js.ha.ev.rejected", { n: rejected.length })) + "</summary><ul>" +
+          rejected.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></details>" : "") + "</div>";
+    }
+    function draw(x) {
+      if (!x || S.open !== d.id) return;
+      var g = x.group, b = x.brand, nm = x.name;
+      var clues = (g.clues || []).map(function (c) { return c.source + " +" + c.points; }).join(", ");
+      var gWhy = g.basis === "manual" ? t("js.ha.ev.g.manual")
+        : g.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", g.reason) })
+        : g.basis === "scored" ? t("js.ha.ev.g.scored", { clues: clues || "-" })
+        : t("js.ha.ev.g." + g.basis);
+      var gRej = (g.rejected || []).map(function (r) {
+        return typePlural(r.value) + " — " + t("js.ha.ev.points", { n: r.points }) + ": " + t("js.ha.ev.why." + r.why, { chosen: typePlural(g.value) });
+      });
+      var bWhy = b.basis === "manual" ? t("js.ha.ev.b.manual") : b.basis === "found" ? t("js.ha.ev.b.found", { source: evKey("js.ha.ev.bsrc.", b.source) }) : t("js.ha.ev.b.none");
+      var bRej = (b.rejected || []).map(function (r) {
+        return r.value + ": " + (r.kind === "vendor" ? t("js.ha.ev.vendor", { role: evKey("js.ha.ev.role.", r.role || "other") }) : t("js.ha.ev.declared"));
+      });
+      var nWhy = nm.basis === "ip" ? t("js.ha.ev.n.ip") : nm.basis === "manual" ? t("js.ha.ev.n.manual") : nm.basis === "placeholder" ? t("js.ha.ev.n.placeholder")
+        : nm.basis === "source" ? t("js.ha.ev.n.source", { source: evKey("js.ha.ev.nsrc.", nm.source) }) : t("js.ha.ev.n.unknown");
+      var nRej = (nm.rejected || []).map(function (r) {
+        return evKey("js.ha.ev.nsrc.", r.source) + ": " + r.value + " — " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical");
+      });
+      el.innerHTML = '<div class="mi-sec-head"><h3>' + esc(t("js.ha.ev.title")) + "</h3></div>" +
+        row(t("js.ha.ev.name"), nm.value || t("js.ha.ev.unknown"), nm, nWhy, nRej) +
+        row(t("js.ha.ev.brand"), b.value || t("js.ha.ev.unknown"), b, bWhy, bRej) +
+        row(t("js.ha.ev.group"), typePlural(g.value), g, gWhy, gRej);
+      el.hidden = false;
+    }
+    if (evFetch.id === d.id && evFetch.data) draw(evFetch.data);
+    if (evFetch.id === d.id && Date.now() - evFetch.at < 5000) return;
+    evFetch.id = d.id; evFetch.at = Date.now();
+    api("/api/ha/devices/" + encodeURIComponent(d.id) + "/evidence").then(function (x) {
+      evFetch.data = x;
+      draw(x);
+    }).catch(function () { /* the card is extra: it must never get in the way of the sheet */ });
   }
 
   // Debug mode: why the device has this type, name and brand (data from the server, not in the normal list).

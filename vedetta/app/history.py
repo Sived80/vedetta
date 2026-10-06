@@ -102,6 +102,49 @@ class History:
             ).fetchall()
         return {r["device_id"]: r["n"] for r in rows}
 
+    def private_mac_counts(self, since: float) -> dict[str, int]:
+        """Distinct private (randomized, "locally administered") MACs seen per device after `since`. A phone that
+        rotates its Wi-Fi address has several; a MAC seen under more than one device (a repeater lending its own
+        address to the clients behind it) says nothing about any of them and is ignored."""
+        with self._lock:
+            rows = self._db.execute(
+                "SELECT DISTINCT device_id, mac FROM presence_events WHERE mac IS NOT NULL AND ts >= ?", (since,)).fetchall()
+        owners: dict[str, set] = {}
+        for r in rows:
+            owners.setdefault(r["mac"].lower(), set()).add(r["device_id"])
+        counts: dict[str, int] = {}
+        for mac, devices in owners.items():
+            try:
+                private = bool(int(mac[:2], 16) & 2)
+            except ValueError:
+                continue
+            if private and len(devices) == 1:
+                device = next(iter(devices))
+                counts[device] = counts.get(device, 0) + 1
+        return counts
+
+    def first_presence(self, device_ids: list[str]) -> dict[str, float]:
+        """When each card was first seen."""
+        if not device_ids:
+            return {}
+        marks = ",".join("?" * len(device_ids))
+        with self._lock:
+            rows = self._db.execute(
+                f"SELECT device_id, MIN(ts) AS ts FROM presence_events WHERE device_id IN ({marks}) GROUP BY device_id", device_ids).fetchall()
+        return {r["device_id"]: r["ts"] for r in rows}
+
+    def online_overlap(self, a: str, b: str, since: float, until: float) -> float:
+        """Seconds in which both devices were online at the same time in the window."""
+        segs = [[(s["from"], s["to"]) for s in self.presence_segments(d, since, until)["segments"] if s["online"]] for d in (a, b)]
+        return sum(max(0.0, min(x1, y1) - max(x0, y0)) for x0, x1 in segs[0] for y0, y1 in segs[1])
+
+    def reassign_device(self, source: str, target: str) -> None:
+        """The history of a card that is merged into another one goes with it (presence, scans, latency)."""
+        with self._lock:
+            for table in ("presence_events", "scans", "latency"):
+                self._db.execute(f"UPDATE {table} SET device_id = ? WHERE device_id = ?", (target, source))
+            self._db.commit()
+
     def presence_segments(self, device_id: str, since: float, until: float) -> dict:
         """Online/offline segments of the device in the window [since, until].
         Before the first known event the state is unknown: no segment,

@@ -131,6 +131,7 @@ def battery_assess(*, api: bool | None = None, scan: str | None = None, texts=()
 
 
 _churn: dict = {"ts": 0.0, "data": {}}
+_macs: dict = {"ts": 0.0, "data": {}}
 
 
 def presence_churn(device_id: str, now: float | None = None) -> int:
@@ -147,10 +148,24 @@ def presence_churn(device_id: str, now: float | None = None) -> int:
     return _churn["data"].get(device_id, 0)
 
 
+def presence_mac_changes(device_id: str, now: float | None = None) -> int:
+    """How many different private MACs this card has used in the last 7 days (see History.private_mac_counts)."""
+    now = time.time() if now is None else now
+    if now - _macs["ts"] > CHURN_REFRESH_S:
+        try:
+            from .history import history
+            _macs["data"] = history.private_mac_counts(now - CHURN_WINDOW_DAYS * 86400)
+        except Exception:
+            pass
+        _macs["ts"] = now
+    return _macs["data"].get(device_id, 0)
+
+
 def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | None,
                   model_class: str | None = None, battery: str | None = None,
                   battery_source: str | None = None, churn: int = 0,
-                  name_weak: bool = False, media_receiver: bool = False, mobile_service: bool = False) -> dict:
+                  name_weak: bool = False, media_receiver: bool = False, mobile_service: bool = False,
+                  mac_changes: int = 0) -> dict:
     """"Phone/tablet/laptop" score (see the module docstring).
     Returns {"mobile": bool, "score": int, "reason": main clue}."""
     score, reason = dhcp.mobile_score(mac, name_is_mobile, has_ports)
@@ -169,6 +184,10 @@ def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | No
             score, reason = score + 2, reason or "presence"
         elif churn >= _CHURN_WEAK:
             score, reason = score + 1, reason or "presence"
+    # Two or more different private MACs on the same card: a phone or tablet that rotates its Wi-Fi address. A new network
+    # card has a global MAC, so a replaced PC does not count; a MAC lent by a repeater is left out by the history.
+    if mac_changes >= 2:
+        score, reason = score + 3, reason if reason not in (None, "MAC privato") else "MAC privati diversi"
     if mobile_service:
         score, reason = score + 3, reason or "servizio mobile"  # announced only by phones and tablets
     # No listening service confirms any other clue (phones have none);
@@ -181,4 +200,5 @@ def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | No
     if battery == "yes" and battery_source in ("api", "scan", "hint"):
         score -= 4  # battery-powered but networked and fixed: not a phone
         reason = None
-    return {"mobile": score >= MOBILE_THRESHOLD, "score": score, "reason": reason if score >= MOBILE_THRESHOLD else None}
+    return {"mobile": score >= MOBILE_THRESHOLD, "score": score, "reason": reason if score >= MOBILE_THRESHOLD else None,
+            "threshold": MOBILE_THRESHOLD}

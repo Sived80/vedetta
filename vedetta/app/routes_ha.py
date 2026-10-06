@@ -89,6 +89,16 @@ async def api_ha_device_debug(device_id: str):
     return out
 
 
+@router.get("/api/ha/devices/{device_id}/evidence")
+async def api_ha_device_evidence(device_id: str):
+    """Evidence card of the device sheet: what decided name, brand and group, how sure the app is and what it rejected."""
+    from . import evidence
+    out = device_debug(device_id)
+    if out is None:
+        raise HTTPException(404, "Dispositivo non trovato")
+    return evidence.summarize(out, state.devices.get(device_id) or {})
+
+
 def device_debug(device_id: str) -> dict | None:
     from . import dhcp, ha_registry, identity, mdns_listener, naming
     device = state.devices.get(device_id)

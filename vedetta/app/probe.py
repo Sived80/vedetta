@@ -5,7 +5,7 @@ from .formatters import quantize_uptime, should_show_title, wifi_quality, lan_qu
 from . import brands
 from .i18n import t_or as i18n_t_or
 from .brands import match_model
-from .identity import battery_assess, default_gateway, identify_brand, mobile_assess, presence_churn
+from .identity import battery_assess, default_gateway, identify_brand, mobile_assess, presence_churn, presence_mac_changes
 
 # Recognition by keyword in the name, not by MAC vendor: the
 # vendor lookup is unreliable for phones (randomized MACs, see
@@ -251,18 +251,20 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     # The saved explicit choice (device["mobile"], set by hand in the edit
     # popup) always wins over the automatic score.
     explicit_mobile = device.get("mobile")
+    assessment = None
     if explicit_mobile is not None:
         is_mobile = explicit_mobile
     else:
         scanned = bool(scan_info.get("scanned_at"))
-        is_mobile = mobile_assess(
+        assessment = mobile_assess(
             mac=identity_mac, name_is_mobile=_is_mobile(display_name),
             name_weak=any(k in (display_name or "").lower() for k in _MOBILE_NAME_WEAK),
             media_receiver=_media_receiver(ip, scan_info, scanned_ports),
             mobile_service=bool(_MOBILE_SERVICES & set((scan_info.get("mdns_services") or "").replace(" ", "").split(","))),
             has_ports=(not scanned_ports) if scanned else None, model_class=model_class,
             battery=battery, battery_source=battery_source,
-            churn=presence_churn(device["id"]))["mobile"]
+            churn=presence_churn(device["id"]), mac_changes=presence_mac_changes(device["id"]))
+        is_mobile = assessment["mobile"]
     if explicit_mobile is None and "mobile_app" in ((ha_card or {}).get("domains") or []):
         is_mobile = True   # the HA mobile app only exists on phones and tablets
     vendor, brand = ident["vendor"], ident["brand"]
@@ -322,6 +324,8 @@ async def probe_device(device: dict, arp_task=None) -> dict:
         "id": device["id"],
         "name": display_name,
         "is_mobile": is_mobile,
+        "mobile_score": assessment["score"] if assessment else None,       # for the evidence card
+        "mobile_reason": assessment["reason"] if assessment else None,
         "ip": ip,
         "port": port,
         "url": _web_url(ip, port, scanned_ports),

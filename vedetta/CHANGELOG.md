@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+- **Evidence card** in the device sheet: for the name, the brand and the group it shows what decided it, a certainty bar (how it is worked out is in the README) and the hypotheses it rejected, with the reason.
+- **Phones with private MAC addresses**: a card that has used two or more different private MACs counts as a phone or tablet. A replaced network card or a MAC lent by a repeater does not.
+- **Duplicate phone cards are merged**: when a phone changes address and leaves an offline card, two mobile cards with the same distinctive name, at least one online and never online together for more than 30 minutes, become one (the older card, with its history and your choices). Nothing is merged if it is not clear. A notice in the log says it happened.
+
 ## 0.3.9
 - Export for analysis: public addresses are masked too, **also the ones the app never announced**: your own public IP written in an old line of the log, the routers of your provider on the way out to the Internet, any address that is not a well-known public DNS. Before, only the address read at the moment of the export was known, and right after the app restarted it was not known yet. The final safety check now refuses the export if any such address is left.
 

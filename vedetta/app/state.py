@@ -12,6 +12,10 @@ from .history import history
 ARP_MAX_AGE = 10
 _MAX_TOMBSTONES = 200
 _QUEUE_SIZE = 200
+# Two cards of the same phone (it changed IP and private MAC): merged only if their names are the same and the two were
+# never online together for longer than this (the 3 failed checks of tolerance already add a few minutes of overlap).
+MERGE_MAX_OVERLAP_S = 30 * 60
+_GENERIC_PHONE_NAMES = {"iphone", "ipad", "android", "phone", "tablet", "galaxy", "pixel", "smartphone", "telefono", "cellulare"}
 
 # A device is reported offline only after this number of consecutive failed
 # checks (~90s at a 30s interval). Phones in standby and devices with
@@ -423,6 +427,7 @@ class DeviceState:
         except Exception:
             arp = {}
         await self.follow_ip_changes(arp)
+        await self.merge_duplicate_phones()
         self.report_ip_conflicts()
         await self.check_new_devices(arp)
         self.ready.set()
@@ -473,6 +478,70 @@ class DeviceState:
             self.emit_alert(f"{label}: IP cambiato {old_ip} -> {new_ip}", "alert.ip_changed",
                             label=label, old=old_ip, new=new_ip)
             self.trigger()
+
+    @staticmethod
+    def _duplicate_key(device: dict) -> str | None:
+        """Name that identifies a phone well enough to say that two cards are the same one; None if it does not
+        (a bare "iPhone", the IP, a placeholder, a brand)."""
+        from . import brands, naming
+        name = (device.get("name") or "").strip()
+        key = "".join(ch for ch in name.lower() if ch.isalnum())
+        if len(key) < 4 or name == device.get("ip") or naming.is_placeholder(name) or key in _GENERIC_PHONE_NAMES:
+            return None
+        known = brands.known_brand(name)
+        if known and "".join(ch for ch in known.lower() if ch.isalnum()) == key:
+            return None
+        return key
+
+    async def merge_duplicate_phones(self) -> None:
+        """A phone that changes IP and private MAC leaves an offline card and gets a new one. When exactly two mobile
+        cards have the same distinctive name, at least one is online now and they were never online together for
+        long, they are the same device: the older card (it keeps the choices made by hand and the history) takes the
+        address of the one that answers, the other disappears and its history goes with it. Nothing is done if it is
+        not clear (three cards, same name online together)."""
+        groups: dict[str, list[dict]] = {}
+        for device in self.devices.values():
+            key = self._duplicate_key(device) if device.get("is_mobile") else None
+            if key:
+                groups.setdefault(key, []).append(device)
+        now = time.time()
+        for cards in groups.values():
+            if len(cards) != 2 or not any(c.get("online") for c in cards):
+                continue
+            first_seen = await asyncio.to_thread(history.first_presence, [c["id"] for c in cards])
+            older, newer = sorted(cards, key=lambda c: first_seen.get(c["id"], now))
+            overlap = await asyncio.to_thread(history.online_overlap, older["id"], newer["id"], now - 7 * 86400, now)
+            if overlap > MERGE_MAX_OVERLAP_S:
+                continue
+            await self._merge_cards(keep=older, drop=newer, now=now)
+
+    async def _merge_cards(self, keep: dict, drop: dict, now: float) -> None:
+        keep_id, drop_id = keep["id"], drop["id"]
+        old_ip, new_ip = keep["ip"], drop["ip"]
+        # the address that answers is the one kept: the card that is online decides it
+        address = new_ip if drop.get("online") or not keep.get("online") else old_ip
+        configs = {c["id"]: c for c in devices_config.load_devices()}
+        if keep_id not in configs or drop_id not in configs:
+            return
+        newer_scan = (configs[drop_id].get("scan_info") or {})
+        ok = await asyncio.to_thread(devices_config.remove_device, drop_id)
+        if not ok:
+            return
+        if address != old_ip:
+            moved = await asyncio.to_thread(devices_config.update_ip, keep_id, address)
+            if moved is None:
+                return
+        if newer_scan.get("scanned_at", 0) > (configs[keep_id].get("scan_info") or {}).get("scanned_at", 0):
+            await asyncio.to_thread(devices_config.update_scan_info, keep_id, newer_scan)
+        await asyncio.to_thread(history.reassign_device, drop_id, keep_id)
+        if self._last_mac.get(drop_id):
+            self._last_mac[keep_id] = self._last_mac.pop(drop_id)
+        self._misses[keep_id] = 0
+        self.remove(drop_id)
+        label = keep.get("name") or old_ip
+        self.emit_alert(f"{label}: schede unite (stesso telefono) {drop_id} -> {keep_id}", "alert.duplicate_merged",
+                        label=label, old=old_ip if address != old_ip else new_ip, new=address)
+        self.trigger()
 
     async def _save_latency(self) -> None:
         """One average sample per minute per device, in a single transaction."""

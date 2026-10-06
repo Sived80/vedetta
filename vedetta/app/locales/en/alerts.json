@@ -3,5 +3,6 @@
   "error.no_mac": "No MAC address known for this device",
   "alert.ip_changed": "{label} changed address: {old} → {new}",
   "alert.dhcp_multiple": "More than one DHCP server on the network: {servers}. One may be unwanted.",
-  "alert.ip_conflict": "Duplicate IP: {ip} answers from more than one device ({macs})"
+  "alert.ip_conflict": "Duplicate IP: {ip} answers from more than one device ({macs})",
+  "alert.duplicate_merged": "{label}: two cards of the same phone were merged ({old} → {new})"
 }

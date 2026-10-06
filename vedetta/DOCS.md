@@ -56,6 +56,14 @@ replaces the icon in the circle). Logos ship with the app, so nothing is request
 brand shown at that moment: if you change the brand by hand, or a new clue changes it, the logo changes too. Brands without
 a logo (and chip makers such as Espressif) show none.
 
+## Evidence card
+
+In a device sheet, below the history, the card shows for the name, the brand and the group: what decided it, a certainty bar and the hypotheses that were rejected. A choice you made by hand is 100% and never changes. For the group, the bar is the lead of the best group over the second one weighted by how much evidence there is (a tie or too little evidence is 0% and the device stays in "Other devices"); for the brand, high when the MAC maker and the name agree or the device declares it; for the name, the weight of the source.
+
+## Phones that change address
+
+A card that has used two or more different private MAC addresses counts as a phone or tablet. When two mobile cards have the same distinctive name (never a bare "iPhone" or the IP), at least one is online and they were never online together for more than 30 minutes, they are the same phone: the older card keeps your choices and the whole history, takes the address that answers and the other disappears. Nothing is merged when it is not clear.
+
 ## How it recognizes devices
 
 Every source proposes a name or a clue and the most reliable one wins; a name you chose by hand is never changed.

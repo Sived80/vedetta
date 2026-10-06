@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- **A device gets its best name**: a name that says what the device is (a known brand and a model number, like `Xiaomi-14` from DHCP) now outranks an opaque label from a more reliable source (like `expiscor`, the instance name of an Alexa service). The saved automatic name is re-evaluated at every check, so devices you already have are corrected without a new deep search. A name you chose never changes.
+- Data per MAC, for analysis only: the history database also keeps what each MAC looked like and what a card carried over when another MAC started answering at the same address. It shows nothing and decides nothing; it goes into the anonymised export.
+
 ## 0.4.2
 - **Sky boxes are Media** (they were a tie between Audio and Media, or Audio): AirPlay and Spotify Connect are supported by TVs, boxes, soundbars and speakers alike, so the *words* "airplay" and "spotify" no longer say "audio" (the services still count a little), and a new signature recognises the Sky Q boxes (brand Sky, model ESi… / EM…). *(Read from a real export sent by a user.)*
 - **Amazon Echo devices are no longer "Network equipment"**: they announce the Matter service, and "matter" and "thread" were words of the hub kind. They are protocols, not roles, so they were removed from it. A Philips Hue hub that only announced Matter goes to Smart home as well. *(Same export.)*

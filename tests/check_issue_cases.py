@@ -30,4 +30,23 @@ assert not identity.mobile_assess(mac=factory, name_is_mobile=False, has_ports=N
 assert identity.mobile_assess(mac=factory, name_is_mobile=probe._phone_brand("Fairphone"), has_ports=None)["mobile"]  # with the brand it is
 # a TV box that is also Android is not turned into a phone by this
 assert not identity.mobile_assess(mac=factory, name_is_mobile=probe._phone_brand("Sony"), has_ports=None, media_receiver=True)["mobile"]
+
+# --- Sky boxes and Amazon Echo, read from a real export (their evidence.json): Sky Q was a tie audio/media, Echo devices with only
+# the Matter service were "Network equipment" because "matter" was a word of the hub kind
+def box(name, brand, extra, ports):
+    return {"id": "x", "ip": "10.0.0.7", "name": name, "brand": brand, "vendor": brand, "extra": extra,
+            "scanned_ports": [{"label": f"{n} · {s}", "confirmed": True} for n, s in ports], "is_mobile": False}
+
+
+sky_ports = [(5000, "Apple AirTunes rtspd"), (8008, "tcpwrapped"), (8080, "http-proxy")]
+sky_extra = {"mdns_services": "_airplay._tcp, _http._tcp, _raop._tcp", "http_server": "Sky"}
+assert ha_data.infer_type(box("Sky Q", "Sky", {**sky_extra, "mdns_model": "ESi240"}, sky_ports)) == "media"
+assert ha_data.infer_type(box("Sky Q Mini", "Sky", {**sky_extra, "mdns_model": "EM150EU", "http_server": "vws/1.0"}, sky_ports)) == "media"
+assert ha_data.infer_type(box("Sky", "Sky", sky_extra, sky_ports)) == "media"           # even without the model: AirPlay words do not say "audio"
+# a real soundbar with AirPlay is still audio
+assert ha_data.infer_type(box("Soundbar", "Yamaha", {"mdns_services": "_airplay._tcp, _raop._tcp"}, [])) == "audio"
+matter = {"mdns_services": "_I163C04EE3B7C500E._sub._matter._tcp, _matter._tcp"}
+assert ha_data.infer_type(box("Amazon", "Amazon", matter, [(4070, "Nagios NSCA"), (55443, "unknown")])) != "router"
+assert ha_data.infer_type(box("Alexa", "Amazon", {"mdns_services": "_spotify-connect._tcp, _matter._tcp"}, [])) == "audio"
+assert ha_data.infer_type(box("Zigbee bridge", "Tasmota", {}, [])) == "router"        # the hub kind keeps its real words
 print("TUTTO OK")

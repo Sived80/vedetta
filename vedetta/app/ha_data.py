@@ -51,7 +51,7 @@ _RULES = {
     },
     "audio": {
         "subs": ("speaker", "sonos", "soundbar", "homepod", "echo dot", "google home", "nest mini",
-                 "nest audio", "denon", "marantz", "harman", "audio", "yamaha", "spotify", "airplay"),
+                 "nest audio", "denon", "marantz", "harman", "audio", "yamaha"),
         "toks": {"echo", "alexa", "bose", "hifi", "avr", "amp"},
         "ports": set(),
     },

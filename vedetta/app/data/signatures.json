@@ -73,6 +73,23 @@
       ]
     },
     {
+      "id": "sky-q",
+      "group": "media",
+      "kind": "streaming",
+      "weight": 12,
+      "fixture": "real",
+      "all": [
+        {
+          "field": "brand",
+          "re": "^sky$"
+        },
+        {
+          "field": "mdns_model",
+          "re": "^(esi|em)\\d{3}"
+        }
+      ]
+    },
+    {
       "id": "amazon-fire-tv",
       "group": "media",
       "kind": "streaming",

@@ -93,9 +93,7 @@
     "gateway"
    ],
    "tokens": [
-    "hub",
-    "matter",
-    "thread"
+    "hub"
    ],
    "w": 4,
    "mdns": [],

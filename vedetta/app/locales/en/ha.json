@@ -403,5 +403,7 @@
   "js.ha.ev.clue.iotports": "only IoT ports",
   "js.ha.ev.n.brand": "No real name found: the brand is shown instead.",
   "js.ha.attr.name": "Name",
-  "js.ha.ev.info": "How sure is Vedetta: {what}"
+  "js.ha.ev.info": "How sure is Vedetta: {what}",
+  "js.ha.ev.bsrc.web": "its web page",
+  "js.ha.ev.bsrc.dhcp": "its DHCP fingerprint"
 }

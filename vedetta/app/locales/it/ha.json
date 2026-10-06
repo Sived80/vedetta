@@ -403,5 +403,7 @@
   "js.ha.ev.clue.iotports": "solo porte IoT",
   "js.ha.ev.n.brand": "Nessun nome vero trovato: al suo posto si vede la marca.",
   "js.ha.attr.name": "Nome",
-  "js.ha.ev.info": "Quanto è sicura Vedetta: {what}"
+  "js.ha.ev.info": "Quanto è sicura Vedetta: {what}",
+  "js.ha.ev.bsrc.web": "la sua pagina web",
+  "js.ha.ev.bsrc.dhcp": "l'impronta DHCP"
 }

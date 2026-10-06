@@ -47,7 +47,7 @@ _URL_CREDS = re.compile(r"(://)[^/\s:@]+:[^/\s@]+@")
 _SECRET_KEY = re.compile(r"pass|token|secret|api_?key|credential|authorization", re.I)
 _PRIVATE_KEYS = {"user", "username", "mqtt_user", "mqtt_username", "mqtt_host"}
 # whatever still looks like a real home network or a person after the masking: used to refuse the export
-_REAL_NET = re.compile(r"(?<![\d])(?:192[.\-_]168|172[.\-_](?:1[6-9]|2\d|3[01]))[.\-_]\d{1,3}[.\-_]\d{1,3}(?![\d])")
+_HOME_DOT = re.compile(r"(?<![\d.])(?:192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}(?!\d|\.\d)")   # same edges as _IPV4: what the masking would have masked
 _MAC = re.compile(r"(?<![0-9A-Fa-f:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])")
 
 
@@ -252,18 +252,17 @@ class Anonymizer:
         """What is still readable in already masked text (kinds only, never the values). Empty list = clean."""
         found = set()
         low = text.lower()
-        if _REAL_NET.search(text):
+        if _HOME_DOT.search(text) or self._home_sep_left(text):
             found.add("home network address")
         if any(ip in text for ip in self._public_known):
             found.add("public address")
         for m in _IPV4.finditer(text):
             ip = m.group(0)
-            if all(int(g) <= 255 for g in m.groups()) and ip not in _WELL_KNOWN and not ip.startswith("203.0."):
-                try:
-                    if ipaddress.ip_address(ip).is_global and not _VERSION_WORD.search(text[max(0, m.start() - 14):m.start()]):
-                        found.add("public address")
-                except ValueError:
-                    pass
+            # exactly the addresses _ip() masks as public: not multicast / loopback / broadcast (_ip_ok), not a well known DNS,
+            # not written after "version", and not our own placeholders
+            if all(int(g) <= 255 for g in m.groups()) and _ip_ok(ip) and ip not in _WELL_KNOWN and not ip.startswith("203.0."):
+                if ipaddress.ip_address(ip).is_global and not _VERSION_WORD.search(text[max(0, m.start() - 14):m.start()]):
+                    found.add("public address")
         if self._macs and self._mac_re(low) is not None:
             found.add("MAC address")
         if any(not m.group(0).endswith("@masked.invalid") for m in _EMAIL.finditer(text)):
@@ -278,6 +277,15 @@ class Anonymizer:
             if self._compile_for(table).search(rest):
                 found.add("name")
         return sorted(found)
+
+    @staticmethod
+    def _home_sep_left(text: str) -> bool:
+        """A 192.168.* or 172.16-31.* written with dashes or underscores that _ip_sep() would have masked."""
+        for m in _IPV4_SEP.finditer(text):
+            a, _sep, b, c, d = m.groups()
+            if ((int(a) == 192 and int(b) == 168) or (int(a) == 172 and 16 <= int(b) <= 31)) and int(c) <= 255 and int(d) <= 255:
+                return True
+        return False
 
     def _mac_re(self, low: str):
         """A real MAC in the text, written like text() would have masked it (whole, not part of a longer run of hex digits)."""

@@ -50,6 +50,9 @@ export.build_zip = lambda: raw
 r = asyncio.run(routes_ha.api_export())
 assert r.media_type == "text/plain" and r.headers["content-disposition"].startswith('attachment; filename="vedetta-report-') and r.body != raw
 assert r.headers["content-disposition"].endswith('.txt"')
+export.last_omitted[:] = [{"file": "data/x.log", "problem": "name"}]
+assert asyncio.run(routes_ha.api_export(plain=True)).headers["x-vedetta-omitted"] == "1"      # the page can warn: some file was left out
+export.last_omitted[:] = []
 r = asyncio.run(routes_ha.api_export(plain=True))
 assert r.media_type == "application/zip" and r.body == raw and "vedetta-analisi-" in r.headers["content-disposition"]
 real_seal = report_crypto.seal

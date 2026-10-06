@@ -75,7 +75,10 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
 
 
 class MaskingFailed(RuntimeError):
-    """Something readable was left in a file after the masking: the export is refused, never delivered half masked."""
+    """Something readable was left in a file after the masking: that file is not delivered, never half masked."""
+
+
+last_omitted: list[dict] = []     # files left out of the last export (the route tells the person)
 
 
 def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:
@@ -142,7 +145,7 @@ def build_zip() -> bytes:
     from .routes_ha import device_debug
     from . import ha_data
     data_dir = paths.DATA_DIR
-    manifest = {"created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
+    manifest = {"omitted": [], "created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
                 "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
     anon = _collect(state.sorted_devices())
     # facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
@@ -165,6 +168,9 @@ def build_zip() -> bytes:
                 except UnicodeDecodeError:       # not text: it cannot be anonymised, so it is left out
                     manifest["notes"].append(f"{name}: binary file not included")
                     return
+                except MaskingFailed as exc:     # only this file is left out, and the manifest says why (kinds, never values)
+                    manifest["omitted"].append({"file": name, "problem": str(exc).split(": ", 1)[-1]})
+                    return
             raw = content.encode("utf-8") if isinstance(content, str) else content
             z.writestr(name, raw)
             manifest["files"][name] = len(raw)
@@ -181,8 +187,6 @@ def build_zip() -> bytes:
                         put(f"data/{f.name}", _tail(f, MAX_LOG_BYTES))
                     else:
                         put(f"data/{f.name}", f.read_bytes())
-                except MaskingFailed:
-                    raise
                 except Exception as exc:   # an unreadable file must not stop the export
                     manifest["notes"].append(f"{f.name}: {exc!r}")
         # history database: consistent copy (SQLite backup) unless it is huge
@@ -200,8 +204,8 @@ def build_zip() -> bytes:
                         dst.close(); src.close()
                         _anonymize_db(copy, anon)
                         put("data/vedetta.db", copy.read_bytes(), text=False)
-                except MaskingFailed:
-                    raise
+                except MaskingFailed as exc:
+                    manifest["omitted"].append({"file": "data/vedetta.db", "problem": str(exc).split(": ", 1)[-1]})
                 except Exception as exc:
                     manifest["notes"].append(f"vedetta.db: {exc!r}")
         # the current state: why each device is the way it is
@@ -227,4 +231,5 @@ def build_zip() -> bytes:
             manifest["notes"].append(f"journal: {exc!r}")
         put("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=1))
     _save_mapping(anon)
+    last_omitted[:] = manifest["omitted"]
     return buf.getvalue()

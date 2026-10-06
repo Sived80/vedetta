@@ -5,7 +5,7 @@
 <br>
 
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white)](#install)
-[![Version](https://img.shields.io/badge/version-0.4.0-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.1-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge)](#privacy--safety)
 [![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#features)
 [![License](https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge)](LICENSE)
@@ -169,6 +169,8 @@ A generated name is never counted as evidence for the category — the app does 
 - ✅ A badge on the arrow of the scan button says how many devices were never analysed in depth, and the deep-search menu has two tiles — *06.10.2026 - V0.4.0*
 - ✅ The nightly maintenance (03:00) and the log use the time zone of Home Assistant — *06.10.2026 - V0.4.0*
 - ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *06.10.2026 - V0.4.0*
+- ✅ A Chromebook is a computer (not an Apple phone) and a Fairphone is a phone; both found by a user on GitHub — *06.10.2026 - V0.4.1*
+- ✅ The export leaves out only a file it cannot mask, and says which, instead of refusing everything — *06.10.2026 - V0.4.1*
 - ✅ The export also holds the evidence of every device and the numbers behind "phone" (no addresses) — *06.10.2026 - V0.4.0*
 
 ### 🛡️ New devices and safety *(passive, no credential tests, nothing leaves your network)*

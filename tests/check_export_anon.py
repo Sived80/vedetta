@@ -33,7 +33,8 @@ out = a.text("host 192.168.50.10 and 192.168.50.23, other net 10.9.8.7, gateway 
 assert out == "host 10.0.0.10 and 10.0.0.23, other net 10.1.0.7, gateway 127.0.0.1, firmware 2.4.1.0.5, public 203.0.113.1", out
 # the same address in a device id ("scan-192-168-50-10"): only for networks that exist here, so dates and versions are safe
 assert a.text("id scan-192-168-50-10, scan_192_168_50_23, net 10-9-8-7") == "id scan-10-0-0-10, scan_10_0_0_23, net 10-1-0-7"
-assert a.text("date 2026-10-06 10-06-12-30 and 192-168-77-1") == "date 2026-10-06 10-06-12-30 and 192-168-77-1"
+# a date is safe, any other 192.168.* / 172.16-31.* written with dashes is masked too (the safety check looks for exactly these)
+assert a.text("date 2026-10-06 10-06-12-30 and 192-168-77-1 and 172_20_3_4") == "date 2026-10-06 10-06-12-30 and 10-2-0-1 and 10_3_0_4"
 assert a.text("mac f0:18:98:aa:bb:cc / F0-18-98-AA-BB-CC / 3C:22:FB:11:22:33") == \
     "mac f0:18:98:00:00:01 / F0-18-98-00-00-01 / 3C:22:FB:00:00:02"      # prefix kept, case and separator kept
 assert a.text("flat f018 98aabbcc? f01898aabbcc tail aabbcc") == "flat f018 98aabbcc? f01898000001 tail 000001"
@@ -55,6 +56,8 @@ assert b.data({"mqtt_password": "zzzzzz", "api_token": "tttttt", "mqtt_user": "s
 # the safety net: what is left readable is found, and a clean text is not flagged
 c = anonymize.Anonymizer(); c.add_ip("192.168.7.5"); c.add_mac("f0:18:98:aa:bb:cc"); c.add_device(["Anna's iPhone"], "phone"); c.add_public_ip("93.184.216.34")
 assert set(c.leaks("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) ==     {"home network address", "MAC address", "name", "public address", "email address", "password or token"}
+assert c.leaks("id deadf018 98aabbccdeadbeef and ab:f0:18:98:aa:bb:cc:dd") == []                  # part of a longer run of hex digits
+assert c.leaks("mac f0:18:98:aa:bb:cc") == ["MAC address"] and c.leaks("f01898aabbcc!") == ["MAC address"]
 assert c.leaks(c.text("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) == []
 assert c.leaks_data({"brand": "Anna's iPhone", "ssh_hostkey": "192.168.7.5"}) == []                   # fields kept on purpose are not judged
 # a file that cannot be masked is refused, never delivered
@@ -126,5 +129,22 @@ assert mapping["names"]["iPad-1"] and mapping["macs"]["f0:18:98:00:00:01"] == "f
 # the second export does not take the mapping file for data
 with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
     assert not any("export_mapping" in n for n in z.namelist())
+# --- the export keeps going when one file cannot be masked: that file is left out, the manifest says which and why
+orig_text = export._anonymize_text
+def refuse_log(name, text, anon_):
+    if name.endswith("app.log"):
+        raise export.MaskingFailed(f"{name}: name")
+    return orig_text(name, text, anon_)
+export._anonymize_text = refuse_log
+try:
+    with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
+        assert "data/app.log" not in z.namelist() and "data/settings.json" in z.namelist() and "state/devices_compact.json" in z.namelist()
+        man = json.loads(z.read("manifest.json"))
+    assert man["omitted"] == [{"file": "data/app.log", "problem": "name"}], man["omitted"]       # the kind, never the value
+    assert export.last_omitted == man["omitted"]
+finally:
+    export._anonymize_text = orig_text
+with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
+    assert "data/app.log" in z.namelist() and json.loads(z.read("manifest.json"))["omitted"] == [] and export.last_omitted == []
 state.devices.clear()
 print("TUTTO OK")

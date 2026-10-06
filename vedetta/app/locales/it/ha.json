@@ -408,5 +408,6 @@
   "js.ha.deep.tile_pending_sub": "mai analizzati",
   "js.ha.deep.tile_pending_done": "tutti analizzati",
   "js.ha.deep.badge": "{n} dispositivi mai analizzati a fondo",
-  "js.ha.deep.note": "La ricerca approfondita legge porte aperte, servizi e pagina web. Stanotte alle {hour} parte da sola per quelli mai analizzati."
+  "js.ha.deep.note": "La ricerca approfondita legge porte aperte, servizi e pagina web. Stanotte alle {hour} parte da sola per quelli mai analizzati.",
+  "js.ha.export.omitted": "Esportato, ma {n} file sono stati lasciati fuori perché non si potevano mascherare in sicurezza. Lo dice manifest.json."
 }

@@ -162,6 +162,7 @@ async def api_export(plain: bool = False):
     headers = {"Cache-Control": "no-store"}
     try:
         data = await asyncio.to_thread(export.build_zip)
+        headers["X-Vedetta-Omitted"] = str(len(export.last_omitted))      # files left out because they could not be masked safely
     except export.MaskingFailed as exc:
         logger.warning("Export refused: the masking left something readable (%s)", exc)    # kinds and file only, never values
         return JSONResponse({"error": "masking_failed"}, status_code=422, headers=headers)

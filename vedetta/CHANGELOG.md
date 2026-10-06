@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+- A **Chromebook is no longer an Apple phone**: ChromeOS asks for the same DHCP options as iOS, so it was read as an iPhone (brand Apple, group Phones and tablets). Its DHCP vendor class (`chromeOS`) now tells it apart: it is a computer and gets no brand from the fingerprint. *(Reported on GitHub, #1.)*
+- A **Fairphone is a phone**: Fairphone (and Murena, the e/OS maker) only sell phones, so the brand alone says "phone"; the Android DHCP class by itself was not enough with a factory MAC address. *(#2.)*
+- **Export for analysis no longer stops when one file cannot be masked**: that file alone is left out, `manifest.json` says which one and the kind of problem (never the value) and the page warns that some files were left out. The safety check now looks for whole addresses only, and any `192.168.*` or `172.16-31.*` written with dashes is masked. *(The export had refused to run for the reporter of #1.)*
+
 ## 0.4.0
 - **Certainty bars** in the device sheet: the rows Name, Brand and Type have a thin bar with the certainty (how it is worked out is in the README) and an (i) that opens a small pop-up with what decided it and the hypotheses it rejected, with the reason. Pressing outside the pop-up closes it.
 - **Deep-search badge**: an orange badge on the corner of the arrow next to "Scan the network" says how many devices were never analysed in depth (all of them on the first start, nothing is shown at zero). Opening the menu, the same badge flies into the "To analyse" tile and comes back when it closes. The menu now has two tiles (All | To analyse) and one note, instead of two repeated lines, and says that the search also starts by itself at 03:00.

@@ -127,6 +127,9 @@ def is_private_mac(mac: str | None) -> bool:
 
 def _os_family(prl: str | None, vendor_class: str | None) -> str | None:
     vc = (vendor_class or "").lower()
+    # ChromeOS asks for the same options as iOS: its own vendor class tells it apart (it is a laptop, not an iPhone)
+    if "chromeos" in vc.replace(" ", ""):
+        return "chromeos"
     if vc.startswith("android-dhcp"):
         return "android"
     if vc.startswith("msft"):
@@ -174,7 +177,7 @@ def mobile_score(mac: str | None, name_is_mobile: bool, has_ports: bool | None) 
             score, reason = score + 3, reason or "impronta DHCP (ios)"
         elif family == "android":
             score, reason = score + 2, reason or "impronta DHCP (android)"
-        elif family in ("windows", "macos", "linux"):
+        elif family in ("windows", "macos", "linux", "chromeos"):
             score -= 2
         host = (entry.get("hostname") or "").lower()
         if host.startswith("iphone") or host.startswith("ipad"):

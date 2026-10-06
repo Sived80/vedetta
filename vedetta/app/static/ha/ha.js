@@ -612,13 +612,15 @@
       if (r.status === 422) { var m2 = new Error("masking"); m2.masking = true; throw m2; }
       if (!r.ok) throw new Error("HTTP " + r.status);
       var m = /filename="([^"]+)"/.exec(r.headers.get("Content-Disposition") || "");
-      return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-report.txt" }; });
+      var omitted = parseInt(r.headers.get("X-Vedetta-Omitted") || "0", 10) || 0;
+      return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-report.txt", omitted: omitted }; });
     }).then(function (f) {
       var a = document.createElement("a");
       a.href = URL.createObjectURL(f.blob); a.download = f.name;
       document.body.appendChild(a); a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
-      snack(t(plain ? "js.ha.export.done_plain" : "js.ha.export.done"), { kind: "success" });
+      if (f.omitted) snack(t("js.ha.export.omitted", { n: f.omitted }), { kind: "warning", ms: 8000 });
+      else snack(t(plain ? "js.ha.export.done_plain" : "js.ha.export.done"), { kind: "success" });
     }).catch(function (err) { snack(t(err && err.crypto ? "js.ha.export.no_crypto" : err && err.masking ? "js.ha.export.masking_failed" : "js.ha.export.failed"), { kind: "error" }); });
   }
   exportDlg.addEventListener("click", function (e) {

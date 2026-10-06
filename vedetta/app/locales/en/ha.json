@@ -408,5 +408,6 @@
   "js.ha.deep.tile_pending_sub": "never analysed",
   "js.ha.deep.tile_pending_done": "all analysed",
   "js.ha.deep.badge": "{n} devices never analysed in depth",
-  "js.ha.deep.note": "Deep search reads open ports, services and the web page. Tonight at {hour} it starts by itself for the devices never analysed."
+  "js.ha.deep.note": "Deep search reads open ports, services and the web page. Tonight at {hour} it starts by itself for the devices never analysed.",
+  "js.ha.export.omitted": "Exported, but {n} file(s) were left out because they could not be masked safely. manifest.json says which."
 }

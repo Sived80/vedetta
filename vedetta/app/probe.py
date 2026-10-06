@@ -18,12 +18,20 @@ from .identity import battery_assess, default_gateway, identify_brand, mobile_as
 _MOBILE_NAME_KEYWORDS = (
     "iphone", "ipad", "pixel", "galaxy", "xiaomi", "redmi",
     "oneplus", "huawei", "honor", "oppo", "vivo", "smartphone", "tablet",
-    "telefono", "cellulare",
+    "telefono", "cellulare", "fairphone",
 )
 
 
 def _is_mobile(name: str | None) -> bool:
     return bool(name) and any(k in name.lower() for k in _MOBILE_NAME_KEYWORDS)
+
+
+# Makers that only sell phones: the brand alone says "phone" (Xiaomi, Huawei... also sell TVs and routers: not here).
+_PHONE_ONLY_BRANDS = ("fairphone", "murena")
+
+
+def _phone_brand(brand: str | None) -> bool:
+    return bool(brand) and any(k in brand.lower() for k in _PHONE_ONLY_BRANDS)
 
 
 _MOBILE_NAME_WEAK = ("android",)
@@ -257,7 +265,7 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     else:
         scanned = bool(scan_info.get("scanned_at"))
         assessment = mobile_assess(
-            mac=identity_mac, name_is_mobile=_is_mobile(display_name),
+            mac=identity_mac, name_is_mobile=_is_mobile(display_name) or _phone_brand(ident.get("brand")),
             name_weak=any(k in (display_name or "").lower() for k in _MOBILE_NAME_WEAK),
             media_receiver=_media_receiver(ip, scan_info, scanned_ports),
             mobile_service=bool(_MOBILE_SERVICES & set((scan_info.get("mdns_services") or "").replace(" ", "").split(","))),

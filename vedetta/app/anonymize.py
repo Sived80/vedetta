@@ -189,9 +189,12 @@ class Anonymizer:
         return self._public_ip(ip)
 
     def _ip_sep(self, m: re.Match) -> str:
-        """192-168-1-5 -> 10-0-0-5, only for the networks that really exist here (so "10-06-12-30" in a date is safe)."""
+        """192-168-1-5 -> 10-0-0-5, for the networks that exist here and for any 192.168.* / 172.16-31.* (so a date such as
+        "10-06-12-30" is safe, and nothing the check below looks for is left)."""
         a, sep, b, c, d = m.groups()
-        if ".".join((a, b, c)) not in self._nets or int(d) > 255:
+        known = ".".join((a, b, c)) in self._nets
+        home = (int(a) == 192 and int(b) == 168) or (int(a) == 172 and 16 <= int(b) <= 31)
+        if not (known or home) or int(c) > 255 or int(d) > 255:
             return m.group(0)
         return self._private_ip(f"{a}.{b}.{c}.{d}").replace(".", sep)
 
@@ -261,10 +264,8 @@ class Anonymizer:
                         found.add("public address")
                 except ValueError:
                     pass
-        for mac in self._macs:
-            if mac in low or mac.replace(":", "-") in low or mac.replace(":", "") in low:
-                found.add("MAC address")
-                break
+        if self._macs and self._mac_re(low) is not None:
+            found.add("MAC address")
         if any(not m.group(0).endswith("@masked.invalid") for m in _EMAIL.finditer(text)):
             found.add("email address")
         if any(m.group(3) != "***" for m in _SECRET_PAIR.finditer(text)) or re.search(r"://[^/\s:@*]+:[^/\s@*]+@", text):
@@ -277,6 +278,16 @@ class Anonymizer:
             if self._compile_for(table).search(rest):
                 found.add("name")
         return sorted(found)
+
+    def _mac_re(self, low: str):
+        """A real MAC in the text, written like text() would have masked it (whole, not part of a longer run of hex digits)."""
+        forms = []
+        for mac in self._macs:
+            forms += [mac, mac.replace(":", "-"), mac.replace(":", "")]
+        if getattr(self, "_mac_forms", None) != len(forms):
+            self._mac_forms = len(forms)
+            self._mac_rx = re.compile(r"(?<![0-9a-f:\-])(?:" + "|".join(re.escape(f) for f in forms) + r")(?![0-9a-f])")
+        return self._mac_rx.search(low)
 
     def leaks_data(self, obj, key: str = "") -> list[str]:
         """Same check over parsed JSON, skipping the fields that describe the device (kept on purpose)."""

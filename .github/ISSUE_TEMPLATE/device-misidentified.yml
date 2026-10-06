@@ -1,0 +1,94 @@
+name: Device recognised wrongly
+description: Vedetta shows the wrong name, brand or type for a device on your network
+title: "[Device] "
+labels: ["misidentified-device"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping Vedetta recognise more devices.
+
+        **Your privacy first.** This page is public. Do **not** write IP addresses, MAC addresses, your real device names or your email here.
+        If you attach an export, attach **only the encrypted one** (see "How to export" below). Never attach the plain `.zip`.
+
+  - type: input
+    id: version
+    attributes:
+      label: Vedetta version
+      description: Settings > Apps > Vedetta shows it.
+      placeholder: "0.3.9"
+    validations:
+      required: true
+
+  - type: input
+    id: real_device
+    attributes:
+      label: What is the device really?
+      description: Brand and model if you know them.
+      placeholder: "Philips Hue bridge"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wrong_what
+    attributes:
+      label: What is wrong?
+      multiple: true
+      options:
+        - Name
+        - Brand
+        - Type (the group it is shown in)
+        - Model
+        - It is not detected, or it appears twice
+    validations:
+      required: true
+
+  - type: textarea
+    id: shown
+    attributes:
+      label: What does Vedetta show now?
+      description: Name, brand, type (group). You can use a generic name instead of your own.
+      placeholder: "Name: only the IP. Brand: empty. Group: Other devices."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it show?
+      placeholder: "Brand: Philips, group: Smart home devices."
+    validations:
+      required: true
+
+  - type: textarea
+    id: clues
+    attributes:
+      label: Anything that could help (optional)
+      description: The model written on the label, the title of its web page, how it connects (Wi-Fi, Ethernet, Zigbee bridge), what it announces on the network.
+
+  - type: markdown
+    attributes:
+      value: |
+        ### How to export (2 minutes)
+        1. Open **Vedetta** from the Home Assistant sidebar.
+        2. Tap the **three dots** (top right), then **Export for analysis**.
+        3. Press **Encrypted export** (the button, not the arrow). A file named `vedetta-report-xxxxxx.txt` is saved.
+        4. Drag that `.txt` file into the box below.
+
+        Before the file is created, IPs, MACs, names and emails are masked, and only the author of Vedetta can open it. It is safe to attach even though this page is public.
+
+  - type: textarea
+    id: attachment
+    attributes:
+      label: Encrypted export (drag the `.txt` file here)
+      description: Optional but very useful. Only the file named `vedetta-report-xxxxxx.txt`.
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I did not write IP addresses, MAC addresses, real names or emails in this issue.
+          required: true
+        - label: If I attached a file, it is the encrypted `.txt` and not the plain `.zip`.
+          required: true

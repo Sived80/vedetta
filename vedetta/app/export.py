@@ -10,7 +10,7 @@ import time
 import zipfile
 from pathlib import Path
 
-from . import anonymize, dhcp, ha_registry, journal, mdns_listener, mqtt_ha, paths, roles, settings
+from . import anonymize, dhcp, evidence, ha_registry, ha_tz, journal, maintenance, mdns_listener, mqtt_ha, paths, roles, settings
 from .state import state
 
 MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by the export (see below)
@@ -145,6 +145,16 @@ def build_zip() -> bytes:
     manifest = {"created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
                 "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
     anon = _collect(state.sorted_devices())
+    # facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
+    # whether it came from Home Assistant, and how many devices never had a deep search
+    try:
+        from . import devices_config
+        pending = sum(1 for d in devices_config.load_devices() if not maintenance.last_deep_attempt(d))
+    except Exception:
+        pending = None
+    manifest["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
+    manifest["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
+    manifest["phone_merge"] = state.merge_report         # counts: why two cards of the same phone were (not) merged, without any name
     manifest["notes"].append("anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
@@ -195,13 +205,16 @@ def build_zip() -> bytes:
                 except Exception as exc:
                     manifest["notes"].append(f"vedetta.db: {exc!r}")
         # the current state: why each device is the way it is
-        dbg = {}
+        dbg, evi = {}, {}
         for did in list(state.devices):
             try:
-                dbg[did] = {"name": state.devices[did].get("name"), "ip": state.devices[did].get("ip"), "debug": device_debug(did)}
+                debug = device_debug(did)
+                dbg[did] = {"name": state.devices[did].get("name"), "ip": state.devices[did].get("ip"), "debug": debug}
+                evi[did] = evidence.summarize(debug, state.devices[did])        # certainty and rejected hypotheses, as the sheet shows them
             except Exception as exc:
                 dbg[did] = {"error": repr(exc)}
         put("state/devices_debug.json", json.dumps(dbg, ensure_ascii=False, indent=1, default=str))
+        put("state/evidence.json", json.dumps(evi, ensure_ascii=False, indent=1, default=str))
         put("state/devices_compact.json", json.dumps(ha_data.compact_all(state.sorted_devices()), ensure_ascii=False, indent=1, default=str))
         put("state/ha_registry.json", json.dumps({"status": ha_registry.status(), "by_mac": ha_registry._state["by_mac"], "by_ip": ha_registry._state["by_ip"]}, ensure_ascii=False, indent=1, default=str))
         put("state/mdns_seen.json", json.dumps({"by_mac": mdns_listener.by_mac, "by_ip": mdns_listener.by_ip}, ensure_ascii=False, indent=1, default=str))

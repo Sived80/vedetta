@@ -139,6 +139,7 @@ def device_debug(device_id: str) -> dict | None:
                   "declared": device.get("brand_declared"), "vendor": device.get("vendor"), "vendor_role": device.get("vendor_role")},
         "mobile": {"is_mobile": device.get("is_mobile"), "mode": cfg.get("mobile"), "private_mac": identity.is_private_mac(device.get("mac")),
                    "dhcp_os_family": dhcp.os_family(device.get("mac")), "churn_7d": identity.presence_churn(device_id),
+                   "score": device.get("mobile_score"), "reason": device.get("mobile_reason"), "private_macs_7d": identity.presence_mac_changes(device_id),
                    "battery": device.get("battery"), "battery_source": device.get("battery_source")},
         "dhcp": {k: v for k, v in entry.items() if k != "seen"},
         "roles": {"roles": roles.roles_for(device.get("ip")), "upnp_types": roles.upnp_types(device.get("ip"))},

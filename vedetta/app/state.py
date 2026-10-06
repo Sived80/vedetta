@@ -41,6 +41,8 @@ class DeviceState:
 
     def __init__(self) -> None:
         self.devices: dict[str, dict] = {}
+        self.merged_total = 0                  # phone cards merged since the app started
+        self.merge_report: dict | None = None  # what the last check decided: counts, never names
         self.rev = 0
         self.ready = asyncio.Event()
         # Last MAC seen per device: when powered off the probe no longer sees it,
@@ -505,15 +507,27 @@ class DeviceState:
             if key:
                 groups.setdefault(key, []).append(device)
         now = time.time()
+        outcome = {"merged": 0, "three_or_more": 0, "both_offline": 0, "online_together": 0}
         for cards in groups.values():
-            if len(cards) != 2 or not any(c.get("online") for c in cards):
+            if len(cards) < 2:
+                continue
+            if len(cards) != 2:
+                outcome["three_or_more"] += 1
+                continue
+            if not any(c.get("online") for c in cards):
+                outcome["both_offline"] += 1
                 continue
             first_seen = await asyncio.to_thread(history.first_presence, [c["id"] for c in cards])
             older, newer = sorted(cards, key=lambda c: first_seen.get(c["id"], now))
             overlap = await asyncio.to_thread(history.online_overlap, older["id"], newer["id"], now - 7 * 86400, now)
             if overlap > MERGE_MAX_OVERLAP_S:
+                outcome["online_together"] += 1
                 continue
             await self._merge_cards(keep=older, drop=newer, now=now)
+            outcome["merged"] += 1
+        # counts only (for the export): they explain a merge that did not happen without any name
+        self.merged_total += outcome["merged"]
+        self.merge_report = {**outcome, "merged_total": self.merged_total}
 
     async def _merge_cards(self, keep: dict, drop: dict, now: float) -> None:
         keep_id, drop_id = keep["id"], drop["id"]

@@ -94,7 +94,7 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
 
   // --- it does not move: the space of percentage and (i) is fixed in the CSS, a longer number takes no extra width
   const rule = (sel) => (css.match(new RegExp(sel.replace(/[.]/g, "\\.") + "\\s*\\{([^}]*)\\}")) || [, ""])[1];
-  check(/width:\s*3\.4em/.test(rule(".ev-pct")) && /text-align:\s*right/.test(rule(".ev-pct")) && /tabular-nums/.test(rule(".ev-pct")), "percentuale: larghezza fissa, allineata a destra, cifre tabulari");
+  check(/width:\s*3\.2em/.test(rule(".ev-pct")) && /text-align:\s*right/.test(rule(".ev-pct")) && /tabular-nums/.test(rule(".ev-pct")), "percentuale: larghezza fissa, allineata a destra, cifre tabulari");
   check(/flex:\s*none/.test(rule(".ev-i")) && /width:\s*20px/.test(rule(".ev-i")) && /width:\s*14px/.test(rule(".ev-i .mdi")), "(i): piccola (icona 14 px) e di dimensione fissa");
   check(/height:\s*20px/.test(rule(".ev-meter")) && /height:\s*4px/.test(rule(".ev-bar")), "riga della barra e barra: altezza fissa");
   // the value changes (certainty 5 -> 100): only the text and the bar change

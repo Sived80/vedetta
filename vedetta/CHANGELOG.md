@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.2
+- **Sky boxes are Media** (they were a tie between Audio and Media, or Audio): AirPlay and Spotify Connect are supported by TVs, boxes, soundbars and speakers alike, so the *words* "airplay" and "spotify" no longer say "audio" (the services still count a little), and a new signature recognises the Sky Q boxes (brand Sky, model ESi… / EM…). *(Read from a real export sent by a user.)*
+- **Amazon Echo devices are no longer "Network equipment"**: they announce the Matter service, and "matter" and "thread" were words of the hub kind. They are protocols, not roles, so they were removed from it. A Philips Hue hub that only announced Matter goes to Smart home as well. *(Same export.)*
+- Corrections like these apply to the devices you already have as soon as the app restarts: the group is worked out again every time from what was saved, nothing has to be scanned again (see "After an update" in the docs).
+
 ## 0.4.1
 - A **Chromebook is no longer an Apple phone**: ChromeOS asks for the same DHCP options as iOS, so it was read as an iPhone (brand Apple, group Phones and tablets). Its DHCP vendor class (`chromeOS`) now tells it apart: it is a computer and gets no brand from the fingerprint. *(Reported on GitHub, #1.)*
 - A **Fairphone is a phone**: Fairphone (and Murena, the e/OS maker) only sell phones, so the brand alone says "phone"; the Android DHCP class by itself was not enough with a factory MAC address. *(#2.)*

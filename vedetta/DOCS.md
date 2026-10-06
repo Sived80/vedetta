@@ -77,6 +77,10 @@ device stays in "Other devices".
 Data lives in `/data` (devices, settings, DHCP and mDNS memory, history, log) and is included in Home Assistant
 backups. **Uninstalling the app deletes `/data`**: use "Export for analysis" first if you want to keep a copy.
 
+## After an update
+
+The group of a device is **not stored**: it is worked out again, every time it is shown, from what Vedetta saved about the device (ports, services, names, DHCP class...). So when an update improves the rules, **every device you already have is re-evaluated at the first refresh after the restart**, with no new scan. What stays as it is: a name, brand, group or "phone" switch **you chose by hand** (it is never changed), and a name found earlier (it is only replaced by a better source). The only case that needs a new deep search is a rule that reads something Vedetta never saved for that device: the card's evidence then says there is no clue yet.
+
 ## Known limits
 
 - **Give it 24 hours.** Right after the installation Vedetta only knows what it saw in the first minutes. Names, models and types arrive with time (phones that wake up, what devices announce, the presence history, the nightly deep search at 03:00). Wrong or empty results in the first hours are expected: leave it running for at least 24 hours (better 48) and run a deep search before reporting a device.

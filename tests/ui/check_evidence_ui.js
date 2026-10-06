@@ -88,15 +88,15 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   check(pct("name") === "65%" && pct("brand") === "45%" && pct("group") === "83%", "percentuali: " + [pct("name"), pct("brand"), pct("group")].join(" "));
   check(qa("#mi-attrs .ev-bar i").map((i) => i.style.width).join() === "65%,45%,83%", "larghezza delle barre");
   check(q('[data-ev-bar="brand"]').className.includes("lvl-mid") && q('[data-ev-bar="group"]').className.includes("lvl-high"), "colore per livello");
-  check(qa("[data-ev-i]").length === 3 && qa("[data-ev-i]").every((b) => b.closest(".ev-line") && b.previousElementSibling.classList.contains("ev-pct")), "la (i) sta subito dopo la percentuale, sulla stessa riga");
+  check(qa("[data-ev-i]").length === 3 && qa("[data-ev-i]").every((b) => b.closest(".ev-meter") && b.previousElementSibling.classList.contains("ev-pct") && b.closest(".ev-meter").querySelector(".ev-bar")), "la (i) sta nella riga della barra, subito dopo la percentuale");
 
   check(qa("[data-ev-i] path").every((p) => (p.getAttribute("d") || "").startsWith("M11,9H13V7H11")), "la (i) ha il disegno di 'informazioni', non un'icona generica");
 
   // --- it does not move: the space of percentage and (i) is fixed in the CSS, a longer number takes no extra width
   const rule = (sel) => (css.match(new RegExp(sel.replace(/[.]/g, "\\.") + "\\s*\\{([^}]*)\\}")) || [, ""])[1];
   check(/width:\s*3\.4em/.test(rule(".ev-pct")) && /text-align:\s*right/.test(rule(".ev-pct")) && /tabular-nums/.test(rule(".ev-pct")), "percentuale: larghezza fissa, allineata a destra, cifre tabulari");
-  check(/flex:\s*none/.test(rule(".ev-i")) && /width:\s*32px/.test(rule(".ev-i")), "(i): dimensione fissa");
-  check(/min-height:\s*32px/.test(rule(".ev-line")) && /height:\s*4px/.test(rule(".ev-bar")), "riga e barra: altezza fissa");
+  check(/flex:\s*none/.test(rule(".ev-i")) && /width:\s*20px/.test(rule(".ev-i")) && /width:\s*14px/.test(rule(".ev-i .mdi")), "(i): piccola (icona 14 px) e di dimensione fissa");
+  check(/height:\s*20px/.test(rule(".ev-meter")) && /height:\s*4px/.test(rule(".ev-bar")), "riga della barra e barra: altezza fissa");
   // the value changes (certainty 5 -> 100): only the text and the bar change
   EV.name.certainty = 5; EV.group.certainty = 100;
   ev("click", q("#mi-attrs"));

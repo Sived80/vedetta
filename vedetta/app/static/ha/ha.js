@@ -1969,10 +1969,12 @@
   var EV_KEYS = ["name", "brand", "group"];
   function evLevel(n) { return n >= 70 ? "high" : n >= 40 ? "mid" : "low"; }
   function evRowCells(key, label) {
-    return '<span class="ev-cell"><span class="ev-line"><span class="ev-v" data-ev-v="' + key + '"></span><span class="ev-pct" data-ev-pct="' + key + '">\u2014</span>' +
-      '<button type="button" class="icon-btn small touch rp ev-i" data-ev-i="' + key + '" aria-haspopup="dialog" aria-expanded="false" title="' + esc(t("js.ha.ev.info", { what: label })) +
-      '" aria-label="' + esc(t("js.ha.ev.info", { what: label })) + '">' + icon("information-outline") + "</button></span>" +
-      '<span class="ev-bar" data-ev-bar="' + key + '" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span></span>';
+    var info = esc(t("js.ha.ev.info", { what: label }));
+    return '<span class="ev-cell"><span class="ev-v" data-ev-v="' + key + '"></span><span class="ev-meter">' +
+      '<span class="ev-bar" data-ev-bar="' + key + '" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></span>' +
+      '<span class="ev-pct" data-ev-pct="' + key + '">\u2014</span>' +
+      '<button type="button" class="ev-i" data-ev-i="' + key + '" aria-haspopup="dialog" aria-expanded="false" title="' + info + '" aria-label="' + info + '">' +
+      icon("information-outline") + "</button></span></span>";
   }
   function evText(x, key) {
     var e = x[key], why = "", rej = [];

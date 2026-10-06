@@ -1265,20 +1265,21 @@
 /* Prove nelle righe Nome, Marca e Tipo: barra sottile, certezza e (i) con spazio fisso, cosi' nulla si muove quando il valore cambia. */
 @layer overrides {
   .attr.ev-attr { align-items: flex-start; padding: 8px 0; }
-  .attr.ev-attr dt { padding-top: 6px; }
+  .attr.ev-attr dt { padding-top: 2px; }
   .attr.ev-attr dd { align-items: flex-start; }
   .attr.ev-attr .attr-val { flex: 1; min-width: 0; }
   .ev-cell { display: block; width: 100%; }
-  .ev-line { display: flex; align-items: center; gap: 4px; min-height: 32px; }
-  .ev-v { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-  .ev-pct { flex: none; width: 3.4em; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); white-space: nowrap; }
-  .ev-i { flex: none; width: 32px; height: 32px; margin: 0 -4px 0 0; color: var(--secondary-text-color); }
-  .ev-i .mdi { width: 18px; height: 18px; }
-  .ev-bar { display: block; height: 4px; margin: 0 36px 4px 0; border-radius: 2px; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); overflow: hidden; }
+  .ev-v { display: block; min-height: 24px; line-height: 24px; overflow-wrap: anywhere; }
+  .ev-meter { display: flex; align-items: center; gap: 6px; height: 20px; }
+  .ev-bar { flex: 1; min-width: 0; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); overflow: hidden; }
   .ev-bar i { display: block; width: 0; height: 100%; border-radius: 2px; transition: width 0.4s ease; }
   .ev-bar.lvl-high i { background: var(--success-color); }
   .ev-bar.lvl-mid i { background: var(--warning-color); }
   .ev-bar.lvl-low i { background: var(--error-color); }
+  .ev-pct { flex: none; width: 3.2em; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); white-space: nowrap; }
+  .ev-i { flex: none; width: 20px; height: 20px; padding: 0; margin: 0; border: 0; border-radius: 50%; background: transparent; color: var(--secondary-text-color); display: grid; place-items: center; cursor: pointer; }
+  .ev-i:hover, .ev-i[aria-expanded="true"] { color: var(--primary-text-color); background: var(--ha-hover); }
+  .ev-i .mdi { width: 14px; height: 14px; }
   .mi { position: relative; }
   .ev-pop {
     position: absolute; z-index: 20; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.45;

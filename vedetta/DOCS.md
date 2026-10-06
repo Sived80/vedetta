@@ -16,7 +16,7 @@ Everything stays at home: no data is sent outside your network.
 - **Export for analysis** (menu, discreet item): builds a file with the configuration, the history and the reason behind the name, brand and
   category of every device. **Before the file is created** IPs (the last number is kept), MAC addresses (the manufacturer prefix is kept)
   and names (`iPhone-1`, `TV-2`...) are masked, the same value always getting the same placeholder; emails become `email-1@masked.invalid`; passwords and tokens are excluded and nothing is
-  sent anywhere. A final check looks for anything still readable and, if it finds something, nothing is exported. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`).
+  sent anywhere. A final check looks for anything still readable and, if it finds something, nothing is exported. For every device it also holds the evidence card (`state/evidence.json`) and the numbers behind "phone", never the addresses. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`).
   - **Encrypted export** (the button): a `.txt` that only the author of Vedetta can open (it is sealed with the public key in
     `app/data/report_key.pub`). Attach it to a GitHub issue: it is safe even if the issue is public.
   - **Plain export** (the arrow): a `.zip` that is not encrypted, to read yourself or hand over privately. Never post it in public.

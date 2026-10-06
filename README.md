@@ -146,25 +146,30 @@ A generated name is never counted as evidence for the category — the app does 
 ## Planned
 
 > [!NOTE]
-> ✅ means it is built, tested and released; the date is when it was done. An empty box (☐) is planned.
+> ✅ means it is built, tested and released. Next to it, the day and the version of the app in which it arrived. An empty box (☐) is planned.
 
 ### ✅ Done
-- ✅ Runs as a Home Assistant app: sidebar panel, own data, backed up with Home Assistant — *2026-10-02*
-- ✅ Recognition by clue families, product signature catalog and a debug view that explains every decision — *2026-10-05*
-- ✅ Names, brands, models and areas from the Home Assistant registry (read-only) — *2026-10-05*
-- ✅ Share chosen devices with Home Assistant through MQTT, one button per device — *2026-10-05*
-- ✅ Phones that sleep keep their name (Bonjour and DHCP memory) — *2026-10-05*
-- ✅ MAC vendor names generated from the public IEEE registries — *2026-10-05*
-- ✅ Open source (MIT), public on GitHub, installable from the App store with one button — *2026-10-05*
-- ✅ Deep search of only the devices never analysed in depth — *2026-10-05*
-- ✅ Pause bar under the first card: orange and filling for a timed pause, solid red when stopped — *2026-10-05*
-- ✅ "Open web interface" only where a real page answers — *2026-10-05*
-- ✅ Response time through ARP when a device does not answer ping — *2026-10-05*
-- ✅ Brand logos on cards, in the device sheet and in the list (58 brands) — *2026-10-05*
-- ✅ Certainty bars on name, brand and type, with a pop-up for the evidence and the rejected hypotheses — *2026-10-06*
-- ✅ A badge on the arrow of the scan button says how many devices were never analysed in depth, and the deep-search menu has two tiles — *2026-10-06*
-- ✅ The nightly maintenance (03:00) and the log use the time zone of Home Assistant — *2026-10-06*
-- ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *2026-10-06*
+- ✅ Runs as a Home Assistant app: sidebar panel, own data, backed up with Home Assistant — *02.10.2026 - V0.1.0*
+- ✅ Names, brands, models and areas from the Home Assistant registry (read-only) — *05.10.2026 - V0.2.0*
+- ✅ Share chosen devices with Home Assistant through MQTT, one button per device — *05.10.2026 - V0.2.0*
+- ✅ Phones that sleep keep their name (Bonjour and DHCP memory) — *05.10.2026 - V0.2.1*
+- ✅ Recognition by clue families, product signature catalog and a debug view that explains every decision — *05.10.2026 - V0.3.0*
+- ✅ MAC vendor names generated from the public IEEE registries — *05.10.2026 - V0.3.0*
+- ✅ Open source (MIT), public on GitHub, installable from the App store with one button — *05.10.2026 - V0.3.0*
+- ✅ Deep search of only the devices never analysed in depth — *05.10.2026 - V0.3.1*
+- ✅ A deep search that finds nothing is remembered, and what a device announced earlier is kept — *05.10.2026 - V0.3.3*
+- ✅ Pause bar under the first card: orange and filling for a timed pause, solid red when stopped — *05.10.2026 - V0.3.4*
+- ✅ "Open web interface" only where a real page answers — *05.10.2026 - V0.3.4*
+- ✅ Response time through ARP when a device does not answer ping — *05.10.2026 - V0.3.4*
+- ✅ Brand logos on cards, in the device sheet and in the list (58 brands) — *05.10.2026 - V0.3.5*
+- ✅ Magic Home brand; the software on a device (Tasmota, ESPHome) wins over the maker of its hardware — *05.10.2026 - V0.3.5*
+- ✅ Export for analysis with IPs, MACs, names and emails masked, and an encrypted report that can be attached to a public GitHub issue — *06.10.2026 - V0.3.7* (hardened in V0.3.8 and V0.3.9)
+- ✅ Issue form "Device recognised wrongly", asking only for the encrypted export — *06.10.2026 - repository (no app update)*
+- ✅ Certainty bars on name, brand and type, with a pop-up for the evidence and the rejected hypotheses — *06.10.2026 - V0.4.0*
+- ✅ A badge on the arrow of the scan button says how many devices were never analysed in depth, and the deep-search menu has two tiles — *06.10.2026 - V0.4.0*
+- ✅ The nightly maintenance (03:00) and the log use the time zone of Home Assistant — *06.10.2026 - V0.4.0*
+- ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *06.10.2026 - V0.4.0*
+- ✅ The export also holds the evidence of every device and the numbers behind "phone" (no addresses) — *06.10.2026 - V0.4.0*
 
 ### 🛡️ New devices and safety *(passive, no credential tests, nothing leaves your network)*
 - [ ] Radar of new devices: "3 new since your last visit" with *it's mine / ignore*

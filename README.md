@@ -183,6 +183,8 @@ A generated name is never counted as evidence for the category — the app does 
 - ✅ Phones with randomized (private) MAC addresses are recognised, and two cards of the same phone are merged — *06.10.2026 - V0.4.0*
 - ✅ A Chromebook is a computer (not an Apple phone) and a Fairphone is a phone; both found by a user on GitHub — *06.10.2026 - V0.4.1*
 - ✅ Sky boxes are Media and Amazon Echo devices are no longer Network equipment, read from a real export sent by a user — *06.10.2026 - V0.4.2*
+- ✅ A device gets its best name: a brand and model name from DHCP (Xiaomi-14) beats an opaque label from mDNS (expiscor), also for devices already named — *06.10.2026 - V0.4.3*
+- ✅ The export holds data per MAC address, to understand devices that share an IP address — *06.10.2026 - V0.4.3*
 - ✅ The export leaves out only a file it cannot mask, and says which, instead of refusing everything — *06.10.2026 - V0.4.1*
 - ✅ The export also holds the evidence of every device and the numbers behind "phone" (no addresses) — *06.10.2026 - V0.4.0*
 

@@ -7,7 +7,7 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white)](#install)
 [![Version](https://img.shields.io/badge/version-0.3.6-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
 [![Privacy](https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge)](#privacy--safety)
-[![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#)
+[![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#features)
 [![License](https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge)](LICENSE)
 
 **[Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [How it thinks](#how-it-recognizes-a-device) · [Home Assistant](#home-assistant-integration) · [Planned](#planned) · [Extend](#teach-it-a-new-device)**
@@ -230,9 +230,6 @@ Pick **one** of the two ways below. Both end the same way: Vedetta appears in yo
 
 ### Option A · Add the repository (the easy way)
 
-> [!IMPORTANT]
-> This works once the repository is public. Until then, use **Option B**.
-
 1. **Add the repository.** Click the button:
 
    [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
@@ -253,12 +250,12 @@ Pick **one** of the two ways below. Both end the same way: Vedetta appears in yo
 3. When it finishes, switch on **Show in sidebar**, then press **Start**.
 4. Click **Vedetta** in the left sidebar (or open `http://homeassistant.local:8123/app/468cebee_vedetta`). Done: go to [First launch](#first-launch).
 
-### Option B · Local app (works today)
+### Option B · Local app (without the repository)
 
 You copy the app folder into Home Assistant's `addons` folder, using the **Samba share** app to reach it from your computer.
 
 1. **Install Samba share.** *Settings → Apps → App store →* search **Samba share** *→ Install.* Open its **Configuration** tab, type a **username** and **password** of your choice, save, then press **Start**.
-2. **Get the files.** You need the folder named `vedetta` (the one that contains `config.yaml`). Once the repository is public: on its GitHub page press **Code → Download ZIP** and unzip it.
+2. **Get the files.** You need the folder named `vedetta` (the one that contains `config.yaml`). On the [GitHub page](https://github.com/Sived80/vedetta) press **Code → Download ZIP** and unzip it.
 3. **Open the Home Assistant folders from your computer.**
    - *Windows:* press <kbd>Win</kbd> + <kbd>E</kbd>, click the address bar, paste the line below and press <kbd>Enter</kbd>.
    - *Mac:* in Finder choose **Go → Connect to Server** and paste `smb://homeassistant.local/addons`.

@@ -26,6 +26,7 @@ assert a.add_device(["Marco iPhone"], "phone") == "iPhone-2"
 assert a.add_device(["Samsung TV salotto"], "media") == "TV-1"
 assert a.add_device(["boh-4567"], "iot") == "IoT-1"                      # no product word: the type decides
 assert a.add_device(["Shelly"], None) is None                             # a bare brand name is kept (the debug needs it)
+assert a.add_device(["pve"], None) is None and a.text("pve-api") == "pve-api"      # three letters: technical, kept
 assert a.add_device(["ab"], None) is None and a.add_device(["12345"], None) is None
 
 out = a.text("host 192.168.50.10 and 192.168.50.23, other net 10.9.8.7, gateway 127.0.0.1, firmware 2.4.1.0.5, public 93.184.216.34")

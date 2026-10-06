@@ -120,6 +120,8 @@ class Anonymizer:
             key = _norm(a)
             if len(key) < 3 or key in _NEVER or key.replace("-", "").isdigit() or _IPV4.fullmatch(a):
                 continue
+            if re.fullmatch(r"[a-z]{3}", key):                       # "pve", "nas", "tv": a short technical word, kept (a clue for the debug)
+                continue
             if key in _brand_keys() or key == _norm(brand or ""):   # a bare brand name is not personal and the debug needs it
                 continue
             usable.append((a, key))

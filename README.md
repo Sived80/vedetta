@@ -46,7 +46,7 @@ names and rooms you already chose, and publishes back **only what you decide to 
 > [!IMPORTANT]
 > **Local-only.** No cloud, no accounts, no telemetry. See [Privacy & safety](#privacy--safety).
 
-<h2 id="features"><img src="docs/images/section-features.svg" alt="Features" width="100%"></h2>
+## Features
 
 | | |
 |---|---|
@@ -62,7 +62,7 @@ names and rooms you already chose, and publishes back **only what you decide to 
 | 🏷️ **Brand logos** | A faint logo of the recognized brand on each card and in the device sheet (in the circle, in list view). Logos ship with the app: no request to the Internet. A brand without a free logo shows none. |
 | 🎨 **Home Assistant native look** | Same palette, light/dark, tiles or list, English and Italian, works in the mobile app. |
 
-<h2 id="how-it-recognizes-a-device"><img src="docs/images/section-recognition.svg" alt="How it recognizes a device" width="100%"></h2>
+## How it recognizes a device
 
 <p align="center"><img src="docs/images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
 
@@ -121,7 +121,7 @@ A generated name is never counted as evidence for the category — the app does 
 
 </details>
 
-<h2 id="home-assistant-integration"><img src="docs/images/section-ha.svg" alt="Home Assistant integration" width="100%"></h2>
+## Home Assistant integration
 
 | Direction | What happens |
 |---|---|
@@ -143,7 +143,7 @@ A generated name is never counted as evidence for the category — the app does 
 > Without MQTT everything else works — search, recognition, Home Assistant lookups, history. Only the **Share with HA** button
 > (and the *Vedetta* device with its counters) needs it, and it stays hidden until a broker is connected.
 
-<h2 id="planned"><img src="docs/images/section-planned.svg" alt="Planned" width="100%"></h2>
+## Planned
 
 > [!NOTE]
 > ✅ A checked box means it is built, tested and released; the date is when it was done.
@@ -211,7 +211,7 @@ A generated name is never counted as evidence for the category — the app does 
 - [ ] "If this repeater drops, who disappears?"
 - [ ] Offline, shareable signature packs *(later)*
 
-<h2 id="privacy--safety"><img src="docs/images/section-privacy.svg" alt="Privacy &amp; safety" width="100%"></h2>
+## Privacy & safety
 
 - 🏡 Everything runs **inside your network**. Data lives in the app’s own `/data`, included in Home Assistant backups.
 - 🌐 The only outbound requests are a periodic update of the MAC-vendor table and the optional public-IP check.
@@ -237,7 +237,7 @@ Vedetta got a device wrong? Open an issue on GitHub and attach an export, **all 
 
 How it is encrypted: the file is sealed with the public key in [`vedetta/app/data/report_key.pub`](vedetta/app/data/report_key.pub) (fingerprint `84ba-bfcc-4706-163d`), and only the private key, which never leaves the author’s computer, can open it. The table that says which placeholder is which device stays in your own `/data`. If the encryption is not available in your version, Vedetta tells you and exports nothing: it never falls back to a plain file by mistake. The author opens the file with [`tools/open_report.py`](tools/open_report.py).
 
-<h2 id="install"><img src="docs/images/section-install.svg" alt="Install" width="100%"></h2>
+## Install
 
 > [!NOTE]
 > **Before you start.** Vedetta is a Home Assistant *app* (older versions call it an *add-on*). Open Home Assistant and go to
@@ -336,7 +336,7 @@ Want to share devices back into Home Assistant? That needs an MQTT broker: see [
 
 </details>
 
-<h2 id="teach-it-a-new-device"><img src="docs/images/section-teach.svg" alt="Teach it a new device" width="100%"></h2>
+## Teach it a new device
 
 Recognition is data, not code. A product signature in [`vedetta/app/data/signatures.json`](vedetta/app/data/signatures.json)
 is a few conditions on what a device declares:
@@ -361,7 +361,7 @@ follows a brand you change by hand. Add a brand to the list in `tools/update_log
 are regenerated (logos come from [Simple Icons](https://simpleicons.org) and
 [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons)). Only logos that may be redistributed belong here.
 
-<h2 id="development"><img src="docs/images/section-dev.svg" alt="Development" width="100%"></h2>
+## Development
 
 ```text
 vedetta/            the app (config.yaml, Dockerfile, FastAPI backend, vanilla-JS frontend)

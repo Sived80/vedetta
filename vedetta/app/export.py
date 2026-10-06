@@ -145,7 +145,7 @@ def build_zip() -> bytes:
     manifest = {"created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
                 "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
     anon = _collect(state.sorted_devices())
-    manifest["notes"].append("anonymised: IP (same last number), MAC (same manufacturer prefix), names (iPhone-1, TV-2...)")
+    manifest["notes"].append("anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         def put(name: str, content: bytes | str, text: bool = True):

@@ -76,6 +76,11 @@ def _brand_in(brand: str, name: str) -> bool:
     return bool(words) and bool(re.search(r"(?<![^\W_])" + r"[\W_]*".join(re.escape(w) for w in words), name, re.I))
 
 
+_WELL_KNOWN = {"1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112", "208.67.222.222", "208.67.220.220",
+               "94.140.14.14", "94.140.15.15", "255.255.255.255"}
+_VERSION_WORD = re.compile(r"(?i)(version|versione|firmware|fw|build|release|ver|v)\W{0,3}$")
+
+
 def _ip_ok(ip: str) -> bool:
     try:
         a = ipaddress.ip_address(ip)
@@ -99,8 +104,9 @@ class Anonymizer:
 
     # ------------------------------------------------------------------ collection
     def add_public_ip(self, ip: str | None) -> None:
-        if ip and _ip_ok(ip):
+        if ip and _ip_ok(ip) and not ipaddress.ip_address(ip).is_private and ip not in _WELL_KNOWN:
             self._public_known.add(ip)
+            self._public_ip(ip)                      # the number is given now, so the user's own address comes first
 
     def add_ip(self, ip: str | None) -> None:
         if ip and _ip_ok(ip) and ipaddress.ip_address(ip).is_private:
@@ -166,15 +172,21 @@ class Anonymizer:
         idx = self._nets.setdefault(".".join(parts[:3]), len(self._nets))
         return f"10.{idx}.0.{int(parts[3])}"
 
+    def _public_ip(self, ip: str) -> str:
+        n = self._pub.setdefault(ip, len(self._pub) + 1) - 1
+        return f"203.0.{113 + n // 254}.{n % 254 + 1}"      # documentation range: it can never be a real address
+
     def _ip(self, m: re.Match) -> str:
         ip = m.group(0)
         if any(int(g) > 255 for g in m.groups()) or not _ip_ok(ip):
             return ip
         if ipaddress.ip_address(ip).is_private:
             return self._private_ip(ip)
-        if ip in self._public_known:
-            return f"203.0.113.{self._pub.setdefault(ip, len(self._pub) + 1)}"
-        return ip                                    # other public numbers are mostly versions or well-known servers
+        if ip in _WELL_KNOWN or _VERSION_WORD.search(m.string[max(0, m.start() - 14):m.start()]):
+            return ip                                # a public DNS, or a version number written like an address
+        if not ipaddress.ip_address(ip).is_global:
+            return self._private_ip(ip)              # CGNAT, reserved ranges: part of somebody's network
+        return self._public_ip(ip)
 
     def _ip_sep(self, m: re.Match) -> str:
         """192-168-1-5 -> 10-0-0-5, only for the networks that really exist here (so "10-06-12-30" in a date is safe)."""
@@ -241,6 +253,14 @@ class Anonymizer:
             found.add("home network address")
         if any(ip in text for ip in self._public_known):
             found.add("public address")
+        for m in _IPV4.finditer(text):
+            ip = m.group(0)
+            if all(int(g) <= 255 for g in m.groups()) and ip not in _WELL_KNOWN and not ip.startswith("203.0."):
+                try:
+                    if ipaddress.ip_address(ip).is_global and not _VERSION_WORD.search(text[max(0, m.start() - 14):m.start()]):
+                        found.add("public address")
+                except ValueError:
+                    pass
         for mac in self._macs:
             if mac in low or mac.replace(":", "-") in low or mac.replace(":", "") in low:
                 found.add("MAC address")
@@ -280,7 +300,7 @@ class Anonymizer:
         """Placeholder -> original value: for the owner only, never put in the zip."""
         return {"emails": {f"email-{i}@masked.invalid": e for e, i in self._emails.items()},
                 "ip_networks": {f"10.{i}.0.x": f"{net}.x" for net, i in self._nets.items()},
-                "public_ips": {f"203.0.113.{i}": ip for ip, i in self._pub.items()},
+                "public_ips": {self._public_ip(ip): ip for ip in self._pub},
                 "macs": {v: k for k, v in self._macs.items()},
                 "names": {v: sorted(k for k, x in {**self._names, **self._areas}.items() if x == v)
                           for v in sorted(set(self._names.values()) | set(self._areas.values()))}}

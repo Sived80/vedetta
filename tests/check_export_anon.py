@@ -64,6 +64,21 @@ try:
 except export.MaskingFailed:
     pass
 
+# --- any public address is masked, also one never announced (a hop, an address in an old log line)
+d = anonymize.Anonymizer()
+d.add_ip("192.168.50.10")
+assert d.text("IP pubblico 128.116.154.247, salti 192.168.50.10 > 81.174.0.21 > 188.114.100.19 > 1.1.1.1 dns 8.8.8.8") == \
+    "IP pubblico 203.0.113.1, salti 10.0.0.10 > 203.0.113.2 > 203.0.113.3 > 1.1.1.1 dns 8.8.8.8"
+assert d.text("firmware 2.4.1.7 version: 3.1.0.9 and v1.2.3.4") == "firmware 2.4.1.7 version: 3.1.0.9 and v1.2.3.4"
+assert d.text("128.116.154.247 again") == "203.0.113.1 again" and "128.116" not in str(d.mapping()["public_ips"].keys())
+assert d.leaks("seen 81.174.0.21") == ["public address"] and d.leaks("dns 1.1.1.1 and 203.0.113.5") == []
+big = anonymize.Anonymizer()
+assert big.text("x 11.0.0.1 y") == "x 203.0.113.1 y" and big._public_ip("12.0.0.1") == "203.0.113.2"
+for i in range(300):
+    big._public_ip(f"20.0.{i // 250}.{i % 250 + 1}")
+assert max(big._pub.values()) > 254 and big._public_ip("20.0.0.1").startswith("203.0.113.")
+assert len({big._public_ip(ip) for ip in big._pub}) == len(big._pub)     # still one placeholder per address, past 254
+
 # --- the whole zip, on a fake network
 tmp = Path(tempfile.mkdtemp())
 paths.DATA_DIR = tmp

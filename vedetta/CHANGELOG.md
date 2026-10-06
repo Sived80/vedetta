@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.9
+- Export for analysis: public addresses are masked too, **also the ones the app never announced**: your own public IP written in an old line of the log, the routers of your provider on the way out to the Internet, any address that is not a well-known public DNS. Before, only the address read at the moment of the export was known, and right after the app restarted it was not known yet. The final safety check now refuses the export if any such address is left.
+
 ## 0.3.8
 - Export for analysis: the device ids (`scan-192-168-1-5`) carried the real network written with dashes and were not masked; they are now masked like any other address (`scan-10-0-0-5`), in every file and in the history database.
 - Export for analysis: also masks every name in the registries of the house (Home Assistant, Bonjour, DHCP), even for devices that are not on the board, email addresses, and passwords, tokens and keys written in logs or text. A final safety check refuses to export anything if something readable is left, instead of delivering a half masked file.

@@ -1956,6 +1956,15 @@
     var text = t(key);
     return text === key ? String(raw || "") : text;
   }
+  var EV_CLUES = [[/^ruolo di rete$/, "role"], [/^porta (\d+)$/, "port"], [/^parola nel testo$/, "words"], [/^parola: (.+)$/, "word"],
+    [/^marca: (.+)$/, "brand"], [/^firma (.+)$/, "sig"], [/^integrazione HA (.+)$/, "ha"], [/^piattaforma IoT$/, "platform"], [/^solo porte IoT$/, "iotports"]];
+  function evClue(src) {
+    for (var i = 0; i < EV_CLUES.length; i++) {
+      var m = EV_CLUES[i][0].exec(src);
+      if (m) return t("js.ha.ev.clue." + EV_CLUES[i][1], { n: m[1], k: m[1] });
+    }
+    return src;    // mDNS, UPnP, API names are the technical names
+  }
   function miEvidence(d) {
     var el = $("mi-evidence");
     if (!el) return;
@@ -1972,7 +1981,7 @@
     function draw(x) {
       if (!x || S.open !== d.id) return;
       var g = x.group, b = x.brand, nm = x.name;
-      var clues = (g.clues || []).map(function (c) { return c.source + " +" + c.points; }).join(", ");
+      var clues = (g.clues || []).map(function (c) { return evClue(c.source) + " +" + c.points; }).join(", ");
       var gWhy = g.basis === "manual" ? t("js.ha.ev.g.manual")
         : g.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", g.reason) })
         : g.basis === "scored" ? t("js.ha.ev.g.scored", { clues: clues || "-" })
@@ -1984,7 +1993,7 @@
       var bRej = (b.rejected || []).map(function (r) {
         return r.value + ": " + (r.kind === "vendor" ? t("js.ha.ev.vendor", { role: evKey("js.ha.ev.role.", r.role || "other") }) : t("js.ha.ev.declared"));
       });
-      var nWhy = nm.basis === "ip" ? t("js.ha.ev.n.ip") : nm.basis === "manual" ? t("js.ha.ev.n.manual") : nm.basis === "placeholder" ? t("js.ha.ev.n.placeholder")
+      var nWhy = nm.basis === "ip" ? t("js.ha.ev.n.ip") : nm.basis === "manual" ? t("js.ha.ev.n.manual") : nm.basis === "placeholder" ? t("js.ha.ev.n.placeholder") : nm.basis === "brand" ? t("js.ha.ev.n.brand")
         : nm.basis === "source" ? t("js.ha.ev.n.source", { source: evKey("js.ha.ev.nsrc.", nm.source) }) : t("js.ha.ev.n.unknown");
       var nRej = (nm.rejected || []).map(function (r) {
         return evKey("js.ha.ev.nsrc.", r.source) + ": " + r.value + " — " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical");

@@ -68,7 +68,7 @@ def brand_evidence(debug_brand: dict) -> dict:
     if not brand:
         return {**out, "certainty": 0, "basis": "none"}
     base = 85 if debug_brand.get("evidence") == "confirmed" else 50
-    base += {"high": 10, "medium": 0, "low": -15}.get(debug_brand.get("confidence"), 0)
+    base += {"high": 10, "medium": 0, "low": -5}.get(debug_brand.get("confidence"), 0)
     return {**out, "certainty": _clamp(base, 10, 98), "basis": "found"}
 
 
@@ -82,6 +82,9 @@ def name_evidence(debug_name: dict, device: dict) -> dict:
         return {**out, "certainty": 0, "basis": "ip"}
     if source == "user":
         return {**out, "certainty": 100, "basis": "manual"}
+    brand = (device.get("brand") or "").strip().lower()
+    if brand and shown.strip().lower() == brand and source in (None, "weak"):
+        return {**out, "certainty": 10, "basis": "brand"}      # no real name: the brand stands in
     if debug_name.get("placeholder"):
         return {**out, "certainty": 15, "basis": "placeholder"}
     weight = naming.PRIORITY.get(source or "", 0)

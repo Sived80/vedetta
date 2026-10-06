@@ -391,5 +391,15 @@
   "js.ha.ev.nsrc.onvif": "ONVIF",
   "js.ha.ev.nsrc.nmap": "nmap",
   "js.ha.ev.nsrc.weak": "a weak clue",
-  "js.ha.ev.nsrc.": "unknown source"
+  "js.ha.ev.nsrc.": "unknown source",
+  "js.ha.ev.clue.role": "network role",
+  "js.ha.ev.clue.port": "port {n}",
+  "js.ha.ev.clue.words": "words in its text",
+  "js.ha.ev.clue.word": "word “{k}”",
+  "js.ha.ev.clue.brand": "brand “{k}”",
+  "js.ha.ev.clue.sig": "known product {k}",
+  "js.ha.ev.clue.ha": "Home Assistant integration {k}",
+  "js.ha.ev.clue.platform": "IoT platform",
+  "js.ha.ev.clue.iotports": "only IoT ports",
+  "js.ha.ev.n.brand": "No real name found: the brand is shown instead."
 }

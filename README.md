@@ -16,6 +16,18 @@
 
 ---
 
+> [!IMPORTANT]
+> ### ⏳ Give Vedetta 24 hours before you judge it
+> Right after the install it only knows what it could see in the first minutes: addresses, and the few names that were already announced. **Most of what makes it good needs time**, and wrong or empty results in the first hours are expected, not a bug:
+> - phones sleep and answer only when they wake up, and so do many smart devices;
+> - names, models and services are *announced* by the devices now and then (Bonjour, DHCP): Vedetta remembers them as they arrive;
+> - who comes and goes (the presence history) is what tells a phone with a changing MAC address from a fixed device;
+> - the **deep search** (the badge on the arrow next to *Scan the network* says how many devices still need it) also runs by itself every night at 03:00.
+>
+> So please **leave it installed, running and with the machine switched on for at least 24 hours (48 is better)** before you decide a device is wrong or open an issue, and press the deep search once.
+>
+> *Why this is written so loudly:* Vedetta is a one-person project made in spare time. Many reports arrive minutes after the first installation, about devices that simply had not had time to be learned, and answering them takes the time needed to fix the real mistakes. If a device is still wrong after a day, that is exactly the report that helps: use [the issue form](https://github.com/Sived80/vedetta/issues/new/choose) and attach the encrypted export.
+
 ## Why Vedetta
 
 **The lookout of your LAN.** Your router says *“Unknown device”*; Vedetta says *“Sony console”* and shows how it knew. Two minutes to install, no cloud: [step by step](#install).
@@ -326,7 +338,7 @@ You copy the app folder into Home Assistant's `addons` folder, using the **Samba
 
 1. Open **Vedetta** from the sidebar. The first page may be empty: that is normal.
 2. Press **Scan network**. Within a few seconds the devices on your network appear; add the ones you want on your board.
-3. **Leave it running.** Vedetta is not learning: it collects clues, and some only arrive with time. Phones that were asleep announce their names when they wake up, the history bars (24 h and 7 days) fill in, and a deeper search runs every night. Expect most names to settle within a day. Devices that announce nothing (an iPhone with a private Wi-Fi address, for example) stay generic: set their name once by hand and it stays.
+3. **Leave it running for at least 24 hours** (see the box at the top). Vedetta is not learning: it collects clues, and some only arrive with time. Phones that were asleep announce their names when they wake up, the history bars (24 h and 7 days) fill in, and a deeper search runs every night. Expect most names to settle within a day. Devices that announce nothing (an iPhone with a private Wi-Fi address, for example) stay generic: set their name once by hand and it stays.
 4. Curious why it chose a name? The debug view lists every clue behind each name and brand.
 
 Want to share devices back into Home Assistant? That needs an MQTT broker: see [MQTT (optional)](#mqtt-optional). Everything else works without it.

@@ -79,6 +79,8 @@ backups. **Uninstalling the app deletes `/data`**: use "Export for analysis" fir
 
 ## Known limits
 
+- **Give it 24 hours.** Right after the installation Vedetta only knows what it saw in the first minutes. Names, models and types arrive with time (phones that wake up, what devices announce, the presence history, the nightly deep search at 03:00). Wrong or empty results in the first hours are expected: leave it running for at least 24 hours (better 48) and run a deep search before reporting a device.
+
 - Devices with a private MAC address (iPhone/iPad) do not always announce their name: they stay "brand mobile"
   until a name arrives from Bonjour, DHCP, Home Assistant or your own choice.
 - A slow device (e.g. a console) is analysed with targeted ports first and, afterwards, in the background.

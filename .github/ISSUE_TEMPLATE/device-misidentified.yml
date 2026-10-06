@@ -8,6 +8,8 @@ body:
       value: |
         Thank you for helping Vedetta recognise more devices.
 
+        **Please let Vedetta run for at least 24 hours first.** Right after the installation most devices are simply not learned yet (names are announced over time, the nightly deep search runs at 03:00). A device that is still wrong after a day is exactly the report that helps.
+
         **Your privacy first.** This page is public. Do **not** write IP addresses, MAC addresses, your real device names or your email here.
         If you attach an export, attach **only the encrypted one** (see "How to export" below). Never attach the plain `.zip`.
 
@@ -89,6 +91,8 @@ body:
     attributes:
       label: Privacy check
       options:
+        - label: Vedetta has been installed and running for at least 24 hours, and I ran the deep search.
+          required: true
         - label: I did not write IP addresses, MAC addresses, real names or emails in this issue.
           required: true
         - label: If I attached a file, it is the encrypted `.txt` and not the plain `.zip`.

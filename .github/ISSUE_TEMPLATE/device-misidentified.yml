@@ -73,15 +73,16 @@ body:
         1. Open **Vedetta** from the Home Assistant sidebar.
         2. Tap the **three dots** (top right), then **Export for analysis**.
         3. Press **Encrypted export** (the button, not the arrow). A file named `vedetta-report-xxxxxx.txt` is saved.
-        4. Drag that `.txt` file into the box below.
+        4. In the box called **Encrypted export** (just below), **drag the `.txt` file onto the box**, or click the small **Add Files** link at the bottom of that box and choose the file. When the upload ends, a line like `[vedetta-report-xxxxxx.txt](...)` appears in the box: that is what you want.
 
         Before the file is created, IPs, MACs, names and emails are masked, and only the author of Vedetta can open it. It is safe to attach even though this page is public.
 
   - type: textarea
     id: attachment
     attributes:
-      label: Encrypted export (drag the `.txt` file here)
-      description: Optional but very useful. Only the file named `vedetta-report-xxxxxx.txt`.
+      label: Encrypted export (drag the `.txt` file onto this box)
+      description: "Optional but very useful. Drag the file `vedetta-report-xxxxxx.txt` onto the box below, or click the small \"Add Files\" link at the bottom of the box. Only that file."
+      placeholder: "Drop vedetta-report-xxxxxx.txt here"
 
   - type: checkboxes
     id: privacy

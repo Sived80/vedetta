@@ -305,7 +305,7 @@
   "js.ha.export.title": "Esporta per l'analisi",
   "js.ha.export.working": "Preparo il file…",
   "js.ha.export.done": "File esportato",
-  "js.ha.export.failed": "Esportazione non riuscita",
+  "js.ha.export.failed": "Esportazione non riuscita. Il motivo è scritto nel registro dell'app (la scheda Registro in fondo alla pagina).",
   "js.ha.brand_src.ha": "Home Assistant",
   "js.ha.share.add": "Condividi con HA",
   "js.ha.share.remove": "Rimuovi da HA",

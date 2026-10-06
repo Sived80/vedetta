@@ -305,7 +305,7 @@
   "js.ha.export.title": "Export for analysis",
   "js.ha.export.working": "Preparing the file…",
   "js.ha.export.done": "File exported",
-  "js.ha.export.failed": "Export failed",
+  "js.ha.export.failed": "Export failed. The reason is written in the app log (the Log card at the bottom of the page).",
   "js.ha.brand_src.ha": "Home Assistant",
   "js.ha.share.add": "Share with HA",
   "js.ha.share.remove": "Remove from HA",

@@ -69,6 +69,12 @@ export.build_zip = refused
 for plain in (False, True):
     r = asyncio.run(routes_ha.api_export(plain=plain))
     assert r.status_code == 422 and b"masking_failed" in r.body and b"192" not in r.body
+def broken_build():
+    raise RuntimeError("disk full")
+export.build_zip = broken_build
+for plain in (False, True):
+    r = asyncio.run(routes_ha.api_export(plain=plain))
+    assert r.status_code == 500 and b"export_failed" in r.body and b"disk full" not in r.body     # a clear answer, the reason goes to the log
 export.build_zip = good_build
 report_crypto.seal = real_seal
 print("TUTTO OK")

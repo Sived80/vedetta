@@ -48,7 +48,7 @@ _SECRET_KEY = re.compile(r"pass|token|secret|api_?key|credential|authorization",
 _PRIVATE_KEYS = {"user", "username", "mqtt_user", "mqtt_username", "mqtt_host"}
 # whatever still looks like a real home network or a person after the masking: used to refuse the export
 _HOME_DOT = re.compile(r"(?<![\d.])(?:192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}(?!\d|\.\d)")   # same edges as _IPV4: what the masking would have masked
-_MAC = re.compile(r"(?<![0-9A-Fa-f:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])")
+_MAC = re.compile(r"(?<![0-9A-Za-z])(?<![^0-9A-Za-z][0-9A-Fa-f]{2}[:\-])(?<!^[0-9A-Fa-f]{2}[:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])(?!\2[0-9A-Fa-f]{2}\2[0-9A-Fa-f]{2})")
 
 
 def _norm(text: str) -> str:
@@ -78,7 +78,7 @@ def _brand_in(brand: str, name: str) -> bool:
 
 _WELL_KNOWN = {"1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112", "208.67.222.222", "208.67.220.220",
                "94.140.14.14", "94.140.15.15", "255.255.255.255"}
-_VERSION_WORD = re.compile(r"(?i)(version|versione|firmware|fw|build|release|ver|v)\W{0,3}$")
+_VERSION_WORD = re.compile(r"(?i)(?<![a-z])(version|versione|firmware|fw|build|release|ver|v)\W{0,3}$")      # a whole word: not the end of "Server" or "DISCOVER"
 
 
 def _ip_ok(ip: str) -> bool:
@@ -289,12 +289,13 @@ class Anonymizer:
 
     def _mac_re(self, low: str):
         """A real MAC in the text, written like text() would have masked it (whole, not part of a longer run of hex digits)."""
-        forms = []
-        for mac in self._macs:
-            forms += [mac, mac.replace(":", "-"), mac.replace(":", "")]
-        if getattr(self, "_mac_forms", None) != len(forms):
-            self._mac_forms = len(forms)
-            self._mac_rx = re.compile(r"(?<![0-9a-f:\-])(?:" + "|".join(re.escape(f) for f in forms) + r")(?![0-9a-f])")
+        if getattr(self, "_mac_forms", None) != len(self._macs):
+            self._mac_forms = len(self._macs)
+            chain = [m for mac in self._macs for m in (mac, mac.replace(":", "-"))]
+            flat = [mac.replace(":", "") for mac in self._macs]
+            self._mac_rx = re.compile(
+                r"(?<![0-9a-z])(?<![^0-9a-z][0-9a-f]{2}[:\-])(?<!^[0-9a-f]{2}[:\-])(?:" + "|".join(re.escape(f) for f in chain) + r")(?![0-9a-f])(?![:\-][0-9a-f]{2}[:\-][0-9a-f]{2})"
+                + r"|(?<![0-9a-f])(?:" + "|".join(re.escape(f) for f in flat) + r")(?![0-9a-f])")
         return self._mac_rx.search(low)
 
     def leaks_data(self, obj, key: str = "") -> list[str]:

@@ -81,10 +81,21 @@ class MaskingFailed(RuntimeError):
 last_omitted: list[dict] = []     # files left out of the last export (the route tells the person)
 
 
-def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:
+def _clean_lines(text: str, anon: anonymize.Anonymizer) -> tuple[str, dict]:
+    """Replaces every line that still has something readable by a note that says only the kind of problem."""
+    kept, kinds_count = [], {}
+    for line in text.split(chr(10)):
+        kinds = anon.leaks(line) if line else []
+        for k in kinds:
+            kinds_count[k] = kinds_count.get(k, 0) + 1
+        kept.append(f"[line removed: {', '.join(kinds)}]" if kinds else line)
+    return chr(10).join(kept), kinds_count
+
+
+def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer, report: list | None = None) -> str:
     """JSON and JSON lines are walked (the fields that describe the device stay as they are); the rest is plain text.
-    The result is checked: if anything readable is left, the file is masked again as plain text and, if it still
-    is not clean, the whole export is refused."""
+    The result is checked. If anything readable is left the file is masked again as plain text and, if a few lines still are
+    not clean, only those lines are replaced by a note. The file is given up (MaskingFailed) only if that does not work."""
     try:
         if name.endswith(".json"):
             data = anon.data(json.loads(text))
@@ -98,8 +109,18 @@ def _anonymize_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:
         pass
     out = anon.text(text)
     left = anon.leaks(out)
-    if left:
-        raise MaskingFailed(f"{name}: {', '.join(left)}")
+    if not left:
+        return out
+    out, dropped = _clean_lines(out, anon)
+    if anon.leaks(out):
+        raise MaskingFailed(f"{name}: {', '.join(sorted(left))}")
+    if name.endswith(".json"):
+        try:
+            json.loads(out)
+        except ValueError:
+            raise MaskingFailed(f"{name}: {', '.join(sorted(left))}") from None
+    if report is not None:
+        report.append({"file": name, "lines_removed": sum(dropped.values()), "problem": ", ".join(sorted(dropped))})
     return out
 
 
@@ -145,7 +166,7 @@ def build_zip() -> bytes:
     from .routes_ha import device_debug
     from . import ha_data
     data_dir = paths.DATA_DIR
-    manifest = {"omitted": [], "created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
+    manifest = {"omitted": [], "lines_removed": [], "created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
                 "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
     anon = _collect(state.sorted_devices())
     # facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
@@ -164,7 +185,7 @@ def build_zip() -> bytes:
         def put(name: str, content: bytes | str, text: bool = True):
             if text:
                 try:
-                    content = _anonymize_text(name, content if isinstance(content, str) else content.decode("utf-8"), anon)
+                    content = _anonymize_text(name, content if isinstance(content, str) else content.decode("utf-8"), anon, manifest["lines_removed"])
                 except UnicodeDecodeError:       # not text: it cannot be anonymised, so it is left out
                     manifest["notes"].append(f"{name}: binary file not included")
                     return

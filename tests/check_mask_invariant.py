@@ -25,11 +25,17 @@ SAFE = [
     "time 12:34:56.789 on 2026-10-06 10-06-12-30", "ptr 4.3.2.1.in-addr.arpa", "80/tcp open http nginx 1.18.0 (Ubuntu)", "ntp 216.239.35.0 and 17.253.14.125",
     "update from 52.84.123.4", "hostname=Android-1234abcd", "ssid HomeWifi bssid 00:11:22:33:44:55", "contact admin@example.org", "password: **** token=abc123",
     "id scan-192-168-1-5, scan_192_168_1_5, scan-172-20-4-7, host-192-168-77-1", "from 192.168.1.5 to 192.168.1.5.1 and 172.16.1.2.3",
+    "mac:F0:18:98:AA:BB:CC bssid=f0-18-98-aa-bb-cc ether f0:18:98:aa:bb:cc, hwaddr:F0:18:98:AA:BB:CC.", "Server: 93.184.216.34 and DHCP DISCOVER: 93.184.216.34",
     "Anna's iPhone joined, giulia-ipad left, Salotto TV Samsung is on, F0:18:98:AA:BB:CC", "public 93.184.216.34 and a hop 81.174.0.21",
 ]
 for line in SAFE:
     out = a.text(line)
     assert a.leaks(out) == [], (line, out, a.leaks(out))
+
+# a MAC is six pairs: a longer run (an SSH fingerprint, an EUI-64) is not touched, a MAC after a word and a colon is
+assert a.text("fp 9b:e9:0b:ab:cd:ef:01:23 and 9b-e9-0b-ab-cd-ef-01-02") == "fp 9b:e9:0b:ab:cd:ef:01:23 and 9b-e9-0b-ab-cd-ef-01-02"      # eight pairs: not a MAC
+assert "f0:18:98:aa:bb:cc" not in a.text("mac:f0:18:98:aa:bb:cc").lower() and "f0:18:98:aa:bb:cc" not in a.text("seen,F0:18:98:AA:BB:CC;").lower()
+assert a.leaks("mac:f0:18:98:aa:bb:cc") == ["MAC address"] and a.leaks("x f0-18-98-aa-bb-cc.") == ["MAC address"]
 
 # and the other way: what must not be left is found
 for line, kind in [("host 192.168.9.9 up", "home network address"), ("id scan-192-168-9-9", "home network address"), ("mac f0:18:98:aa:bb:cc", "MAC address"),

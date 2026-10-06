@@ -166,6 +166,9 @@ async def api_export(plain: bool = False):
     except export.MaskingFailed as exc:
         logger.warning("Export refused: the masking left something readable (%s)", exc)    # kinds and file only, never values
         return JSONResponse({"error": "masking_failed"}, status_code=422, headers=headers)
+    except Exception:                                  # whatever else goes wrong: the reason is in the log, the person gets a clear answer
+        logger.exception("Export failed")
+        return JSONResponse({"error": "export_failed"}, status_code=500, headers=headers)
     if plain:
         name = "vedetta-analisi-" + time.strftime("%Y%m%d-%H%M%S") + ".zip"
         return Response(content=data, media_type="application/zip", headers={**headers, "Content-Disposition": f'attachment; filename="{name}"'})

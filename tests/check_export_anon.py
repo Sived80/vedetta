@@ -60,9 +60,12 @@ assert c.leaks("id deadf018 98aabbccdeadbeef and ab:f0:18:98:aa:bb:cc:dd") == []
 assert c.leaks("mac f0:18:98:aa:bb:cc") == ["MAC address"] and c.leaks("f01898aabbcc!") == ["MAC address"]
 assert c.leaks(c.text("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) == []
 assert c.leaks_data({"brand": "Anna's iPhone", "ssh_hostkey": "192.168.7.5"}) == []                   # fields kept on purpose are not judged
-# a file that cannot be masked is refused, never delivered
+# a file the masking cannot clean is never delivered as it is: a log loses only the lines, a JSON that would break is given up
+Broken = type("Broken", (anonymize.Anonymizer,), {"text": lambda self, s: s})
+bk = Broken()
+assert export._anonymize_text("data/x.log", "host 192.168.7.5", bk) == "[line removed: home network address]"
 try:
-    export._anonymize_text("data/x.log", "host 192.168.7.5", type("Broken", (anonymize.Anonymizer,), {"text": lambda self, s: s})())
+    export._anonymize_text("data/x.json", chr(10).join(['{"a": 1,', ' "b": "192.168.7.5"}']), bk)
     raise AssertionError("a leaking file was accepted")
 except export.MaskingFailed:
     pass
@@ -129,12 +132,29 @@ assert mapping["names"]["iPad-1"] and mapping["macs"]["f0:18:98:00:00:01"] == "f
 # the second export does not take the mapping file for data
 with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
     assert not any("export_mapping" in n for n in z.namelist())
+# --- a line the masking cannot clean is replaced by a note, the rest of the file is kept
+NL = chr(10)
+
+
+class Lazy(anonymize.Anonymizer):
+    def text(self, s):
+        return NL.join(l if "SKIPME" in l else super(Lazy, self).text(l) for l in s.split(NL))
+
+
+lz = Lazy()
+lz.add_ip("192.168.5.5")
+report = []
+out = export._anonymize_text("data/x.log", NL.join(["ok 192.168.5.5", "SKIPME 192.168.5.5", "fine"]), lz, report)
+assert out.split(NL) == ["ok 10.0.0.5", "[line removed: home network address]", "fine"], out
+assert report == [{"file": "data/x.log", "lines_removed": 1, "problem": "home network address"}], report
+assert export._anonymize_text("data/y.log", "all 192.168.5.5 fine", lz, report) == "all 10.0.0.5 fine" and len(report) == 1
+
 # --- the export keeps going when one file cannot be masked: that file is left out, the manifest says which and why
 orig_text = export._anonymize_text
-def refuse_log(name, text, anon_):
+def refuse_log(name, text, anon_, report=None):
     if name.endswith("app.log"):
         raise export.MaskingFailed(f"{name}: name")
-    return orig_text(name, text, anon_)
+    return orig_text(name, text, anon_, report)
 export._anonymize_text = refuse_log
 try:
     with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:

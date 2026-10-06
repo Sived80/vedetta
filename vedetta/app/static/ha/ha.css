@@ -1264,7 +1264,7 @@
 
 /* Scheda delle prove: barra di certezza e ipotesi respinte. */
 @layer overrides {
-  .mi-section.ev { margin-top: 12px; }
+  .mi-section.evc { margin-top: 12px; }
   .ev-row { padding: 10px 0; border-top: 1px solid var(--divider-color); }
   .ev-head { display: flex; align-items: baseline; gap: 8px; }
   .ev-label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); min-width: 56px; }

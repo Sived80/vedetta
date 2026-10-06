@@ -1923,7 +1923,7 @@
       '<button type="button" class="rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
       '<button type="button" class="rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
       '<div class="mi-graph" id="mi-graph"><div class="skeleton sk-graph"></div></div></section>' +
-      '<section class="mi-section ev" id="mi-evidence" hidden></section>' +
+      '<section class="mi-section evc" id="mi-evidence" hidden></section>' +
       '<section class="mi-section attrs"><dl class="attr-list" id="mi-attrs"></dl></section><div id="mi-debug"></div></div>' +
       '<div class="mi-actions" id="mi-actions"></div></div>';
     miHero(d);

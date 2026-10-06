@@ -584,31 +584,50 @@
     if (exportDlg.open && typeof exportDlg.close === "function") exportDlg.close(); else exportDlg.removeAttribute("open");
   }
   function openExport() {
+    function opt(ic, title, text) {
+      return '<div class="exp-opt">' + icon(ic) + '<div><b>' + esc(t(title)) + "</b><span>" + esc(t(text)) + "</span></div></div>";
+    }
     exportDlg.innerHTML = '<div class="mi"><div class="mi-header"><div class="mi-titles"><h2 class="mi-title" id="exportdlg-title">' + esc(t("js.ha.export.title")) + "</h2></div></div>" +
-      '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("download") + "</span><p>" + esc(t("js.ha.export.text")) + "</p></div></div>" +
+      '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("shield-home") + "</span><p>" + esc(t("js.ha.export.safe")) + "</p></div>" +
+      opt("download", "js.ha.export.enc_title", "js.ha.export.enc_text") + opt("download", "js.ha.export.plain_title", "js.ha.export.plain_text") + "</div>" +
       '<div class="mi-actions"><button type="button" class="btn text rp" data-export-do="cancel">' + esc(t("js.ha.cancel")) + "</button>" +
-      '<button type="button" class="btn filled rp" data-export-do="start">' + esc(t("js.ha.export.start")) + "</button></div></div>";
+      '<div class="split exp-split"><button type="button" class="btn outlined rp" data-export-do="enc">' + icon("download") + "<span>" + esc(t("js.ha.export.start_enc")) + "</span></button>" +
+      '<button type="button" class="btn outlined rp split-more" data-export-do="more" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(t("js.ha.export.more")) + '">' + icon("chevron-down") + "</button>" +
+      '<div class="menu exp-menu" role="menu" hidden><button type="button" class="menu-item dm-item rp" role="menuitem" data-export-do="plain">' + icon("download") + '<span class="dm-text"><b>' +
+      esc(t("js.ha.export.plain_title")) + "</b><span>" + esc(t("js.ha.export.plain_hint")) + "</span></span></button></div></div></div></div>";
     if (typeof exportDlg.showModal === "function") exportDlg.showModal(); else exportDlg.setAttribute("open", "");
   }
-  exportDlg.addEventListener("click", function (e) {
-    if (e.target === exportDlg) return closeExport();
-    var b = e.target.closest("[data-export-do]");
-    if (!b) return;
-    if (b.dataset.exportDo === "cancel") return closeExport();
-    b.disabled = true;
+  function toggleExportMenu(open) {
+    var menu = exportDlg.querySelector(".exp-menu"), more = exportDlg.querySelector('[data-export-do="more"]');
+    if (!menu) return;
+    if (open === undefined) open = menu.hidden;
+    menu.hidden = !open;
+    if (more) more.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  function runExport(plain) {
     closeExport();
     snack(t("js.ha.export.working"), { ms: 4000 });
-    fetch("/api/export", { method: "POST", headers: { "X-Lang": LANG }, cache: "no-store" }).then(function (r) {
+    fetch("/api/export" + (plain ? "?plain=1" : ""), { method: "POST", headers: { "X-Lang": LANG }, cache: "no-store" }).then(function (r) {
+      if (r.status === 501) { var e = new Error("crypto"); e.crypto = true; throw e; }
       if (!r.ok) throw new Error("HTTP " + r.status);
       var m = /filename="([^"]+)"/.exec(r.headers.get("Content-Disposition") || "");
-      return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-analisi.zip" }; });
+      return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-report.txt" }; });
     }).then(function (f) {
       var a = document.createElement("a");
       a.href = URL.createObjectURL(f.blob); a.download = f.name;
       document.body.appendChild(a); a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
-      snack(t("js.ha.export.done"), { kind: "success" });
-    }).catch(function () { snack(t("js.ha.export.failed"), { kind: "error" }); });
+      snack(t(plain ? "js.ha.export.done_plain" : "js.ha.export.done"), { kind: "success" });
+    }).catch(function (err) { snack(t(err && err.crypto ? "js.ha.export.no_crypto" : "js.ha.export.failed"), { kind: "error" }); });
+  }
+  exportDlg.addEventListener("click", function (e) {
+    if (e.target === exportDlg) return closeExport();
+    var b = e.target.closest("[data-export-do]");
+    if (!b) { toggleExportMenu(false); return; }
+    var what = b.dataset.exportDo;
+    if (what === "cancel") return closeExport();
+    if (what === "more") return toggleExportMenu();
+    if (what === "enc" || what === "plain") runExport(what === "plain");
   });
 
   // ------------------------------------------------- deep search

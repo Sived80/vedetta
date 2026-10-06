@@ -307,8 +307,6 @@
   "js.ha.dbg.roles": "Ruoli",
   "js.ha.dbg.scan": "Scansione",
   "js.ha.export.title": "Esporta per l'analisi",
-  "js.ha.export.text": "Crea un file zip con configurazione, storico e il motivo di nome, marca e categoria di ogni dispositivo, per analizzare e correggere gli errori. Indirizzi IP, MAC e nomi sono anonimizzati (lo stesso valore ha sempre lo stesso segnaposto, così le relazioni restano leggibili) e le password sono escluse. Non pubblicarlo in luoghi pubblici: consegnalo in privato. Non viene inviato da nessuna parte: lo scarichi tu.",
-  "js.ha.export.start": "Esporta",
   "js.ha.export.working": "Preparo il file…",
   "js.ha.export.done": "File esportato",
   "js.ha.export.failed": "Esportazione non riuscita",
@@ -317,5 +315,15 @@
   "js.ha.share.remove": "Rimuovi da HA",
   "js.ha.share.added": "Condiviso con Home Assistant",
   "js.ha.share.removed": "Rimosso da Home Assistant",
-  "js.ha.dbg.evidence": "Indizi"
+  "js.ha.dbg.evidence": "Indizi",
+  "js.ha.export.safe": "Prima di creare il file, gli indirizzi IP e MAC e i nomi dei dispositivi vengono mascherati e le password sono escluse. Non viene inviato niente: il file lo scarichi tu.",
+  "js.ha.export.enc_title": "Export cifrato (il pulsante)",
+  "js.ha.export.enc_text": "Per segnalare un errore: allega il file a una issue su GitHub. Solo l'autore di Vedetta può aprirlo, anche se la issue è pubblica.",
+  "js.ha.export.plain_title": "Export in chiaro (la freccia)",
+  "js.ha.export.plain_text": "Per leggerlo tu o consegnarlo in privato. Non è cifrato: non pubblicarlo in luoghi pubblici.",
+  "js.ha.export.plain_hint": "Non cifrato: per te o per una persona di fiducia, mai in pubblico",
+  "js.ha.export.start_enc": "Export cifrato",
+  "js.ha.export.more": "Altre opzioni di export",
+  "js.ha.export.done_plain": "File in chiaro esportato (non cifrato)",
+  "js.ha.export.no_crypto": "La cifratura non è disponibile in questa versione dell'app: non è stato esportato niente."
 }

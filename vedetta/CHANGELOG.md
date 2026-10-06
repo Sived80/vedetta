@@ -2,6 +2,7 @@
 
 ## 0.3.7
 - Export for analysis is anonymised: IPs keep the last number (`10.0.0.x`), MAC addresses keep the manufacturer prefix, names of devices, areas, DHCP and Bonjour hostnames become `iPhone-1`, `Thermostat-1`, `Area-2`... The same value always gets the same placeholder in every file (JSON, log, history database), brand, type, ports, times and scores are left as they are, and the real devices are not touched. The table placeholder → real value stays on your machine and is never in the zip.
+- Two ways to export: the button makes an **encrypted** `.txt` (sealed with the author's public key, safe to attach to a public GitHub issue), the arrow next to it a **plain** `.zip` for you or someone you trust. The dialog explains what each one is for. If encryption is unavailable nothing is exported: it never falls back to a plain file.
 ## 0.3.6
 - Brand logos reach more devices: "AdGuard Team" (the name Home Assistant gives) is recognized as AdGuard, a host named "MSI" is an MSI, and a host named "Node-RED" (or serving its page) is Node-RED, even when the network card or the virtual machine says something else.
 

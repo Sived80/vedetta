@@ -5,6 +5,7 @@ classic dashboard: it reads the shared state (state) and the history (history) a
 for actions (refresh, wake, rename, ignore) the UI uses the already existing
 endpoints of main.py."""
 import asyncio
+import secrets
 import json
 import time
 from pathlib import Path
@@ -139,13 +140,23 @@ def device_debug(device_id: str) -> dict | None:
 
 
 @router.post("/api/export")
-async def api_export():
-    """Zip for analysis (data, state and reasons of every device). POST: so it is not downloaded by accident through a link."""
-    from fastapi.responses import Response
-    from . import export
+async def api_export(plain: bool = False):
+    """Zip for analysis (data, state and reasons of every device), anonymised. By default it is encrypted with the
+    maintainer's public key (safe to attach to a public issue); ?plain=1 gives the plain zip. POST: so it is not
+    downloaded by accident through a link."""
+    from fastapi.responses import JSONResponse, Response
+    from . import export, report_crypto
     data = await asyncio.to_thread(export.build_zip)
-    name = "vedetta-analisi-" + time.strftime("%Y%m%d-%H%M%S") + ".zip"
-    return Response(content=data, media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"', "Cache-Control": "no-store"})
+    headers = {"Cache-Control": "no-store"}
+    if plain:
+        name = "vedetta-analisi-" + time.strftime("%Y%m%d-%H%M%S") + ".zip"
+        return Response(content=data, media_type="application/zip", headers={**headers, "Content-Disposition": f'attachment; filename="{name}"'})
+    try:
+        sealed = await asyncio.to_thread(report_crypto.seal, data)
+    except report_crypto.CryptoUnavailable:
+        return JSONResponse({"error": "encryption_unavailable"}, status_code=501, headers=headers)   # never a plain file by mistake
+    name = "vedetta-report-" + secrets.token_hex(3) + ".txt"      # neutral name: no date, no device
+    return Response(content=sealed, media_type="text/plain", headers={**headers, "Content-Disposition": f'attachment; filename="{name}"'})
 
 
 @router.get("/api/ha/registry/status")

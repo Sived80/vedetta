@@ -19,6 +19,7 @@ versions pinned there and everything they pull in. Licenses were read from the i
 | python-multipart | 0.0.9 | Apache-2.0 |
 | zeroconf | 0.151.5 | LGPL-2.1-or-later |
 | paho-mqtt | 2.1.0 | EPL-2.0 OR BSD-3-Clause |
+| PyNaCl (with cffi, pycparser) | 1.6.2 | Apache-2.0 (cffi: MIT, pycparser: BSD-3-Clause; the wheels include libsodium, ISC) |
 | starlette | 0.38.6 | BSD-3-Clause |
 | pydantic, pydantic-core, annotated-types, typing-inspection | 2.x | MIT |
 | anyio, h11, httptools, ifaddr, watchfiles | various | MIT |

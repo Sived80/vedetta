@@ -217,7 +217,24 @@ A generated name is never counted as evidence for the category — the app does 
 - 🌐 The only outbound requests are a periodic update of the MAC-vendor table and the optional public-IP check.
 - 🔒 Home Assistant access is **read-only by construction**: only registry reads, no services, no writes.
 - 🚪 The ingress panel only accepts the Supervisor. Passwords are never exported.
-- 📦 *Export for analysis* (menu) builds a local zip for **you** to read or hand over; it is never sent anywhere.
+- 📦 *Export for analysis* (menu) builds a local zip with IPs, MAC addresses and names **masked before the file is created**; it is never sent anywhere. See [Report a mistake](#report-a-mistake) just below.
+
+### Report a mistake
+
+Vedetta got a device wrong? Open an issue on GitHub and attach an export, **all in one place**. Menu → *Export for analysis* has two ways to export:
+
+| What you press | What you get | What it is for |
+|---|---|---|
+| **Encrypted export** (the button) | A `.txt` file that only the author of Vedetta can open | **Attach it to a GitHub issue.** It is safe even if the issue is public. |
+| **Plain export** (the arrow next to the button) | A `.zip` that is not encrypted | To read it yourself or hand it over to someone you trust. **Never post it in public.** |
+
+**Both are masked before the file is created**, so nothing personal is in them to start with:
+
+- IP addresses keep only the last number (`10.0.0.x`); MAC addresses keep only the manufacturer prefix, which is what shows the brand.
+- Names of devices, areas, DHCP and Bonjour hostnames become `iPhone-1`, `Thermostat-1`, `Area-2`… The same value always gets the same placeholder, so the relations stay readable.
+- Your public IP is masked too, and every password or token is left out. Nothing is sent anywhere: you download the file yourself.
+
+How it is encrypted: the file is sealed with the public key in [`vedetta/app/data/report_key.pub`](vedetta/app/data/report_key.pub) (fingerprint `84ba-bfcc-4706-163d`), and only the private key, which never leaves the author’s computer, can open it. The table that says which placeholder is which device stays in your own `/data`. If the encryption is not available in your version, Vedetta tells you and exports nothing: it never falls back to a plain file by mistake. The author opens the file with [`tools/open_report.py`](tools/open_report.py).
 
 <h2 id="install"><img src="docs/images/section-install.svg" alt="Install" width="100%"></h2>
 

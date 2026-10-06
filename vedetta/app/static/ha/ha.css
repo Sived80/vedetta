@@ -1247,3 +1247,17 @@
   .batt-line { display: inline-flex; align-items: center; gap: 8px; }
   .batt-line .mdi { width: 18px; height: 18px; }
 }
+
+/* Dialogo di export: due opzioni spiegate e pulsante diviso come "Scansiona la rete". */
+@layer overrides {
+  .exp-opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--divider-color); }
+  .exp-opt .mdi { width: 22px; height: 22px; flex: none; margin-top: 2px; color: var(--secondary-text-color); }
+  .exp-opt b { display: block; font-size: 14px; font-weight: 500; }
+  .exp-opt span { display: block; font-size: 13px; line-height: 1.45; color: var(--secondary-text-color); }
+  .exp-split { position: relative; }
+  .exp-split > .btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .exp-split .split-more { min-width: 0; padding: 0 8px; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
+  .exp-split .split-more .mdi { width: 20px; height: 20px; }
+  .exp-split .exp-menu { position: absolute; top: auto; bottom: calc(100% + 4px); right: 0; width: min(320px, calc(100vw - 48px)); padding: 8px 0; transform-origin: bottom right; }
+  .exp-split .exp-menu[hidden] { display: none; }
+}

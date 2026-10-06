@@ -9,13 +9,18 @@ LOG_PATH = CONFIG_DIR / "dashboard.log"
 _MAX_ENTRIES = 500
 _SEP = "\t"
 
-# The container has the UTC time zone: the log time must be written explicitly in
-# Italian time, otherwise it is 1-2 hours off from the real clock.
-TZ = ZoneInfo("Europe/Rome")
+# The container has the UTC time zone: the log time must be written explicitly in the user's time zone
+# (the one of Home Assistant, see ha_tz), otherwise it is hours off from the real clock.
+def _tz():
+    try:
+        from . import ha_tz   # late import: ha_tz writes to this log
+        return ha_tz.zone()
+    except Exception:
+        return ZoneInfo("Europe/Rome")
 
 
 def _display_time(timestamp: float) -> str:
-    return datetime.fromtimestamp(timestamp, TZ).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.fromtimestamp(timestamp, _tz()).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _parse_stored_time(text: str) -> str:
@@ -26,7 +31,7 @@ def _parse_stored_time(text: str) -> str:
             moment = datetime.strptime(text, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
         else:
             moment = datetime.fromisoformat(text)
-        return moment.astimezone(TZ).strftime("%Y-%m-%d %H:%M:%S")
+        return moment.astimezone(_tz()).strftime("%Y-%m-%d %H:%M:%S")
     except ValueError:
         return text
 
@@ -66,7 +71,7 @@ class _BufferHandler(logging.Handler):
 
 class _FileFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        when = datetime.fromtimestamp(record.created, TZ).isoformat(timespec="seconds")
+        when = datetime.fromtimestamp(record.created, _tz()).isoformat(timespec="seconds")
         message = record.getMessage().replace("\n", " ").replace(_SEP, " ")
         return f"{when}{_SEP}{record.levelname}{_SEP}{message}"
 

@@ -203,10 +203,6 @@
   "js.ha.deep.all_text": "Analyses all {n} devices in depth: open services and web page. It is the slowest search and may take several minutes. The list updates by itself.",
   "js.ha.deep.done": "Deep search finished",
   "js.ha.deep.none": "No devices to analyse yet",
-  "js.ha.deep.menu_title": "Deep search…",
-  "js.ha.deep.menu_hint": "Analyse all devices in depth",
-  "js.ha.deep.menu_pending_title": "Deep search: not yet analysed…",
-  "js.ha.deep.menu_pending_hint": "Only devices never analysed in depth: {n}",
   "js.ha.deep.menu_pending_none": "All devices have already been analysed in depth",
   "js.ha.deep.pending_text": "Analyses in depth the {n} devices that have not been analysed in depth yet: open services and web page. It may take several minutes. The list updates by itself.",
   "js.ha.brand_unknown": "not determined",
@@ -405,5 +401,12 @@
   "js.ha.attr.name": "Name",
   "js.ha.ev.info": "How sure is Vedetta: {what}",
   "js.ha.ev.bsrc.web": "its web page",
-  "js.ha.ev.bsrc.dhcp": "its DHCP fingerprint"
+  "js.ha.ev.bsrc.dhcp": "its DHCP fingerprint",
+  "js.ha.deep.tile_all": "All",
+  "js.ha.deep.tile_all_sub": "every device",
+  "js.ha.deep.tile_pending": "To analyse",
+  "js.ha.deep.tile_pending_sub": "never analysed",
+  "js.ha.deep.tile_pending_done": "all analysed",
+  "js.ha.deep.badge": "{n} devices never analysed in depth",
+  "js.ha.deep.note": "Deep search reads open ports, services and the web page. Tonight at {hour} it starts by itself for the devices never analysed."
 }

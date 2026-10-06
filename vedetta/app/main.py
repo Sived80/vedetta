@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import blocklist, ha_registry, mdns_listener, devices_config, dhcp, i18n, journal, roles, naming, newdevices, scanner, settings, wol
+from . import blocklist, ha_registry, ha_tz, mdns_listener, devices_config, dhcp, i18n, journal, roles, naming, newdevices, scanner, settings, wol
 from .applog import logger
 from .history import history
 from .ingress import IngressMiddleware, template_context
@@ -29,6 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent
 async def lifespan(_: FastAPI):
     await state.load_history()
     state.start()
+    asyncio.create_task(ha_tz.refresh(force=True))   # the user's time zone, from Home Assistant
     nightly = asyncio.create_task(nightly_loop())
     dhcp_transport = await dhcp.start()
     ha_registry.start()  # Home Assistant registry (read-only; empty outside HA)

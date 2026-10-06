@@ -1,16 +1,14 @@
 import asyncio
 import time
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
-from . import devices_config, pipeline
+from . import devices_config, ha_tz, pipeline
 from .applog import logger
 from .history import history
 from .netutil import filter_local_ips
 from .rescan import rescan_device
 
-TZ = ZoneInfo("Europe/Rome")
-NIGHT_HOUR = 3
+NIGHT_HOUR = 3    # local time of Home Assistant (ha_tz)
 STALE_DAYS = 7
 
 
@@ -53,12 +51,17 @@ async def run_nightly() -> None:
         logger.warning("Manutenzione notturna: aggiornamento prefissi MAC non riuscito (%s)", exc)
 
 
+def is_night(now: datetime) -> bool:
+    return now.hour == NIGHT_HOUR
+
+
 async def nightly_loop() -> None:
     while True:
         await asyncio.sleep(60)
         try:
-            now = datetime.now(TZ)
-            if now.hour != NIGHT_HOUR:
+            await ha_tz.refresh()
+            now = ha_tz.now()
+            if not is_night(now):
                 continue
             today = now.date().isoformat()
             if await asyncio.to_thread(history.meta_get, "last_nightly") == today:

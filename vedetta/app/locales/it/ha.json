@@ -203,10 +203,6 @@
   "js.ha.deep.all_text": "Analizza a fondo tutti i {n} dispositivi: servizi aperti e pagina web. È la ricerca più lenta e può richiedere alcuni minuti. L'elenco si aggiorna da solo.",
   "js.ha.deep.done": "Ricerca approfondita terminata",
   "js.ha.deep.none": "Ancora nessun dispositivo da analizzare",
-  "js.ha.deep.menu_title": "Ricerca approfondita…",
-  "js.ha.deep.menu_hint": "Analizza a fondo tutti i dispositivi",
-  "js.ha.deep.menu_pending_title": "Ricerca approfondita: solo mancanti…",
-  "js.ha.deep.menu_pending_hint": "Solo i dispositivi mai analizzati a fondo: {n}",
   "js.ha.deep.menu_pending_none": "Tutti i dispositivi sono già stati analizzati a fondo",
   "js.ha.deep.pending_text": "Analizza a fondo i {n} dispositivi non ancora analizzati: servizi aperti e pagina web. Può richiedere alcuni minuti. L'elenco si aggiorna da solo.",
   "js.ha.brand_unknown": "non determinata",
@@ -405,5 +401,12 @@
   "js.ha.attr.name": "Nome",
   "js.ha.ev.info": "Quanto è sicura Vedetta: {what}",
   "js.ha.ev.bsrc.web": "la sua pagina web",
-  "js.ha.ev.bsrc.dhcp": "l'impronta DHCP"
+  "js.ha.ev.bsrc.dhcp": "l'impronta DHCP",
+  "js.ha.deep.tile_all": "Tutti",
+  "js.ha.deep.tile_all_sub": "i dispositivi",
+  "js.ha.deep.tile_pending": "Da analizzare",
+  "js.ha.deep.tile_pending_sub": "mai analizzati",
+  "js.ha.deep.tile_pending_done": "tutti analizzati",
+  "js.ha.deep.badge": "{n} dispositivi mai analizzati a fondo",
+  "js.ha.deep.note": "La ricerca approfondita legge porte aperte, servizi e pagina web. Stanotte alle {hour} parte da sola per quelli mai analizzati."
 }

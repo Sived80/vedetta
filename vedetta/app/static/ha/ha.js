@@ -799,8 +799,12 @@
       var r = liveEl.getBoundingClientRect();
       pauseEl.style.top = Math.round(r.bottom + 4) + "px";
       pauseEl.style.right = "auto";
-      pauseEl.style.left = Math.max(8, Math.min(Math.round(r.left), window.innerWidth - 308)) + "px";
       pauseEl.style.maxHeight = Math.max(160, window.innerHeight - r.bottom - 16) + "px";
+      pauseEl.hidden = false;                                  // visible to measure its width: the centre of the menu is the centre of the button
+      var w = pauseEl.offsetWidth || 300, centre = r.left + r.width / 2;
+      var left = Math.max(8, Math.min(Math.round(centre - w / 2), window.innerWidth - w - 8));
+      pauseEl.style.left = left + "px";
+      pauseEl.style.transformOrigin = Math.round(centre - left) + "px top";
     }
     pauseEl.hidden = !open;
     liveEl.setAttribute("aria-expanded", String(open));
@@ -2310,9 +2314,9 @@
       html += '<button type="button" class="btn ' + (d.ha_share ? "outlined" : "tonal") + ' rp" data-act="share">' + icon("home-assistant") +
         "<span>" + esc(t(d.ha_share ? "js.ha.share.remove" : "js.ha.share.add")) + "</span></button>";
     }
-    html += '<button type="button" class="btn ' + (d && d.focus ? "outlined" : "tonal") + ' rp" data-act="focus">' + icon("flag") +
-      "<span>" + esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add")) + "</span></button>";
-    el.innerHTML = html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepBusy() ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+    var flagTip = esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add"));
+    var flag = '<button type="button" class="icon-btn small mi-flag rp' + (d && d.focus ? " on" : "") + '" data-act="focus" title="' + flagTip + '" aria-label="' + flagTip + '" aria-pressed="' + !!(d && d.focus) + '">' + icon("flag") + "</button>";
+    el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepBusy() ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   }
 
   function updateMore() {

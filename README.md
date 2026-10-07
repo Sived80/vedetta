@@ -64,7 +64,7 @@ Vedetta reads the Home Assistant registry **read-only**, and can publish chosen 
 
 ## Privacy and safety
 
-Everything runs **inside your network**, with no cloud, no accounts and no telemetry. Home Assistant access is read-only by construction. *Export for analysis* masks IPs, MACs, names and emails **before the file is created**, and the encrypted export can be attached to a public issue (key fingerprint `84ba-bfcc-4706-163d`). Details and how to report a mistake: [Privacy and safety](docs/PRIVACY.md).
+Everything runs **inside your network**, with no cloud, no accounts and no telemetry. Home Assistant access is read-only by construction. *Export for analysis* has two kinds: **for the developer** masks IPs, MACs, names and emails **before the file is created** and encrypts it, so it can be attached to a public issue; **for you** it is your own data, as it is. The encrypted export can be attached to a public issue (key fingerprint `84ba-bfcc-4706-163d`). Details and how to report a mistake: [Privacy and safety](docs/PRIVACY.md).
 
 ## Documentation
 

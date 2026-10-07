@@ -74,7 +74,7 @@ body:
         ### How to export (2 minutes)
         1. Open **Vedetta** from the Home Assistant sidebar.
         2. Tap the **three dots** (top right), then **Export for analysis**.
-        3. Press **Encrypted export** (the button, not the arrow). A file named `vedetta-report-xxxxxx.txt` is saved.
+        3. Choose **For the developer**, pick the days (tap the first and the last day on the columns; if the problem happened recently, the last 2 to 7 days are enough), press **Export (encrypted)** and then **Save the file**. A file named `vedetta-report-xxxxxx.txt` is saved. Tip: press the flag in the device sheet first (*Flag this device*) and write what is wrong.
         4. In the box called **Encrypted export** (just below), **drag the `.txt` file onto the box**, or click the small **Add Files** link at the bottom of that box and choose the file. When the upload ends, a line like `[vedetta-report-xxxxxx.txt](...)` appears in the box: that is what you want.
 
         Before the file is created, IPs, MACs, names and emails are masked, and only the author of Vedetta can open it. It is safe to attach even though this page is public.

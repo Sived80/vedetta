@@ -14,12 +14,13 @@ Everything stays at home: no data is sent outside your network.
 - **Search methods** (menu): which methods the three searches use (initial, associative, deep). The dot shows the
   risk: green non-intrusive, orange intrusive, red risky.
 - **Export for analysis** (menu, discreet item): builds a file with the configuration, the history and the reason behind the name, brand and
-  category of every device. **Before the file is created** IPs (the last number is kept), MAC addresses (the manufacturer prefix is kept)
+  category of every device, for the days you choose (2 to 20, or all). It asks first **who it is for**. **For the developer**, **before the file is created** IPs (the last number is kept), MAC addresses (the manufacturer prefix is kept)
   and names (`iPhone-1`, `TV-2`...) are masked, the same value always getting the same placeholder; emails become `email-1@masked.invalid`; passwords and tokens are excluded and nothing is
-  sent anywhere. A final check looks for anything still readable and, if it finds something, nothing is exported. For every device it also holds the evidence card (`state/evidence.json`) and the numbers behind "phone", never the addresses. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`).
-  - **Encrypted export** (the button): a `.txt` that only the author of Vedetta can open (it is sealed with the public key in
-    `app/data/report_key.pub`). Attach it to a GitHub issue: it is safe even if the issue is public.
-  - **Plain export** (the arrow): a `.zip` that is not encrypted, to read yourself or hand over privately. Never post it in public.
+  sent anywhere. A final check looks for anything still readable: what it finds it replaces; what it cannot replace is listed and you choose to remove it or keep it. **For me** nothing is masked (only credentials are replaced): it is your own data. For every device it also holds the evidence card (`state/evidence.json`) and the numbers behind "phone", never the addresses. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`).
+  - **For the developer**: a `.txt` that only the author of Vedetta can open (it is sealed with the public key in
+    `app/data/report_key.pub`), up to 20 MB. Attach it to a GitHub issue: it is safe even if the issue is public.
+  - **For me**: a `.zip` that is not masked and not encrypted, with no size limit, to read yourself or hand over privately. Never post it in public.
+  - **Flag this device** (the round flag in a device sheet) adds a section to the report with that card, its history and a short note.
 - **Debug mode**: 3 consecutive taps on the title of the top card (or Ctrl+Shift+D). An orange DEBUG badge stays
   visible while it is on; the card shows the clues, scores and sources of name and brand.
 

@@ -1009,11 +1009,12 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> dict |
 
 def is_web_ui(status: int | None, title: str | None, body_len: int) -> bool:
     """True if what answers on `/` is a page a person can open: a normal page (2xx/3xx with a title or some content),
-    or a login (401/403). A 404/400/5xx, an empty answer or a few bytes of API output (the REST service of a TV,
-    the control port of a streaming stick) is not a web interface, even if a web server is running."""
+    or a login that asks for credentials (401). A 403 is a refusal, not a login: the page is not for people.
+    A 404/400/5xx, an empty answer or a few bytes of API output (the REST service of a TV, the control port of a streaming stick, the UPnP
+    port of a speaker that answers 403) is not a web interface, even if a web server is running."""
     if status is None:
         return False
-    if status in (401, 403):
+    if status == 401:
         return True
     if 300 <= status < 400:
         return True

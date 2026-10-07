@@ -63,6 +63,14 @@ def _web_url(ip: str, port: int, scanned_ports: list[dict]) -> str:
     pages = [(p, _port_number(p)) for p in scanned_ports if p.get("web_ui")]
     pages = [(p, n) for p, n in pages if n is not None]
     if not pages:
+        # No page was verified. The port the device was added with is kept if it is open (or if nothing is known about the ports);
+        # if the scan shows it is closed but another open port is a web service (Glances on 61208), the button points there.
+        numbers = {_port_number(p) for p in scanned_ports} - {None}
+        web = sorted(n for n in (_port_number(p) for p in scanned_ports if p.get("category") == "web" and p.get("confirmed")) if n)
+        if numbers and port not in numbers and web:
+            n = min(web, key=lambda x: (x not in (80, 443), x))
+            entry = next(p for p in scanned_ports if _port_number(p) == n)
+            return f"{'https' if 'https' in str(entry.get('label', '')).lower() else 'http'}://{ip}:{n}"
         return f"http://{ip}:{port}"
     chosen = next((x for x in pages if x[1] == port), None) or min(pages, key=lambda x: (x[1] not in (80, 443), x[1]))
     entry, number = chosen

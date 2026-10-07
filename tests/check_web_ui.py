@@ -12,7 +12,7 @@ i18n.use("en")
 
 # --- pure rule
 assert scanner.is_web_ui(200, "Router", 500) and scanner.is_web_ui(200, None, 2000)
-assert scanner.is_web_ui(302, None, 0) and scanner.is_web_ui(401, None, 0) and scanner.is_web_ui(403, None, 10)
+assert scanner.is_web_ui(302, None, 0) and scanner.is_web_ui(401, None, 0)
 assert not scanner.is_web_ui(404, "404 Not Found", 146)      # nginx error page of a TV
 assert not scanner.is_web_ui(400, None, 0)                   # control port of a streaming stick
 assert not scanner.is_web_ui(500, "Error", 300) and not scanner.is_web_ui(None, None, 0)
@@ -69,4 +69,12 @@ assert probe._web_url("10.0.0.3", 18102, saved) == "https://10.0.0.3:18102"
 assert probe._web_url("10.0.0.3", 8009, [{"label": "8009 · x", "web_ui": False}]) == "http://10.0.0.3:8009"
 assert probe._web_url("10.0.0.3", 80, [{"label": "8080 · http", "web_ui": True, "web_scheme": "http"},
                                        {"label": "80 · http", "web_ui": True, "web_scheme": "http"}]) == "http://10.0.0.3:80"
+# a 403 is a refusal, not a login (the UPnP port 1400 of a Sonos answers 403 and was offered as "open web interface")
+assert not scanner.is_web_ui(403, None, 10) and not scanner.is_web_ui(403, "Camera login", 900)   # a refusal is not a page for people
+# the default port is closed but another port is a web service (Glances on 61208): the button points there; if the port is open it stays
+glances = [{"label": "22 · OpenSSH", "category": "remote", "confirmed": True}, {"label": "61208 · WSGIServer", "category": "web", "confirmed": True}]
+assert probe._web_url("10.0.0.2", 80, glances) == "http://10.0.0.2:61208"
+assert probe._web_url("10.0.0.2", 61208, glances) == "http://10.0.0.2:61208"
+assert probe._web_url("10.0.0.2", 80, []) == "http://10.0.0.2:80"                                      # nothing known: unchanged
+assert probe._web_url("10.0.0.2", 80, [{"label": "22 · OpenSSH", "category": "remote", "confirmed": True}]) == "http://10.0.0.2:80"
 print("TUTTO OK")

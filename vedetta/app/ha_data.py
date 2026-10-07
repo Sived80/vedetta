@@ -85,7 +85,7 @@ def _blob(device: dict) -> tuple[str, set[str], set[int]]:
     # routers, cameras and servers. It counts as a weak clue, separately (see type_scores).
     # What Home Assistant says about the device (ha_*: area, model, integration) is not what the device says about itself: the
     # integrations are counted apart, by their own table. ("mikrotik_router" as a word made every device tracked by it a router.)
-    parts += [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str) and not k.startswith("ha_")]
+    parts += [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str) and (not k.startswith("ha_") or k == "ha_model")]
     ports: set[int] = set()
     for p in device.get("scanned_ports") or []:
         label = p.get("label") or ""
@@ -95,6 +95,25 @@ def _blob(device: dict) -> tuple[str, set[str], set[int]]:
             ports.add(int(m.group(1)))
     text = " ".join(str(p) for p in parts if p).lower()
     return text, set(_TOKEN_RE.findall(text)), ports
+
+
+# Words that mean the product only in the declared model: "camera" is also the room in Italian (a device called "Camera da letto"),
+# but in a model ("lumi.camera.acn007", "C200 Camera") it is the product.
+_MODEL_WORDS = {"media": {"camera", "cameras"}}
+
+
+def _model_text(device: dict) -> tuple[str, set[str]]:
+    """The model that the device declares about itself (mDNS, UPnP, its own interface) or that Home Assistant knows: it is the name
+    of the product, so a word in it ("camera", "speaker", "router") says what the product is."""
+    parts = [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str) and (k == "model" or k.endswith("_model"))]
+    text = " ".join(parts).lower()
+    return text, set(_TOKEN_RE.findall(text))
+
+
+def _word_pts(base: int, subs, toks, model: tuple[str, set[str]]) -> int:
+    """A word that is in the declared model counts as a declaration (W_DECLARED); anywhere else in the text it counts base."""
+    text, tokens = model
+    return max(base, W_DECLARED) if (any(x in text for x in subs) or tokens & toks) else base
 
 
 def _hit(rule: dict, text: str, tokens: set[str], ports: set[int]) -> bool:
@@ -249,9 +268,13 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
         for shared in _PORT_SHARED.get(port, ()):
             add(shared, W_PORT_GUESS, "port:%s:%s" % (port, shared), "porta %s" % port)
     text, tokens, ports = _blob(device)
+    model = _model_text(device)
+    for group, words in _MODEL_WORDS.items():
+        if model[1] & words:
+            add(group, W_DECLARED, "model", "modello dichiarato")
     for kind, rule in _RULES.items():
         if any(s in text for s in rule["subs"]) or tokens & rule["toks"]:
-            add(kind, W_WORD, "words", "parola nel testo")
+            add(kind, _word_pts(W_WORD, rule["subs"], rule["toks"], model), "words", "parola nel testo")
     # Product brand (or MAC manufacturer if it only sells devices of that type); the name counts too (a PC
     # called "MSI"): the MAC manufacturer is often just the network card, the name is chosen by whoever installs the system.
     brand_tokens = set(_TOKEN_RE.findall(" ".join(filter(None, [
@@ -272,12 +295,20 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
             add(entry["group"], W_DECLARED, "ha", "integrazione HA " + dom)
         if entry and entry.get("kind") and kinds_out is not None:
             kinds_out[entry["kind"]] = kinds_out.get(entry["kind"], 0) + W_DECLARED
+    # The integration is not in the table (Daikin, Broadlink, Sonoff...): what Home Assistant does with the device still says
+    # something. A player or a camera is media; switches, lights, climate, covers... say "smart device" (little, like any platform).
+    real_kinds = set(ha_card.get("entity_domains") or []) - {"device_tracker"}
+    if real_kinds and not any(_ha_integrations().get(d) for d in (ha_card.get("domains") or [])):
+        if real_kinds & {"media_player", "camera"}:
+            add("media", W_SERVICE, "ha_entities", "entita HA " + ",".join(sorted(real_kinds & {"media_player", "camera"})))
+        else:
+            platform += 2
     declared_svc = set(services)
     declared_upnp = set(upnp_types)
     for kd in _kinds():
         pts = 0
         if any(s in text for s in kd["subs"]) or tokens & kd["toks"]:
-            word_pts = kd["w"]
+            word_pts = _word_pts(kd["w"], kd["subs"], kd["toks"], model)
             pts += word_pts
             if kd["id"] not in _PLATFORM_KINDS:
                 add(kd["group"], word_pts, "words", "parola: " + kd["id"])

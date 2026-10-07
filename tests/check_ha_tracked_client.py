@@ -30,4 +30,20 @@ other = {"id": "e", "ip": "10.0.0.3", "name": "Cam", "extra": {}, "ha_registry":
 assert ha_data.type_scores(other).get("media", 0) >= ha_data.W_DECLARED, ha_data.type_scores(other)
 tracked = dict(other, ha_registry=card(["onvif"], ["device_tracker"]))
 assert ha_data.type_scores(tracked).get("media", 0) < ha_data.W_DECLARED, ha_data.type_scores(tracked)   # any integration, any group
+# Integration not in the table: what HA does with the device still says something
+unknown_iot = {"id": "f", "ip": "10.0.0.4", "name": "AC", "extra": {}, "ha_registry": card(["some_new_integration"], ["device_tracker", "climate", "sensor"])}
+assert ha_data.infer_type(unknown_iot) == "iot", ha_data.type_scores(unknown_iot)
+unknown_player = {"id": "g", "ip": "10.0.0.5", "name": "Box", "extra": {}, "ha_registry": card(["some_new_integration"], ["media_player"])}
+assert ha_data.infer_type(unknown_player) == "media", ha_data.type_scores(unknown_player)
+unknown_tracker = {"id": "h", "ip": "10.0.0.6", "name": "Box", "extra": {}, "ha_registry": card(["some_new_integration"], ["device_tracker"])}
+assert ha_data.infer_type(unknown_tracker) == "generic", ha_data.type_scores(unknown_tracker)
+
+# A declared model beats the banner of a port (real case: two cameras read as routers because of a wrong banner on a HomeKit port)
+cam = {"id": "i", "ip": "10.0.0.7", "name": "Camera-1", "brand": "Lumi United", "extra": {"mdns_model": "lumi.camera.acn007", "mdns_services": "_hap._tcp"},
+       "scanned_ports": [{"label": "49152 · IKEA Tradfri zigbee controller httpd", "confirmed": False}]}
+assert ha_data.infer_type(cam) == "media", ha_data.type_scores(cam)
+room = {"id": "j", "ip": "10.0.0.8", "name": "Camera da letto", "extra": {}}                  # the room is not a camera
+assert ha_data.infer_type(room) != "media", ha_data.type_scores(room)
+speaker = {"id": "k", "ip": "10.0.0.9", "name": "Box", "extra": {"mdns_model": "HomePod"}, "scanned_ports": [{"label": "7000 · rtsp", "confirmed": False}]}
+assert ha_data.infer_type(speaker) == "audio", ha_data.type_scores(speaker)
 print("TUTTO OK")

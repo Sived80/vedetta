@@ -123,17 +123,20 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(/Chiudi|Close/.test(bar()[1]) && /^1 /.test(title()) && /aggiunt|added/.test(title()), "in alto «Annulla» e' diventato «Chiudi» e il titolo dice «1 dispositivo aggiunto»");
   check(!!q("#card-new .nd-prog.ok"), "la barra di avanzamento e' piena e verde");
 
-  // --- 5. Close takes the added ones away, the others stay
+  // --- 5. Close closes the card (the devices added are in the list; a new scan finds the others again)
   await click("#card-new [data-add-close]");
-  check(rows().length === 2 && rows().every((_, i) => rowState(i) === "nd-idle"), "«Chiudi»: l'aggiunto esce dalla lista, gli altri restano");
+  check(q("#card-new").hidden, "«Chiudi» chiude la scheda, senza far comparire «Annulla»");
 
-  // --- 6. Add all, everything works
+  // --- 6. a new scan, Add all, everything works
+  await click("#btn-scan");
+  await wait(120);
+  check(rows().length === 3, "una nuova ricerca ripropone i dispositivi");
   await click("#card-new [data-add-all]");
   const s = streams[streams.length - 1];
-  s.progress("192.168.178.202"); s.progress("192.168.178.203"); s.push({ type: "complete", results: [{ ip: "192.168.178.202", adapter: "generic" }, { ip: "192.168.178.203", adapter: "generic" }] }); s.end();
+  HOSTS.forEach((h) => s.progress(h.ip)); s.push({ type: "complete", results: HOSTS.map((h) => ({ ip: h.ip, adapter: "generic" })) }); s.end();
   await wait(200);
-  check(rows().length === 2 && rows().every((_, i) => rowState(i) === "nd-done"), "tutti aggiunti: due righe verdi");
-  check(/^2 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «2 dispositivi aggiunti» e «Chiudi» in alto");
+  check(rows().length === 3 && rows().every((_, i) => rowState(i) === "nd-done"), "tutti aggiunti: tre righe verdi");
+  check(/^3 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «3 dispositivi aggiunti» e «Chiudi» in alto");
   await click("#card-new [data-add-close]");
   check(q("#card-new").hidden, "«Chiudi»: finito tutto la scheda sparisce");
 

@@ -1484,14 +1484,14 @@
     el.style.animationDelay = Math.min(index || 0, 14) * 22 + "ms";
     el.innerHTML =
       '<span class="brand-big" aria-hidden="true" hidden><i></i></span>' +
-      '<span class="tile-icon"><span class="ic"></span><span class="ring"></span></span>' +
+      '<span class="tile-icon"><span class="ic"></span><span class="ring"></span><span class="tile-flag" hidden>' + icon("flag") + "</span></span>" +
       '<span class="tile-body"><span class="tile-name"></span><span class="tile-ip"></span><span class="tile-state"></span><span class="tile-sub"><span class="tile-sub-txt"></span><span class="tile-batt" role="img" style="display:inline-flex;vertical-align:-2px;margin-left:.35em;opacity:.65"></span></span></span>' +
       '<button type="button" class="icon-btn small tile-open touch rp" title="' + esc(t("js.ha.act.open")) + '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</button>" +
       '<button type="button" class="icon-btn small tile-wake touch rp" hidden>' + icon("power") + "</button>" +
       '<span class="hbar" role="img"></span>';
     el._r = {
       big: el.querySelector(".brand-big"), box: el.querySelector(".tile-icon"), ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
-      sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
+      sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), flag: el.querySelector(".tile-flag"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
     };
     el._r.wake.title = t("js.ha.act.wake");
     el._r.wake.setAttribute("aria-label", t("js.ha.act.wake"));
@@ -1535,6 +1535,10 @@
       }
     }
     if (r.name.textContent !== d.name) r.name.textContent = d.name;
+    // a device flagged for the report is recognisable from outside: a small flag on its icon
+    r.flag.hidden = !d.focus;
+    r.flag.title = d.focus ? t("js.ha.focus.edit") : "";
+    el.classList.toggle("flagged", !!d.focus);
     var st = stateText(d);
     if (r.state.textContent !== st) r.state.textContent = st;
     var chip = [roleText(d.ip), viaText(d.ip, true), chipText(d)].filter(Boolean).join(" \u00b7 ");
@@ -1882,8 +1886,9 @@
     var ad = S.adding;
     if (!ad) return;
     S.adding = null;
-    var gone = Object.keys(ad.saved);
-    S.found = S.found.filter(function (h) { return gone.indexOf(h.ip) < 0; });
+    // "Close" closes the card: the devices added are in the list, the others were not wanted now and a new scan finds them again
+    S.found = [];
+    S.scanDone = false;
     renderNew();
   }
   function addDevices(ips, hosts, mode) {

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Installs (or updates) a SEPARATE copy of Vedetta on Home Assistant OS, for debugging: "Vedetta (debug)", slug local_vedetta_debug.
+# It does not touch the real app: own data (/data), own port (8766), no MQTT (nothing is published to Home Assistant),
+# no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> tools/deploy_debug.sh
+set -euo pipefail
+HOST="${VEDETTA_HA_HOST:?set VEDETTA_HA_HOST}"
+KEY="${VEDETTA_HA_KEY:-$HOME/.ssh/id_ed25519}"
+SLUG=vedetta_debug
+cd "$(dirname "$0")/.."
+python tools/run_tests.py
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+cp -r vedetta "$STAGE/$SLUG"
+rm -rf "$STAGE/$SLUG/app/__pycache__"
+sed -i \
+  -e 's/^name: Vedetta$/name: Vedetta (debug)/' \
+  -e "s/^slug: vedetta$/slug: $SLUG/" \
+  -e 's/^version: "\(.*\)"$/version: "\1-debug"/' \
+  -e 's/^boot: auto$/boot: manual/' \
+  -e 's/\[PORT:8765\]/[PORT:8766]/' \
+  -e 's/^ingress_port: 8765$/ingress_port: 8766/' \
+  -e 's/^panel_icon: .*/panel_icon: mdi:bug/' \
+  -e 's/^panel_title: .*/panel_title: Vedetta debug/' \
+  -e '/^services:$/,/^  - mqtt:want$/d' \
+  "$STAGE/$SLUG/config.yaml"
+tar czf - -C "$STAGE" "$SLUG" | ssh -i "$KEY" "root@$HOST" \
+  "tar xzf - -C /local_apps && ha store reload && if ha apps info local_$SLUG 2>&1 | grep -q '^version: null'; then ha apps install local_$SLUG; else ha apps rebuild local_$SLUG; fi && ha apps start local_$SLUG"
+echo "Sent: the first build may take a few minutes. Then: Settings > Apps > Vedetta (debug) > Show in sidebar."

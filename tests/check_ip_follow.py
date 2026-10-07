@@ -4,7 +4,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config  # noqa: E402
+from app.storage import devices_config  # noqa: E402
 from app.state import DeviceState  # noqa: E402
 
 configs = [{"id": "a", "ip": "10.0.0.5", "name": "10.0.0.5"}, {"id": "b", "ip": "10.0.0.6"}, {"id": "c", "ip": "10.0.0.7"}]

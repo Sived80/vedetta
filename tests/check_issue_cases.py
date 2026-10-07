@@ -3,7 +3,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import brands, dhcp, ha_data, identity, probe  # noqa: E402
+from app.recognition import brands, identity
+from app.scan import dhcp, probe
+from app.ha import ha_data  # noqa: E402
 
 # --- #1: ChromeOS asks for the same DHCP options as iOS; its vendor class tells it apart
 assert dhcp._os_family("1,121,3,6,15,119,252", "chromeOS") == "chromeos"

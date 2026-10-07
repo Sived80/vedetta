@@ -10,7 +10,10 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import anonymize, dhcp, export, ha_registry, mdns_listener, paths  # noqa: E402
+from app.export import anonymize, export_zip as export
+from app.scan import dhcp, mdns_listener
+from app.ha import ha_registry
+from app import paths  # noqa: E402
 from app.state import state  # noqa: E402
 
 # --- the pieces

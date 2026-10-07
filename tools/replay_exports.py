@@ -29,7 +29,10 @@ def load_ha_data(root: Path):
         del sys.modules[m]
     sys.path.insert(0, str(root))
     try:
-        return importlib.import_module("app.ha_data")
+        try:
+            return importlib.import_module("app.ha.ha_data")
+        except ImportError:                      # a revision from before the modules were put in packages
+            return importlib.import_module("app.ha_data")
     finally:
         sys.path.pop(0)
 

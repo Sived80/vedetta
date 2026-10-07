@@ -3,9 +3,12 @@ import json
 import time
 
 from .formatters import update_generic_titles
-from . import blocklist, devices_config, dhcp, latency, mac_shadow, netutil, newdevices, probe, scanner, settings
+from .storage import blocklist, devices_config, newdevices, settings
+from .scan import dhcp, latency, probe, scanner
+from .export import mac_shadow
+from . import netutil
 from .applog import logger
-from .history import history
+from .storage.history import history
 
 # The check interval is a setting (settings.poll_interval, 10-300 s),
 # re-read on every cycle: see _interval().
@@ -264,7 +267,7 @@ class DeviceState:
         """Notice (e.g. new open port): to the log the text as is, to
         open browsers the key and parameters, translated into each one's language."""
         logger.warning(log_message)
-        from . import journal  # late import: avoids import cycles
+        from .storage import journal  # late import: avoids import cycles
         journal.add("normal", key, icon="alert", **params)
         self._emit({"type": "alert", "level": "warning", "key": key, "params": params})
 
@@ -498,7 +501,7 @@ class DeviceState:
     def _duplicate_key(device: dict) -> str | None:
         """Name that identifies a phone well enough to say that two cards are the same one; None if it does not
         (a bare "iPhone", the IP, a placeholder, a brand)."""
-        from . import brands, naming
+        from .recognition import brands, naming
         name = (device.get("name") or "").strip()
         key = "".join(ch for ch in name.lower() if ch.isalnum())
         if len(key) < 4 or name == device.get("ip") or naming.is_placeholder(name) or key in _GENERIC_PHONE_NAMES:

@@ -25,7 +25,9 @@ try:
 except ImportError:  # it may be missing locally: the adapters here are simulated anyway
     sys.modules["httpx"] = types.ModuleType("httpx")
 
-from app import flows, i18n, pipeline, scanner, settings
+from app.scan import flows, pipeline, scanner
+from app import i18n
+from app.storage import settings
 
 tmp = Path(tempfile.mkdtemp())
 settings.SETTINGS_PATH = tmp / "settings.json"

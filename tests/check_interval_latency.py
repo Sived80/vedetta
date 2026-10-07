@@ -16,8 +16,9 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import latency, settings  # noqa: E402
-from app import history as history_mod  # noqa: E402
+from app.scan import latency
+from app.storage import settings  # noqa: E402
+from app.storage import history as history_mod  # noqa: E402
 
 errors = 0
 

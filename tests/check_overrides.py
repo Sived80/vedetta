@@ -6,7 +6,11 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config, ha_data, i18n, probe, roles  # noqa: E402
+from app.storage import devices_config
+from app.ha import ha_data
+from app import i18n
+from app.scan import probe
+from app.recognition import roles  # noqa: E402
 
 i18n.use("it")
 tmp = Path(tempfile.mkdtemp())

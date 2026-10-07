@@ -3,7 +3,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import dhcp, discovery, roles  # noqa: E402
+from app.scan import dhcp, discovery
+from app.recognition import roles  # noqa: E402
 
 UPNP = {
     "192.168.50.1": {"types": ["MediaServer"], "name": "EX233v", "model": "Windows Media Connect compatible (MiniDLNA)"},
@@ -45,7 +46,7 @@ q = roles._dns_query(0x1234)
 assert q[:4] == bytes([0x12, 0x34, 0x01, 0x00]) and q[12:25] == bytes([7]) + b"example" + bytes([3]) + b"com" + bytes([0]), q
 assert q[-4:] == bytes([0, 1, 0, 1])
 # DHCP offers (real text from broadcast-dhcp-discover, nmap format).
-from app import scanner  # noqa: E402
+from app.scan import scanner  # noqa: E402
 OUT = """
   Response 1 of 1:
     Interface: eth0

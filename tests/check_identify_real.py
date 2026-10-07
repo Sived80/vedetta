@@ -7,7 +7,10 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import ha_data, i18n, probe, roles  # noqa: E402
+from app.ha import ha_data
+from app import i18n
+from app.scan import probe
+from app.recognition import roles  # noqa: E402
 
 i18n.use("it")
 probe.ADAPTERS = {}
@@ -61,14 +64,14 @@ async def main():
 asyncio.run(main())
 
 # Android phone: mDNS announces a random hostname, DHCP the real name ("Pixel-7").
-from app import naming  # noqa: E402
+from app.recognition import naming  # noqa: E402
 assert naming.pick([("mdns", "Android_MGDZ1OUL"), ("dhcp", "Pixel-7")]) == ("Pixel-7", "dhcp")
 assert naming.pick([("mdns", "Android_MGDZ1OUL")]) == ("Android_MGDZ1OUL", "weak")   # better than the IP
 assert naming.pick([("mdns", "Galaxy-S23"), ("dhcp", "x1")])[1] == "mdns"           # real name: it stays
 assert naming.is_better({"name": "Android_MGDZ1OUL", "ip": "1", "name_source": "weak"}, "dhcp")
 
 # The phone is already saved with the random hostname: as soon as DHCP gives the real name it replaces it.
-from app import dhcp  # noqa: E402
+from app.scan import dhcp  # noqa: E402
 dhcp.seen["0c:c4:13:00:00:b0"] = {"hostname": "Pixel-7"}
 phone = {"id": "ph", "name": "Android_1MRKG1M7", "name_source": "mdns", "ip": "10.0.0.108", "port": 80, "adapter": "generic",
          "scan_info": {"mdns_name": "Android_1MRKG1M7"}, "last_mac": "0C:C4:13:00:00:B0"}
@@ -98,7 +101,7 @@ assert "os" not in res["extra"] and not hasattr(naming, "os_name")
 
 # Home Assistant data (registry matched by MAC): name chosen by the user in HA, manufacturer, model,
 # area and category from the integration; below the name chosen in Vedetta; technical names do not count.
-from app import ha_registry  # noqa: E402
+from app.ha import ha_registry  # noqa: E402
 CARDS = {}
 ha_registry.lookup = lambda mac, ip=None: CARDS.get(str(mac or "").lower())
 
@@ -191,7 +194,7 @@ assert res["name_generated"] and "smartphone" not in kinds_seen, kinds_seen
 
 # Certificate subject read in pure Python (non-standard TLS ports, e.g. 8006).
 import shutil, ssl, subprocess, tempfile  # noqa: E402
-from app import scanner  # noqa: E402
+from app.scan import scanner  # noqa: E402
 if shutil.which("openssl"):
     d = tempfile.mkdtemp()
     subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", d + "/k.pem", "-out", d + "/c.pem",

@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import applog, ha_registry, ha_tz, maintenance  # noqa: E402
+from app import applog, maintenance
+from app.ha import ha_registry, ha_tz  # noqa: E402
 
 # the configuration of Home Assistant
 assert str(ha_tz.zone_from_config({"time_zone": "Europe/Rome", "latitude": 1})) == "Europe/Rome"

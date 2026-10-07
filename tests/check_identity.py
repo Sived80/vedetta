@@ -14,8 +14,9 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import brands, dhcp, identity, scanner  # noqa: E402
-from app.history import History  # noqa: E402
+from app.recognition import brands, identity
+from app.scan import dhcp, scanner  # noqa: E402
+from app.storage.history import History  # noqa: E402
 
 # no user rules in the way
 brands._USER_PATH = Path(tempfile.mkdtemp()) / "brands.json"

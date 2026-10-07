@@ -9,7 +9,8 @@ import io
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from nacl.public import PrivateKey  # noqa: E402
-from app import export, report_crypto, routes_ha  # noqa: E402
+from app.export import export_zip as export, report_crypto
+from app.routes import ha as routes_ha  # noqa: E402
 
 spec = importlib.util.spec_from_file_location("open_report", os.path.join(os.path.dirname(__file__), "..", "tools", "open_report.py"))
 tool = importlib.util.module_from_spec(spec); spec.loader.exec_module(tool)

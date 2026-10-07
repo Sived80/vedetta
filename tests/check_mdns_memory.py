@@ -7,7 +7,9 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import i18n, mdns_listener, probe, roles  # noqa: E402
+from app import i18n
+from app.scan import mdns_listener, probe
+from app.recognition import roles  # noqa: E402
 
 i18n.use("it")
 mdns_listener.STORE_PATH = Path(tempfile.mkdtemp()) / "mdns_seen.json"

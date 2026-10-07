@@ -7,8 +7,8 @@ import time
 from pathlib import Path
 
 from app import state as state_mod
-from app.history import History
-from app.rescan import diff_ports
+from app.storage.history import History
+from app.scan.rescan import diff_ports
 
 # ---- port comparison ----
 old = [{"label": "80 · http"}, {"label": "22 · OpenSSH"}, {"label": "49200"}]

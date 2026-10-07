@@ -6,7 +6,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import i18n, probe, scanner  # noqa: E402
+from app import i18n
+from app.scan import probe, scanner  # noqa: E402
 
 i18n.use("en")
 

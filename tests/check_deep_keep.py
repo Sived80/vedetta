@@ -7,7 +7,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config, i18n, pipeline, rescan  # noqa: E402
+from app.storage import devices_config
+from app import i18n
+from app.scan import pipeline, rescan  # noqa: E402
 
 i18n.use("en")
 tmp = Path(tempfile.mkdtemp())

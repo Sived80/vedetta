@@ -3,8 +3,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import discovery  # noqa: E402
-from app.identity import identify_brand  # noqa: E402
+from app.scan import discovery  # noqa: E402
+from app.recognition.identity import identify_brand  # noqa: E402
 
 # Real ProbeMatch from a white-label camera (reduced form, real fields from the test).
 PM = b"""<?xml version="1.0" encoding="UTF-8"?>

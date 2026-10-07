@@ -8,8 +8,9 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config, history as history_mod, identity  # noqa: E402
-from app.history import History  # noqa: E402
+from app.storage import devices_config, history as history_mod
+from app.recognition import identity  # noqa: E402
+from app.storage.history import History  # noqa: E402
 from app import state as state_mod  # noqa: E402
 
 now = time.time()

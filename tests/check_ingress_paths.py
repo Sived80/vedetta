@@ -153,15 +153,15 @@ assert paths.DATA_DIR.resolve() == default or "VEDETTA_DATA_DIR" in os.environ
 with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # Windows: the .db stays open
     target = Path(tmp) / "nuova" / "dati"
     os.environ["VEDETTA_DATA_DIR"] = str(target)
-    for mod in ("app.paths", "app.devices_config", "app.settings", "app.history", "app.dhcp", "app.blocklist",
-                "app.brands", "app.vendor_lookup"):
+    for mod in ("app.paths", "app.storage.devices_config", "app.storage.settings", "app.storage.history", "app.scan.dhcp", "app.storage.blocklist",
+                "app.recognition.brands", "app.recognition.vendor_lookup"):
         sys.modules.pop(mod, None)
     paths = importlib.import_module("app.paths")
     assert target.is_dir(), "DATA_DIR non creata"
-    for mod, attr, name in (("app.devices_config", "DEVICES_PATH", "devices.yaml"), ("app.settings", "SETTINGS_PATH", "settings.json"),
-                            ("app.history", "DB_PATH", "vedetta.db"), ("app.dhcp", "STORE_PATH", "dhcp_seen.json"),
-                            ("app.blocklist", "PATH", "ignored.json"), ("app.brands", "_USER_PATH", "brands.json"),
-                            ("app.vendor_lookup", "USER_OUI_PATH", "oui-ieee.txt")):
+    for mod, attr, name in (("app.storage.devices_config", "DEVICES_PATH", "devices.yaml"), ("app.storage.settings", "SETTINGS_PATH", "settings.json"),
+                            ("app.storage.history", "DB_PATH", "vedetta.db"), ("app.scan.dhcp", "STORE_PATH", "dhcp_seen.json"),
+                            ("app.storage.blocklist", "PATH", "ignored.json"), ("app.recognition.brands", "_USER_PATH", "brands.json"),
+                            ("app.recognition.vendor_lookup", "USER_OUI_PATH", "oui-ieee.txt")):
         got = getattr(importlib.import_module(mod), attr)
         assert got == target / name, "%s.%s = %s" % (mod, attr, got)
     del os.environ["VEDETTA_DATA_DIR"]
@@ -184,7 +184,7 @@ assert iface.lan_iface()  # detected or eth0 fallback
 print("ok: interfaccia di rete")
 
 # 8) DNS packages of the reverse resolution
-from app import scanner
+from app.scan import scanner
 q = scanner._build_ptr_query("192.168.50.44")
 assert q[12:].startswith(b"\x0244\x0250\x03168\x03192\x07in-addr\x04arpa\x00")
 answer = (b"\x00\x00\x84\x00\x00\x00\x00\x01\x00\x00\x00\x00" + q[12:-4] + b"\x00\x0c\x00\x01\x00\x00\x00x\x00\x0f"

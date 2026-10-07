@@ -3,7 +3,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import ha_data, roles  # noqa: E402
+from app.ha import ha_data
+from app.recognition import roles  # noqa: E402
 
 
 def port(label, confirmed=True):

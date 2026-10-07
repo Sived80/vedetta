@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vedetta"))
 stub = types.ModuleType("app.applog")
 stub.logger = logging.getLogger("dashboard")
 sys.modules["app.applog"] = stub
-from app import scanner  # noqa: E402
+from app.scan import scanner  # noqa: E402
 
 TAB = chr(9)
 text = TAB.join(["192.168.1.1", "aa:bb:cc:00:00:01", "TP-Link"]) + "\n" \

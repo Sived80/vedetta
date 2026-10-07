@@ -3,7 +3,8 @@ import sys, tempfile, types
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vedetta"))
-from app import blocklist, dhcp  # noqa: E402
+from app.storage import blocklist
+from app.scan import dhcp  # noqa: E402
 
 blocklist.PATH = Path(tempfile.mkdtemp()) / "ignored.json"
 blocklist._cache["stamp"] = None

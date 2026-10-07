@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vedetta"))
-from app.brands import normalize_brand, refine_brand  # noqa: E402
-from app.vendor_lookup import lookup_registrant, lookup_vendor  # noqa: E402
+from app.recognition.brands import normalize_brand, refine_brand  # noqa: E402
+from app.recognition.vendor_lookup import lookup_registrant, lookup_vendor  # noqa: E402
 
 # registered name -> brand
 for raw, expected in [
@@ -43,7 +43,7 @@ print("OK")
 
 # user rules in config/brands.json: precedence over the default ones
 import json, tempfile, time  # noqa: E402
-from app import brands  # noqa: E402
+from app.recognition import brands  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp()) / "brands.json"
 tmp.write_text(json.dumps({"aliases": [["bouffalo", "Tuya (Bouffalo)"]], "name_hints": [["^lampada", "Philips Hue"]]}), encoding="utf-8")
@@ -56,7 +56,7 @@ print("OK regole utente")
 
 # --- rules created from the interface (config/brands.json "rules") ---
 import shutil  # noqa: E402
-from app import oui_update, vendor_lookup  # noqa: E402
+from app.recognition import oui_update, vendor_lookup  # noqa: E402
 
 cfg = Path(tempfile.mkdtemp())
 brands._USER_PATH = cfg / "brands.json"

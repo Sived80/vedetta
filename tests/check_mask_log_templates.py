@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent / "vedetta"
 sys.path.insert(0, str(ROOT))
-from app import anonymize  # noqa: E402
+from app.export import anonymize  # noqa: E402
 
 # --- the messages: every string given to logger.<level>(...) or emit_alert(...), plus the texts of the journal
 templates = set()

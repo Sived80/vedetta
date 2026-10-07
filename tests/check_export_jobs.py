@@ -14,9 +14,14 @@ import yaml
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
-from app import anonymize, devices_config, dhcp, export, export_jobs, ha_registry, mdns_listener, paths, routes_ha  # noqa: E402
-from app import history as history_mod  # noqa: E402
-from app.history import History  # noqa: E402
+from app.export import anonymize, export_zip as export, export_jobs
+from app.storage import devices_config
+from app.scan import dhcp, mdns_listener
+from app.ha import ha_registry
+from app import paths
+from app.routes import ha as routes_ha  # noqa: E402
+from app.storage import history as history_mod  # noqa: E402
+from app.storage.history import History  # noqa: E402
 from app.state import state  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())

@@ -13,7 +13,7 @@ _SEP = "\t"
 # (the one of Home Assistant, see ha_tz), otherwise it is hours off from the real clock.
 def _tz():
     try:
-        from . import ha_tz   # late import: ha_tz writes to this log
+        from .ha import ha_tz   # late import: ha_tz writes to this log
         return ha_tz.zone()
     except Exception:
         return ZoneInfo("Europe/Rome")

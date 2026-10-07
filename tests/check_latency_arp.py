@@ -5,7 +5,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import latency  # noqa: E402
+from app.scan import latency  # noqa: E402
 
 # nmap output -> milliseconds
 assert abs(latency.parse_nmap_latency("Nmap scan report for 10.0.0.9\nHost is up (0.00042s latency).\n") - 0.42) < 1e-9

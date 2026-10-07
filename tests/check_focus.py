@@ -12,9 +12,13 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config, dhcp, export, ha_registry, mdns_listener, paths  # noqa: E402
-from app import history as history_mod  # noqa: E402
-from app.history import History  # noqa: E402
+from app.storage import devices_config
+from app.scan import dhcp, mdns_listener
+from app.export import export_zip as export
+from app.ha import ha_registry
+from app import paths  # noqa: E402
+from app.storage import history as history_mod  # noqa: E402
+from app.storage.history import History  # noqa: E402
 from app.state import state  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())

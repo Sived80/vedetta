@@ -10,16 +10,23 @@ from fastapi.responses import JSONResponse, RedirectResponse, Response, Streamin
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import blocklist, ha_registry, ha_tz, mdns_listener, devices_config, dhcp, i18n, journal, roles, naming, newdevices, scanner, settings, wol
+from .storage import blocklist, devices_config, journal, newdevices, settings
+from .ha import ha_registry, ha_tz
+from .scan import mdns_listener, dhcp, scanner, wol
+from . import i18n
+from .recognition import roles, naming
 from .applog import logger
-from .history import history
+from .storage.history import history
 from .ingress import IngressMiddleware, template_context
 from .maintenance import nightly_loop
 from .netutil import filter_local_ips, get_local_network
-from .rescan import rescan_device
-from . import assets, ha_data, pipeline, routes_flows
-from . import routes_brands, routes_ignored, routes_ha, routes_mqtt
-from .mqtt_ha import service as mqtt_service
+from .scan.rescan import rescan_device
+from . import assets
+from .ha import ha_data
+from .scan import pipeline
+from .routes import flows as routes_flows
+from .routes import brands as routes_brands, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt
+from .ha.mqtt_ha import service as mqtt_service
 from .state import state
 
 BASE_DIR = Path(__file__).resolve().parent

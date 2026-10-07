@@ -45,7 +45,7 @@ asyncio.run(go())
 
 # The pause survives a service restart (pause.json file).
 import json, pathlib, tempfile, time  # noqa: E402
-from app import settings  # noqa: E402
+from app.storage import settings  # noqa: E402
 settings.CONFIG_DIR = pathlib.Path(tempfile.mkdtemp())
 a = DeviceState()
 a.pause(0)

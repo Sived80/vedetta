@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vedetta"))
-from app import naming  # noqa: E402
+from app.recognition import naming  # noqa: E402
 
 # cleanup: DNS-SD escapes, domains, useless names
 assert naming.clean_name(r"SONY\032XR-55X92K") == "SONY XR-55X92K"

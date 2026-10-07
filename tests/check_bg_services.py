@@ -7,7 +7,8 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import devices_config, rescan, scanner  # noqa: E402
+from app.storage import devices_config
+from app.scan import rescan, scanner  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())
 devices_config.DEVICES_PATH = tmp / "devices.yaml"

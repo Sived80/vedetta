@@ -1,5 +1,5 @@
 """Regenerates app/data/oui-ieee.txt from the public IEEE registries (MA-L 24 bit,
-MA-M 28 bit, MA-S 36 bit and IAB). The logic lives in app/oui_update.py (also used by
+MA-M 28 bit, MA-S 36 bit and IAB). The logic lives in app/recognition/oui_update.py (also used by
 the update from the web, which however writes to config/).
 
 Usage:  python tools/update_oui.py                 (downloads the updated registries)
@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent / "vedetta"
 sys.path.insert(0, str(ROOT))
-from app import oui_update  # noqa: E402
+from app.recognition import oui_update  # noqa: E402
 
 OUT = ROOT / "app" / "data" / "oui-ieee.txt"
 

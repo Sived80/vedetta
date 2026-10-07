@@ -4,8 +4,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app.identity import mobile_assess  # noqa: E402
-from app.probe import _is_mobile, _media_receiver  # noqa: E402
+from app.recognition.identity import mobile_assess  # noqa: E402
+from app.scan.probe import _is_mobile, _media_receiver  # noqa: E402
 
 fire = {"mdns_services": "_amzn-wplay._tcp"}
 assert _media_receiver("10.0.0.3", fire, [{"label": "40027 · Amazon FireTV Stick", "confirmed": True}])

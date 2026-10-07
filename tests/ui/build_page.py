@@ -18,8 +18,9 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 import jinja2  # noqa: E402
-from app import assets, ha_data, i18n  # noqa: E402
-from app.history import History  # noqa: E402
+from app import assets, i18n
+from app.ha import ha_data  # noqa: E402
+from app.storage.history import History  # noqa: E402
 
 out = Path(sys.argv[1])
 lang = sys.argv[2] if len(sys.argv) > 2 else "it"

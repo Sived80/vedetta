@@ -6,7 +6,8 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import journal, pipeline  # noqa: E402
+from app.storage import journal
+from app.scan import pipeline  # noqa: E402
 
 journal.PATH = pathlib.Path(tempfile.mkdtemp()) / "journal.jsonl"
 journal._entries.clear()

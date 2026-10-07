@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import ha_registry  # noqa: E402
+from app.ha import ha_registry  # noqa: E402
 
 entries = [{"entry_id": "e_shelly", "domain": "shelly", "title": "Cancello"}, {"entry_id": "e_mqtt", "domain": "mqtt", "title": "MQTT"},
            {"entry_id": "e_fritz", "domain": "fritz", "title": "FRITZ!Box"}]
@@ -47,7 +47,7 @@ assert idx["5c:cf:7f:00:00:a7"]["manufacturer"] == "Tasmota"
 ha_registry._state["by_mac"] = idx
 ha_registry._state["by_ip"] = by_ip
 # the function is a step of the search flows: if turned off there, the registry is not used
-from app import settings  # noqa: E402
+from app.storage import settings  # noqa: E402
 settings.CONFIG_DIR = Path(tempfile.mkdtemp()); settings.SETTINGS_PATH = settings.CONFIG_DIR / "settings.json"
 assert "ha_registry" in settings.flows_load()["associative"] and "ha_registry" in settings.flows_load()["deep"]
 assert ha_registry.active()

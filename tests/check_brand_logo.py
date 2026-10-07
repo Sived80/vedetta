@@ -5,7 +5,9 @@ import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import brand_logo, brands, ha_data, i18n  # noqa: E402
+from app.recognition import brand_logo, brands
+from app.ha import ha_data
+from app import i18n  # noqa: E402
 
 i18n.use("en")
 

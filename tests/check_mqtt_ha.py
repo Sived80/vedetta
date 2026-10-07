@@ -1,4 +1,4 @@
-"""Check of the pure MQTT publishing logic (app/mqtt_ha.py), without a broker:
+"""Check of the pure MQTT publishing logic (app/ha/mqtt_ha.py), without a broker:
 configuration (environment > settings), slug, per-device discovery payload,
 deduplication, removal, republishing after reset, password never in the APIs.
 With "python - < file" the current folder must be the project root."""
@@ -18,7 +18,8 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import mqtt_ha, settings
+from app.ha import mqtt_ha
+from app.storage import settings
 
 fails = []
 

@@ -18,8 +18,9 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import newdevices, settings, wol
-from app.history import History
+from app.storage import newdevices, settings
+from app.scan import wol
+from app.storage.history import History
 
 tmp = Path(tempfile.mkdtemp())
 hist = History(tmp / "t.db")

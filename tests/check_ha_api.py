@@ -22,8 +22,9 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import ha_data, i18n
-from app.history import History
+from app.ha import ha_data
+from app import i18n
+from app.storage.history import History
 
 ROOT = Path(".")
 
@@ -165,7 +166,7 @@ try:
         import httpx  # noqa: F401
     except ImportError:  # it may be missing locally: it is only needed by the adapters, not by these checks
         sys.modules["httpx"] = types.ModuleType("httpx")
-    from app import routes_ha
+    from app.routes import ha as routes_ha
 except Exception as exc:  # fastapi or other dependencies missing locally: skip
     print("salto: routes_ha non importabile (%s)" % exc.__class__.__name__)
 else:

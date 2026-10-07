@@ -6,14 +6,15 @@ import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import ha_data, roles, signatures  # noqa: E402
+from app.ha import ha_data
+from app.recognition import roles, signatures  # noqa: E402
 
 roles.roles_for = lambda ip: []
 roles.upnp_types = lambda ip: []
 
 # ---- the signatures file is valid (unique ids, existing categories and types, compilable expressions, declared fixture)
 data = json.load(open(signatures.DATA_PATH, encoding="utf-8"))
-kind_ids = {k["id"] for k in json.load(open(ha_data.Path(ha_data.__file__).parent / "data" / "device_kinds.json", encoding="utf-8"))["kinds"]}
+kind_ids = {k["id"] for k in json.load(open(ha_data.Path(ha_data.__file__).parent.parent / "data" / "device_kinds.json", encoding="utf-8"))["kinds"]}
 ids = [s["id"] for s in data["signatures"]]
 assert data["schema"] == 1 and len(ids) == len(set(ids)), "id unici"
 for s in data["signatures"]:

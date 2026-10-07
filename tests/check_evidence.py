@@ -5,7 +5,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import evidence, routes_ha  # noqa: E402
+from app.recognition import evidence
+from app.routes import ha as routes_ha  # noqa: E402
 from app.state import state  # noqa: E402
 
 

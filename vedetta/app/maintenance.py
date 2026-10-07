@@ -2,11 +2,13 @@ import asyncio
 import time
 from datetime import datetime
 
-from . import devices_config, ha_tz, pipeline
+from .storage import devices_config
+from .ha import ha_tz
+from .scan import pipeline
 from .applog import logger
-from .history import history
+from .storage.history import history
 from .netutil import filter_local_ips
-from .rescan import rescan_device
+from .scan.rescan import rescan_device
 
 NIGHT_HOUR = 3    # local time of Home Assistant (ha_tz)
 STALE_DAYS = 7
@@ -44,7 +46,7 @@ async def run_nightly() -> None:
 
     # MAC prefix database: if automatic update is enabled, every 30 days.
     try:
-        from . import oui_update
+        from .recognition import oui_update
         if await asyncio.to_thread(oui_update.auto_update_enabled) and await asyncio.to_thread(oui_update.is_due):
             await asyncio.to_thread(oui_update.update)
     except Exception as exc:

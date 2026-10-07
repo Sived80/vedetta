@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "vedetta"))
-from app import dhcp  # noqa: E402
+from app.scan import dhcp  # noqa: E402
 
 
 def packet(mac: bytes, msg_type: int, hostname: str, prl: list[int], vendor: str = "") -> bytes:

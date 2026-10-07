@@ -6,7 +6,7 @@ import random
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import anonymize  # noqa: E402
+from app.export import anonymize  # noqa: E402
 
 a = anonymize.Anonymizer()
 for ip in ("192.168.1.5", "10.0.0.9", "172.20.4.7"):

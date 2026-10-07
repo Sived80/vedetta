@@ -3,7 +3,7 @@ Real case: Shelly Pro 4PM relays tracked by the MikroTik integration were read a
 import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import ha_data, ha_registry
+from app.ha import ha_data, ha_registry
 
 def card(domains, ents):
     return {"name": "x", "domains": domains, "entity_domains": ents}

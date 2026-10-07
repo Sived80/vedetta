@@ -8,8 +8,9 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import mac_shadow, dhcp, anonymize  # noqa: E402
-from app.history import History  # noqa: E402
+from app.export import mac_shadow, anonymize
+from app.scan import dhcp  # noqa: E402
+from app.storage.history import History  # noqa: E402
 
 H = History(Path(tempfile.mkdtemp()) / "t.db")
 mac_shadow.history = H

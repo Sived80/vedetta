@@ -4,7 +4,7 @@ import struct
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import internet, localapi, scanner  # noqa: E402
+from app.scan import internet, localapi, scanner  # noqa: E402
 
 # DNS response with an A record (name compression).
 q = internet.build_query(0x2222, "myip.opendns.com")
@@ -56,12 +56,12 @@ assert scanner.arp_conflicts == {}, "un MAC che risponde per piu' IP e' un proxy
 out = "\n  192.168.1.20\n    Interface: eth0\n    Version: 2\n    Group: 239.255.255.250\n    Description: SSDP\n  192.168.1.21\n    Group: 224.0.0.251\n"
 assert scanner.parse_igmp(out) == {"192.168.1.20": ["239.255.255.250"], "192.168.1.21": ["224.0.0.251"]}, scanner.parse_igmp(out)
 # Name from the certificate: only local network names (real Proxmox: CN=pve.local).
-from app import naming  # noqa: E402
+from app.recognition import naming  # noqa: E402
 assert naming.pick([("tls", naming.cn_host("commonName=pve.local/organizationName=Proxmox Virtual Environment"))]) == ("pve", "tls")
 assert naming.cn_host("commonName=*.hiservert.com") is None and naming.cn_host("commonName=tplinkwifi.net") is None
 assert naming.pick([("tls", naming.cn_host("commonName=4356345988971635954/organizationName=Google Inc"))]) == (None, None)
 # Full background scan: merge of the ports (the new entry prevails, the others stay).
-from app import rescan  # noqa: E402
+from app.scan import rescan  # noqa: E402
 m = rescan._merge_ports([{"label": "80 · http"}, {"label": "12345"}], [{"label": "80 · nginx"}, {"label": "22 · ssh"}])
 assert [p["label"] for p in m] == ["22 · ssh", "80 · nginx", "12345"], m
 assert 80 in rescan._FAST_SET and 12345 not in rescan._FAST_SET

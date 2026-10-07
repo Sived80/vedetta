@@ -13,7 +13,9 @@ Sources, weights, certainty bars and the rules for phones. Everything here is pu
 - 🧹 **Placeholders are not names.** `Android_7F3A…`, `wMAN MOD 1.47.45`, `shelly1-8CAA…` are recognized as noise and
   replaced by something better — or by *brand + type* (“Sony console”) when nothing else exists.
 - 🤷 **Honest about doubt.** Two equally weak candidates → *Other devices*. You can always pick brand and type by hand.
-- 🔍 **No black box.** The weights are public: see [the weights, in the open](RECOGNITION.md) just below.
+- 🔍 **No black box.** The weights are public: see [the weights, in the open](#the-weights) just below (open the section).
+
+<a name="the-weights"></a>
 
 <details>
 <summary><b>The weights, in the open</b> — every number that decides a category and a name</summary>

@@ -18,7 +18,7 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 import jinja2  # noqa: E402
-from app import ha_data, i18n  # noqa: E402
+from app import assets, ha_data, i18n  # noqa: E402
 from app.history import History  # noqa: E402
 
 out = Path(sys.argv[1])
@@ -29,8 +29,15 @@ env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "app/template
 env.globals["static_version"] = lambda p: "1"
 page = env.get_template("ha.html").render(lang=lang, languages=i18n.available(), js_strings=i18n.js_table(lang), theme="auto",
                                           transparent=False, compact=False, limit=4, request=None)
-page = re.sub(r'<script src="([^"]+)"></script>',
-              lambda m: "<script>" + (ROOT / "app" / m.group(1).split("?")[0].lstrip("/")).read_text(encoding="utf-8") + "</script>", page)
+
+
+def served(url: str) -> str:
+    """A static file as the app serves it: ha.js and ha.css are put together from their parts (app/assets.py)."""
+    rel = url.split("?")[0].lstrip("/").removeprefix("static/")
+    return assets.bundle(rel) if rel in assets.BUNDLES else (ROOT / "app" / "static" / rel).read_text(encoding="utf-8")
+
+
+page = re.sub(r'<script src="([^"]+)"></script>', lambda m: "<script>" + served(m.group(1)) + "</script>", page)
 (out / "page.html").write_text(page, encoding="utf-8")
 
 now = time.time()

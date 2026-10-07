@@ -244,7 +244,8 @@ assert set(en) == set(it), sorted(set(en) ^ set(it))
 assert all(k.startswith(("ha.", "js.ha.")) for k in en), "solo chiavi ha.* e js.ha.*"
 for k in en:  # same placeholders in both languages
     assert sorted(re.findall(r"\{(\w+)\}", en[k])) == sorted(re.findall(r"\{(\w+)\}", it[k])), k
-src = (ROOT / "app/static/ha/ha.js").read_text(encoding="utf-8")
+from app import assets  # noqa: E402
+src = assets.bundle("ha/ha.js")
 
 
 def have(key):

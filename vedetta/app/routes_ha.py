@@ -16,7 +16,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from .applog import logger
-from . import applog, ha_data, i18n, journal, latency, roles
+from . import applog, assets, ha_data, i18n, journal, latency, roles
 from .history import history
 from .ingress import template_context
 from .state import state
@@ -36,6 +36,8 @@ MAX_HOURS = 24 * 30
 def static_version(rel_path: str) -> str:
     """As in main.py: file modification date, to put in ?v= so that after
     a deploy the browser always downloads the new version."""
+    if rel_path in assets.BUNDLES:
+        return assets.version(rel_path)
     try:
         return str(int((BASE_DIR / "static" / rel_path).stat().st_mtime))
     except OSError:

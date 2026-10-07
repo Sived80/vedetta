@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -17,7 +17,7 @@ from .ingress import IngressMiddleware, template_context
 from .maintenance import nightly_loop
 from .netutil import filter_local_ips, get_local_network
 from .rescan import rescan_device
-from . import ha_data, pipeline, routes_flows
+from . import assets, ha_data, pipeline, routes_flows
 from . import routes_brands, routes_ignored, routes_ha, routes_mqtt
 from .mqtt_ha import service as mqtt_service
 from .state import state
@@ -54,6 +54,15 @@ app.include_router(routes_ignored.router)
 app.include_router(routes_flows.router)
 app.include_router(routes_ha.router)
 app.include_router(routes_mqtt.router)
+# ha.js and ha.css are put together from their parts (app/frontend, see assets.py); these routes come before the static folder.
+def _bundle_route(name: str):
+    async def serve():
+        return Response(assets.bundle(name), media_type=assets.media_type(name))
+    return serve
+
+
+for _name in assets.BUNDLES:
+    app.add_api_route("/static/" + _name, _bundle_route(_name), methods=["GET"], include_in_schema=False)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 app.add_middleware(IngressMiddleware)  # ingress prefix -> request.state.base; optional 403 outside the Supervisor
 templates = Jinja2Templates(directory=BASE_DIR / "templates", context_processors=[template_context])  # `base` in the templates
@@ -65,6 +74,8 @@ def static_version(rel_path: str) -> str:
     deploy it always downloads the new version instead of serving the old
     one from cache - this avoids having to explain "do a hard refresh" after every change
     to style.css (happened several times in this very session)."""
+    if rel_path in assets.BUNDLES:
+        return assets.version(rel_path)
     try:
         return str(int((BASE_DIR / "static" / rel_path).stat().st_mtime))
     except OSError:

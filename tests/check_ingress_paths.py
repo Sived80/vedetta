@@ -91,11 +91,11 @@ assert "VEDETTA_BASE" not in render(new_env, "ha.html", base="")
 print("ok: URL dei template prefissati")
 
 # 3) no internal absolute URL in the static sources outside the points covered by the wrapper
-for js in list(Path("app/static/js").glob("*.js")) + [Path("app/static/ha/ha.js")]:
+for js in list(Path("app/static/js").glob("*.js")) + list(Path("app/frontend/ha/js").glob("*.js")):
     text = js.read_text(encoding="utf-8")
     for m in re.finditer(r"""(?:href|src|action)=\\?["']\s*\+?\s*["']?/""", text):
         raise AssertionError("href/src assoluto in %s: %s" % (js, m.group(0)))
-for css in (Path("app/static/ha/ha.css"),):
+for css in Path("app/frontend/ha/css").glob("*.css"):
     assert "url(/" not in css.read_text(encoding="utf-8").replace("url( /", "url(/"), "url(/...) assoluto in " + str(css)
 print("ok: sorgenti statici senza URL assoluti nascosti")
 

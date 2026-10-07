@@ -20,7 +20,8 @@ const built = spawnSync(process.env.PYTHON || "python", [path.join(__dirname, "b
 if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout + built.stderr); process.exit(1); }
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
-const css = fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "static", "ha", "ha.css"), "utf8");
+const cssDir = path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "css");   // ha.css as the app serves it: its parts in order
+const css = fs.readdirSync(cssDir).filter((f) => f.endsWith(".css")).sort().map((f) => fs.readFileSync(path.join(cssDir, f), "utf8")).join("");
 const IT = lang === "it";
 
 const EV = {

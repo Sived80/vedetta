@@ -5,14 +5,17 @@ feature files, **without changing behaviour**. One step = one local commit, full
 
 Rules
 - Move code, do not rewrite it. No behaviour change inside a step.
-- One shared namespace (`Vedetta`) instead of the IIFE locals; one shared state object `S`.
-- Scripts are loaded in order from the template (no bundler), each with its own cache version.
+- How (decided at step 1): the parts live in `app/frontend/ha/js/` and `app/frontend/ha/css/` and the app joins them in the order of
+  their names (`app/assets.py`); the page still receives one `/static/ha/ha.js` and one `/static/ha/ha.css`, with a version that
+  follows the content. So the parts keep ONE scope and ONE cascade order, and every cut can be proved: the joined file must stay
+  byte for byte the same (`python tools/asset_fingerprint.py` against the fingerprint of the installed app). A shared namespace
+  between separate scripts would have meant rewriting hundreds of calls: it can come later, file by file, once the split is done.
 - After each step: jsdom UI tests green, then try on the debug app; the production app is only read for comparison.
 - Nothing is published or pushed without an explicit request.
 
 ## Steps
 - [x] 0. Baseline: tag the current commit, record the size of `ha.js`/`ha.css`, list the functions per section
-- [ ] 1. Test loader: `build_page.py` and the jsdom tests load several scripts in order
+- [x] 1. Test loader: `build_page.py` and the jsdom tests load several scripts in order
 - [ ] 2. `core.js`: state `S`, `api`, `t`, `esc`, `icon`, `snack`, formatting helpers, menus
 - [ ] 3. `log.js` (log card) + its CSS
 - [ ] 4. `export.js` (export window) + its CSS

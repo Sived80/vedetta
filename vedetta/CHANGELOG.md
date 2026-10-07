@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.6
+- **Nothing changes on the screen.** The page of the app is now kept in parts (one file per feature: export, deep search, network card, tiles, devices found, log, device sheet), joined by the app into the same script and style as before; its style lost its overlapping corrections (95,362 → 85,335 characters). Proved by comparing the computed style of every element of the page in 18 states, light and dark, wide and narrow: no difference.
+- **Time zones no longer depend on the system**: the time zone list (`tzdata`) is now part of the app's dependencies.
+- **Docs**: the link "the weights, in the open" opens its section, not the same page.
+- **Project**: the tests run on GitHub at every change; `SECURITY.md` says how to report a security problem privately; tools to compare styles, fingerprint the served files and replay real exports through the recognition rules.
+
 ## 0.4.5
 - **Devices tracked by a router integration are no longer read as routers.** An integration like MikroTik, UniFi or FRITZ!Box lists every client it sees as a Home Assistant device (with only a `device_tracker`), and the name of the integration was counted as a word of the *router* kind: eleven Shelly Pro relays tied between *router* and *IoT* and ended in *Other devices*. Now the integration is counted as a clue only when the device has other entities than the tracker (the router itself has sensors, switches, buttons...; this holds for every integration, not only routers), and the text that comes from Home Assistant (`ha_*`) no longer counts as words said by the device. *(Read from a real export sent by a user.)*
 - **A device that Home Assistant knows, but whose integration is not in the table, is no longer left in *Other devices*.** What it does in Home Assistant says something: a climate, a switch, a light or a sensor means a smart device; a media player or a camera means media. (An air conditioner, an IR emitter and a smart switch, known only through their own integration, were *Other devices*.)

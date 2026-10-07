@@ -7,3 +7,4 @@ python-multipart==0.0.9
 zeroconf==0.151.5
 paho-mqtt==2.1.0
 PyNaCl==1.6.2
+tzdata==2026.5

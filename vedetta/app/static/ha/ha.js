@@ -639,22 +639,34 @@
   });
 
   // ------------------------------------------------- deep search
-  // First advanced search: system, open services, web page. Slow, so always
-  // behind a confirmation. On a single device the confirmation can be disabled; on
-  // all devices it cannot.
+  // Advanced search: system, open services, web page. Slow. From the menu (all devices, or the ones never analysed) it starts
+  // as soon as the choice is made; on a single device the confirmation can be switched off. While one is running no other
+  // can start: the buttons are off until it is over (the network search is independent and stays available).
   var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
   function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
   // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
   function deepPending() { return S.list.filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
-  var deepIds = [];
+  var deepRunning = false;          // this page started one and the request is still open
+  function deepBusy() { return deepRunning || S.activity.rescanning.size > 0; }
+  function syncDeepBusy() {
+    var busy = deepBusy(), btn = $("btn-deepmenu");
+    if (btn) { btn.disabled = busy; btn.title = busy ? t("js.ha.deep.busy") : ""; }
+    if (busy && deepMenuEl && !deepMenuEl.hidden) toggleDeepMenu(false);
+    if (typeof dlg !== "undefined" && dlg) {
+      var sheetBtn = dlg.querySelector('[data-act="deep"]');
+      if (sheetBtn) { sheetBtn.disabled = busy; sheetBtn.title = busy ? t("js.ha.deep.busy") : ""; }
+    }
+  }
   function runDeep(ids) {
-    if (!ids.length) return;
+    if (!ids.length || deepBusy()) return;
+    deepRunning = true;
+    syncDeepBusy();
     api("/api/devices/rescan", { method: "POST", json: { ids: ids } }).then(function () {
       snack(t("js.ha.deep.done"), { kind: "success" });
       fetchHist();
-    }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
+    }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); }).then(function () { deepRunning = false; syncDeepBusy(); });
   }
-  var deepDlg = $("deepall"), deepMenuEl = $("deep-menu");
+  var deepMenuEl = $("deep-menu");
   // The badge: how many devices were never analysed in depth. It is ONE element that changes place: on the corner of the arrow
   // while the menu is closed, in the "to analyse" tile while it is open. While it moves it lives in <body>, fixed, so nothing it
   // crosses (overflow, stacking order, the menu itself) can hide it, and it lands in exactly the place it was measured for.
@@ -709,13 +721,14 @@
     anim.oncancel = land;
   }
   deepBadge.addEventListener("click", function (e) {
-    if (deepBadge.dataset.at !== "corner") return;
+    if (deepBadge.dataset.at !== "corner" || deepBusy()) return;
     e.stopPropagation();
     toggleDeepMenu(true);
   });
   function toggleDeepMenu(open) {
     if (open === undefined) open = deepMenuEl.hidden;
     if (open === !deepMenuEl.hidden) return;         // already so: the badge must not move twice
+    if (open && deepBusy()) return;                  // one search at a time
     if (open) {
       closePopups("deep");
       if (deepMenuEl.contains(deepBadge)) deepSplit().appendChild(deepBadge);      // never lost with the old tiles
@@ -738,18 +751,12 @@
     }
     var b2 = $("btn-deepmenu"); if (b2) b2.setAttribute("aria-expanded", String(open));
   }
-  function openDeepAll(mode) {
-    var list = mode === "pending" ? deepPending() : S.list, n = list.length;
-    if (!n) { snack(t(mode === "pending" ? "js.ha.deep.menu_pending_none" : "js.ha.deep.none"), { kind: "warning" }); return; }
-    deepIds = list.map(function (d) { return d.id; });
-    deepDlg.innerHTML = '<div class="mi"><div class="mi-header"><div class="mi-titles"><h2 class="mi-title" id="deepall-title">' + esc(t("js.ha.deep.title")) + "</h2></div></div>" +
-      '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("magnify") + "</span><p>" + esc(t(mode === "pending" ? "js.ha.deep.pending_text" : "js.ha.deep.all_text", { n: n })) + "</p></div></div>" +
-      '<div class="mi-actions"><button type="button" class="btn text rp" data-deep="cancel">' + esc(t("js.ha.cancel")) + "</button>" +
-      '<button type="button" class="btn filled rp" data-deep="start">' + esc(t("js.ha.deep.start")) + "</button></div></div>";
-    if (typeof deepDlg.showModal === "function") deepDlg.showModal(); else deepDlg.setAttribute("open", "");
-  }
-  function closeDeepAll() {
-    if (deepDlg.open && typeof deepDlg.close === "function") deepDlg.close(); else deepDlg.removeAttribute("open");
+  // The choice in the menu starts the search: no confirmation (the badge and the tiles already say what it will do).
+  function startDeepAll(mode) {
+    if (deepBusy()) { snack(t("js.ha.deep.busy"), { kind: "warning" }); return; }
+    var list = mode === "pending" ? deepPending() : S.list;
+    if (!list.length) { snack(t(mode === "pending" ? "js.ha.deep.menu_pending_none" : "js.ha.deep.none"), { kind: "warning" }); return; }
+    runDeep(list.map(function (d) { return d.id; }));
   }
   document.addEventListener("click", function (e) {
     if (e.target.closest("#btn-deepmenu")) { e.stopPropagation(); toggleDeepMenu(); }
@@ -758,14 +765,7 @@
     var item = e.target.closest("[data-deep]");
     if (!item || item.disabled) return;
     toggleDeepMenu(false);
-    openDeepAll(item.dataset.deep);
-  });
-  deepDlg.addEventListener("click", function (e) {
-    if (e.target === deepDlg) return closeDeepAll();
-    var b = e.target.closest("[data-deep]");
-    if (!b) return;
-    if (b.dataset.deep === "start") { closeDeepAll(); runDeep(deepIds); }
-    else closeDeepAll();
+    startDeepAll(item.dataset.deep);
   });
   document.addEventListener("click", function (e) {
     if (!deepMenuEl.hidden && !e.target.closest("#deep-menu") && !e.target.closest("#btn-deepmenu")) toggleDeepMenu(false);
@@ -1167,6 +1167,7 @@
     if (!textEl) return;
     var busy = false, text;
     var rescanning = S.activity.rescanning.size;
+    syncDeepBusy();
     if (S.activity.search) { text = t("js.ha.scan.searching"); busy = true; }
     else if (rescanning) { text = t("js.ha.scan.deep", { n: rescanning }); busy = true; }
     else if (S.refreshing) { text = t("js.ha.scan.refreshing"); busy = true; }
@@ -2311,7 +2312,7 @@
     }
     html += '<button type="button" class="btn ' + (d && d.focus ? "outlined" : "tonal") + ' rp" data-act="focus">' + icon("flag") +
       "<span>" + esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add")) + "</span></button>";
-    el.innerHTML = html + '<button type="button" class="btn tonal rp" data-act="deep">' + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+    el.innerHTML = html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepBusy() ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   }
 
   function updateMore() {
@@ -2642,6 +2643,7 @@
       case "type-menu": if (d) openTypeMenu(act, d); break;
       case "ignore": S.mi.view = "ignore"; renderMore(); break;
       case "deep":
+        if (deepBusy()) break;
         // Once the search has started, return to the dashboard: progress is visible on the card.
         if (d && skipDeepConfirm()) { runDeep([d.id]); closeMore(); break; }
         S.mi.view = "deep"; renderMore(); break;

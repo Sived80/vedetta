@@ -30,6 +30,8 @@ const vc = new VirtualConsole();
 vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.stack) || e.message)));
 vc.on("error", (e) => errors.push("console.error: " + e));
 const sources = [];
+const calls = [];                         // the requests the page made
+let releaseRescan = null;                 // the deep search request stays open until the test lets it finish
 const flights = [];                       // the animations the page asked for (jsdom has none: they are driven by hand)
 const dom = new JSDOM(html, {
   runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc, url: "http://localhost/ha?lang=" + lang,
@@ -48,7 +50,9 @@ const dom = new JSDOM(html, {
       flights.push(a);
       return a;
     };
-    win.fetch = (url) => {
+    win.fetch = (url, opts) => {
+      calls.push({ url, method: opts && opts.method });
+      if (url.startsWith("/api/devices/rescan")) return new Promise((res) => { releaseRescan = () => res({ ok: true, status: 200, headers: { get: () => null }, json: () => Promise.resolve({}) }); });
       let body = {};
       if (url.startsWith("/api/ha/devices") && !url.includes("/debug")) body = data.devices;
       else if (url.startsWith("/api/ha/summary")) body = data.summary;
@@ -158,6 +162,36 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   arrow().click();
   await wait(30);
   check(badge().parentElement === q(".gauge-side .split"), "e torna sull'angolo");
+
+  // --- a choice in the menu starts the search at once (no confirmation) and, while it runs, no other can start
+  win.HTMLElement.prototype.animate = function () { return { finish() {}, cancel() {}, set onfinish(f) { setTimeout(f, 0); }, set oncancel(f) {} }; };
+  await setDevice(0, { scanned_at: null });
+  arrow().click();
+  await wait(30);
+  q('#deep-menu [data-deep="all"]').click();
+  await wait(30);
+  check(!doc.querySelector("dialog[open]"), "dopo la scelta nel menu non compare nessun pop-up di conferma");
+  check(calls.filter((c) => c.url.startsWith("/api/devices/rescan")).length === 1, "la ricerca parte subito");
+  check(arrow().disabled && arrow().title.length > 0, "mentre la ricerca va, la freccia e' spenta e dice perche'");
+  arrow().click();
+  await wait(30);
+  check(q("#deep-menu").hidden, "con la ricerca in corso il menu non si apre");
+  badge().click();
+  await wait(30);
+  check(q("#deep-menu").hidden, "ne' dal badge");
+  check(!q("#btn-scan").disabled, "Scansiona la rete e' indipendente: resta disponibile");
+  sources[sources.length - 1].emit("activity", { type: "activity", rescanning: [D[0].id], search: false });
+  releaseRescan && releaseRescan();
+  await wait(60);
+  check(arrow().disabled, "lo dice anche il server (rescanning): resta spenta anche dopo che la richiesta e' finita");
+  sources[sources.length - 1].emit("activity", { type: "activity", rescanning: [], search: false });
+  await wait(60);
+  check(!arrow().disabled, "a ricerca finita la freccia torna attiva");
+  arrow().click();
+  await wait(30);
+  check(!q("#deep-menu").hidden, "e il menu si apre di nuovo");
+  arrow().click();
+  await wait(30);
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");

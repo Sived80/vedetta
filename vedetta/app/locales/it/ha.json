@@ -200,11 +200,9 @@
   "js.ha.deep.start": "Avvia",
   "js.ha.deep.skip": "Non visualizzare più",
   "js.ha.deep.one_text": "Analizza a fondo {name}: servizi aperti e pagina web. È la ricerca più lenta e può richiedere un po' di tempo.",
-  "js.ha.deep.all_text": "Analizza a fondo tutti i {n} dispositivi: servizi aperti e pagina web. È la ricerca più lenta e può richiedere alcuni minuti. L'elenco si aggiorna da solo.",
   "js.ha.deep.done": "Ricerca approfondita terminata",
   "js.ha.deep.none": "Ancora nessun dispositivo da analizzare",
   "js.ha.deep.menu_pending_none": "Tutti i dispositivi sono già stati analizzati a fondo",
-  "js.ha.deep.pending_text": "Analizza a fondo i {n} dispositivi non ancora analizzati: servizi aperti e pagina web. Può richiedere alcuni minuti. L'elenco si aggiorna da solo.",
   "js.ha.brand_unknown": "non determinata",
   "js.ha.brand_declared": "nessuna marca dichiarata (il dispositivo dice «{value}»)",
   "js.ha.ev.confirmed": "confermata",
@@ -421,5 +419,6 @@
   "js.ha.focus.saved": "Dispositivo segnalato",
   "js.ha.focus.removed": "Segnalazione tolta",
   "js.ha.export.focus_title": "Dispositivi segnalati: {n}",
-  "js.ha.export.focus_text": "Il report include la loro scheda, la storia e la tua nota."
+  "js.ha.export.focus_text": "Il report include la loro scheda, la storia e la tua nota.",
+  "js.ha.deep.busy": "Ricerca approfondita in corso: attendi che finisca."
 }

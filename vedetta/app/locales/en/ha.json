@@ -200,11 +200,9 @@
   "js.ha.deep.start": "Start",
   "js.ha.deep.skip": "Don't show this again",
   "js.ha.deep.one_text": "Analyses {name} in depth: open services and web page. It is the slowest search and may take a while.",
-  "js.ha.deep.all_text": "Analyses all {n} devices in depth: open services and web page. It is the slowest search and may take several minutes. The list updates by itself.",
   "js.ha.deep.done": "Deep search finished",
   "js.ha.deep.none": "No devices to analyse yet",
   "js.ha.deep.menu_pending_none": "All devices have already been analysed in depth",
-  "js.ha.deep.pending_text": "Analyses in depth the {n} devices that have not been analysed in depth yet: open services and web page. It may take several minutes. The list updates by itself.",
   "js.ha.brand_unknown": "not determined",
   "js.ha.brand_declared": "no brand declared (the device says “{value}”)",
   "js.ha.ev.confirmed": "confirmed",
@@ -421,5 +419,6 @@
   "js.ha.focus.saved": "Device flagged",
   "js.ha.focus.removed": "Flag removed",
   "js.ha.export.focus_title": "Flagged devices: {n}",
-  "js.ha.export.focus_text": "The report includes their card, history and your note."
+  "js.ha.export.focus_text": "The report includes their card, history and your note.",
+  "js.ha.deep.busy": "A deep search is running: wait until it finishes."
 }

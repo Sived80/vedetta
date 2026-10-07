@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **Export**: two different devices that announce the same name (for example the service name an app announces from every phone) no longer get the same placeholder in the anonymised export. Each device keeps its own, so two phones are no longer read as one.
+
 ## 0.4.3
 - **A device gets its best name**: a name that says what the device is (a known brand and a model number, like `Xiaomi-14` from DHCP) now outranks an opaque label from a more reliable source (like `expiscor`, the instance name of an Alexa service). The saved automatic name is re-evaluated at every check, so devices you already have are corrected without a new deep search. A name you chose never changes.
 - Data per MAC, for analysis only: the history database also keeps what each MAC looked like and what a card carried over when another MAC started answering at the same address. It shows nothing and decides nothing; it goes into the anonymised export.

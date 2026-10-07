@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs (or updates) a SEPARATE copy of Vedetta on Home Assistant OS, for debugging: "Vedetta (debug)", slug local_vedetta_debug.
-# It does not touch the real app: own data (/data), own port (8766), no MQTT (nothing is published to Home Assistant),
+# The copy on the host is replaced as a whole (a file removed in the repository must not stay there: the front-end parts are joined
+# by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (8766), no MQTT (nothing is published to Home Assistant),
 # no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> tools/deploy_debug.sh
 set -euo pipefail
 HOST="${VEDETTA_HA_HOST:?set VEDETTA_HA_HOST}"
@@ -24,5 +25,5 @@ sed -i \
   -e '/^services:$/,/^  - mqtt:want$/d' \
   "$STAGE/$SLUG/config.yaml"
 tar czf - -C "$STAGE" "$SLUG" | ssh -i "$KEY" "root@$HOST" \
-  "tar xzf - -C /local_apps && ha store reload && if ha apps info local_$SLUG 2>&1 | grep -q '^version: null'; then ha apps install local_$SLUG; else INFO=\$(ha apps info local_$SLUG 2>&1); if [ \"\$(echo \"\$INFO\" | sed -n 's/^version: //p')\" != \"\$(echo \"\$INFO\" | sed -n 's/^version_latest: //p')\" ]; then ha apps update local_$SLUG; else ha apps rebuild local_$SLUG; fi; fi && ha apps start local_$SLUG"
+  "rm -rf /local_apps/$SLUG && tar xzf - -C /local_apps && ha store reload && if ha apps info local_$SLUG 2>&1 | grep -q '^version: null'; then ha apps install local_$SLUG; else INFO=\$(ha apps info local_$SLUG 2>&1); if [ \"\$(echo \"\$INFO\" | sed -n 's/^version: //p')\" != \"\$(echo \"\$INFO\" | sed -n 's/^version_latest: //p')\" ]; then ha apps update local_$SLUG; else ha apps rebuild local_$SLUG; fi; fi && ha apps start local_$SLUG"
 echo "Sent: the first build may take a few minutes. Then: Settings > Apps > Vedetta (debug) > Show in sidebar."

@@ -1452,6 +1452,7 @@
       var n = S.found.length;
       S.scanned = true;
       S.scanDone = true;
+      S.dismissedNew = {};      // a search the user asks for shows again what the app had seen by itself
       try { localStorage.setItem("vedetta-ha-scanned", "1"); } catch (err) { /* ignore */ }
       renderNew();
       snack(n === 0 ? t("js.ha.toast.scan_none") : t("js.ha.toast.scan_found", { n: n }), { kind: "success" });
@@ -2018,8 +2019,10 @@
     if (ia) {
       // Cancel: closes the list of this scan; the devices are not ignored
       // and a new scan finds them again.
-      // Cancel closes the card until something new appears: the devices seen on the network are remembered as dismissed.
-      newRows().forEach(function (r) { if (r.src === "new") S.dismissedNew[String(r.mac || r.ip).toUpperCase()] = true; });
+      // Cancel closes what the card shows. With the list of a search on screen it closes only that list: the devices the app saw by
+      // itself stay and are the second card (a second Cancel closes it). Without a list it closes the card until something new
+      // appears: the devices seen on the network are remembered as dismissed.
+      if (!S.found.length) newRows().forEach(function (r) { if (r.src === "new") S.dismissedNew[String(r.mac || r.ip).toUpperCase()] = true; });
       S.found = [];
       S.scanDone = false;
       renderNew();

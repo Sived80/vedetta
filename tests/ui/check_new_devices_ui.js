@@ -157,12 +157,20 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(!q("#card-new").hidden && rows().length === 2, "due dispositivi visti in rete dall'app: la scheda compare");
   await click("#card-new [data-ignore-all]");
   check(q("#card-new").hidden, "«Annulla» chiude la scheda");
-  await click("#btn-scan");                          // (a completed scan is what lets the devices seen on the network show)
-  await wait(60);
   emitNew([A, B]);
   await wait(60);
-  check(q("#card-new").hidden, "e non ricompare per gli stessi dispositivi, nemmeno dopo una nuova ricerca");
+  check(q("#card-new").hidden, "e non ricompare per gli stessi dispositivi quando l'app li rivede");
+  // a search that the user asks for brings them back
+  await click("#btn-scan");
+  await wait(60);
+  check(rows().length === 2, "una ricerca chiesta dall'utente riporta i due dispositivi visti dall'app");
+  await click("#card-new [data-ignore-all]");
+  // the app sees a third one while the card is closed (the card shows what the app sees by itself ten seconds after the start)
   const C = seen("AA:AA:AA:00:00:03", "192.168.178.213");
+  await wait(10500);
+  emitNew([A, B]);
+  await wait(60);
+  check(q("#card-new").hidden, "richiusa, non ricompare per gli stessi");
   emitNew([A, B, C]);
   await wait(60);
   check(!q("#card-new").hidden && rows().length === 1, "ricompare solo per un dispositivo mai visto prima");
@@ -175,6 +183,19 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(rowState(0) === "nd-done", "salvato: la riga e' verde");
   await wait(2600);
   check(q("#card-new").hidden, "e dopo la spunta la scheda sparisce da sola");
+
+  // --- 9. the list of a search AND devices the app saw by itself: the first Cancel closes the list, the second card stays, the second Cancel closes it
+  const D = seen("AA:AA:AA:00:00:04", "192.168.178.221"), E2 = seen("AA:AA:AA:00:00:05", "192.168.178.222");
+  [["192.168.178.201", "B8:27:EB:3A:91:C2"], ["192.168.178.202", "3C:61:05:4F:20:7D"]].forEach(([ip, mac]) => HOSTS.push({ ip, mac, hostname: "h" + ip.split(".")[3] }));
+  await click("#btn-scan");
+  await wait(60);
+  emitNew([D, E2]);
+  await wait(60);
+  check(rows().length === 4, "la lista della ricerca (2) e i due dispositivi visti dall'app stanno insieme");
+  await click("#card-new [data-ignore-all]");
+  check(!q("#card-new").hidden && rows().length === 2 && rows().every((r) => /\.22[12]$/.test(r.dataset.ip)), "primo «Annulla»: chiude la lista, resta la seconda scheda con i dispositivi dell'app");
+  await click("#card-new [data-ignore-all]");
+  check(q("#card-new").hidden, "secondo «Annulla»: chiude anche quella");
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");

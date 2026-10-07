@@ -1509,3 +1509,9 @@
   }
   .field textarea:focus + .field-label { color: var(--primary-color); }
 }
+
+/* The search box and the circle: the same distance (16 px) as the circle from the buttons under it. */
+@layer overrides {
+  #card-search { padding-bottom: 16px; }
+  #card-search:empty { padding-bottom: 0; }
+}

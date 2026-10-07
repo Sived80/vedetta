@@ -1,4 +1,5 @@
-/* Devices found card (#card-new). Its .nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog (network). */
+/* Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog
+   (network): the plain .nd-* rules below style that dialog, #card-new restyles them in the overrides layer. */
 
 @layer layout {
   /* Compact mode (?compact=1): no devices found card. */
@@ -6,34 +7,28 @@
 }
 
 @layer components {
-  /* New devices */
-  #card-new { border-color: color-mix(in srgb, var(--warning-color) 50%, var(--divider-color)); }
-  #card-new .card-header { padding-bottom: 4px; }
+  /* The card: a ring in the icon of each row, a bar of two buttons under the title, nothing moves when a button is pressed (the
+     two cells of buttons, --c1 and --c2, are always there and have the same width in the bar and in the rows; the progress bar
+     has its place). */
+  #card-new {
+    --c1: 124px; --c2: 84px; overflow: clip; container-type: inline-size;
+    border-color: color-mix(in srgb, var(--warning-color) 50%, var(--divider-color));
+  }
+  #card-new .card-header { min-height: 72px; box-sizing: border-box; }
+
+  /* Device rows: Add and Ignore together, wrapping on narrow screens. */
   .nd-list { padding: 4px 8px; }
-  .nd-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; min-height: 52px; }
+  .nd-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 6px 8px; min-height: 52px; }
   .nd-ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none;
     color: var(--warning-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
   .nd-ic .mdi { width: 20px; height: 20px; }
   .nd-text { flex: 1; min-width: 0; }
   .nd-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nd-sub { font-size: 12px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nd-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 }
 
 @layer overrides {
-  /* New devices rows: Add and Ignore together, wrapping on narrow screens (inside #card-new the later block takes over; this still
-     styles #ignored). */
-  .nd-row { flex-wrap: wrap; }
-  .nd-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
-
-  /* Devices found card: actions on the title row (superseded by #card-new .card-header in the block below). */
-  #card-new .card-header { align-items: flex-start; }
-
-  /* The card of the devices found: a ring in the icon of each row, a bar of two buttons under the title, nothing moves when a
-     button is pressed (the two cells of buttons are always there and have the same width in the bar and in the rows; the progress
-     bar has its place). */
-  #card-new { --c1: 124px; --c2: 84px; overflow: clip; container-type: inline-size; }
-  #card-new .card-header { align-items: center; min-height: 72px; box-sizing: border-box; }
-  #card-new .ch-text { flex: 1; min-width: 0; }
   #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); order: -1; margin: 0 4px 0 0; }
   #card-new .nd-bar-actions { display: grid; grid-template-columns: var(--c1) var(--c2); justify-content: end; gap: 4px; padding: 8px 16px; position: sticky; top: 0; z-index: 3;
     background: color-mix(in srgb, var(--card-background-color) 92%, var(--primary-color)); border-top: 1px solid var(--divider-color); border-bottom: 1px solid var(--divider-color); }
@@ -48,8 +43,7 @@
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
   #card-new .nd-ico, #card-new .nd-lbl + .nd-ico { display: none; }
   /* the ring */
-  #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic { background: transparent; }
-  #card-new .nd-row.nd-done .nd-ic { background: transparent; }
+  #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic, #card-new .nd-row.nd-done .nd-ic { background: transparent; }
   .nd-ring { width: 30px; height: 30px; }
   .nd-ring circle { fill: none; stroke-width: 3; }
   .nd-ring .tr { stroke: var(--divider-color); }

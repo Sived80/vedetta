@@ -80,33 +80,6 @@ def quantize_uptime(seconds) -> int | None:
     return seconds if seconds < 60 else seconds // 60 * 60
 
 
-def format_uptime(seconds) -> str | None:
-    """Text in the current language (called from the templates via a filter)."""
-    if seconds is None:
-        return None
-    seconds = int(seconds)
-    days, rem = divmod(seconds, 86400)
-    hours, rem = divmod(rem, 3600)
-    minutes, _ = divmod(rem, 60)
-    if days > 0:
-        return t("uptime.days_hours", d=days, h=hours)
-    if hours > 0:
-        return t("uptime.hours_minutes", h=hours, m=minutes)
-    return t("uptime.minutes", m=minutes)
-
-
-def format_uptime_short(seconds) -> str | None:
-    """Seconds, minutes or hours only (for tables, where space is tight)."""
-    if seconds is None:
-        return None
-    seconds = int(seconds)
-    if seconds < 60:
-        return t("uptime.short_seconds", n=seconds)
-    if seconds < 3600:
-        return t("uptime.short_minutes", n=seconds // 60)
-    return t("uptime.short_hours", n=seconds // 3600)
-
-
 # Qualities are neutral codes ("excellent"...): the text is chosen at
 # display time (key signal.<code>), so the state shared among
 # browsers does not depend on anyone's language.

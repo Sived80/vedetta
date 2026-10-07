@@ -26,10 +26,6 @@ def _is_mobile(name: str | None) -> bool:
     return bool(name) and any(k in name.lower() for k in _MOBILE_NAME_KEYWORDS)
 
 
-def _phone_brand(brand: str | None) -> bool:
-    return bool(brand) and any(k in brand.lower() for k in _PHONE_ONLY_BRANDS)
-
-
 _MOBILE_NAME_WEAK = ("android",)
 # "Declared" models that are actually the service type, not a model.
 _GENERIC_MODELS = {"mediarenderer", "mediaserver", "basic", "dial", "device", "root"}

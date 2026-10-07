@@ -76,10 +76,6 @@ def default_flows() -> dict[str, list[str]]:
     return {p: list(ids) for p, ids in DEFAULT_FLOWS.items()}
 
 
-def get_step(step_id: str) -> Step | None:
-    return _BY_ID.get(step_id)
-
-
 class FlowError(ValueError):
     """Invalid flow setting: key is the translation key of the
     message (flow.error.*), params its placeholders."""

@@ -116,10 +116,6 @@ def _word_pts(base: int, subs, toks, model: tuple[str, set[str]]) -> int:
     return max(base, W_DECLARED) if (any(x in text for x in subs) or tokens & toks) else base
 
 
-def _hit(rule: dict, text: str, tokens: set[str], ports: set[int]) -> bool:
-    return (any(s in text for s in rule["subs"]) or bool(tokens & rule["toks"]) or bool(ports & rule["ports"]))
-
-
 # ---- score-based category --------------------------------------------------
 # Each clue gives points to one or more categories, with a weight that depends on how
 # reliable it is; the category with the most points wins (on a tie, TYPE_ORDER order),

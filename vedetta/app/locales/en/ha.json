@@ -171,11 +171,6 @@
   "js.ha.new.found_one": "{n} device found",
   "js.ha.new.found_other": "{n} devices found",
   "js.ha.new.add_all": "Add all",
-  "js.ha.new.analyzing": "Analyzing…",
-  "js.ha.new.done": "Done",
-  "js.ha.new.progress": "Adding devices: {done} of {total}",
-  "js.ha.new.progress_hint": "Each device is analyzed to pick its name and port, then saved.",
-  "js.ha.new.cancel_all": "Cancel",
   "js.ha.menu.speed": "Responsiveness",
   "js.ha.menu.speed_fast": "Fast",
   "js.ha.menu.speed_normal": "Normal",
@@ -246,7 +241,6 @@
   "js.ha.log.hint_min": "Only what matters: fixed devices going offline or back online, new devices, duplicate IPs, multiple DHCP servers.",
   "js.ha.log.hint_normal": "Every state change (phones too), every alert (ports, changed IPs), additions, removals and pauses.",
   "js.ha.log.hint_detail": "Also the service's work: searches, device analyses, network roles, DHCP and internet uplink.",
-  "js.ha.new.cancelled": "Search cancelled: only already analysed devices are added",
   "js.ha.menu.ignored": "Ignored devices",
   "js.ha.ign.hint": "They are hidden from searches and new devices. Restore them to see them again.",
   "js.ha.ign.restore": "Restore",
@@ -465,5 +459,12 @@
   "js.ha.export.save": "Save the file",
   "js.ha.export.saved": "File saved",
   "js.ha.export.err_too_big": "The file for the developer is over {size}: shorten the period.",
-  "js.ha.export.err_busy": "Another export is running: try again in a moment."
+  "js.ha.export.err_busy": "Another export is running: try again in a moment.",
+  "js.ha.new.working": "In progress",
+  "js.ha.new.run_title": "Adding · {done} of {total}",
+  "js.ha.new.run_sub": "Analysing and saving",
+  "js.ha.new.added_title_one": "{n} device added",
+  "js.ha.new.added_title_other": "{n} devices added",
+  "js.ha.new.added_sub": "They are in the device list",
+  "js.ha.new.close": "Close"
 }

@@ -171,11 +171,6 @@
   "js.ha.new.found_one": "{n} dispositivo trovato",
   "js.ha.new.found_other": "{n} dispositivi trovati",
   "js.ha.new.add_all": "Aggiungi tutti",
-  "js.ha.new.analyzing": "Analisi…",
-  "js.ha.new.done": "Fatto",
-  "js.ha.new.progress": "Aggiunta dei dispositivi: {done} di {total}",
-  "js.ha.new.progress_hint": "Ogni dispositivo viene analizzato per scegliere nome e porta, poi salvato.",
-  "js.ha.new.cancel_all": "Annulla",
   "js.ha.menu.speed": "Reattività",
   "js.ha.menu.speed_fast": "Veloce",
   "js.ha.menu.speed_normal": "Normale",
@@ -246,7 +241,6 @@
   "js.ha.log.hint_min": "Solo ciò che conta: dispositivi fissi che vanno offline o tornano online, nuovi dispositivi, IP duplicati, più server DHCP.",
   "js.ha.log.hint_normal": "Tutti i cambi di stato (anche dei telefoni), tutti gli avvisi (porte, IP cambiati), aggiunte, eliminazioni e pause.",
   "js.ha.log.hint_detail": "Anche il lavoro del servizio: ricerche, analisi dei dispositivi, ruoli di rete, DHCP e uscita verso internet.",
-  "js.ha.new.cancelled": "Ricerca annullata: si aggiungono solo i dispositivi già analizzati",
   "js.ha.menu.ignored": "Dispositivi ignorati",
   "js.ha.ign.hint": "Non compaiono nelle ricerche né tra i nuovi rilevati. Ripristinali per vederli di nuovo.",
   "js.ha.ign.restore": "Ripristina",
@@ -465,5 +459,12 @@
   "js.ha.export.save": "Salva il file",
   "js.ha.export.saved": "File salvato",
   "js.ha.export.err_too_big": "Il file per lo sviluppatore supera {size}: accorcia il periodo.",
-  "js.ha.export.err_busy": "Un'altra esportazione è in corso: riprova tra poco."
+  "js.ha.export.err_busy": "Un'altra esportazione è in corso: riprova tra poco.",
+  "js.ha.new.working": "In corso",
+  "js.ha.new.run_title": "Aggiunta in corso · {done} di {total}",
+  "js.ha.new.run_sub": "Analisi e salvataggio in corso",
+  "js.ha.new.added_title_one": "{n} dispositivo aggiunto",
+  "js.ha.new.added_title_other": "{n} dispositivi aggiunti",
+  "js.ha.new.added_sub": "Sono nell'elenco dei dispositivi",
+  "js.ha.new.close": "Chiudi"
 }

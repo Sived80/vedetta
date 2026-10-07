@@ -4,8 +4,6 @@ Sources, weights, certainty bars and the rules for phones. Everything here is pu
 
 [← Back to the README](../README.md)
 
-# How it recognizes a device
-
 <p align="center"><img src="images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
 
 - 🗳️ **One fact, one vote.** Cast shows up as an mDNS service, a local API, two ports and a DIAL record — that is *one*

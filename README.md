@@ -50,7 +50,9 @@ Many weak clues (services, ports, names, DHCP and Bonjour announcements, the Hom
 > [!NOTE]
 > Needs **Home Assistant OS** or **Supervised** (Settings shows **Apps**). Home Assistant *Container* or *Core* has no app store.
 
-1. Add the repository: [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta) (or add `https://github.com/Sived80/vedetta` by hand in the App store).
+1. Add the repository with this button, or add `https://github.com/Sived80/vedetta` by hand in the App store:
+
+   [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
 2. Search **Vedetta** in the App store and press **Install**.
 3. Switch on **Show in sidebar** and press **Start**, then open **Vedetta** from the sidebar and press **Scan network**.
 

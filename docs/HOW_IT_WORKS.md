@@ -4,7 +4,7 @@ What Vedetta is, what it does and how its search methods work. How it decides wh
 
 [← Back to the README](../README.md)
 
-# Meet Vedetta
+## Meet Vedetta
 
 Your router lists *“android-7f3a…”* and *“Unknown device”*. Fing shows a brand and no reason. Home Assistant knows the
 devices **you** set up, not the rest of your network.
@@ -24,7 +24,7 @@ names and rooms you already chose, and publishes back **only what you decide to 
 > [!IMPORTANT]
 > **Local-only.** No cloud, no accounts, no telemetry. See [Privacy & safety](PRIVACY.md).
 
-# Features
+## Features
 
 | | |
 |---|---|

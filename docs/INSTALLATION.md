@@ -4,8 +4,6 @@ How to install Vedetta in Home Assistant, what happens at the first launch, and 
 
 [← Back to the README](../README.md)
 
-# Install
-
 > [!NOTE]
 > **Before you start.** Vedetta is a Home Assistant *app* (older versions call it an *add-on*). Open Home Assistant and go to
 > **Settings**: if you see **Apps** (or **Add-ons**, or **Applicazioni** in Italian), you are ready. If you run Home Assistant *Container* or *Core*, there is no

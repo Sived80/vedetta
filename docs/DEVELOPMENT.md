@@ -4,7 +4,7 @@ How to teach Vedetta a new device or brand logo, how the repository is organized
 
 [← Back to the README](../README.md)
 
-# Teach it a new device
+## Teach it a new device
 
 Recognition is data, not code. A product signature in [`vedetta/app/data/signatures.json`](../vedetta/app/data/signatures.json)
 is a few conditions on what a device declares:
@@ -29,7 +29,7 @@ follows a brand you change by hand. Add a brand to the list in `tools/update_log
 are regenerated (logos come from [Simple Icons](https://simpleicons.org) and
 [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons)). Only logos that may be redistributed belong here.
 
-# Development
+## Development
 
 ```text
 vedetta/            the app (config.yaml, Dockerfile, FastAPI backend, vanilla-JS frontend)

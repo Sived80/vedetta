@@ -4,8 +4,6 @@ What Vedetta reads from Home Assistant and what it can publish back. Publishing 
 
 [← Back to the README](../README.md)
 
-# Home Assistant integration
-
 | Direction | What happens |
 |---|---|
 | **HA → Vedetta** *(read-only)* | Device registry, areas and integrations give names, manufacturers, models and categories. Matched by MAC, or by the device’s configuration address when it is unique. Turn it off in *Search methods → Home Assistant data*. |

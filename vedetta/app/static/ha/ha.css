@@ -1323,3 +1323,93 @@
   .dm-foot { margin: 8px 16px 8px; padding-top: 8px; border-top: 1px solid var(--divider-color); font-size: 12px; line-height: 1.45; color: var(--secondary-text-color); }
   @media (prefers-reduced-motion: reduce) { .deep-badge { will-change: auto; } }
 }
+
+/* The export window (xp-*): who it is for, which days, the steps, what to decide. */
+@layer overrides {
+  #exportdlg .mi-header { padding: 20px 24px 8px; }
+  #exportdlg .xp-body { display: flex; flex-direction: column; gap: 16px; padding: 4px 24px 12px; }
+  #exportdlg .mi-actions { padding: 12px 24px 20px; gap: 8px; }
+  .xp-sub { color: var(--secondary-text-color); font-size: 13px; line-height: 1.55; }
+  .xp-sub.warn { color: var(--warning-color, #ff9800); }
+  .xp-tag { font-size: 11px; font-style: normal; margin-left: 8px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; background: color-mix(in srgb, var(--primary-color) 14%, transparent); color: var(--primary-color); }
+  .xp-tag.warn { background: color-mix(in srgb, var(--warning-color, #ff9800) 18%, transparent); color: var(--warning-color, #ff9800); }
+  .xp-chosen .xp-tag { margin: 0; }
+  .xp-dcard { display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left; border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); border-radius: 14px; padding: 16px; cursor: pointer; font: inherit; }
+  .xp-dcard:hover { background: color-mix(in srgb, var(--primary-color) 6%, transparent); }
+  .xp-dcard b { font-size: 15px; font-weight: 500; }
+  .xp-dcard .xp-sub { display: block; margin-top: 4px; }
+  .xp-dic { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--primary-color) 14%, transparent); color: var(--primary-color); }
+  .xp-flag { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--secondary-text-color); }
+  .xp-flag .mdi { width: 20px; height: 20px; flex: none; }
+  .xp-flag b { color: var(--primary-text-color); font-weight: 500; }
+  .xp-pan { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; font-size: 13px; color: var(--secondary-text-color); }
+  .xp-pan button { border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); border-radius: 16px; padding: 4px 12px; min-height: 32px; font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; flex: none; }
+  .xp-pan button:disabled { opacity: 0.35; cursor: default; }
+  .xp-pan .mdi { width: 16px; height: 16px; }
+  .xp-cap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; text-align: center; flex: 1; }
+  .xp-days { position: relative; display: flex; align-items: flex-end; gap: 2px; height: 74px; margin-bottom: 6px; user-select: none; }
+  .xp-col { flex: 1; min-width: 4px; border: 0; padding: 0; border-radius: 2px 2px 0 0; cursor: pointer; background: color-mix(in srgb, var(--secondary-text-color) 35%, transparent); }
+  .xp-col.in { background: var(--primary-color); }
+  .xp-col.nod { background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); cursor: default; }
+  .xp-col.pend { background: color-mix(in srgb, var(--primary-color) 55%, transparent); animation: xp-blink 1s ease-in-out infinite; }
+  .xp-lab { display: flex; gap: 2px; font-size: 10px; line-height: 14px; color: var(--secondary-text-color); }
+  .xp-lab i { flex: 1; min-width: 0; text-align: center; font-style: normal; white-space: nowrap; }
+  .xp-lab i.in { color: var(--primary-text-color); font-weight: 500; }
+  .xp-lab i.we { color: color-mix(in srgb, var(--error-color) 65%, var(--secondary-text-color)); }
+  .xp-lab i.today { color: var(--primary-color); font-weight: 600; }
+  .xp-lab i.m { text-transform: uppercase; font-size: 9px; margin-top: 2px; }
+  .xp-read { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .xp-read b { font-size: 16px; font-weight: 500; }
+  .xp-read span { font-size: 13px; color: var(--secondary-text-color); }
+  .xp-meter { height: 6px; border-radius: 3px; overflow: hidden; margin: 10px 0 6px; background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  .xp-meter i { display: block; height: 100%; background: var(--primary-color); transition: width 0.2s; }
+  .xp-meter.over i { background: var(--error-color); }
+  .xp-segm { display: flex; border: 1px solid var(--divider-color); border-radius: 20px; overflow: hidden; }
+  .xp-segm button { flex: 1; min-height: 38px; padding: 8px 6px; border: 0; border-left: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); font: inherit; font-size: 13px; white-space: nowrap; cursor: pointer; }
+  .xp-segm button:first-child { border-left: 0; }
+  .xp-segm button[aria-pressed="true"] { background: color-mix(in srgb, var(--primary-color) 18%, transparent); color: var(--primary-color); font-weight: 500; }
+  .xp-segm button:disabled { opacity: 0.4; cursor: default; }
+  .xp-step { display: flex; gap: 14px; align-items: flex-start; padding: 8px 0; }
+  .xp-step b { display: block; font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .xp-step .xp-sub { display: block; }
+  .xp-dot { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 2px solid var(--divider-color); color: var(--secondary-text-color); font-size: 12px; }
+  .xp-dot .mdi { width: 16px; height: 16px; }
+  .xp-step.run .xp-dot { border-color: var(--primary-color); border-top-color: transparent; animation: spin 0.8s linear infinite; }
+  .xp-step.done .xp-dot { background: var(--success-color, #43a047); border-color: transparent; color: #fff; }
+  .xp-step.bad .xp-dot { background: var(--error-color); border-color: transparent; color: #fff; }
+  .xp-step.wait { opacity: 0.5; }
+  .xp-res { border: 1px solid color-mix(in srgb, var(--success-color, #43a047) 55%, transparent); border-radius: 12px; padding: 14px; }
+  .xp-rt { display: flex; gap: 12px; align-items: flex-start; }
+  .xp-rt b { display: block; font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .xp-rt .ok { color: var(--success-color, #43a047); }
+  .xp-tone { display: flex; gap: 12px; align-items: flex-start; border-radius: 12px; padding: 12px 14px; font-size: 13px; line-height: 1.5; }
+  .xp-tone.warn { background: color-mix(in srgb, var(--warning-color, #ff9800) 14%, transparent); }
+  .xp-tone.bad { background: color-mix(in srgb, var(--error-color) 16%, transparent); border: 1px solid color-mix(in srgb, var(--error-color) 50%, transparent); }
+  .xp-tone .mdi { flex: none; }
+  .xp-bulk { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--secondary-text-color); }
+  .xp-link { background: none; border: 0; padding: 0 0 0 8px; min-height: 32px; color: var(--primary-color); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .xp-fl { margin: 0; padding: 0; list-style: none; font-size: 13px; }
+  .xp-fl li { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--divider-color); }
+  .xp-fl code { font: 12px ui-monospace, monospace; color: var(--primary-text-color); overflow-wrap: anywhere; }
+  .xp-fl li > span { color: var(--secondary-text-color); text-align: right; overflow-wrap: anywhere; }
+  .xp-more { font-size: 12px; color: var(--secondary-text-color); padding-top: 8px; }
+  .xp-rowact { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
+  .xp-rowact button { min-height: 30px; padding: 4px 12px; border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); border-radius: 14px; font: inherit; font-size: 12px; cursor: pointer; }
+  .xp-rowact button[aria-pressed="true"] { border-color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 14%, transparent); color: var(--primary-color); }
+  .xp-rowact button.rm[aria-pressed="true"] { border-color: var(--error-color); background: color-mix(in srgb, var(--error-color) 12%, transparent); color: var(--error-color); }
+  /* the finger that shows the columns can be touched: once, when the window opens */
+  .xp-finger { position: absolute; z-index: 3; top: 34px; left: 0; width: 34px; height: 34px; margin-left: -12px; color: var(--primary-text-color); pointer-events: none; opacity: 0; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45)); animation: xp-fing 3.4s ease-in-out 0.4s 1 both; }
+  .xp-finger .mdi { width: 34px; height: 34px; }
+  .xp-finger i { position: absolute; left: 6px; top: 2px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--primary-color); opacity: 0; animation: xp-rip 3.4s ease-out 0.4s 1 both; }
+  @keyframes xp-fing { 0% { opacity: 0; left: var(--x1); transform: translateY(14px) scale(1); } 10% { opacity: 1; left: var(--x1); transform: translateY(0) scale(1); } 20% { transform: translateY(0) scale(0.86); } 28% { transform: translateY(0) scale(1); left: var(--x1); } 52% { left: var(--x2); transform: translateY(0) scale(1); } 60% { left: var(--x2); transform: translateY(0) scale(0.86); } 68% { left: var(--x2); transform: translateY(0) scale(1); opacity: 1; } 100% { left: var(--x2); opacity: 0; transform: translateY(8px) scale(1); } }
+  @keyframes xp-rip { 0%, 16% { opacity: 0; transform: scale(0.4); } 22% { opacity: 0.9; transform: scale(0.7); } 34% { opacity: 0; transform: scale(1.7); } 55%, 56% { opacity: 0; transform: scale(0.4); } 62% { opacity: 0.9; transform: scale(0.7); } 74%, 100% { opacity: 0; transform: scale(1.7); } }
+  @keyframes xp-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+  @media (prefers-reduced-motion: reduce) { .xp-finger, .xp-finger i, .xp-col.pend { animation: none; } .xp-finger { display: none; } }
+  @media (max-width: 480px) {
+    #exportdlg .mi-actions { flex-direction: column-reverse; align-items: stretch; }
+    #exportdlg .mi-actions .btn { justify-content: center; width: 100%; }
+    .xp-read { flex-direction: column; gap: 2px; }
+    .xp-lab { font-size: 9px; gap: 1px; }
+    .xp-days { gap: 1px; }
+  }
+}

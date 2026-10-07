@@ -2500,8 +2500,8 @@
     }
     // Dropdown closed initially; if opened it stays open when the data updates.
     el.innerHTML = html(fixedRows) + (rows.length
-      ? '<details class="attr-more" id="attr-more"' + (S.mi.moreOpen ? " open" : "") + "><summary>" + esc(t("js.ha.attr.more", { n: rows.length })) +
-        "</summary>" + html(rows) + "</details>"
+      ? '<details class="attr-more" id="attr-more"' + (S.mi.moreOpen ? " open" : "") + "><summary><span>" + esc(t("js.ha.attr.more", { n: rows.length })) +
+        '</span><span class="icon-btn small touch attr-chev" aria-hidden="true">' + icon("chevron-down") + "</span></summary>" + html(rows) + "</details>"
       : "");
     var det = $("attr-more");
     if (det) det.addEventListener("toggle", function () { S.mi.moreOpen = det.open; });

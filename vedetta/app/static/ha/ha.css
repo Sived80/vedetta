@@ -1468,10 +1468,12 @@
   }
 }
 
-/* "More attributes": the arrow is the same as the one of the "Type" row: a 20 px icon whose centre is 20 px (22 on touch) from the right edge. */
+/* "More attributes": the arrow is the same element as the one of the "Type" row (a small round icon button, only not clickable by itself),
+   so size and position are the same by construction. */
 @layer overrides {
-  .attr-more > summary::after { width: 20px; height: 20px; padding: 0; margin: 0 10px; background-clip: border-box; }
-  @media (pointer: coarse) { .attr-more > summary::after { margin: 0 12px; } }
+  .attr-more > summary::after { content: none; display: none; }
+  .attr-more > summary .attr-chev { pointer-events: none; color: inherit; transition: transform 0.15s; }
+  .attr-more[open] > summary .attr-chev { transform: rotate(180deg); }
 }
 
 /* A device flagged for the report: small flag on the corner of its icon. */

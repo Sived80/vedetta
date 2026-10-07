@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Flag a device for the report**: in the device sheet, *Flag this device* adds a short note (what is wrong). The export for analysis then has a section `state/focus.json` with that device's card, evidence, last 14 days of history (presence, MAC changes, the MACs seen) and the note. Up to 5 devices. Everything is anonymised like the rest, and a single word of a device name written in the note is masked too.
 - **Export**: two different devices that announce the same name (for example the service name an app announces from every phone) no longer get the same placeholder in the anonymised export. Each device keeps its own, so two phones are no longer read as one.
 
 ## 0.4.3

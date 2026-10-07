@@ -172,6 +172,23 @@ class Anonymizer:
         for a, hint, brand, icon in shared:
             self.add_device([a], hint, brand, icon)
 
+    def text_note(self, note: str | None) -> str | None:
+        """Free text written by the person (a note in the report): a single word of a known device name ("Giulia" in
+        "Giulia's iPad") is masked as the placeholder of that device. Product and brand words stay. Addresses and the rest are
+        left to text(), which the export applies to the whole file afterwards (masking twice would turn 10.0.0.x into 10.1.0.x)."""
+        if not note:
+            return note
+        out = note
+        words: dict[str, str] = {}
+        for key, label in {**self._names, **self._areas}.items():
+            for w in key.split("-"):
+                if len(w) >= 4 and w.isalpha() and w not in _NEVER and w not in _brand_keys() and not any(rx.search(w) for _, rx in _PRODUCTS):
+                    words.setdefault(w, label)
+        if words:
+            rx = re.compile(r"(?<![0-9A-Za-z])(" + "|".join(sorted(map(re.escape, words), key=len, reverse=True)) + r")(?![0-9A-Za-z])", re.I)
+            out = rx.sub(lambda m: words[m.group(1).lower()], out)
+        return out
+
     def _new_label(self, names: list[str], hint: str | None, brand: str | None = None, icon: str | None = None) -> str:
         # the brand written in the name stays visible: it is the clue the brand was recognised from
         base = re.sub(r"[^A-Za-z0-9]+", "", brand or "") if brand and any(_brand_in(brand, n) for n in names) else None

@@ -409,5 +409,17 @@
   "js.ha.deep.tile_pending_done": "tutti analizzati",
   "js.ha.deep.badge": "{n} dispositivi mai analizzati a fondo",
   "js.ha.deep.note": "La ricerca approfondita legge porte aperte, servizi e pagina web. Stanotte alle {hour} parte da sola per quelli mai analizzati.",
-  "js.ha.export.omitted": "Esportato, ma {n} file sono stati lasciati fuori perché non si potevano mascherare in sicurezza. Lo dice manifest.json."
+  "js.ha.export.omitted": "Esportato, ma {n} file sono stati lasciati fuori perché non si potevano mascherare in sicurezza. Lo dice manifest.json.",
+  "js.ha.focus.add": "Segnala questo dispositivo",
+  "js.ha.focus.edit": "Segnalato per il report",
+  "js.ha.focus.title": "Segnala nel report",
+  "js.ha.focus.label": "Cosa non va? (facoltativo)",
+  "js.ha.focus.hint": "Se esporti per l'analisi, il report include la scheda di questo dispositivo, la sua storia e questa nota. Non scrivere dati personali.",
+  "js.ha.focus.save": "Segnala",
+  "js.ha.focus.remove": "Togli la segnalazione",
+  "js.ha.focus.too_many": "Puoi segnalare al massimo 5 dispositivi.",
+  "js.ha.focus.saved": "Dispositivo segnalato",
+  "js.ha.focus.removed": "Segnalazione tolta",
+  "js.ha.export.focus_title": "Dispositivi segnalati: {n}",
+  "js.ha.export.focus_text": "Il report include la loro scheda, la storia e la tua nota."
 }

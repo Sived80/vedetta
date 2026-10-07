@@ -294,6 +294,24 @@ class History:
             )
             self._db.commit()
 
+    def device_focus(self, device_id: str, since: float, limit: int = 400) -> dict:
+        """Everything the database knows about one card in the period, for the "device under examination" section of the
+        export: presence events (newest first, with the MAC seen), the times of the deep searches, the MAC changes behind
+        the card and what each MAC of the card looked like."""
+        def rows(sql, *args):
+            return [dict(r) for r in self._db.execute(sql, args).fetchall()]
+        with self._lock:
+            out = {
+                "presence": rows("SELECT ts, online, ip, mac FROM presence_events WHERE device_id = ? AND ts >= ? ORDER BY ts DESC LIMIT ?", device_id, since, limit),
+                "scans": [r["ts"] for r in rows("SELECT ts FROM scans WHERE device_id = ? AND ts >= ? ORDER BY ts DESC LIMIT 60", device_id, since)],
+            }
+            try:
+                out["mac_changes"] = rows("SELECT ts, ip, old_mac, new_mac, carried_name, carried_brand, carried_grp, new_known FROM mac_takeover WHERE device_id = ? AND ts >= ? ORDER BY ts DESC LIMIT 100", device_id, since)
+                out["macs"] = rows("SELECT mac, first_seen, last_seen, name, brand, grp, mobile_score, dhcp_name, dhcp_class, hits FROM mac_memory WHERE device_id = ?", device_id)
+            except sqlite3.OperationalError:
+                out["mac_changes"], out["macs"] = [], []
+        return out
+
     # ---- shadow data per MAC (analysis only) ----
     def mac_memory_set(self, mac: str, device_id: str, ip: str | None, fields: dict, ts: float) -> None:
         with self._lock:

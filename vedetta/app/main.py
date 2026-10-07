@@ -443,6 +443,17 @@ async def api_device_override(device_id: str, request: Request):
     if "ha_share" in body:   # share with Home Assistant (true) or remove from HA (false)
         updated = devices_config.set_override(device_id, "ha_share", "1" if body["ha_share"] is True else None) or updated
         mqtt_service.refresh()
+    if "focus" in body:      # "device under examination": its card, history and a note go in the export for analysis
+        if body["focus"] is True:
+            others = [d for d in devices_config.load_devices() if d.get("focus") and d["id"] != device_id]
+            if len(others) >= devices_config.FOCUS_MAX:
+                raise HTTPException(409, "Troppi dispositivi segnalati")
+            note = str(body.get("focus_note") or "").strip()[:devices_config.FOCUS_NOTE_MAX] or None
+            updated = devices_config.set_override(device_id, "focus", "1") or updated
+            devices_config.set_override(device_id, "focus_note", note)
+        else:
+            updated = devices_config.set_override(device_id, "focus", None) or updated
+            devices_config.set_override(device_id, "focus_note", None)
     for key, field in (("brand", "brand_user"), ("type", "type_user")):
         if key not in body:
             continue
@@ -453,7 +464,7 @@ async def api_device_override(device_id: str, request: Request):
         updated = devices_config.set_override(device_id, field, value) or updated
     if not updated:
         raise HTTPException(404, "Dispositivo non trovato")
-    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share") if k in body})
+    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share", "focus") if k in body})
     await state.refresh_device(device_id)
     return {"ok": True}
 

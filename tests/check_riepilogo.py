@@ -28,6 +28,8 @@ with zipfile.ZipFile(buf, "w") as z:
         {"id": "scan-b", "name": "10.0.0.9", "ip": "10.0.0.9", "mac": None, "type": "generic", "brand": None, "online": False}]))
     z.writestr("state/evidence.json", json.dumps({"scan-a": {"name": {"certainty": 70}, "brand": {"certainty": 90}, "group": {"certainty": 80}}, "scan-b": {"name": {"certainty": 0, "basis": "ip"}, "brand": {"certainty": 0}, "group": {"certainty": 0}}}))
     z.writestr("data/vedetta.db", tmp.read_bytes())
+    z.writestr("state/focus.json", json.dumps({"days": 14, "devices": [{"id": "scan-a", "name": "iPhone-1", "note": "turns on at 6", "card": {"type": "phone", "brand": "Apple"},
+        "evidence": {"group": {"certainty": 80}}, "history": {"presence": [{}, {}], "mac_changes": [{}], "macs": [{}]}}]}))
     z.writestr("data/dashboard.log", "2026-10-07T03:00:00+02:00\tWARNING\tHost-timeout 30s su 10.0.0.5\n2026-10-07T03:01:00+02:00\tINFO\tok\n")
 z = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
 d = R.digest(z)
@@ -35,6 +37,8 @@ assert d["devices"]["total"] == 2 and d["devices"]["online"] == 1 and d["devices
 assert [w["id"] for w in d["weak"]] == ["scan-b"] and d["ip_named"] == 1 and d["no_mac"] == ["10.0.0.9"], d["weak"]
 assert d["history"]["mac_changes_total"] == 1 and d["history"]["several_macs"] == [("scan-a", 2)], d["history"]
 assert d["log"]["levels"] == {"WARNING": 1, "INFO": 1} and d["log"]["top_problems"][0][1] == 1, d["log"]
+f = d["focus"][0]
+assert f["name"] == "iPhone-1" and f["note"] == "turns on at 6" and f["events"] == 2 and f["mac_changes"] == 1 and f["certainty"]["group"] == 80, f
 assert R.card(z, "iPhone-1")["matches"][0]["card"]["brand"] == "Apple" and R.card(z, "9")["matches"][0]["card"]["id"] == "scan-b"
 big = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
 R.MAX_FILE = 10

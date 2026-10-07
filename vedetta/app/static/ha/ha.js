@@ -583,13 +583,18 @@
   function closeExport() {
     if (exportDlg.open && typeof exportDlg.close === "function") exportDlg.close(); else exportDlg.removeAttribute("open");
   }
+  function focusOpt() {
+    var n = 0;
+    S.devices.forEach(function (x) { if (x.focus) n++; });
+    return n ? '<div class="exp-opt">' + icon("flag") + "<div><b>" + esc(t("js.ha.export.focus_title", { n: n })) + "</b><span>" + esc(t("js.ha.export.focus_text")) + "</span></div></div>" : "";
+  }
   function openExport() {
     function opt(ic, title, text) {
       return '<div class="exp-opt">' + icon(ic) + '<div><b>' + esc(t(title)) + "</b><span>" + esc(t(text)) + "</span></div></div>";
     }
     exportDlg.innerHTML = '<div class="mi"><div class="mi-header"><div class="mi-titles"><h2 class="mi-title" id="exportdlg-title">' + esc(t("js.ha.export.title")) + "</h2></div></div>" +
       '<div class="mi-body"><div class="confirm"><span class="confirm-ic info">' + icon("shield-home") + "</span><p>" + esc(t("js.ha.export.safe")) + "</p></div>" +
-      opt("download", "js.ha.export.enc_title", "js.ha.export.enc_text") + opt("download", "js.ha.export.plain_title", "js.ha.export.plain_text") + "</div>" +
+      focusOpt() + opt("download", "js.ha.export.enc_title", "js.ha.export.enc_text") + opt("download", "js.ha.export.plain_title", "js.ha.export.plain_text") + "</div>" +
       '<div class="mi-actions"><button type="button" class="btn text rp" data-export-do="cancel">' + esc(t("js.ha.cancel")) + "</button>" +
       '<div class="split exp-split"><button type="button" class="btn outlined rp" data-export-do="enc">' + icon("download") + "<span>" + esc(t("js.ha.export.start_enc")) + "</span></button>" +
       '<button type="button" class="btn outlined rp split-more" data-export-do="more" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(t("js.ha.export.more")) + '">' + icon("chevron-down") + "</button>" +
@@ -1984,6 +1989,7 @@
     if (!d) return closeMore();
     if (S.mi.view === "rename") return renderRename(d);
     if (S.mi.view === "brand") return renderBrandEdit(d);
+    if (S.mi.view === "focus") return renderFocus(d);
     if (S.mi.view === "ignore") return renderIgnore(d);
     if (S.mi.view === "deep") return renderDeep(d);
     dlg.innerHTML = '<div class="mi">' + miHeader(d, d.name, false) +
@@ -2303,6 +2309,8 @@
       html += '<button type="button" class="btn ' + (d.ha_share ? "outlined" : "tonal") + ' rp" data-act="share">' + icon("home-assistant") +
         "<span>" + esc(t(d.ha_share ? "js.ha.share.remove" : "js.ha.share.add")) + "</span></button>";
     }
+    html += '<button type="button" class="btn ' + (d && d.focus ? "outlined" : "tonal") + ' rp" data-act="focus">' + icon("flag") +
+      "<span>" + esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add")) + "</span></button>";
     el.innerHTML = html + '<button type="button" class="btn tonal rp" data-act="deep">' + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   }
 
@@ -2450,6 +2458,18 @@
       '<button type="submit" class="btn filled rp">' + esc(t("js.ha.save")) + "</button></div></form></div>";
     var input = $("rn-name");
     if (input) { input.focus(); input.select(); }
+  }
+  // Flag the device for the report: its card, history and this note go in the export for analysis.
+  function renderFocus(d) {
+    dlg.innerHTML = '<div class="mi">' + miHeader(null, t("js.ha.focus.title"), true) +
+      '<form class="mi-body" id="focus-form" autocomplete="off">' +
+      '<label class="field"><textarea id="fc-note" rows="4" maxlength="500" placeholder=" ">' + esc(d.focus_note || "") + '</textarea><span class="field-label">' + esc(t("js.ha.focus.label")) + "</span></label>" +
+      '<div class="field-hint">' + esc(t("js.ha.focus.hint")) + "</div>" +
+      '<div class="mi-actions"><button type="button" class="btn text rp" data-act="back">' + esc(t("js.ha.cancel")) + "</button>" +
+      (d.focus ? '<button type="button" class="btn outlined rp" data-act="focus-off">' + esc(t("js.ha.focus.remove")) + "</button>" : "") +
+      '<button type="submit" class="btn filled rp">' + esc(t("js.ha.focus.save")) + "</button></div></form></div>";
+    var input = $("fc-note");
+    if (input) input.focus();
   }
   function renderBrandEdit(d) {
     dlg.innerHTML = '<div class="mi">' + miHeader(null, t("js.ha.brand.title"), true) +
@@ -2617,6 +2637,8 @@
       case "back": S.mi.view = "main"; renderMore(); break;
       case "rename": S.mi.view = "rename"; renderMore(); break;
       case "brand-edit": S.mi.view = "brand"; renderMore(); break;
+      case "focus": S.mi.view = "focus"; renderMore(); break;
+      case "focus-off": if (d) saveOverride(d, { focus: false }).then(function () { S.mi.view = "main"; renderMore(); snack(t("js.ha.focus.removed"), { kind: "success" }); }); break;
       case "type-menu": if (d) openTypeMenu(act, d); break;
       case "ignore": S.mi.view = "ignore"; renderMore(); break;
       case "deep":
@@ -2639,6 +2661,15 @@
     e.preventDefault();
     var d = S.devices.get(S.open);
     if (!d) return;
+    if (e.target.id === "focus-form") {
+      var flagged = 0;
+      S.devices.forEach(function (x) { if (x.focus && x.id !== d.id) flagged++; });
+      if (flagged >= 5) { snack(t("js.ha.focus.too_many"), { kind: "warning" }); return; }
+      var submitF = e.target.querySelector('[type="submit"]');
+      if (submitF) submitF.disabled = true;
+      saveOverride(d, { focus: true, focus_note: $("fc-note").value.trim() || null }).then(function () { S.mi.view = "main"; renderMore(); snack(t("js.ha.focus.saved"), { kind: "success" }); });
+      return;
+    }
     if (e.target.id === "brand-form") {
       var submitB = e.target.querySelector('[type="submit"]');
       if (submitB) submitB.disabled = true;

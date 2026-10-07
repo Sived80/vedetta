@@ -10,12 +10,13 @@ import time
 import zipfile
 from pathlib import Path
 
-from . import anonymize, dhcp, evidence, ha_registry, ha_tz, journal, maintenance, mdns_listener, mqtt_ha, paths, roles, settings
+from . import anonymize, devices_config, dhcp, evidence, ha_registry, ha_tz, journal, maintenance, mdns_listener, mqtt_ha, paths, roles, settings
 from .state import state
 
 MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by the export (see below)
 MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
 MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
+FOCUS_DAYS = 14                    # history of a flagged device that goes in the export
 SKIP_WORDS = ("key", "token", "secret", "pass")   # files that might contain credentials
 
 
@@ -240,6 +241,27 @@ def build_zip() -> bytes:
                 evi[did] = evidence.summarize(debug, state.devices[did])        # certainty and rejected hypotheses, as the sheet shows them
             except Exception as exc:
                 dbg[did] = {"error": repr(exc)}
+        # the "device under examination" section: what the person flagged, with a note, so the reader knows where to look
+        try:
+            from .history import history as _history
+            flagged = [c for c in devices_config.load_devices() if c.get("focus")][:devices_config.FOCUS_MAX]
+            focus = {"days": FOCUS_DAYS, "devices": []}
+            since = time.time() - FOCUS_DAYS * 86400
+            for cfg in flagged:
+                did = cfg["id"]
+                dev = state.devices.get(did)
+                if not dev:
+                    continue
+                card = ha_data.compact_device(dev, cfg)
+                card.pop("focus_note", None)                         # the note is in its own field, masked as free text
+                focus["devices"].append({"id": did, "name": dev.get("name"), "note": anon.text_note(cfg.get("focus_note")),
+                                         "card": card, "evidence": evi.get(did), "debug": (dbg.get(did) or {}).get("debug"),
+                                         "history": _history.device_focus(did, since)})
+            manifest["focus"] = {"devices": len(focus["devices"]), "with_note": sum(1 for x in focus["devices"] if x["note"]), "days": FOCUS_DAYS}
+            if focus["devices"]:
+                put("state/focus.json", json.dumps(focus, ensure_ascii=False, indent=1, default=str))
+        except Exception as exc:
+            manifest["notes"].append(f"focus: {exc!r}")
         put("state/devices_debug.json", json.dumps(dbg, ensure_ascii=False, indent=1, default=str))
         put("state/evidence.json", json.dumps(evi, ensure_ascii=False, indent=1, default=str))
         put("state/devices_compact.json", json.dumps(ha_data.compact_all(state.sorted_devices()), ensure_ascii=False, indent=1, default=str))

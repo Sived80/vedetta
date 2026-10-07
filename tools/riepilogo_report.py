@@ -86,7 +86,13 @@ def digest(z: zipfile.ZipFile) -> dict:
     off = (man.get("time") or {}).get("utc_offset")
     devs = devices_of(z)
     ev = read_json(z, "state/evidence.json", {}) or {}
+    focus = read_json(z, "state/focus.json", None)
     out: dict = {"manifest": {k: man.get(k) for k in ("version", "created", "platform", "time", "deep_search", "omitted", "lines_removed", "phone_merge")}}
+    if focus and focus.get("devices"):
+        out["focus"] = [{"id": f.get("id"), "name": f.get("name"), "note": f.get("note"), "group": (f.get("card") or {}).get("type"), "brand": (f.get("card") or {}).get("brand"),
+                         "certainty": {k: ((f.get("evidence") or {}).get(k) or {}).get("certainty") for k in ("name", "brand", "group")},
+                         "events": len((f.get("history") or {}).get("presence") or []), "mac_changes": len((f.get("history") or {}).get("mac_changes") or []),
+                         "macs": len((f.get("history") or {}).get("macs") or []), "days": focus.get("days")} for f in focus["devices"]]
     # --- devices
     groups = Counter(d.get("type") or "?" for d in devs)
     out["devices"] = {"total": len(devs), "online": sum(1 for d in devs if d.get("online")), "by_group": dict(groups.most_common())}
@@ -164,6 +170,11 @@ def show(dg: dict) -> None:
         print("FILE LASCIATI FUORI:", m["omitted"])
     if m.get("lines_removed"):
         print("RIGHE TOLTE:", m["lines_removed"])
+    for f in dg.get("focus") or []:
+        c = f["certainty"]
+        print(f"\nDISPOSITIVO IN ESAME: {f['name']} ({f['id']}) · gruppo={f['group']} marca={f['brand']} · certezza n/m/g={c['name']}/{c['brand']}/{c['group']}")
+        print(f"  nota: {f['note'] or '(nessuna)'}")
+        print(f"  ultimi {f['days']} giorni: {f['events']} eventi di presenza, {f['mac_changes']} cambi di MAC, {f['macs']} MAC visti  (dettagli: --device {f['name']})")
     d = dg["devices"]
     print(f"\nDispositivi: {d['total']} ({d['online']} online)  ·  " + ", ".join(f"{g}: {n}" for g, n in d["by_group"].items()))
     if dg.get("ip_named"):

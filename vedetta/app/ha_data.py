@@ -465,6 +465,8 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "ha_share": bool(cfg.get("ha_share")),
         "type_user": cfg.get("type_user"),
         "brand_user": cfg.get("brand_user"),
+        "focus": bool(cfg.get("focus")),
+        "focus_note": cfg.get("focus_note"),
         "online": online,
         "last_seen": None if online else device.get("last_seen"),
         "uptime": device.get("uptime"),

@@ -92,7 +92,9 @@ def update_device(device_id: str, new_name: str, new_port: int | None = None, mo
     return None
 
 
-OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share")
+OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share", "focus", "focus_note")
+FOCUS_MAX = 5           # devices that can be flagged for the report at the same time
+FOCUS_NOTE_MAX = 500
 
 
 def set_override(device_id: str, field: str, value: str | None) -> dict | None:

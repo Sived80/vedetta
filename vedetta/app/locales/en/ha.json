@@ -409,5 +409,17 @@
   "js.ha.deep.tile_pending_done": "all analysed",
   "js.ha.deep.badge": "{n} devices never analysed in depth",
   "js.ha.deep.note": "Deep search reads open ports, services and the web page. Tonight at {hour} it starts by itself for the devices never analysed.",
-  "js.ha.export.omitted": "Exported, but {n} file(s) were left out because they could not be masked safely. manifest.json says which."
+  "js.ha.export.omitted": "Exported, but {n} file(s) were left out because they could not be masked safely. manifest.json says which.",
+  "js.ha.focus.add": "Flag this device",
+  "js.ha.focus.edit": "Flagged for the report",
+  "js.ha.focus.title": "Flag in the report",
+  "js.ha.focus.label": "What is wrong? (optional)",
+  "js.ha.focus.hint": "When you export for analysis, the report includes this device's card, its history and this note. Do not write personal data.",
+  "js.ha.focus.save": "Flag",
+  "js.ha.focus.remove": "Remove the flag",
+  "js.ha.focus.too_many": "You can flag at most 5 devices.",
+  "js.ha.focus.saved": "Device flagged",
+  "js.ha.focus.removed": "Flag removed",
+  "js.ha.export.focus_title": "Flagged devices: {n}",
+  "js.ha.export.focus_text": "The report includes their card, history and your note."
 }

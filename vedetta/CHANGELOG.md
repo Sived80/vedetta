@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **Card of the devices found, narrow screens**: under about 480 px the *Ignore* and *In progress* buttons were empty (the text went away and the icon that should replace it stayed hidden too). Now the icon is shown.
+
 ## 0.4.6
 - **Nothing changes on the screen.** The page of the app is now kept in parts (one file per feature: export, deep search, network card, tiles, devices found, log, device sheet), joined by the app into the same script and style as before; its style lost its overlapping corrections (95,362 → 85,335 characters). Proved by comparing the computed style of every element of the page in 18 states, light and dark, wide and narrow: no difference.
 - **Time zones no longer depend on the system**: the time zone list (`tzdata`) is now part of the app's dependencies.

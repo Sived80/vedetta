@@ -41,7 +41,7 @@
   #card-new .nd-actions > * { min-height: 36px; display: flex; align-items: center; justify-content: center; min-width: 0; }
   #card-new .nd-actions > .btn { width: 100%; padding: 0 6px; }
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
-  #card-new .nd-ico, #card-new .nd-lbl + .nd-ico { display: none; }
+  #card-new .nd-ico { display: none; }                        /* narrow card: the label goes and the icon takes its place (rule below) */
   /* the ring */
   #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic, #card-new .nd-row.nd-done .nd-ic { background: transparent; }
   .nd-ring { width: 30px; height: 30px; }

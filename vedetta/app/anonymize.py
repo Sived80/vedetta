@@ -156,6 +156,22 @@ class Anonymizer:
         self._name_re = None
         return label
 
+    def add_devices(self, devices: list[tuple]) -> None:
+        """Several devices at once: [(aliases, hint, brand, icon), ...]. A name that two or more devices have in common (the
+        service name an app announces from every phone, "Apple mobile") says nothing about who is who, so it never joins them
+        into one placeholder: each device keeps its own, and the shared name gets a label of its own."""
+        count: dict[str, int] = {}
+        for aliases, *_ in devices:
+            for key in {_norm(str(a or "")) for a in aliases if a}:
+                count[key] = count.get(key, 0) + 1
+        shared: list[tuple] = []
+        for aliases, hint, brand, icon in devices:
+            own = [a for a in aliases if a and count.get(_norm(str(a)), 0) < 2]
+            self.add_device(own, hint, brand, icon)
+            shared += [(a, hint, brand, icon) for a in aliases if a and count.get(_norm(str(a)), 0) >= 2]
+        for a, hint, brand, icon in shared:
+            self.add_device([a], hint, brand, icon)
+
     def _new_label(self, names: list[str], hint: str | None, brand: str | None = None, icon: str | None = None) -> str:
         # the brand written in the name stays visible: it is the clue the brand was recognised from
         base = re.sub(r"[^A-Za-z0-9]+", "", brand or "") if brand and any(_brand_in(brand, n) for n in names) else None

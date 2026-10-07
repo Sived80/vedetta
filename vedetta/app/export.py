@@ -34,6 +34,7 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
     anon = anonymize.Anonymizer()
     for d in devices:                                   # the main network is found first: it becomes 10.0.0.x
         anon.add_ip(d.get("ip"))
+    cards = []
     for d in devices:
         mac, ip = d.get("mac"), d.get("ip")
         anon.add_mac(mac)
@@ -50,7 +51,8 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
         name = d.get("name")
         aliases = [name if name != ip else None, (dhcp.seen.get(str(mac or "").lower()) or {}).get("hostname"),
                    mdns.get("name"), reg.get("name")]
-        anon.add_device(aliases, hint, d.get("brand"), icon)
+        cards.append((aliases, hint, d.get("brand"), icon))
+    anon.add_devices(cards)                             # together: a name shared by several devices must not merge them
     for table in (dhcp.seen, mdns_listener.by_mac, ha_registry._state["by_mac"]):   # devices known but not on the board
         for mac in table:
             anon.add_mac(mac)

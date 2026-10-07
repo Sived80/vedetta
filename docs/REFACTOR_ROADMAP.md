@@ -25,7 +25,7 @@ Rules
 - [x] 8. `tile.js` (tiles, list/grid views, compact list) (script; its CSS: step 10)
 - [x] 9. `more-info.js` (the "More info" dialog, attributes, history chart, flag) (script; its CSS: step 10)
 - [x] 10. CSS: one file per feature (phase 1, move only: same declarations, 0 computed-style differences), then each file folded into its own rules by a separate agent (phase 2): corrections merged into the rules they correct, superseded and dead rules deleted, `95-dead.css` gone. Proof for every step: `node tools/css_compare.js` (computed styles of every element in 15 states, light/dark, 1280/390 px) with 0 differences, plus the suite
-- [ ] 11. Final check: full suite, debug app compared with the production app, sizes recorded, docs updated
+- [x] 11. Final check: full suite, debug app compared with the production app, sizes recorded, docs updated
 
 ## Baseline (version 0.4.5, tag `pre-split-0.4.5`)
 `ha.js` 3,226 lines, `ha.css` 1,517 lines (55 `@layer overrides` blocks), `icons.js` 158 lines. Sections of `ha.js` (lines of the baseline) and where each goes:

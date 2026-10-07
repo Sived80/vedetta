@@ -180,6 +180,86 @@ async def api_export(plain: bool = False):
     return Response(content=sealed, media_type="text/plain", headers={**headers, "Content-Disposition": f'attachment; filename="{name}"'})
 
 
+# ---- the export window: an estimate, a job followed step by step, the file once
+@router.get("/api/export/info")
+async def api_export_info():
+    """Bytes of raw data for each of the last days, what the file always has, and the limit: the window draws the columns and
+    says how big a period will be with these."""
+    from . import export_engine
+    return await asyncio.to_thread(export_engine.estimate)
+
+
+def _job_or_404(job_id: str):
+    from . import export_jobs
+    job = export_jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "export not found")
+    return job
+
+
+@router.post("/api/export/jobs")
+async def api_export_job_start(request: Request):
+    """Body: {"dest": "dev"|"me", "from_day": N, "to_day": M} (days ago: the oldest and the newest included, 0 = today) or
+    {"dest": ..., "all": true} for the whole history."""
+    from . import export_engine, export_jobs
+    body = await request.json()
+    dest = body.get("dest")
+    if dest not in ("dev", "me"):
+        raise HTTPException(422, "dest must be dev or me")
+    if body.get("all") is True:
+        first = last = None
+    else:
+        try:
+            first, last = int(body["from_day"]), int(body.get("to_day", 0))
+        except (KeyError, TypeError, ValueError):
+            raise HTTPException(422, "from_day and to_day must be numbers") from None
+        if not (0 <= last <= first < export_engine.HORIZON_DAYS):
+            raise HTTPException(422, "period out of range")
+    try:
+        job = export_jobs.start(dest, first, last)
+    except export_jobs.Busy:
+        raise HTTPException(409, "an export is already running") from None
+    return export_jobs.snapshot(job)
+
+
+@router.get("/api/export/jobs/{job_id}")
+async def api_export_job(job_id: str):
+    from . import export_jobs
+    return export_jobs.snapshot(_job_or_404(job_id))
+
+
+@router.post("/api/export/jobs/{job_id}/choices")
+async def api_export_job_choices(job_id: str, request: Request):
+    """Body: {"choices": {"0": "rm", "1": "keep"}}: what to do with each value the check could not fix."""
+    from . import export_jobs
+    job = _job_or_404(job_id)
+    body = await request.json()
+    try:
+        export_jobs.decide(job, body.get("choices") or {})
+    except export_jobs.Busy:
+        raise HTTPException(409, "nothing to decide") from None
+    return export_jobs.snapshot(job)
+
+
+@router.post("/api/export/jobs/{job_id}/file")
+async def api_export_job_file(job_id: str):
+    """The finished file, once. POST so it is not downloaded by accident through a link."""
+    from fastapi.responses import Response
+    from . import export_jobs
+    got = export_jobs.take(_job_or_404(job_id))
+    if got is None:
+        raise HTTPException(409, "the file is not ready")
+    data, name, mime = got
+    return Response(content=data, media_type=mime, headers={"Cache-Control": "no-store", "Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@router.delete("/api/export/jobs/{job_id}")
+async def api_export_job_cancel(job_id: str):
+    from . import export_jobs
+    export_jobs.forget(job_id)
+    return {"ok": True}
+
+
 @router.get("/api/ha/registry/status")
 async def api_ha_registry_status():
     """State of the Home Assistant registry reading (for debugging)."""

@@ -37,6 +37,7 @@ assert d["devices"]["total"] == 2 and d["devices"]["online"] == 1 and d["devices
 assert [w["id"] for w in d["weak"]] == ["scan-b"] and d["ip_named"] == 1 and d["no_mac"] == ["10.0.0.9"], d["weak"]
 assert d["history"]["mac_changes_total"] == 1 and d["history"]["several_macs"] == [("scan-a", 2)], d["history"]
 assert d["log"]["levels"] == {"WARNING": 1, "INFO": 1} and d["log"]["top_problems"][0][1] == 1, d["log"]
+assert d["caveats"] == ["export vecchio: senza prove e certezze (prima della 0.4.0)"] or d["caveats"] == [], d["caveats"]
 f = d["focus"][0]
 assert f["name"] == "iPhone-1" and f["note"] == "turns on at 6" and f["events"] == 2 and f["mac_changes"] == 1 and f["certainty"]["group"] == 80, f
 assert R.card(z, "iPhone-1")["matches"][0]["card"]["brand"] == "Apple" and R.card(z, "9")["matches"][0]["card"]["id"] == "scan-b"

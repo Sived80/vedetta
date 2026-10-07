@@ -170,7 +170,7 @@ def build_zip() -> bytes:
     from . import ha_data
     data_dir = paths.DATA_DIR
     manifest = {"omitted": [], "lines_removed": [], "created": time.strftime("%Y-%m-%d %H:%M:%S"), "version": mqtt_ha.version(),
-                "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": []}
+                "python": platform.python_version(), "platform": platform.platform(), "files": {}, "notes": [], "format": 1}
     anon = _collect(state.sorted_devices())
     # facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
     # whether it came from Home Assistant, and how many devices never had a deep search

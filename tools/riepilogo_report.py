@@ -87,7 +87,16 @@ def digest(z: zipfile.ZipFile) -> dict:
     devs = devices_of(z)
     ev = read_json(z, "state/evidence.json", {}) or {}
     focus = read_json(z, "state/focus.json", None)
-    out: dict = {"manifest": {k: man.get(k) for k in ("version", "created", "platform", "time", "deep_search", "omitted", "lines_removed", "phone_merge")}}
+    names = set(z.namelist())
+    fmt = man.get("format") or 1
+    caveats = []
+    if man.get("dest") == "me":
+        caveats.append("ESPORTATO «PER ME»: in chiaro, dati veri non mascherati (IP, MAC, nomi): trattalo come dato personale")
+    if "state/evidence.json" not in names:
+        caveats.append("export vecchio: senza prove e certezze (prima della 0.4.0)")
+    if man.get("version") and "state/focus.json" not in names and fmt >= 2:
+        caveats.append("nessun dispositivo segnalato nell'export")
+    out: dict = {"manifest": {k: man.get(k) for k in ("version", "format", "dest", "period", "check", "created", "platform", "time", "deep_search", "omitted", "lines_removed", "phone_merge")}, "caveats": caveats}
     if focus and focus.get("devices"):
         out["focus"] = [{"id": f.get("id"), "name": f.get("name"), "note": f.get("note"), "group": (f.get("card") or {}).get("type"), "brand": (f.get("card") or {}).get("brand"),
                          "certainty": {k: ((f.get("evidence") or {}).get(k) or {}).get("certainty") for k in ("name", "brand", "group")},
@@ -163,7 +172,12 @@ def card(z, key: str) -> dict:
 
 def show(dg: dict) -> None:
     m = dg["manifest"]
-    print(f"Vedetta {m.get('version')} · creato {m.get('created')} · {m.get('platform')}")
+    print(f"Vedetta {m.get('version')} · formato export {m.get('format') or 1} · creato {m.get('created')} · {m.get('platform')}")
+    for c in dg.get("caveats") or []:
+        print("  !", c)
+    if m.get("period"):
+        pr = m["period"]
+        print("  periodo:", "tutto lo storico" if pr.get("all") else f"da {pr.get('from')} a {pr.get('until')} (secondi unix)", "· controllo:", m.get("check") or "-")
     t = m.get("time") or {}
     print(f"Fuso {t.get('utc_offset')} (da HA: {t.get('from_home_assistant')}) · notte alle {t.get('night_hour')}:00 · mai analizzati a fondo: {(m.get('deep_search') or {}).get('never_analysed')}")
     if m.get("omitted"):

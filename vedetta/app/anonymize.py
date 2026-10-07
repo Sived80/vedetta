@@ -281,35 +281,101 @@ class Anonymizer:
             return self.text(obj)
         return obj
 
-    def leaks(self, text: str) -> list[str]:
-        """What is still readable in already masked text (kinds only, never the values). Empty list = clean."""
-        found = set()
+    def leak_items(self, text: str) -> list[tuple[str, str]]:
+        """What is still readable in already masked text: [(kind, value)], the value being the real thing found. Empty list =
+        clean. The values are for the person who is exporting (shown in the window, never written to a log or to the file)."""
+        found: list[tuple[str, str]] = []
+
+        def add(kind: str, value: str) -> None:
+            if value and (kind, value) not in found:
+                found.append((kind, value))
         low = text.lower()
-        if _HOME_DOT.search(text) or self._home_sep_left(text):
-            found.add("home network address")
-        if any(ip in text for ip in self._public_known):
-            found.add("public address")
+        for m in _HOME_DOT.finditer(text):
+            add("home network address", m.group(0))
+        for m in _IPV4_SEP.finditer(text):
+            a, _sep, b, c, d = m.groups()
+            if ((int(a) == 192 and int(b) == 168) or (int(a) == 172 and 16 <= int(b) <= 31)) and int(c) <= 255 and int(d) <= 255:
+                add("home network address", m.group(0))
+        for ip in self._public_known:
+            if ip in text:
+                add("public address", ip)
         for m in _IPV4.finditer(text):
             ip = m.group(0)
             # exactly the addresses _ip() masks as public: not multicast / loopback / broadcast (_ip_ok), not a well known DNS,
             # not written after "version", and not our own placeholders
             if all(int(g) <= 255 for g in m.groups()) and _ip_ok(ip) and ip not in _WELL_KNOWN and not ip.startswith("203.0."):
                 if ipaddress.ip_address(ip).is_global and not _VERSION_WORD.search(text[max(0, m.start() - 14):m.start()]):
-                    found.add("public address")
+                    add("public address", ip)
         if self._macs and self._mac_re(low) is not None:
-            found.add("MAC address")
-        if any(not m.group(0).endswith("@masked.invalid") for m in _EMAIL.finditer(text)):
-            found.add("email address")
-        if any(m.group(3) != "***" for m in _SECRET_PAIR.finditer(text)) or re.search(r"://[^/\s:@*]+:[^/\s@*]+@", text):
-            found.add("password or token")
+            for m in self._mac_rx.finditer(low):
+                add("MAC address", text[m.start():m.end()])
+        for m in _EMAIL.finditer(text):
+            if not m.group(0).endswith("@masked.invalid"):
+                add("email address", m.group(0))
+        for m in _SECRET_PAIR.finditer(text):
+            if m.group(3) != "***":
+                add("password or token", m.group(3))
+        for m in re.finditer(r"://([^/\s:@*]+:[^/\s@*]+)@", text):
+            add("password or token", m.group(1))
         table = {**self._areas, **self._names}
         if table:
             rest = text
             for label in sorted(set(table.values()), key=len, reverse=True):
                 rest = rest.replace(label, " ")
-            if self._compile_for(table).search(rest):
-                found.add("name")
-        return sorted(found)
+            for m in self._compile_for(table).finditer(rest):
+                add("name", m.group(0))
+        return found
+
+    def leaks(self, text: str) -> list[str]:
+        """What is still readable in already masked text (kinds only, never the values). Empty list = clean."""
+        return sorted({kind for kind, _ in self.leak_items(text)})
+
+    def fix_value(self, kind: str, value: str) -> str | None:
+        """What a value found by leak_items() is replaced with, or None when it cannot be done safely (the person decides)."""
+        if kind == "password or token":
+            return "***"
+        fixed = self.text(value)
+        return fixed if fixed != value and not self.leak_items(fixed) else None
+
+    def repair(self, text: str) -> tuple[str, int, list[tuple[str, str]]]:
+        """Replaces what leak_items() finds by the same placeholders text() uses. Returns (text, how many values were replaced,
+        what is still readable and could not be replaced)."""
+        fixed = 0
+        for kind, value in sorted(self.leak_items(text), key=lambda it: -len(it[1])):
+            replacement = self.fix_value(kind, value)
+            if replacement is not None and value in text:
+                text = text.replace(value, replacement)
+                fixed += 1
+        return text, fixed, self.leak_items(text)
+
+    def repair_data(self, obj, key: str = "", path: str = ""):
+        """repair() over parsed JSON, skipping the fields that describe the device (kept on purpose).
+        Returns (object, replaced, [(kind, value, where)])."""
+        if isinstance(obj, dict):
+            out, fixed, left = {}, 0, []
+            for k, v in obj.items():
+                k2 = k
+                if isinstance(k, str):
+                    k2, f, rest = self.repair(k)
+                    fixed += f
+                    left += [(kind, val, path or "/") for kind, val in rest]
+                v2, f, rest = self.repair_data(v, k if isinstance(k, str) else "", f"{path}/{k}")
+                out[k2] = v2
+                fixed += f
+                left += rest
+            return out, fixed, left
+        if isinstance(obj, list):
+            out, fixed, left = [], 0, []
+            for i, v in enumerate(obj):
+                v2, f, rest = self.repair_data(v, key, f"{path}/{i}")
+                out.append(v2)
+                fixed += f
+                left += rest
+            return out, fixed, left
+        if isinstance(obj, str) and key not in _KEEP and obj != "***":
+            text, fixed, rest = self.repair(obj)
+            return text, fixed, [(kind, val, path) for kind, val in rest]
+        return obj, 0, []
 
     @staticmethod
     def _home_sep_left(text: str) -> bool:

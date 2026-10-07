@@ -4,7 +4,7 @@
 
 <br>
 
-<a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.4.4-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="docs/PRIVACY.md"><img src="https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge" alt="Privacy" height="20"></a> <a href="#what-it-does"><img src="https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge" alt="Languages" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge" alt="License" height="20"></a>
+<a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.4.5-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="docs/PRIVACY.md"><img src="https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge" alt="Privacy" height="20"></a> <a href="#what-it-does"><img src="https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge" alt="Languages" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge" alt="License" height="20"></a>
 
 **[Install](docs/INSTALLATION.md) · [Screenshots](#what-is-vedetta) · [Features](#what-it-does) · [How it thinks](docs/RECOGNITION.md) · [Home Assistant](docs/HOME_ASSISTANT.md) · [Roadmap](docs/ROADMAP.md) · [Extend](docs/DEVELOPMENT.md)**
 
@@ -82,7 +82,7 @@ Everything runs **inside your network**, with no cloud, no accounts and no telem
 
 ## Project status
 
-Vedetta is a one-person project made in spare time, public under the MIT license. It is at version **0.4.4** and under active development: what is built (each item with its date and version) and what is planned is in the [Roadmap](docs/ROADMAP.md). Found a device recognised wrongly? Use [the issue form](https://github.com/Sived80/vedetta/issues/new/choose) and attach the encrypted export.
+Vedetta is a one-person project made in spare time, public under the MIT license. It is at version **0.4.5** and under active development: what is built (each item with its date and version) and what is planned is in the [Roadmap](docs/ROADMAP.md). Found a device recognised wrongly? Use [the issue form](https://github.com/Sived80/vedetta/issues/new/choose) and attach the encrypted export.
 
 ## 📜 License and credits
 

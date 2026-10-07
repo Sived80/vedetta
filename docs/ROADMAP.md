@@ -35,6 +35,8 @@ What is built and released, and what is planned.
 - ✅ New export window: for the developer or for me, choice of the days, progress steps, decisions on what cannot be masked — *07.10.2026 - V0.4.4*
 - ✅ Flag a device for the report (card, evidence and history of that device in the export) — *07.10.2026 - V0.4.4*
 - ✅ New card for the devices found: ring and tick per row, nothing moves when a button is pressed — *07.10.2026 - V0.4.4*
+- ✅ Better group for devices that Home Assistant tracks or knows: a tracked client is no longer typed by the integration, the declared model beats a port banner, entities of unknown integrations count — *07.10.2026 - V0.4.5*
+- ✅ External links: a page that answers 403 is not offered as a web interface; the link follows the open web port — *07.10.2026 - V0.4.5*
 - ✅ The export leaves out only a file it cannot mask, and says which, instead of refusing everything — *06.10.2026 - V0.4.1*
 - ✅ The export also holds the evidence of every device and the numbers behind "phone" (no addresses) — *06.10.2026 - V0.4.0*
 

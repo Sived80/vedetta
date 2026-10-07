@@ -1,4 +1,6 @@
-/* More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. */
+/* More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows.
+   Most corrections live in the overrides layer; they stay there because the base (10-base) also has overrides-layer rules on
+   the same elements (.icon-btn, .menu, tokens). */
 
 @layer components {
   /* Flag button of the More info actions */
@@ -55,19 +57,13 @@
   }
   .graph-msg { display: flex; align-items: center; gap: 12px; padding: 24px 0; color: var(--secondary-text-color); }
 
-  /* Attributes, signal and latency colours */
+  /* Attributes and the signal icon (signal and latency colours: overrides layer) */
   .attr { display: flex; align-items: center; gap: 16px; min-height: 44px; padding: 4px 0; border-top: 1px solid var(--divider-color); }
   .attr dt { flex: 0 0 36%; color: var(--secondary-text-color); }
   .attr dd { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .attr-val { min-width: 0; overflow-wrap: anywhere; }
   .sig { display: inline-flex; vertical-align: middle; color: var(--secondary-text-color); }
   .sig .mdi { width: 18px; height: 18px; }
-  .sig-green { color: var(--success-color); }
-  .sig-yellow { color: var(--warning-color); }
-  .sig-red { color: var(--error-color); }
-  .lat-green { color: var(--success-color); }
-  .lat-yellow { color: var(--warning-color); }
-  .lat-red { color: var(--error-color); }
 
   /* Response-time line chart (under the timeline) */
   .lat-chart { margin-top: 14px; }
@@ -76,16 +72,8 @@
   .lat-line { fill: none; stroke: var(--primary-color); stroke-width: 1.5; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
   .lat-area { fill: color-mix(in srgb, var(--primary-color) 15%, transparent); stroke: none; }
 
-  /* Port pills */
-  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
-
-  /* Port pills: guessed ports and category colours */
+  /* Port pills: an uncertain port has a dashed border (layout and category colours: overrides layer) */
   .pill.guess { border-style: dashed; }
-  .pill.cat-web { --pc: var(--primary-color); }
-  .pill.cat-remote { --pc: var(--ha-c4); }
-  .pill.cat-iot { --pc: var(--success-color); }
-  .pill.cat-file { --pc: var(--accent-color); }
-  .pill.cat-db { --pc: var(--ha-c5); }
 
   /* Rename form and confirmations */
   .field { position: relative; display: block; margin: 8px 0 16px; }
@@ -104,14 +92,14 @@
   .confirm p { color: var(--secondary-text-color); }
 
   @media (max-width: 600px) {
-    /* Narrow screens: full-screen dialog */
+    /* Narrow screens: a wider label column */
     .attr dt { flex-basis: 40%; }
   }
 }
 
 @layer overrides {
   /* Rename next to the name in the More info dialog. */
-  .mi-name-row { display: flex; align-items: center; gap: 2px; min-width: 0; }
+  .mi-name-row { display: flex; align-items: center; gap: 2px; min-width: 0; width: 100%; }
   .mi-name-row .mi-title { min-width: 0; flex: 0 1 auto; }
   .mi-name-row .icon-btn { flex: none; color: var(--secondary-text-color); }
 
@@ -119,7 +107,6 @@
   .hero-wake { margin-left: auto; flex: none; color: var(--primary-color); }
 
   /* Ignore in red at the right end of the name row; its box shares the right edge with the attribute icons. */
-  .mi-name-row { width: 100%; }
   .mi-name-row [data-act="ignore"] { margin-left: auto; color: var(--error-color); }
   .mi-name-row [data-act="ignore"]:hover { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 14%, transparent); }
 
@@ -137,14 +124,9 @@
   .ev-confirmed { color: var(--success-text-color); background: color-mix(in srgb, var(--success-color) 14%, transparent); }
   .ev-plausible { color: var(--warning-text-color); background: color-mix(in srgb, var(--warning-color) 14%, transparent); }
 
-  /* Open ports: coloured by category; uncertain ones have only the number (dashed border). */
-  .pills .pill { display: inline-block; margin: 0 4px 4px 0; cursor: default; }
-  .pill.cat-other { --pc: var(--secondary-text-color); }
-  .pill.cat-infra { --pc: var(--warning-text-color); }
-
-  /* Ports: one colour per category, in tidy rows (category, then number). */
+  /* Open ports: one colour per category, in tidy rows (category, then number); uncertain ones have only the number. */
   .pills { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
-  .pills .pill { margin: 0; min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+  .pills .pill { display: inline-block; margin: 0; cursor: default; min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
   .pill.cat-web { --pc: #2196f3; }
   .pill.cat-media { --pc: #e91e63; }
   .pill.cat-remote { --pc: #9c27b0; }
@@ -158,11 +140,12 @@
   .pill.cat-other { --pc: #9e9e9e; }
 
   /* Brand logo of the device sheet: big and faint, on the right (positioned against .mi, see 10-base). */
-  .brand-sheet { position: absolute; pointer-events: none; color: var(--primary-text-color);
-    -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%); mask-image: linear-gradient(to left, #000 40%, transparent 100%); }
+  .brand-sheet {
+    position: absolute; right: -110px; top: 30px; width: 340px; height: 340px; opacity: 0.08; pointer-events: none; color: var(--primary-text-color);
+    -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%); mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+  }
   .brand-sheet i { display: block; width: 100%; height: 100%; background: currentColor;
     -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
-  .brand-sheet { right: -110px; top: 30px; width: 340px; height: 340px; opacity: 0.08; }
 
   /* Type dropdown in the dialog: same look as the other menus, inside the (modal) dialog. Same specificity as the .menu rules: it
      wins because this file comes after 10-base. */
@@ -171,19 +154,17 @@
   .type-menu .menu-item .mdi { width: 24px; height: 24px; flex: none; color: var(--secondary-text-color); }
   .type-menu .menu-item[aria-checked="true"] .mdi { color: var(--primary-color); }
 
-  /* Device sheet: More attributes dropdown (closed at first). */
+  /* Device sheet: More attributes dropdown (closed at first). Its arrow is the same element as the one of the "Type" row (a small
+     round icon button, only not clickable by itself), so size and position are the same by construction. */
   .attr-more { border-top: 1px solid var(--divider-color); }
   .attr-more > summary {
     display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; cursor: pointer; list-style: none;
     color: var(--secondary-text-color); font-weight: 500;
   }
   .attr-more > summary::-webkit-details-marker { display: none; }
-  .attr-more > summary::after { content: ""; width: 20px; height: 20px; margin: 0 10px; flex: none; background: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.58 12 13.17l4.59-4.59L18 10l-6 6-6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.58 12 13.17l4.59-4.59L18 10l-6 6-6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
-    transition: transform 0.15s; }
-  .attr-more[open] > summary::after { transform: rotate(180deg); }
   .attr-more > summary:hover { color: var(--primary-text-color); }
+  .attr-more > summary .attr-chev { pointer-events: none; color: inherit; transition: transform 0.15s; }
+  .attr-more[open] > summary .attr-chev { transform: rotate(180deg); }
   .attr-more .attr:first-of-type { border-top: 0; }
 
   /* Everything that exists only in debug mode is orange (HA warning colour). */
@@ -227,12 +208,6 @@
   @media (prefers-reduced-motion: reduce) {
     .ev-bar i, .ev-pop { transition: none; animation: none; }
   }
-
-  /* "More attributes": the arrow is the same element as the one of the "Type" row (a small round icon button, only not clickable
-     by itself), so size and position are the same by construction. */
-  .attr-more > summary::after { content: none; display: none; }
-  .attr-more > summary .attr-chev { pointer-events: none; color: inherit; transition: transform 0.15s; }
-  .attr-more[open] > summary .attr-chev { transform: rotate(180deg); }
 
   @media (max-width: 600px) {
     /* The buttons under the sheet shrink on a narrow screen so that they stay inside it: they share the width, the text is cut

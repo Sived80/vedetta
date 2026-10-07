@@ -31,38 +31,24 @@
 }
 
 @layer overrides {
-  /* Log: collapsible card (closed part), level button, service entries. */
-  #card-log .log-head { cursor: pointer; align-items: center; padding-bottom: 12px; }
+  /* Collapsible card: the header opens it (Home Assistant card-header padding); the arrow and the level button share one
+     48px column, so their centres line up. */
+  #card-log .log-head { cursor: pointer; align-items: center; padding: 20px 8px 20px 16px; }
   #card-log .log-head .ch-text { flex: 1; min-width: 0; }
   #card-log .log-head:hover { background: var(--ha-hover); }
-  .log-chev { display: flex; color: var(--secondary-text-color); padding: 0 8px; transition: transform 0.2s; }
+  .log-chev { display: flex; width: 48px; justify-content: center; padding: 0; color: var(--secondary-text-color); transition: transform 0.2s; }
   #card-log.is-open .log-chev { transform: rotate(180deg); }
-  .log-ic.svc { color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
-  .log-ic.svc.warn { color: var(--warning-text-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
   @media (prefers-reduced-motion: reduce) {
     .log-chev { transition: none; }
   }
 
-  /* Search in the open log */
-  .log-search { padding: 0 16px 8px; }
-  .log-search .search { height: 40px; }
+  /* Service entries */
+  .log-ic.svc { color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+  .log-ic.svc.warn { color: var(--warning-text-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
 
-  /* Open log: search and level button on one row; the button sits in the column of the title arrow. */
-  .log-search { display: flex; align-items: center; gap: 4px; padding: 0 0 8px 16px; }
-  .log-search .search { flex: 1; min-width: 0; }
-  #card-log .log-head { padding-right: 0; }
-  .log-chev { width: 48px; justify-content: center; padding: 0; }
-  .log-search #log-level-btn { flex: none; width: 48px; }
-  /* The header keeps 8px of padding on the right (card-header), so the level button gets the same 8px: its column and the title
-     arrow share the same centre line. */
-  #card-log .log-search { padding-right: 8px; }
-  /* Slightly more compact search field */
-  #card-log .log-search .search { height: 36px; padding-left: 14px; }
+  /* Open log: a slightly compact search field and the level button on one row. */
+  #card-log .log-search { display: flex; align-items: center; gap: 4px; padding: 0 8px 8px 16px; }
+  #card-log .log-search .search { flex: 1; min-width: 0; height: 36px; padding-left: 14px; }
   #card-log .log-search .search input { font-size: 15px; }
-
-  /* Log header padding (superseded by the next block). */
-  #card-log .log-head { padding: 12px 0 12px 16px; }
-
-  /* Log header with the Home Assistant card-header padding. */
-  #card-log .log-head { padding: 20px 8px 20px 16px; }
+  .log-search #log-level-btn { flex: none; width: 48px; }
 }

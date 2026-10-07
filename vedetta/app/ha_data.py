@@ -261,9 +261,10 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
     ha_card = device.get("ha_registry") or {}
     for dom in (ha_card.get("domains") or []):
         entry = _ha_integrations().get(dom)
-        # A router integration (UniFi, FRITZ!Box, MikroTik...) also lists every client it sees, as a device with only a
-        # device_tracker: that one is not the router. The router itself has other entities (sensors, switches, buttons...).
-        if entry and entry.get("group") == "router" and not entry.get("platform") and ha_card.get("entity_domains") is not None                 and not (set(ha_card["entity_domains"]) - {"device_tracker"}):
+        # A device that Home Assistant only knows through a device_tracker is a client that some integration (a router, a presence
+        # tracker...) saw on the network: that says it is on the network, not what it is. Only a device with other entities
+        # (sensors, switches, players, cameras...) is declared by its integration.
+        if entry and ha_card.get("entity_domains") is not None and not (set(ha_card["entity_domains"]) - {"device_tracker"}):
             continue
         if entry and entry.get("platform"):
             platform += W_PLATFORM_MAX

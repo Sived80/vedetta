@@ -26,4 +26,8 @@ idx = ha_registry.build_index(
     [{"entity_id": "device_tracker.shelly", "device_id": "D1"}, {"entity_id": "switch.relay", "device_id": "D1"}],
     [], [{"entry_id": "E1", "domain": "mikrotik_router", "title": "T"}])
 assert idx["by_mac"]["08:3a:f2:00:00:05"]["entity_domains"] == ["device_tracker", "switch"]
+other = {"id": "e", "ip": "10.0.0.3", "name": "Cam", "extra": {}, "ha_registry": card(["onvif"], ["camera"])}
+assert ha_data.type_scores(other).get("media", 0) >= ha_data.W_DECLARED, ha_data.type_scores(other)
+tracked = dict(other, ha_registry=card(["onvif"], ["device_tracker"]))
+assert ha_data.type_scores(tracked).get("media", 0) < ha_data.W_DECLARED, ha_data.type_scores(tracked)   # any integration, any group
 print("TUTTO OK")

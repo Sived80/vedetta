@@ -16,12 +16,6 @@
 
 ---
 
-> [!IMPORTANT]
-> ### ⏳ Give Vedetta 24 hours before you judge it
-> Right after the install it only knows what it could see in the first minutes. **Most of what makes it good needs time**: phones sleep, names are announced now and then, and the presence history is what tells a phone with a changing MAC from a fixed device. A deep search also runs by itself every night at 03:00.
->
-> Please **leave it installed and running for at least 24 hours (48 is better)** before you decide a device is wrong or open an issue, and press the deep search once. Why this matters, and what to do if a device is still wrong after a day: [Troubleshooting](docs/TROUBLESHOOTING.md).
-
 ## What is Vedetta
 
 **The lookout of your LAN.** Your router says *“Unknown device”*; Vedetta says *“Sony console”* and shows how it knew. It finds every device on your network, works out *what it is* from many weak clues, and **tells you why**. Anything you set by hand is never overwritten.
@@ -43,7 +37,19 @@ It is a Home Assistant **app** (not a custom integration): install it from the A
 
 All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 
+## How it recognizes a device
+
+<p align="center"><img src="docs/images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
+
+Many weak clues (services, ports, names, DHCP and Bonjour announcements, the Home Assistant registry) are fused **by family**, so one fact is never counted twice. Placeholders are not names, doubt is shown as doubt, and the weights are public. Sources, weights and certainty bars: [Recognition](docs/RECOGNITION.md).
+
 ## Quick start
+
+> [!IMPORTANT]
+> ### ⏳ Give Vedetta a couple of days to settle
+> Right after the install it only knows what it could see in the first minutes. **Most of what makes it good needs time**: phones sleep, names are announced now and then, and the presence history is what tells a phone with a changing MAC from a fixed device. A deep search also runs by itself every night at 03:00.
+>
+> Please **leave it installed and running for at least 24 hours (48 is better)** before you decide a device is wrong or open an issue, and press the deep search once. Why this matters, and what to do if a device is still wrong after a day: [Troubleshooting](docs/TROUBLESHOOTING.md).
 
 > [!NOTE]
 > Needs **Home Assistant OS** or **Supervised** (Settings shows **Apps**). Home Assistant *Container* or *Core* has no app store.
@@ -53,10 +59,6 @@ All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 3. Switch on **Show in sidebar** and press **Start**, then open **Vedetta** from the sidebar and press **Scan network**.
 
 Two minutes to install, no cloud. Step by step, the local-app option and the first launch: [Installation](docs/INSTALLATION.md).
-
-## How it recognizes a device
-
-Many weak clues (services, ports, names, DHCP and Bonjour announcements, the Home Assistant registry) are fused **by family**, so one fact is never counted twice. Placeholders are not names, doubt is shown as doubt, and the weights are public. Sources, weights and certainty bars: [Recognition](docs/RECOGNITION.md).
 
 ## Home Assistant and MQTT
 

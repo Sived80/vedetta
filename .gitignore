@@ -10,3 +10,6 @@ backups/
 archive/
 vedetta/app/static/models/
 node_modules/
+
+# Worktrees of the helper agents
+.claude/

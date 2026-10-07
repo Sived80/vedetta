@@ -1,0 +1,156 @@
+/* Rules believed dead (never match, or always superseded by a higher-specificity rule): kept untouched here, in their original
+   layer, so that phase 2 can delete them. Each one says why. */
+
+@layer layout {
+  /* dead: no element has class chip, chips, chip-check, chip-count or chips-sep any more. */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }
+  @media (max-width: 520px) {
+    /* dead: .live padding is set in the overrides layer (Home Assistant sizes), which beats the layout layer. */
+    .live { padding: 0 10px; }
+  }
+  /* dead: no element has class chip, chips, chip-check, chip-count or chips-sep any more. */
+  html[data-compact] .chips { display: none; }
+}
+
+@layer components {
+  /* dead: no element has class chip, chips, chip-check, chip-count or chips-sep any more. */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 8px;
+    border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); font-size: 14px;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .chip:hover { background: var(--ha-hover); }
+  .chip[aria-pressed="true"] {
+    border-color: var(--primary-color); color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  }
+  .chip-check { width: 0; overflow: hidden; display: flex; transition: width 0.15s; }
+  .chip-check .mdi { width: 18px; height: 18px; }
+  .chip[aria-pressed="true"] .chip-check { width: 18px; }
+  .chip-count { font-size: 12px; color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed="true"] .chip-count { color: inherit; }
+  .chips-sep { width: 1px; height: 24px; background: var(--divider-color); margin: 0 4px; }
+  @media (pointer: coarse) {
+    /* dead: no element has class chip, chips, chip-check, chip-count or chips-sep any more. */
+    .chip { min-height: 44px; }
+  }
+}
+
+@layer dialog {
+  /* dead: paintGraph emits only class stat-v, never ok, warn or bad. */
+  .stat-v.ok { color: var(--success-color); }
+  .stat-v.warn { color: var(--warning-color); }
+  .stat-v.bad { color: var(--error-color); }
+  /* dead: no <details class=attrs> and no .chev element (the dropdown is details.attr-more). */
+  details.attrs { margin-top: 8px; }
+  details.attrs summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; cursor: pointer; list-style: none; }
+  details.attrs summary::-webkit-details-marker { display: none; }
+  details.attrs .chev { transition: transform 0.2s; color: var(--secondary-text-color); }
+  details.attrs[open] .chev { transform: rotate(180deg); }
+}
+
+@layer motion {
+  /* dead: no animation uses the grow keyframes. */
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+}
+
+@layer overrides {
+  /* dead: no device has type tv (renamed media; TYPE_ICON has no tv). */
+  .tile.online[data-type="tv"], .crow.online[data-type="tv"] { --c: #ec407a; }
+  /* never active in practice: #mi-actions is filled right after it is written (at least the flag button). */
+  .mi-actions:empty { display: none; }
+  /* dead: no <details class=attrs> and no .chev element (the dropdown is details.attr-more). */
+  details.attrs .chev { width: 40px; height: 40px; padding: 10px; box-sizing: border-box; flex: none; }
+  @media (pointer: coarse) {
+    /* dead: no <details class=attrs> and no .chev element (the dropdown is details.attr-more). */
+    details.attrs .chev { width: 44px; height: 44px; padding: 12px; }
+  }
+  /* dead: rows never get is-adding or is-done (the states are nd-idle, nd-run, nd-save, nd-done). */
+  .nd-row.is-adding .nd-ic { color: var(--warning-color); background: color-mix(in srgb, var(--warning-color) 20%, transparent); animation: nd-blink 0.9s ease-in-out infinite; }
+  .nd-row.is-done .nd-ic { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 20%, transparent); }
+  .nd-row.is-done .nd-status { color: var(--success-color); }
+  /* superseded: #card-new .nd-status (higher specificity) sets all three properties, and .nd-status exists only in #card-new. */
+  .nd-status { font-size: 13px; color: var(--secondary-text-color); padding-right: 8px; }
+  /* dead: rows never get is-adding or is-done (the states are nd-idle, nd-run, nd-save, nd-done). */
+  .ch-ic.is-adding { animation: nd-blink 0.9s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    /* dead: rows never get is-adding or is-done (the states are nd-idle, nd-run, nd-save, nd-done). */
+    .nd-row.is-adding .nd-ic, .ch-ic.is-adding { animation: none; }
+  }
+  /* dead: busy is set only on #btn-scan (a .btn), .empty-ic.scan and #scan-ic, never on an .icon-btn. */
+  .icon-btn.busy { animation: nd-blink 0.9s ease-in-out infinite; }
+  .icon-btn.busy { color: var(--primary-color); }
+  /* dead: nothing hides #btn-scan, and the reset [hidden] rule already does this. */
+  #btn-scan[hidden] { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    /* dead: busy is set only on #btn-scan (a .btn), .empty-ic.scan and #scan-ic, never on an .icon-btn. */
+    .icon-btn.busy { animation: none; }
+  }
+  /* dead: pill() never gets the sm size (only lg half, md, lg, lg full). */
+  .menu .pill.sm { min-width: 46px; min-height: 32px; padding: 0 12px; font-size: 13px; }
+  @media (pointer: coarse) {
+    /* dead: pill() never gets the sm size (only lg half, md, lg, lg full). */
+    .menu .pill.sm { min-height: 40px; min-width: 52px; }
+  }
+  /* dead: no element has class menu-row. */
+  .menu-row { display: flex; flex-wrap: wrap; gap: 0 16px; border-top: 1px solid var(--divider-color); margin-top: 10px; }
+  .menu-row .menu-group { flex: 1 1 auto; border-top: 0; margin-top: 0; }
+  .menu-row .pill.sm { min-width: 34px; padding: 0 8px; }
+  .menu-row .menu-pills { flex-wrap: nowrap; gap: 4px; }
+  /* dead: .card-scan is never generated. */
+  .card-scan { padding: 4px 16px 0; }
+  /* dead: no element has class menu-row. */
+  .menu-row .menu-group { flex: 1 1 auto; }
+  .menu-row .pill.sm { flex: 0 0 auto; }
+  /* dead: rows never get is-adding or is-done (the states are nd-idle, nd-run, nd-save, nd-done). */
+  .nd-row.is-done .nd-status { color: var(--success-text-color); }
+  /* dead: paintGraph emits only class stat-v, never ok, warn or bad. */
+  .stat-v.ok { color: var(--success-text-color); }
+  .stat-v.warn { color: var(--warning-text-color); }
+  .stat-v.bad { color: var(--error-text-color); }
+  /* dead: menu links are never first (only menu-link, next, menu-export next). */
+  .menu-link.first { margin-top: 0; padding-top: 4px; border-top: 0; }
+  /* dead: the deep menu renders only .dm-tiles, .dm-tile, .dm-slot and .dm-foot. */
+  .dm-text { display: flex; flex-direction: column; text-align: left; }
+  .dm-text b { font-weight: 500; font-size: 14px; }
+  .dm-text span { font-size: 12px; color: var(--secondary-text-color); }
+  /* dead: the card renders .nd-bar-actions now. */
+  .nd-head-actions { margin-left: auto; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; padding-right: 8px; }
+  .nd-head-actions .btn { min-height: 36px; }
+  /* dead: the log header has no .ch-ic. */
+  #card-log .ch-ic { background: transparent; color: var(--secondary-text-color); width: auto; height: auto; }
+  #card-log .ch-ic { display: none; }
+  /* dead: compact rows contain no .brand-big. */
+  .crow .brand-big { display: none; }
+  /* dead: the server merges these types into iot; no tile or row carries them. */
+  .tile.online[data-type="climate"], .crow.online[data-type="climate"] { --c: #ff5722; }
+  .tile.online[data-type="appliance"], .crow.online[data-type="appliance"] { --c: #00acc1; }
+  .tile.online[data-type="energy"], .crow.online[data-type="energy"] { --c: #fbc02d; }
+  .tile.online[data-type="security"], .crow.online[data-type="security"] { --c: #e53935; }
+  .tile.online[data-type="cover"], .crow.online[data-type="cover"] { --c: #6d4c41; }
+  .tile.online[data-type="water"], .crow.online[data-type="water"] { --c: #1e88e5; }
+  /* dead: the search methods dialog renders only .risk and .risk-dot. */
+  .risk-tag { display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 10px; font-size: 11px; font-weight: 400; line-height: 16px;
+    color: var(--rc); background: color-mix(in srgb, var(--rc) 14%, transparent); }
+  .r-easy.risk-tag { color: var(--success-text-color); }
+  .r-invasive.risk-tag { color: var(--warning-text-color); }
+  .r-risky.risk-tag { color: var(--error-text-color); }
+  /* dead: the deep menu renders only .dm-tiles, .dm-tile, .dm-slot and .dm-foot. */
+  .menu-item.dm-item { align-items: center; min-height: 56px; padding: 8px 16px; }
+  .menu-item.dm-item .mdi { width: 24px; height: 24px; flex: none; color: var(--secondary-text-color); }
+  .dm-text b { font-size: 14px; font-weight: 500; color: var(--primary-text-color); }
+  .dm-text span { font-size: 12px; line-height: 1.4; }
+  /* dead: the export dialog uses only xp-* classes; no exp-* class exists. */
+  .exp-opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--divider-color); }
+  .exp-opt .mdi { width: 22px; height: 22px; flex: none; margin-top: 2px; color: var(--secondary-text-color); }
+  .exp-opt b { display: block; font-size: 14px; font-weight: 500; }
+  .exp-opt span { display: block; font-size: 13px; line-height: 1.45; color: var(--secondary-text-color); }
+  .exp-split { position: relative; }
+  .exp-split > .btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .exp-split .split-more { min-width: 0; padding: 0 8px; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
+  .exp-split .split-more .mdi { width: 20px; height: 20px; }
+  .exp-split .exp-menu { position: absolute; top: auto; bottom: calc(100% + 4px); right: 0; width: min(320px, calc(100vw - 48px)); padding: 8px 0; transform-origin: bottom right; }
+  .exp-split .exp-menu[hidden] { display: none; }
+  /* never active in practice: the search box is always appended to #card-search. */
+  #card-search:empty { padding-bottom: 0; }
+}

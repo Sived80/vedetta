@@ -1,0 +1,68 @@
+/* Log card (#card-log). .log-empty is reused by the #ignored dialog (network). */
+
+@layer layout {
+  /* Compact mode (?compact=1): no log card. */
+  html[data-compact] #card-log { display: none; }
+}
+
+@layer components {
+  /* Log (logbook) */
+  .log-list { padding: 0 8px 8px; max-height: 520px; overflow-y: auto; }
+  .log-day { padding: 12px 8px 4px; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); }
+  .log-row {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 6px 8px; border: 0; border-radius: 8px;
+    background: transparent; text-align: left; color: inherit; cursor: default;
+  }
+  button.log-row { cursor: pointer; }
+  button.log-row:hover { background: var(--ha-hover); }
+  .log-ic { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+  .log-ic .mdi { width: 18px; height: 18px; }
+  .log-ic.on { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 16%, transparent); }
+  .log-ic.off { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 16%, transparent); }
+  .log-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .log-msg { overflow-wrap: anywhere; }
+  .log-ago, .log-time { font-size: 12px; color: var(--secondary-text-color); }
+  .log-time { font-variant-numeric: tabular-nums; align-self: flex-start; padding-top: 2px; }
+  .log-row.fresh { animation: fresh 2.2s ease-out; }
+  .log-empty { display: flex; align-items: center; gap: 16px; padding: 20px 8px; color: var(--secondary-text-color); }
+  .log-empty .mdi { width: 32px; height: 32px; }
+  .log-empty div { display: flex; flex-direction: column; }
+  .log-empty b { color: var(--primary-text-color); font-weight: 500; }
+}
+
+@layer overrides {
+  /* Log: collapsible card (closed part), level button, service entries. */
+  #card-log .log-head { cursor: pointer; align-items: center; padding-bottom: 12px; }
+  #card-log .log-head .ch-text { flex: 1; min-width: 0; }
+  #card-log .log-head:hover { background: var(--ha-hover); }
+  .log-chev { display: flex; color: var(--secondary-text-color); padding: 0 8px; transition: transform 0.2s; }
+  #card-log.is-open .log-chev { transform: rotate(180deg); }
+  .log-ic.svc { color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+  .log-ic.svc.warn { color: var(--warning-text-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
+  @media (prefers-reduced-motion: reduce) {
+    .log-chev { transition: none; }
+  }
+
+  /* Search in the open log */
+  .log-search { padding: 0 16px 8px; }
+  .log-search .search { height: 40px; }
+
+  /* Open log: search and level button on one row; the button sits in the column of the title arrow. */
+  .log-search { display: flex; align-items: center; gap: 4px; padding: 0 0 8px 16px; }
+  .log-search .search { flex: 1; min-width: 0; }
+  #card-log .log-head { padding-right: 0; }
+  .log-chev { width: 48px; justify-content: center; padding: 0; }
+  .log-search #log-level-btn { flex: none; width: 48px; }
+  /* The header keeps 8px of padding on the right (card-header), so the level button gets the same 8px: its column and the title
+     arrow share the same centre line. */
+  #card-log .log-search { padding-right: 8px; }
+  /* Slightly more compact search field */
+  #card-log .log-search .search { height: 36px; padding-left: 14px; }
+  #card-log .log-search .search input { font-size: 15px; }
+
+  /* Log header padding (superseded by the next block). */
+  #card-log .log-head { padding: 12px 0 12px 16px; }
+
+  /* Log header with the Home Assistant card-header padding. */
+  #card-log .log-head { padding: 20px 8px 20px 16px; }
+}

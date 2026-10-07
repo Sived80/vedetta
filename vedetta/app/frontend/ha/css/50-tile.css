@@ -1,0 +1,204 @@
+/* Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. */
+
+@layer components {
+  /* Groups by type (heading card) */
+  .group { margin-bottom: 24px; }
+  .heading { display: flex; align-items: center; gap: 8px; padding: 0 4px 10px; color: var(--secondary-text-color); }
+  .hd-ic { display: flex; }
+  .hd-ic .mdi { width: 20px; height: 20px; }
+  .hd-title { font-size: 16px; line-height: 24px; font-weight: 500; color: var(--primary-text-color); }
+  .hd-count {
+    font-size: 12px; font-weight: 500; line-height: 18px; padding: 0 8px; border-radius: 9px;
+    background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent);
+  }
+  .hd-sub { margin-left: auto; font-size: 12px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+  /* Tile card */
+  .tile {
+    --c: var(--state-icon-color);
+    display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "ic body" "bar bar";
+    column-gap: 12px; row-gap: 12px; padding: 12px; cursor: pointer; outline: none;
+    background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: var(--ha-card-border-radius);
+    box-shadow: var(--ha-card-box-shadow);
+    transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s, transform 0.12s;
+    animation: tile-in 0.3s ease-out backwards;
+  }
+  .tile:hover { background: color-mix(in srgb, var(--card-background-color) 94%, var(--primary-text-color)); }
+  .tile:focus-visible { box-shadow: 0 0 0 2px var(--primary-color); }
+  .tile:active { transform: scale(0.99); }
+  .tile.online { --c: var(--primary-color); }
+  .tile-icon {
+    grid-area: ic; position: relative; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    color: var(--c); background: color-mix(in srgb, var(--c) 20%, transparent); transition: background-color 0.3s, color 0.3s;
+  }
+  .tile.offline .tile-icon { color: var(--disabled-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+  .ic { display: grid; place-items: center; }
+  .ring { display: none; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--warning-color); }
+  .tile.scanning .ring { display: block; animation: spin 1s linear infinite; }
+  .tile-icon.flash-on { animation: flash-on 0.9s ease-out; }
+  .tile-icon.flash-off { animation: flash-off 0.9s ease-out; }
+  .tile-body { grid-area: body; display: flex; flex-direction: column; min-width: 0; padding-right: 32px; }
+  .tile-name { font-size: 14px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tile-state { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tile.online .tile-state { color: var(--success-color); }
+  .tile-sub { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tile-wake { position: absolute; top: 2px; right: 2px; }
+  .hbar {
+    grid-area: bar; position: relative; height: 8px; border-radius: 4px; overflow: hidden; display: block;
+    background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent);
+  }
+  .hbar i { position: absolute; top: 0; bottom: 0; }
+  .hbar i.on { background: var(--success-color); }
+  .hbar i.off { background: var(--error-color); }
+
+  /* Compact-mode list */
+  .compact-list .crows { padding: 0 8px 8px; }
+  .crow {
+    --c: var(--state-icon-color);
+    display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 8px; border-radius: 8px; cursor: pointer; outline: none;
+  }
+  .crow:hover { background: var(--ha-hover); }
+  .crow.online { --c: var(--primary-color); }
+  .crow .tile-icon { flex: none; width: 36px; height: 36px; }
+  .crow.offline .tile-icon { color: var(--disabled-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+  .crow.online .tile-state { color: var(--success-color); }
+  .crow-body { display: flex; flex-direction: column; min-width: 0; }
+  .crow-empty { padding: 16px 8px; color: var(--secondary-text-color); }
+  .crow-more {
+    display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
+    border-top: 1px solid var(--divider-color); color: var(--primary-color); text-decoration: none; font-weight: 500;
+  }
+  .crow-more .mdi { width: 18px; height: 18px; }
+
+  /* Empty states */
+  .empty-state { padding: 40px 24px; text-align: center; }
+  .empty-ic {
+    width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center;
+    color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  }
+  .empty-ic .mdi { width: 36px; height: 36px; }
+  .empty-ic.err { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 14%, transparent); }
+  .empty-state h3 { font-size: 20px; line-height: 28px; font-weight: 500; }
+  .empty-state p { max-width: 420px; margin: 8px auto 0; color: var(--secondary-text-color); }
+}
+
+@layer overrides {
+  /* Icon colour by device TYPE (like HA tiles, where each domain has its colour); offline stays disabled grey. */
+  .tile.online[data-type="router"], .crow.online[data-type="router"] { --c: #29b6f6; }
+  .tile.online[data-type="server"], .crow.online[data-type="server"] { --c: #7e57c2; }
+  .tile.online[data-type="pc"], .crow.online[data-type="pc"] { --c: #5c6bc0; }
+  .tile.online[data-type="phone"], .crow.online[data-type="phone"] { --c: #ff7043; }
+  .tile.online[data-type="audio"], .crow.online[data-type="audio"] { --c: #26a69a; }
+  .tile.online[data-type="iot"], .crow.online[data-type="iot"] { --c: #66bb6a; }
+  .tile.online[data-type="printer"], .crow.online[data-type="printer"] { --c: #8d6e63; }
+  .tile.online[data-type="generic"], .crow.online[data-type="generic"] { --c: #78909c; }
+
+  /* Scan button of the empty state: the circle with the magnifier above the title. It blinks while scanning (nd-blink, 10-base). */
+  button.empty-ic.scan { border: none; cursor: pointer; font: inherit; transition: transform 0.15s, background-color 0.2s; }
+  button.empty-ic.scan:hover:not(:disabled) { transform: scale(1.05); background: color-mix(in srgb, var(--primary-color) 22%, transparent); }
+  button.empty-ic.scan:active:not(:disabled) { transform: scale(0.97); }
+  button.empty-ic.scan:disabled { cursor: default; }
+  button.empty-ic.scan .mdi { width: 36px; height: 36px; }
+  button.empty-ic.scan.busy { animation: nd-blink 0.9s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    button.empty-ic.scan.busy { animation: none; }
+  }
+
+  /* Tile: name, IP, status and latency, other information. */
+  .tile-ip { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tile-sub[hidden] { display: none; }
+
+  /* Visual polish: tile focus, group titles, 24 h bar, status text contrast. */
+  .tile:focus-visible, .crow:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 2px; box-shadow: none; }
+  .hd-title { font-size: 14px; line-height: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
+  /* Tile: no space reserved for the button when there is none */
+  .tile-body { padding-right: 0; }
+  .tile:has(.tile-wake:not([hidden])) .tile-body { padding-right: 32px; }
+  /* 24 h bar: thin, segmented, empty when there is no data */
+  .hbar { height: 4px; border-radius: 2px; background: transparent; }
+  .hbar i { border-radius: 2px; box-shadow: 0 0 0 0.5px var(--card-background-color); }
+  .hbar i.on { opacity: 0.65; }
+  .hbar.nodata { visibility: hidden; }
+  /* Status text contrast in the light theme */
+  .tile.online .tile-state, .crow.online .tile-state { color: var(--success-text-color); }
+
+  /* Connect button in every tile (top right); grey when offline. */
+  .tile-open { position: absolute; top: 2px; right: 2px; color: var(--primary-color); }
+  .tile-open.off { color: var(--disabled-text-color); cursor: default; }
+  .tile-open.off:hover { background: transparent; }
+  .tile-wake { right: 36px; }
+  .tile-body { padding-right: 34px; }
+  .tile:has(.tile-wake:not([hidden])) .tile-body { padding-right: 68px; }
+
+  /* Colour of the Media category (formerly tv). */
+  .tile.online[data-type="media"], .crow.online[data-type="media"] { --c: #ec407a; }
+
+  /* List view (menu > View > List): each group is a card like the HA entities card, one row per device. Same elements as the
+     tiles, in columns: icon | name | IP | status and ms | role and brand | last 24 h | actions. */
+  html[data-view="list"] .tiles {
+    display: block; background: var(--card-background-color); border: 1px solid var(--divider-color);
+    border-radius: var(--ha-card-border-radius); overflow: hidden;
+  }
+  html[data-view="list"] .tile {
+    grid-template-columns: 36px minmax(0, 2fr) minmax(112px, 1fr) minmax(0, 1.3fr) minmax(0, 1.7fr) 72px 40px 40px;
+    grid-template-areas: none; align-items: center; column-gap: 16px; row-gap: 0;
+    min-height: 56px; padding: 6px 8px 6px 16px; border: 0; border-radius: 0; box-shadow: none; animation: none;
+  }
+  html[data-view="list"] .tile + .tile { border-top: 1px solid var(--divider-color); }
+  html[data-view="list"] .tile:active { transform: none; }
+  html[data-view="list"] .tile:focus-visible { outline-offset: -2px; }
+  html[data-view="list"] .tile-body { display: contents; }
+  html[data-view="list"] .tile > *, html[data-view="list"] .tile-body > * { grid-row: 1; }
+  html[data-view="list"] .tile-icon { grid-area: auto; grid-column: 1; width: 36px; height: 36px; }
+  html[data-view="list"] .tile-name { grid-column: 2; }
+  html[data-view="list"] .tile-ip { grid-column: 3; }
+  html[data-view="list"] .tile-state { grid-column: 4; }
+  html[data-view="list"] .tile-sub { grid-column: 5; }
+  html[data-view="list"] .tile-sub[hidden] { display: block; visibility: hidden; }
+  html[data-view="list"] .hbar { grid-area: auto; grid-column: 6; }
+  html[data-view="list"] .tile-wake { position: static; grid-column: 7; }
+  html[data-view="list"] .tile-open { position: static; grid-column: 8; }
+  @media (max-width: 700px) {
+    /* Narrow screens: icon | name with the IP below | status | open */
+    html[data-view="list"] .tile {
+      grid-template-columns: 36px minmax(0, 1fr) auto 40px; row-gap: 0; padding: 8px 4px 8px 12px; column-gap: 12px;
+    }
+    html[data-view="list"] .tile-icon { grid-row: 1 / span 2; }
+    html[data-view="list"] .tile-name { grid-column: 2; grid-row: 1; }
+    html[data-view="list"] .tile-ip { grid-column: 2; grid-row: 2; }
+    html[data-view="list"] .tile-state { grid-column: 3; grid-row: 1 / span 2; text-align: right; }
+    html[data-view="list"] .tile-sub, html[data-view="list"] .tile-sub[hidden], html[data-view="list"] .hbar { display: none; }
+    html[data-view="list"] .tile-wake { grid-column: 4; grid-row: 2; }
+    html[data-view="list"] .tile-open { grid-column: 4; grid-row: 1; }
+  }
+
+  /* Brand logos. Cards: a big faint logo on the right, cut by the edge and fading to the left. List: the logo replaces the icon in
+     the circle, tinted with the brand colour. No logo, nothing shown. */
+  .brand-big { position: absolute; pointer-events: none; color: var(--primary-text-color);
+    -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%); mask-image: linear-gradient(to left, #000 40%, transparent 100%); }
+  .brand-big i { display: block; width: 100%; height: 100%; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .brand-big { right: -36px; top: 50%; transform: translateY(-50%); width: 170px; height: 170px; opacity: 0.14; }
+  .brand-big[hidden] { display: none; }
+  [data-view="list"] .brand-big { display: none; }
+  .crow .tile-icon.has-logo { background: color-mix(in srgb, var(--bc) 22%, transparent); color: var(--bc); }
+  [data-view="list"] .tile .tile-icon.has-logo { background: color-mix(in srgb, var(--bc) 22%, transparent); color: var(--bc); }
+  [data-view="list"] .tile.offline .tile-icon.has-logo { background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); color: var(--disabled-text-color); }
+  [data-view="list"] .tile .tile-icon.has-logo .ic svg { display: none; }
+  [data-view="list"] .tile .tile-icon.has-logo .ic { display: block; width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .crow.offline .tile-icon.has-logo { background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); color: var(--disabled-text-color); }
+  .crow .tile-icon.has-logo .ic { display: block; width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+
+  /* Debug mode: the battery line of a tile is orange (HA warning colour). */
+  html[data-debug] .tile-batt { color: var(--warning-text-color); opacity: 1 !important; }
+
+  /* A device flagged for the report: small flag on the corner of its icon. */
+  .tile-icon { position: relative; }
+  .tile-flag { position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--primary-color); color: var(--text-primary-color, #fff); box-shadow: 0 0 0 2px var(--card-background-color); }
+  .tile-flag[hidden] { display: none; }
+  .tile-flag .mdi { width: 12px; height: 12px; }
+}

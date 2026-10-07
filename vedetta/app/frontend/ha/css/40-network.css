@@ -1,0 +1,227 @@
+/* Network card: live pill, gauge, scan state, badges, brands, progress bar, search, split scan button, pause menu, and the network
+   dialogs (search methods #flows, ignored devices #ignored). */
+
+@layer layout {
+  @media (max-width: 520px) {
+    .live-text { display: none; }
+  }
+
+  /* Compact mode (?compact=1): no brands and no scan button, smaller gauge. */
+  html[data-compact] .brands, html[data-compact] #btn-scan { display: none; }
+  html[data-compact] .gauge { width: 96px; height: 96px; }
+  html[data-compact] .gauge-value { font-size: 28px; }
+}
+
+@layer components {
+  /* Live status pill (top of the network card) and the dot of the compact title */
+  .live {
+    display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; flex: none;
+    border: 1px solid var(--divider-color); border-radius: 16px; color: var(--secondary-text-color); font-size: 12px;
+  }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--disabled-text-color); }
+  .live.ok .live-dot { background: var(--success-color); animation: live-pulse 2.4s ease-out infinite; }
+  .live.bad .live-dot { background: var(--error-color); }
+  .live.bad { color: var(--error-color); }
+  .net-dot { display: none; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--disabled-text-color); }
+  html[data-compact] .net-dot { display: inline-block; }
+  .net-dot.ok { background: var(--success-color); }
+  .net-dot.bad { background: var(--error-color); }
+
+  /* Network card: gauge */
+  .gauge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; }
+  .gauge { --gc: var(--primary-color); position: relative; width: 132px; height: 132px; flex: none; }
+  .gauge.ok { --gc: var(--success-color); }
+  .gauge.warn { --gc: var(--warning-color); }
+  .gauge.bad { --gc: var(--error-color); }
+  .gauge.none { --gc: var(--disabled-text-color); }
+  .gauge svg { width: 100%; height: 100%; display: block; }
+  .g-track { fill: none; stroke-width: 10; stroke: color-mix(in srgb, var(--secondary-text-color) 22%, transparent); }
+  .g-fill {
+    fill: none; stroke-width: 10; stroke-linecap: round; stroke: var(--gc);
+    transition: stroke 0.4s;
+  }
+  .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .gauge-value { font-size: 36px; line-height: 40px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .gauge-of { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); }
+  .gauge-side { flex: 1; min-width: 160px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .scan-state { display: flex; align-items: flex-start; gap: 8px; color: var(--secondary-text-color); font-size: 14px; }
+  .scan-ic { display: flex; flex: none; }
+  .scan-ic .mdi { width: 20px; height: 20px; }
+  .scan-ic.busy { color: var(--primary-color); animation: pulse 1.2s ease-in-out infinite; }
+
+  /* Badges (like the HA badges) */
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .badge {
+    --tone: var(--primary-color);
+    display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 4px; border-radius: 18px;
+    border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color);
+    transition: background-color 0.15s, border-color 0.15s, opacity 0.2s;
+  }
+  .badge:hover { background: var(--ha-hover); }
+  .badge.tone-success { --tone: var(--success-color); }
+  .badge.tone-error { --tone: var(--error-color); }
+  .badge.tone-warning { --tone: var(--warning-color); }
+  .badge-ic {
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    color: var(--tone); background: color-mix(in srgb, var(--tone) 18%, transparent);
+  }
+  .badge-ic .mdi { width: 18px; height: 18px; }
+  .badge-val { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .badge-lb { font-size: 12px; color: var(--secondary-text-color); }
+  .badge[aria-pressed="true"] { border-color: var(--tone); background: color-mix(in srgb, var(--tone) 10%, transparent); }
+  .badge.dim { opacity: 0.55; }
+  .badge.bump { animation: bump 0.45s ease-out; }
+
+  /* Brands */
+  .brands { margin-top: 20px; }
+  .brands-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); margin-bottom: 8px; }
+  .brand-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; }
+  .brand-bar i { display: block; min-width: 4px; transition: flex-grow 0.5s; }
+  .brands ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px 12px; margin-top: 10px; font-size: 13px; }
+  .brands li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .b-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .b-n { color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
+  .c1 { background: var(--ha-c1); }
+  .c2 { background: var(--ha-c2); }
+  .c3 { background: var(--ha-c3); }
+  .c4 { background: var(--ha-c4); }
+  .c5 { background: var(--ha-c5); }
+  .c-other { background: var(--disabled-text-color); }
+
+  /* Progress bar (like ha-linear-progress) */
+  .progress { height: 4px; overflow: hidden; background: color-mix(in srgb, var(--primary-color) 18%, transparent); }
+  .progress .bar { width: 100%; height: 100%; background: var(--primary-color); transform-origin: left; transform: scaleX(0); transition: transform 1s linear; }
+  .progress.indet .bar { width: 35%; transform: none; transition: none; animation: indeterminate 1.5s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite; }
+
+  @media (pointer: coarse) {
+    /* Touch target of the badges on coarse pointers */
+    .badge { min-height: 44px; }
+  }
+
+  /* Search, status and settings inside the network card. */
+  .card-tools { display: flex; align-items: center; gap: 4px; }
+  .card-search { padding: 0 16px 4px; }
+  .card-search .search { width: 100%; }
+  html[data-compact] .card-search,
+  html[data-compact] .card-tools .menu-wrap,
+  html[data-compact] .card-tools .live { display: none; }
+}
+
+@layer overrides {
+  /* Badges: value and label on the same text line, centred with the icon (mostly superseded by the next badge block). */
+  .badge { padding: 0 14px 0 4px; }
+  .badge-val, .badge-lb { display: inline-flex; align-items: center; height: 20px; line-height: 20px; }
+  .badge-val { margin-right: -2px; }
+
+  /* Badges: value and label with the same size and line, centred with the icon. */
+  .badge { align-items: center; }
+  .badge-val, .badge-lb { font-size: 13px; line-height: 1; height: auto; display: block; margin: 0; padding: 0; }
+  .badge-val { margin-right: -4px; }
+  .badge-lb { font-weight: 400; }
+
+  /* Scan button under the status (margin superseded by the split button block). */
+  .gauge-side #btn-scan { margin-top: 10px; align-self: flex-start; }
+
+  /* Visual polish: badges without border and icon without circle; status text contrast. */
+  .badge { border: 0; background: color-mix(in srgb, var(--primary-text-color) 6%, transparent); padding: 0 14px 0 10px; gap: 6px; }
+  .badge:hover { background: color-mix(in srgb, var(--primary-text-color) 12%, transparent); }
+  .badge[aria-pressed="true"] { background: color-mix(in srgb, var(--tone) 16%, transparent); }
+  .badge-ic { width: 24px; height: 24px; background: transparent; }
+  .live.bad { color: var(--error-text-color); }
+
+  /* Brand colours 6-8 (bar and legend). */
+  .c6 { background: #009688; }
+  .c7 { background: #795548; }
+  .c8 { background: #3f51b5; }
+
+  /* Search methods dialog (#flows). .fl-row/.fl-text/.fl-sw are also used by the deep search confirm in More info. */
+  /* Search methods dialog */
+  #flows .mi-sub { white-space: normal; }
+  .fl-body { overflow: auto; padding: 0 24px 8px; }
+  .fl-sec { padding: 16px 0 4px; }
+  .fl-sec + .fl-sec { border-top: 1px solid var(--divider-color); margin-top: 8px; }
+  .fl-sec h3 { font-size: 16px; font-weight: 500; }
+  .fl-sec p { margin: 2px 0 8px; font-size: 13px; color: var(--secondary-text-color); }
+  .fl-row { display: flex; align-items: center; gap: 16px; min-height: 48px; padding: 6px 0; cursor: pointer; }
+  .fl-row.locked { cursor: default; }
+  .fl-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .fl-text b { font-size: 14px; font-weight: 500; }
+  .fl-text span { font-size: 12px; color: var(--secondary-text-color); }
+  .fl-sw { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 36px; height: 14px; border-radius: 7px; margin: 0 2px;
+    background: color-mix(in srgb, var(--secondary-text-color) 45%, transparent); cursor: inherit; transition: background-color 0.15s; }
+  .fl-sw::after { content: ""; position: absolute; top: -3px; left: -2px; width: 20px; height: 20px; border-radius: 50%; background: var(--card-background-color);
+    border: 1px solid var(--divider-color); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); transition: transform 0.15s, background-color 0.15s; }
+  .fl-sw:checked { background: color-mix(in srgb, var(--primary-color) 55%, transparent); }
+  .fl-sw:checked::after { transform: translateX(18px); background: var(--primary-color); border-color: var(--primary-color); }
+  .fl-sw:disabled { opacity: 0.5; }
+  .fl-sw:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 4px; }
+
+  /* Clickable status pill (pause). */
+  button.live { font: inherit; font-size: 12px; background: transparent; cursor: pointer; }
+  button.live:hover { background: var(--ha-hover); }
+  .live.paused { color: var(--warning-text-color); }
+  .live.paused .live-dot { background: var(--warning-color); animation: none; }
+
+  /* The status text always takes two lines, so the button below never moves. */
+  .scan-state { min-height: 40px; line-height: 20px; }
+  .scan-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+
+  /* Split button: network scan + deep search menu. */
+  .split { display: inline-flex; }
+  .split #btn-scan { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .split .split-more { min-width: 0; padding: 0 8px; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
+  .split .split-more .mdi { width: 20px; height: 20px; }
+  .gauge-side .split { margin-top: 10px; align-self: flex-start; }
+  .gauge-side #btn-scan { margin-top: 0; }
+
+  /* List of the ignored devices dialog. */
+  #ignored .nd-list { padding: 8px 16px 16px; }
+
+  /* Monitoring stopped (pause): red LED, as when the connection is lost. */
+  .live.paused .live-dot { background: var(--error-color); }
+  /* Bar under the first card while the service is paused: orange and filling for a timed pause, solid red when stopped until
+     resumed. */
+  .progress.pause-timed { background: color-mix(in srgb, var(--warning-color) 22%, transparent); }
+  .progress.pause-timed .bar { background: var(--warning-color); }
+  .progress.pause-stop { background: color-mix(in srgb, var(--error-color) 22%, transparent); }
+  .progress.pause-stop .bar { background: var(--error-color); }
+
+  /* LED of the status pill: timed pause = blinking orange; stopped until resumed = blinking red; connection lost = solid red. */
+  .live.paused.timed .live-dot { background: var(--warning-color); animation: nd-blink 1.2s ease-in-out infinite; }
+  .live.paused.forever .live-dot { background: var(--error-color); animation: nd-blink 1.2s ease-in-out infinite; }
+  .live.bad .live-dot { background: var(--error-color); animation: none; }
+  .live.paused.timed { color: var(--warning-text-color); }
+  .live.paused.forever { color: var(--error-text-color); }
+  @media (prefers-reduced-motion: reduce) {
+    .live.paused .live-dot { animation: none; }
+  }
+
+  /* Risk levels of the search methods: green non-invasive, orange invasive, red risky. */
+  .fl-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 0; }
+  .risk { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 12px; font-size: 12px; line-height: 18px;
+    border: 1px solid color-mix(in srgb, var(--rc) 40%, transparent); background: color-mix(in srgb, var(--rc) 12%, transparent); color: var(--rc); }
+  .risk i { width: 8px; height: 8px; border-radius: 50%; background: var(--rc); }
+  .r-easy { --rc: var(--success-color); }
+  .r-invasive { --rc: var(--warning-color); }
+  .r-risky { --rc: var(--error-color); }
+  .risk-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; background: var(--rc); vertical-align: 0; }
+
+  /* Card tools gap (superseded by the next block). */
+  .card-tools { gap: 0; }
+
+  /* Live pill and card tools with the Home Assistant sizes. */
+  .card-tools { gap: 4px; }
+  .live { height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; gap: 8px; }
+  button.live { font-size: 14px; }
+  .live-dot { width: 10px; height: 10px; }
+
+  /* Search methods: the risk legend stays at the top while scrolling. */
+  .fl-legend { position: sticky; top: 0; z-index: 3; background: var(--card-background-color); padding: 12px 0; border-bottom: 1px solid var(--divider-color); margin-bottom: 4px; }
+
+  /* The search box and the circle: the same distance (16 px) as the circle from the buttons under it. */
+  #card-search { padding-bottom: 16px; }
+}
+
+/* Network card title: no text selection or tap highlight (long press). Unlayered, as it was. */
+#card-network .card-header .ch-text { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }

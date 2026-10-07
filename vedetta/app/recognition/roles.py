@@ -4,7 +4,7 @@ Wi-Fi repeater, and which clients go through a repeater.
 Sources (standard protocols only, no vendor API):
   gateway   system default route (/proc/net/route)
   dhcp      test DHCP DISCOVER (offer never accepted) and option 54 (Server
-            Identifier) read from passive DHCP listening (dhcp.py)
+            Identifier) read from passive DHCP listening (scan/dhcp.py)
   dns       LAN hosts that answer a standard DNS query (UDP 53)
   router/ap/repeater  device type declared via UPnP (deviceType:
             InternetGatewayDevice, WLANAccessPointDevice, WFADevice) or declared

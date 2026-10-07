@@ -3,7 +3,7 @@ compact format for the UI, summary, event log.
 
 The calculation functions are pure (they take dicts and return
 dicts): they can be tested on their own (tests/check_ha_api.py) without starting the
-service. The HTTP calls live in routes_ha.py."""
+service. The HTTP calls live in routes/ha.py."""
 import json
 import re
 from pathlib import Path
@@ -587,7 +587,7 @@ def build_summary(devices: list[dict], poll: dict, activity: dict, new_devices: 
 # ---- event log (logbook) ----
 def recent_presence(limit: int, hist: History = history) -> list[dict]:
     """Latest online/offline events from the history, most recent first.
-    Reads presence_events without touching history.py (same connection and the
+    Reads presence_events without touching storage/history.py (same connection and the
     same lock as the other methods)."""
     limit = max(1, min(int(limit), 200))
     with hist._lock:

@@ -12,7 +12,7 @@ python tools/run_tests.py
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 cp -r vedetta "$STAGE/$SLUG"
-rm -rf "$STAGE/$SLUG/app/__pycache__"
+find "$STAGE/$SLUG" -name __pycache__ -prune -exec rm -rf {} +
 sed -i \
   -e 's/^name: Vedetta$/name: Vedetta (debug)/' \
   -e "s/^slug: vedetta$/slug: $SLUG/" \

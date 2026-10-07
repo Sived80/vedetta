@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS known_macs (
 );
 
 -- Shadow data (nothing reads it to decide what a card shows): what each MAC looked like, and what a card carried over
--- when another MAC started answering at the same address. Only for analysis, see mac_shadow.py.
+-- when another MAC started answering at the same address. Only for analysis, see export/mac_shadow.py.
 CREATE TABLE IF NOT EXISTS mac_memory (
     mac TEXT PRIMARY KEY,
     first_seen REAL NOT NULL,

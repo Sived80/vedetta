@@ -18,6 +18,10 @@ ROOT = Path(__file__).resolve().parent.parent / "vedetta"
 sys.path.insert(0, str(ROOT))
 import app  # noqa: E402
 
+# every folder with Python files is a package (walk_packages would silently skip one without __init__.py)
+for d in sorted({f.parent for f in (ROOT / "app").rglob("*.py") if "__pycache__" not in f.parts}):
+    assert (d / "__init__.py").exists(), "no __init__.py in %s" % d.relative_to(ROOT)
+
 names = [m.name for m in pkgutil.walk_packages(app.__path__, "app.")]
 packages = {m.name for m in pkgutil.walk_packages(app.__path__, "app.") if m.ispkg}   # a package is not a module to depend on: its files are
 for n in names:
@@ -96,6 +100,29 @@ for n, d in full.items():
         continue
     bad = [x for x in d if x.startswith("app.routes")]
     assert not bad or n == "app.main", "%s imports a route module: %s" % (n, bad)
+
+# every `from app... import name` (also inside functions) names something that exists
+unresolved = []
+for n in names:
+    p = ROOT / (n.replace(".", "/") + ".py")
+    if not p.exists():
+        p = ROOT / n.replace(".", "/") / "__init__.py"
+    pkg = n.split(".") if p.name == "__init__.py" else n.split(".")[:-1]
+    for node in ast.walk(ast.parse(p.read_text(encoding="utf-8"))):
+        if isinstance(node, ast.ImportFrom) and (node.level or (node.module or "").startswith("app")):
+            base = pkg[: len(pkg) - (node.level - 1)] if node.level else []
+            mod = ".".join(base + ([node.module] if node.module else [])) if node.level else node.module
+            try:
+                m = importlib.import_module(mod)
+            except ImportError as e:
+                unresolved.append("%s: %s (%s)" % (n, mod, e)); continue
+            for a in node.names:
+                if a.name != "*" and not hasattr(m, a.name):
+                    try:
+                        importlib.import_module(mod + "." + a.name)
+                    except ImportError:
+                        unresolved.append("%s: %s.%s" % (n, mod, a.name))
+assert not unresolved, "imports that point at nothing: " + "; ".join(unresolved)
 
 print("ok: %d modules import, no cycle at module level, %d imports inside functions" % (len(names), count))
 print("TUTTO OK")

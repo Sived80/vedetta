@@ -25,7 +25,7 @@ MISS_LIMITS = (1, 2, 3, 5, 10)
 
 DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3}
 
-# Publishing to Home Assistant (mqtt_ha.py, off by default). They are keys
+# Publishing to Home Assistant (ha/mqtt_ha.py, off by default). They are keys
 # of the file separate from DEFAULTS: they do not appear in load()/update() (so not even
 # in GET /api/settings) and the password never leaves the mqtt_* functions.
 MQTT_DEFAULTS: dict = {"mqtt_enabled": False, "mqtt_host": "", "mqtt_port": 1883, "mqtt_user": "", "mqtt_password": ""}

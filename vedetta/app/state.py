@@ -312,7 +312,7 @@ class DeviceState:
             return self._arp[1]
 
     def _shadow(self, device_id: str, previous: dict | None, result: dict, now: float) -> None:
-        """Data per MAC for later analysis (mac_shadow.py). Never decides anything shown, never raises."""
+        """Data per MAC for later analysis (export/mac_shadow.py). Never decides anything shown, never raises."""
         try:
             job = mac_shadow.observe(device_id, previous, result, self._last_mac.get(device_id), now)
             if job:

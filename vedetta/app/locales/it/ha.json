@@ -302,6 +302,7 @@
   "js.ha.share.remove": "Rimuovi da HA",
   "js.ha.share.added": "Condiviso con Home Assistant",
   "js.ha.share.removed": "Rimosso da Home Assistant",
+  "js.ha.share.pending": "La scelta viene salvata e vale appena il collegamento MQTT con Home Assistant e' attivo",
   "js.ha.dbg.evidence": "Indizi",
   "js.ha.export.done_plain": "File in chiaro esportato (non cifrato)",
   "js.ha.export.no_crypto": "La cifratura non è disponibile in questa versione dell'app: non è stato esportato niente.",

@@ -1221,7 +1221,7 @@
     color: var(--secondary-text-color); font-weight: 500;
   }
   .attr-more > summary::-webkit-details-marker { display: none; }
-  .attr-more > summary::after { content: ""; width: 24px; height: 24px; flex: none; background: currentColor;
+  .attr-more > summary::after { content: ""; width: 40px; height: 40px; padding: 10px; box-sizing: border-box; background-clip: content-box; flex: none; background: currentColor;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.58 12 13.17l4.59-4.59L18 10l-6 6-6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.58 12 13.17l4.59-4.59L18 10l-6 6-6-6z'/%3E%3C/svg%3E") center / contain no-repeat;
     transition: transform 0.15s; }
@@ -1466,4 +1466,10 @@
     #card-new .nd-actions .btn { padding: 0 4px; }
     #card-new .nd-actions > :nth-child(2) .mdi { width: 20px; height: 20px; }
   }
+}
+
+/* "More attributes": the arrow has the box of the small icons above it (40 px, 44 px on touch) so the centres are on the same vertical. */
+@layer overrides {
+  .attr-more > summary::after { background-clip: content-box; }
+  @media (pointer: coarse) { .attr-more > summary::after { width: 44px; height: 44px; padding: 12px; } }
 }

@@ -183,7 +183,7 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   sources[sources.length - 1].emit("activity", { type: "activity", rescanning: [D[0].id], search: false });
   releaseRescan && releaseRescan();
   await wait(60);
-  check(arrow().disabled, "lo dice anche il server (rescanning): resta spenta anche dopo che la richiesta e' finita");
+  check(!arrow().disabled, "la ricerca di un singolo dispositivo (rescanning del server) non blocca la freccia in alto");
   sources[sources.length - 1].emit("activity", { type: "activity", rescanning: [], search: false });
   await wait(60);
   check(!arrow().disabled, "a ricerca finita la freccia torna attiva");

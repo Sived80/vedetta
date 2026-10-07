@@ -617,7 +617,7 @@
     for (k = 0; k < w; k++) {
       a = off + w - 1 - k;
       var d = xpDay(a), nod = a >= XP.HOR, weekend = d.getDay() === 0 || d.getDay() === 6, isIn = xpIn(a);
-      var height = nod ? 12 : Math.max(14, Math.round(((i && i.daily[a]) || 0) / max * 100));
+      var height = nod ? 12 : Math.round(66 + 24 * (((i && i.daily[a]) || 0) / max) + 10 * Math.sin(k * 0.9));   // always full (easy to click), a light wave
       var edge = !X.all && (a === X.from - 1 || a === X.to);
       h += '<button type="button" class="xp-col' + (nod ? " nod" : "") + (isIn ? " in" : "") + (edge ? " edge" : "") + (X.pend === a ? " pend" : "") + '" data-xa="' + a + '"' + (nod ? " disabled" : "") +
         ' style="height:' + height + '%" aria-label="' + esc(xpFmt(d, { weekday: "long", day: "numeric", month: "long" })) + '"></button>';
@@ -836,14 +836,15 @@
   // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
   function deepPending() { return S.list.filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
   var deepRunning = false;          // this page started one and the request is still open
-  function deepBusy() { return deepRunning || S.activity.rescanning.size > 0; }
+  function deepBusy() { return deepRunning; }                       // only a search started from the top buttons blocks the top buttons
+  function deepOneBusy(id) { return !!id && S.activity.rescanning.has(id); }   // a device already being searched cannot be started again
   function syncDeepBusy() {
     var busy = deepBusy(), btn = $("btn-deepmenu");
     if (btn) { btn.disabled = busy; btn.title = busy ? t("js.ha.deep.busy") : ""; }
     if (busy && deepMenuEl && !deepMenuEl.hidden) toggleDeepMenu(false);
     if (typeof dlg !== "undefined" && dlg) {
       var sheetBtn = dlg.querySelector('[data-act="deep"]');
-      if (sheetBtn) { sheetBtn.disabled = busy; sheetBtn.title = busy ? t("js.ha.deep.busy") : ""; }
+      if (sheetBtn) { var one = deepOneBusy(S.open); sheetBtn.disabled = one; sheetBtn.title = one ? t("js.ha.deep.busy") : ""; }
     }
   }
   function runDeep(ids) {
@@ -2536,13 +2537,14 @@
     var html = "";
     // Sharing with Home Assistant (MQTT): only if the link exists. Shared = HA sees the device as a
     // sub-device of "Vedetta"; "Remove" takes it out of HA.
-    if (d && S.mqtt && S.mqtt.active) {
-      html += '<button type="button" class="btn ' + (d.ha_share ? "outlined" : "tonal") + ' rp" data-act="share">' + icon("home-assistant") +
+    if (d) {
+      var shareTip = S.mqtt && S.mqtt.active ? "" : ' title="' + esc(t("js.ha.share.pending")) + '"';
+      html += '<button type="button" class="btn ' + (d.ha_share ? "outlined" : "tonal") + ' rp" data-act="share"' + shareTip + '>' + icon("home-assistant") +
         "<span>" + esc(t(d.ha_share ? "js.ha.share.remove" : "js.ha.share.add")) + "</span></button>";
     }
     var flagTip = esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add"));
     var flag = '<button type="button" class="icon-btn small mi-flag rp' + (d && d.focus ? " on" : "") + '" data-act="focus" title="' + flagTip + '" aria-label="' + flagTip + '" aria-pressed="' + !!(d && d.focus) + '">' + icon("flag") + "</button>";
-    el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepBusy() ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+    el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   }
 
   function updateMore() {
@@ -2873,7 +2875,7 @@
       case "type-menu": if (d) openTypeMenu(act, d); break;
       case "ignore": S.mi.view = "ignore"; renderMore(); break;
       case "deep":
-        if (deepBusy()) break;
+        if (d && deepOneBusy(d.id)) break;
         // Once the search has started, return to the dashboard: progress is visible on the card.
         if (d && skipDeepConfirm()) { runDeep([d.id]); closeMore(); break; }
         S.mi.view = "deep"; renderMore(); break;

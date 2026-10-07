@@ -435,6 +435,21 @@ async def api_device_rename(device_id: str, request: Request):
     return updated
 
 
+_bg_tasks: set = set()
+
+
+def _bg(coro) -> None:
+    """Runs a coroutine behind the answer, keeping it alive and logging its failure."""
+    task = asyncio.create_task(coro)
+    _bg_tasks.add(task)
+
+    def done(t):
+        _bg_tasks.discard(t)
+        if not t.cancelled() and t.exception():
+            logger.error("Aggiornamento in secondo piano non riuscito: %s", t.exception())
+    task.add_done_callback(done)
+
+
 @app.post("/api/devices/{device_id}/override")
 async def api_device_override(device_id: str, request: Request):
     """Brand and/or type chosen by hand ("brand", "type"); null = back to automatic."""
@@ -465,7 +480,9 @@ async def api_device_override(device_id: str, request: Request):
     if not updated:
         raise HTTPException(404, "Dispositivo non trovato")
     logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share", "focus") if k in body})
-    await state.refresh_device(device_id)
+    # The device is read again behind the answer (a probe over the network takes seconds): the page already shows the choice,
+    # and the card is sent again to it (event) as soon as the reading is done.
+    _bg(state.refresh_device(device_id))
     return {"ok": True}
 
 

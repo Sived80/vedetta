@@ -266,6 +266,7 @@
     filter: { q: (params.get("q") || "").toLowerCase(), status: "all", type: null },
     poll: { known: false, interval: 30000, nextAt: 0 },
     activity: { search: false, rescanning: new Set() },
+    dismissedNew: {},          // devices seen on the network that the user closed with "Cancel" (by MAC): the card does not come back for them
     newDevices: { count: 0, devices: [], init: false },
     refreshing: false,
     refreshStart: 0,
@@ -834,7 +835,7 @@
   var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
   function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
   // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
-  function deepPending() { return S.list.filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
+  function deepPending() { return Array.from(S.devices.values()).filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
   var deepRunning = false;          // this page started one and the request is still open
   function deepBusy() { return deepRunning; }                       // only a search started from the top buttons blocks the top buttons
   function deepOneBusy(id) { return !!id && S.activity.rescanning.has(id); }   // a device already being searched cannot be started again
@@ -868,7 +869,9 @@
     var split = deepSplit();
     if (!split) return;
     var n = S.loaded ? deepPending().length : 0;
-    if (!deepBadge.parentNode) split.appendChild(deepBadge);
+    // it lives in the arrow of the network card: when that card is rebuilt (return to the app, reload) the badge is put back
+    if (deepBadge.dataset.at === "corner" && deepBadge.parentNode !== split) split.appendChild(deepBadge);
+    else if (!deepBadge.parentNode) split.appendChild(deepBadge);
     deepBadge.textContent = n > 99 ? "99+" : String(n);
     deepBadge.hidden = n === 0;
     var label = t("js.ha.deep.badge", { n: n });
@@ -1767,6 +1770,7 @@
     // Never-seen MACs detected on the network are added only after a completed scan.
     var list = (S.scanDone || S.newReady) ? S.newDevices.devices : [];
     list.forEach(function (d) {
+      if (S.dismissedNew[String(d.mac || d.ip).toUpperCase()]) return;     // closed with "Cancel": it comes back only for a device not seen before
       take({ src: "new", ip: d.ip, mac: d.mac, name: d.hostname || "" });
     });
     var ad = S.adding;
@@ -1919,6 +1923,12 @@
         ad.batch = false;
         if (!Object.keys(ad.saved).length) S.adding = null;      // nothing was added: the card goes back to how it was
         renderNew();                                             // otherwise it stays, green, until "Close"
+        // A device that the card itself brought (seen on the network, not chosen from a search) has no list to come back to:
+        // when it is saved the card goes away by itself, after the tick has been seen.
+        var savedIps = Object.keys(ad.saved);
+        if (S.adding === ad && savedIps.length && !S.found.length && savedIps.every(function (ip) { return ad.meta[ip] && ad.meta[ip].src === "new"; })) {
+          setTimeout(function () { if (S.adding === ad && !ad.jobs) closeAdding(); }, 2200);
+        }
       }
     }
     var use = ips;
@@ -2008,6 +2018,8 @@
     if (ia) {
       // Cancel: closes the list of this scan; the devices are not ignored
       // and a new scan finds them again.
+      // Cancel closes the card until something new appears: the devices seen on the network are remembered as dismissed.
+      newRows().forEach(function (r) { if (r.src === "new") S.dismissedNew[String(r.mac || r.ip).toUpperCase()] = true; });
       S.found = [];
       S.scanDone = false;
       renderNew();
@@ -2722,9 +2734,13 @@
   // Manual choice of brand or type: stays until switching back to automatic.
   function saveOverride(d, body) {
     return api("/api/devices/" + encodeURIComponent(d.id) + "/override", { method: "POST", json: body }).then(function () {
-      // the choice is shown at once; the full reload happens behind (it used to be waited for, and made the sheet late on a big list)
+      // the choice is shown at once (the server sends the card again when it has re-read the device); no full reload, which
+      // rebuilt every tile and played all their animations again
       Object.assign(d, body);
-      load({ silent: true }).catch(function () {});
+      S.dirty.ids.add(d.id);
+      S.dirty.more = true;
+      S.dirty.net = true;
+      schedule();
     }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
   }
   // Type dropdown menu: inside the dialog (it is modal), with the same rules as the other

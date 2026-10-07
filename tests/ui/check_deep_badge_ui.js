@@ -98,6 +98,14 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   await setDevice(1, { deep_empty_at: null });
   check(!badge().hidden && badge().textContent === "2", "un dispositivo nuovo o da rifare: ricompare (2)");
 
+  // --- the network card is rebuilt (return to the app, silent reload): the badge is put back in the new arrow, it is not lost
+  const oldSplit = q(".gauge-side .split"), freshSplit = doc.createElement("div");
+  freshSplit.className = oldSplit.className;
+  Array.from(oldSplit.childNodes).forEach((n) => { if (n !== badge()) freshSplit.appendChild(n); });
+  oldSplit.replaceWith(freshSplit);                  // the badge stays in the old, detached one
+  await setDevice(0, {});
+  check(badge().parentElement === freshSplit && !badge().hidden, "ricostruita la scheda Rete, il badge torna sulla nuova freccia");
+
   // --- the menu: two tiles, one note, and the number only in the badge
   arrow().click();
   await wait(30);

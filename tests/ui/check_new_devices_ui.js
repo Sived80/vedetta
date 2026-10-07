@@ -26,6 +26,7 @@ vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.s
 vc.on("error", (e) => errors.push("console.error: " + e));
 const calls = [];
 const HOSTS = [["192.168.178.201", "B8:27:EB:3A:91:C2"], ["192.168.178.202", "3C:61:05:4F:20:7D"], ["192.168.178.203", "F0:18:98:5A:11:09"]].map(([ip, mac]) => ({ ip, mac, hostname: "h" + ip.split(".")[3] }));
+const sources = [];
 const streams = [];                                   // the deep searches started: the test says what each one has found, and when it ends
 function makeStream(ips, signal) {
   const q = [], waiters = []; let closed = false, aborted = false;
@@ -61,7 +62,11 @@ const dom = new JSDOM(html, {
       else if (url.startsWith("/api/ha/history/")) { const id = url.split("/")[4].split("?")[0]; b = Object.assign({ device_id: id }, url.includes("hours=168") ? data.history_7d[id] : data.history_all.devices[id]); }
       return ok(b);
     };
-    win.EventSource = class { constructor() { setTimeout(() => this.onopen && this.onopen(), 5); } addEventListener() {} close() {} };
+    win.EventSource = class {
+      constructor() { this.l = {}; sources.push(this); setTimeout(() => this.onopen && this.onopen(), 5); }
+      addEventListener(n, f) { this.l[n] = f; } close() {}
+      emit(n, obj) { if (this.l[n]) this.l[n]({ data: JSON.stringify(obj) }); }
+    };
     win.requestAnimationFrame = (f) => setTimeout(() => f(win.performance.now()), 0);
   },
 });
@@ -139,6 +144,37 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(/^3 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «3 dispositivi aggiunti» e «Chiudi» in alto");
   await click("#card-new [data-add-close]");
   check(q("#card-new").hidden, "«Chiudi»: finito tutto la scheda sparisce");
+
+  // --- 7. devices seen on the network by the app (not chosen from a search): "Cancel" closes the card until something new appears
+  const seen = (mac, ip) => ({ mac, ip, hostname: "n" + ip.split(".")[3] });
+  const emitNew = (list) => sources[sources.length - 1].emit("new_devices", { type: "new_devices", count: list.length, devices: list });
+  HOSTS.length = 0;                                  // the next scans find nothing: only what the app saw by itself
+  const A = seen("AA:AA:AA:00:00:01", "192.168.178.211"), B = seen("AA:AA:AA:00:00:02", "192.168.178.212");
+  await click("#btn-scan");
+  await wait(60);
+  emitNew([A, B]);
+  await wait(60);
+  check(!q("#card-new").hidden && rows().length === 2, "due dispositivi visti in rete dall'app: la scheda compare");
+  await click("#card-new [data-ignore-all]");
+  check(q("#card-new").hidden, "«Annulla» chiude la scheda");
+  await click("#btn-scan");                          // (a completed scan is what lets the devices seen on the network show)
+  await wait(60);
+  emitNew([A, B]);
+  await wait(60);
+  check(q("#card-new").hidden, "e non ricompare per gli stessi dispositivi, nemmeno dopo una nuova ricerca");
+  const C = seen("AA:AA:AA:00:00:03", "192.168.178.213");
+  emitNew([A, B, C]);
+  await wait(60);
+  check(!q("#card-new").hidden && rows().length === 1, "ricompare solo per un dispositivo mai visto prima");
+
+  // --- 8. a device the card itself brought: once saved, the card goes away by itself (after the tick)
+  await click("#card-new [data-add-ip='192.168.178.213']");
+  const s2 = streams[streams.length - 1];
+  s2.progress("192.168.178.213"); s2.push({ type: "complete", results: [{ ip: "192.168.178.213", adapter: "generic" }] }); s2.end();
+  await wait(300);
+  check(rowState(0) === "nd-done", "salvato: la riga e' verde");
+  await wait(2600);
+  check(q("#card-new").hidden, "e dopo la spunta la scheda sparisce da sola");
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");

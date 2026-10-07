@@ -1494,3 +1494,18 @@
     #more .mi-actions .mi-flag { flex: none; }
   }
 }
+
+/* The text box of the flag ("What is wrong?"): tall enough from the start, the text starts under the label and never slides under it. */
+@layer overrides {
+  .field textarea {
+    display: block; width: 100%; min-height: 168px; padding: 32px 16px 10px; box-sizing: border-box; border: 0; border-bottom: 1px solid var(--secondary-text-color);
+    border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--secondary-text-color) 10%, transparent); color: var(--primary-text-color);
+    font: inherit; font-size: 16px; line-height: 22px; outline: none; resize: vertical; transition: border-color 0.15s, background-color 0.15s;
+  }
+  .field textarea:focus { border-bottom: 2px solid var(--primary-color); padding-bottom: 9px; background: color-mix(in srgb, var(--primary-color) 8%, transparent); }
+  .field textarea + .field-label {
+    left: 0; right: 14px; top: 0; padding: 8px 16px 4px; border-radius: 4px 0 0 0;
+    background: color-mix(in srgb, var(--card-background-color, #1c1c1c), var(--secondary-text-color) 10%);   /* opaque: the text scrolls under it, not through it */
+  }
+  .field textarea:focus + .field-label { color: var(--primary-color); }
+}

@@ -1,23 +1,19 @@
 /* Deep search: the menu of #deep-menu, its tiles and the badge on the split button. */
 
 @layer overrides {
-  /* Deep search menu width (superseded by the later #deep-menu rules). */
-  #deep-menu { width: 300px; }
-
-  /* Deep search menu: width and padding (superseded by the block below). */
-  #deep-menu { width: min(320px, calc(100vw - 16px)); padding: 8px 0; }
-
-  /* Deep search badge and tile menu. */
+  /* The badge: one element that moves between the corner of the split arrow, the slot of the "pending" tile, and a fixed copy
+     that flies between the two. [hidden] is handled by the reset. */
   .split { position: relative; }
   .deep-badge {
     display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; box-sizing: border-box;
     font-size: 12px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap;
     color: #1c1c1c; background: var(--warning-color); box-shadow: 0 0 0 2px var(--card-background-color); will-change: transform;
   }
-  .deep-badge[hidden] { display: none; }
   .deep-badge[data-at="corner"] { position: absolute; top: -9px; right: -9px; z-index: 2; cursor: pointer; }
   .deep-badge[data-at="slot"] { position: relative; }
   .deep-badge[data-at="fly"] { position: fixed; margin: 0; z-index: 2147483000; pointer-events: none; }
+
+  /* The menu: two tiles and a note. It stays in the overrides layer: the base .menu width and padding are set there too. */
   #deep-menu { width: min(330px, calc(100vw - 16px)); padding: 8px 0 4px; }
   .dm-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 12px 0; }
   .dm-tile {

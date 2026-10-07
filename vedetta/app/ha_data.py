@@ -83,7 +83,9 @@ def _blob(device: dict) -> tuple[str, set[str], set[int]]:
     parts = [None if device.get("name_generated") else device.get("name"), device.get("brand"), device.get("vendor")]
     # The operating system ("Linux 4.14", "Windows 10") is not a role: it runs on phones, TVs,
     # routers, cameras and servers. It counts as a weak clue, separately (see type_scores).
-    parts += [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str)]
+    # What Home Assistant says about the device (ha_*: area, model, integration) is not what the device says about itself: the
+    # integrations are counted apart, by their own table. ("mikrotik_router" as a word made every device tracked by it a router.)
+    parts += [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str) and not k.startswith("ha_")]
     ports: set[int] = set()
     for p in device.get("scanned_ports") or []:
         label = p.get("label") or ""
@@ -256,8 +258,13 @@ def type_evidence(device: dict, adapter: str | None = None, kinds_out: dict | No
         device.get("brand"), device.get("name"),
         device.get("vendor") if device.get("vendor_role") == "brand" else None])).lower()))
     # Home Assistant integrations attached to the device: they declare what it is (onvif, braviatv...).
-    for dom in ((device.get("ha_registry") or {}).get("domains") or []):
+    ha_card = device.get("ha_registry") or {}
+    for dom in (ha_card.get("domains") or []):
         entry = _ha_integrations().get(dom)
+        # A router integration (UniFi, FRITZ!Box, MikroTik...) also lists every client it sees, as a device with only a
+        # device_tracker: that one is not the router. The router itself has other entities (sensors, switches, buttons...).
+        if entry and entry.get("group") == "router" and not entry.get("platform") and ha_card.get("entity_domains") is not None                 and not (set(ha_card["entity_domains"]) - {"device_tracker"}):
+            continue
         if entry and entry.get("platform"):
             platform += W_PLATFORM_MAX
         elif entry:

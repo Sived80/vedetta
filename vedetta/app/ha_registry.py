@@ -89,6 +89,8 @@ def build_index(devices: list, entities: list, areas: list, entries: list) -> di
             "entry_titles": [title_of.get(e) for e in entry_ids if title_of.get(e)],
             "sw_version": dev.get("sw_version"),
             "entity_names": sorted(names)[:6],
+            # kinds of entities of the device (device_tracker, sensor...): a client that a router integration only tracks has just device_tracker
+            "entity_domains": sorted({str(e.get("entity_id") or "").split(".")[0] for e in ent_by_dev.get(dev.get("id"), []) if e.get("entity_id")}),
         }
         for m in macs:
             out.setdefault(m, card)

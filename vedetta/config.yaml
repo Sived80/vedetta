@@ -1,5 +1,5 @@
 name: Vedetta
-version: "0.4.3"
+version: "0.4.4"
 slug: vedetta
 description: "Local network dashboard: finds and recognizes the devices on your network, shows them in Home Assistant and shares what you choose"
 url: https://github.com/Sived80/vedetta

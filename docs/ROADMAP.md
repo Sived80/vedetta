@@ -32,6 +32,9 @@ What is built and released, and what is planned.
 - ✅ Sky boxes are Media and Amazon Echo devices are no longer Network equipment, read from a real export sent by a user — *06.10.2026 - V0.4.2*
 - ✅ A device gets its best name: a brand and model name from DHCP (Xiaomi-14) beats an opaque label from mDNS (expiscor), also for devices already named — *06.10.2026 - V0.4.3*
 - ✅ The export holds data per MAC address, to understand devices that share an IP address — *06.10.2026 - V0.4.3*
+- ✅ New export window: for the developer or for me, choice of the days, progress steps, decisions on what cannot be masked — *07.10.2026 - V0.4.4*
+- ✅ Flag a device for the report (card, evidence and history of that device in the export) — *07.10.2026 - V0.4.4*
+- ✅ New card for the devices found: ring and tick per row, nothing moves when a button is pressed — *07.10.2026 - V0.4.4*
 - ✅ The export leaves out only a file it cannot mask, and says which, instead of refusing everything — *06.10.2026 - V0.4.1*
 - ✅ The export also holds the evidence of every device and the numbers behind "phone" (no addresses) — *06.10.2026 - V0.4.0*
 

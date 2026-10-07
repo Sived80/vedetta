@@ -4,11 +4,7 @@
 
 <br>
 
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white)](docs/INSTALLATION.md)
-[![Version](https://img.shields.io/badge/version-0.4.3-43a047?style=for-the-badge)](vedetta/CHANGELOG.md)
-[![Privacy](https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge)](docs/PRIVACY.md)
-[![Languages](https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge)](#what-it-does)
-[![License](https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge)](LICENSE)
+<a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.4.3-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="docs/PRIVACY.md"><img src="https://img.shields.io/badge/privacy-100%25%20local-ffa600?style=for-the-badge" alt="Privacy" height="20"></a> <a href="#what-it-does"><img src="https://img.shields.io/badge/UI-English%20%7C%20Italiano-7e57c2?style=for-the-badge" alt="Languages" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge" alt="License" height="20"></a>
 
 **[Install](docs/INSTALLATION.md) · [Screenshots](#what-is-vedetta) · [Features](#what-it-does) · [How it thinks](docs/RECOGNITION.md) · [Home Assistant](docs/HOME_ASSISTANT.md) · [Roadmap](docs/ROADMAP.md) · [Extend](docs/DEVELOPMENT.md)**
 

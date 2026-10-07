@@ -11,7 +11,7 @@ Rules
 - Nothing is published or pushed without an explicit request.
 
 ## Steps
-- [ ] 0. Baseline: tag the current commit, record the size of `ha.js`/`ha.css`, list the functions per section
+- [x] 0. Baseline: tag the current commit, record the size of `ha.js`/`ha.css`, list the functions per section
 - [ ] 1. Test loader: `build_page.py` and the jsdom tests load several scripts in order
 - [ ] 2. `core.js`: state `S`, `api`, `t`, `esc`, `icon`, `snack`, formatting helpers, menus
 - [ ] 3. `log.js` (log card) + its CSS
@@ -23,3 +23,25 @@ Rules
 - [ ] 9. `more-info.js` (the "More info" dialog, attributes, history chart, flag) + its CSS
 - [ ] 10. CSS: merge the `@layer overrides` patches into the rules they override; remove dead rules
 - [ ] 11. Final check: full suite, debug app compared with the production app, sizes recorded, docs updated
+
+## Baseline (version 0.4.5, tag `pre-split-0.4.5`)
+`ha.js` 3,226 lines, `ha.css` 1,517 lines (55 `@layer overrides` blocks), `icons.js` 158 lines. Sections of `ha.js` (lines of the baseline) and where each goes:
+
+| Lines | Section | Functions | Goes to |
+|---|---|---|---|
+| 26-64 | language | 3 | `core.js` |
+| 65-258 | utilities | 27 | `core.js` |
+| 259-296 | state `S` | 0 | `core.js` |
+| 297-453 | toast, ripple, bar | 8 | `core.js` |
+| 454-581 | menu | 6 | `core.js` |
+| 582-830 | export for analysis | 28 | `export.js` |
+| 831-970 | deep search | 11 | `deep.js` |
+| 971-1137 | pause, ignored devices, search methods | 8 | `network.js` |
+| 1138-1468 | filters, "Network" card | 14 | `network.js` |
+| 1469-1747 | tile | 13 | `tile.js` |
+| 1748-2046 | new devices | 8 | `new-devices.js` |
+| 2047-2206 | log | 7 | `log.js` |
+| 2207-2967 | "More info" dialog | 40 | `more-info.js` |
+| 2968-3226 | update, real-time stream, startup | 12 | `app.js` (loaded last) |
+
+Order of loading: `icons.js`, `core.js`, the feature files, `app.js`. A feature file only uses what the files before it define; what two features share goes to `core.js`.

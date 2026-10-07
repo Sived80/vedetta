@@ -2722,7 +2722,9 @@
   // Manual choice of brand or type: stays until switching back to automatic.
   function saveOverride(d, body) {
     return api("/api/devices/" + encodeURIComponent(d.id) + "/override", { method: "POST", json: body }).then(function () {
-      return load({ silent: true });
+      // the choice is shown at once; the full reload happens behind (it used to be waited for, and made the sheet late on a big list)
+      Object.assign(d, body);
+      load({ silent: true }).catch(function () {});
     }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
   }
   // Type dropdown menu: inside the dialog (it is modal), with the same rules as the other

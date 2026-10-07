@@ -1482,3 +1482,13 @@
   .tile-flag[hidden] { display: none; }
   .tile-flag .mdi { width: 12px; height: 12px; }
 }
+
+/* The buttons under the sheet shrink on a narrow screen so that they stay inside it: they share the width, the text is cut with "..." if needed. */
+@layer overrides {
+  @media (max-width: 600px) {
+    #more .mi-actions { flex-wrap: nowrap; gap: 6px; padding-left: 12px; padding-right: 12px; }
+    #more .mi-actions .btn { flex: 1 1 0; min-width: 0; padding: 0 10px; gap: 6px; }
+    #more .mi-actions .btn > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #more .mi-actions .mi-flag { flex: none; }
+  }
+}

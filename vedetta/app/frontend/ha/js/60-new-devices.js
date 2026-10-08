@@ -44,6 +44,7 @@
     if (COMPACT) { newEl.hidden = true; return; }
     var list = newRows();
     if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; return; }
+    var opening = newEl.hidden;      // the card appears now: it opens (below), instead of the page jumping to it
     newEl.hidden = false;
     var ad = S.adding;  // during the add: {ips, done (analysed), saved, mode ("single" | "batch"), meta, fresh, jobs, list, batch}
     var run = 0, analysed = 0, saved = 0;
@@ -88,6 +89,11 @@
       '<div class="nd-bar-actions">' + bar + "</div>" +
       '<div class="nd-list">' + rows + "</div>" +
       '<div class="nd-prog' + (fin ? " ok" : "") + (ad ? "" : " idle") + '" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
+    // Opening: the card grows from nothing to its height and what is under it (the log) slides down with it.
+    if (opening && !REDUCED && newEl.animate) {
+      var full = newEl.getBoundingClientRect().height;
+      if (full > 0) newEl.animate([{ height: "0px", opacity: 0 }, { height: full + "px", opacity: 1 }], { duration: 280, easing: "ease-out" });
+    }
   }
   // Adding directly from here (in the HA mobile app a link to the classic
   // dashboard would be blocked): associative search on the devices by recommended

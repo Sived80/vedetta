@@ -486,8 +486,7 @@
       try { localStorage.setItem("vedetta-ha-scanned", "1"); } catch (err) { /* ignore */ }
       renderNew();
       snack(n === 0 ? t("js.ha.toast.scan_none") : t("js.ha.toast.scan_found", { n: n }), { kind: "success" });
-      // The card of found devices may sit below the visible part (on mobile especially).
-      if (n && !newEl.hidden && newEl.scrollIntoView) newEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      // No scrolling: the card opens where it is, under the network card, and pushes the rest down (see renderNew).
     }).catch(function () {
       snack(t("js.ha.toast.scan_failed"), { kind: "error" });
     }).then(function () {

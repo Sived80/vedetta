@@ -85,7 +85,8 @@
     var m = /^#([0-9a-f]{6})$/i.exec(d.logo_color || "");
     if (!m) return "var(--primary-text-color)";
     var n = parseInt(m[1], 16), lum = (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
-    return lum < 0.28 ? "var(--primary-text-color)" : "#" + m[1];
+    // a colour that would vanish on one of the themes (near black on dark, near white on light) is drawn in the text colour of the theme
+    return lum < 0.28 || lum > 0.85 ? "var(--primary-text-color)" : "#" + m[1];
   }
   // Big faint logo on the device sheet, cut by the edge of the window.
   function brandSheetSync(d) {

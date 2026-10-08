@@ -2,6 +2,8 @@
 
 ## Unreleased
 - **The version is shown** at the bottom of the menu (⋮), small and grey: "Vedetta 0.4.7".
+- **Scan network**: when the card of the devices found appears the page no longer scrolls down to it; the card opens under the network card and what is below (the log) slides down.
+- **Brand logos**: a logo that is white (Sony) was invisible on the light theme; a logo whose colour would vanish on a theme is drawn in the text colour of that theme.
 - **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded).
 
 ## 0.4.7

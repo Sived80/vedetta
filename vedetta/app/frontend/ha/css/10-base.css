@@ -125,7 +125,7 @@
 /* ------------------------------------------------------------------ layout */
 @layer layout {
   .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .view { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .view { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; overflow-anchor: none; }   /* a card that opens moves what is under it; the page does not scroll to compensate */
   .col-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
   .col-main { min-width: 0; }
   @media (max-width: 860px) {

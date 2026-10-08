@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
-- **The version is shown** at the bottom of the menu (⋮), small and grey: "Vedetta 0.4.7".
+## 0.5.0 · Telaio
+**Telaio** is Italian for *frame*: the frame of Vedetta has been rebuilt, and on it come new windows and a lot of care. Thank you to everyone who sent a report: several fixes in this version come straight from your exports. 🎉
+- **The version is shown** at the bottom of the menu (⋮), small and grey: "Vedetta 0.5.0".
 - **Scan network**: when the card of the devices found appears the page no longer scrolls down to it; the card opens under the network card and what is below (the log) slides down.
 - **Brand logos**: a logo that is white (Sony) was invisible on the light theme; a logo whose colour would vanish on a theme is drawn in the text colour of that theme.
 - **The (i) pop-ups** of the device sheet (what decided a name, a brand, a group): a long one is no longer cut at the end of the screen. It opens below the button or above it, wherever there is more room, is never taller than the room and scrolls inside; the same on a phone and on a computer. Scrolling it no longer closes it.

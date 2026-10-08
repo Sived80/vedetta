@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.4.7**, released 7 October 2026. **31 things shipped** since the first release on 2 October, **33 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 0.5.0 · Telaio**, released 8 October 2026. **39 things shipped** since the first release on 2 October, **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **0.5.0 · Telaio** | 8 Oct | *Search methods* as three tabs with panels by risk · *Ignored devices* redone, with *Restore* and *Forget* on a 5-second countdown, and *Restore all* / *Forget all* · guided typing of MAC and IP addresses · a one-time invitation to star the project · a note when two different devices answer at one address · speed buttons with their times and the version in the menu · tidier code, and saves that can no longer arrive out of order |
 | **0.4.4 – 0.4.7** | 7 Oct | New export window · flag a device for the report · new card for the devices found · better groups for devices Home Assistant knows · external links only where a page answers |
 | **0.4.0 – 0.4.3** | 6 Oct | Certainty bars with the evidence · badge for devices never searched in depth · phones with private MAC addresses · fixes from real exports (Chromebook, Fairphone, Sky, Echo) · best name wins |
 | **0.3.7 – 0.3.9** | 6 Oct | Export for analysis: masked, encrypted, safe to attach to a public issue |
@@ -22,7 +23,7 @@ What is built, release by release, and what is planned.
 A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person, spare-time project. Ordered by theme, not by priority.
 
 <details>
-<summary><b>🛡️ New devices and safety</b> · 8 · passive, no credential tests, nothing leaves your network</summary>
+<summary><b>🛡️ New devices and safety</b> · 9 · passive, no credential tests, nothing leaves your network</summary>
 
 - ☐ Radar of new devices: "3 new since your last visit" with *it's mine / ignore*
 - ☐ Clear-text services (telnet, FTP, SMB1) with severity per port
@@ -32,6 +33,7 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 - ☐ Network health indicator with a public, explained formula
 - ☐ TLS certificates close to expiry (self-signed shown as information only)
 - ☐ UPnP / IGD: which devices have ports open to the Internet
+- ☐ One MAC answering for many addresses (a repeater that clones it): say so as a network role
 
 </details>
 
@@ -80,12 +82,13 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 </details>
 
 <details>
-<summary><b>💡 Original ideas</b> · 5</summary>
+<summary><b>💡 Original ideas</b> · 6</summary>
 
 - ☐ Inventory export (CSV, JSON, Markdown) with an anonymize option
 - ☐ Device identity card: first/last seen, notes, room, warranty
 - ☐ "Ask Vedetta" with fixed Assist sentences, no language model
 - ☐ "If this repeater drops, who disappears?"
 - ☐ Offline, shareable signature packs *(later)*
+- ☐ A card per MAC, for devices that take turns at one address (a console and a laptop) *(later)*
 
 </details>

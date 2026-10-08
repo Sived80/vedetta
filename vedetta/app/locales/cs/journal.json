@@ -1,0 +1,20 @@
+{
+  "journal.quick": "Prohledávání sítě: nalezeno {seen} zařízení, z toho {new} nových",
+  "journal.analyzed": "Analýza {ip} dokončena ({ports} otevřených portů)",
+  "journal.cancelled": "Prohledávání zrušeno (zastaveno {n} analýz)",
+  "journal.added": "{name} ({ip}) přidáno na nástěnku",
+  "journal.removed": "{name} ({ip}) odebráno z nástěnky",
+  "journal.ignored": "{name} ({ip}) odebráno a ignorováno",
+  "journal.paused": "Monitorování pozastaveno na {minutes} minut",
+  "journal.paused_forever": "Monitorování pozastaveno do obnovení",
+  "journal.resumed": "Monitorování obnoveno",
+  "journal.dhcp": "DHCP: server {server} přiděluje bránu {router} a DNS {dns}",
+  "journal.internet_direct": "Přímé internetové připojení (bez dvojitého NAT)",
+  "journal.internet_double": "Internetové připojení za dvojitým NAT",
+  "journal.internet_cgnat": "Internetové připojení přes CGNAT poskytovatele",
+  "journal.roles": "Síťové role: {roles}; přes opakovač: {via}",
+  "journal.unignored": "{name} již není ignorováno",
+  "journal.forgotten": "{name} zapomenuto",
+  "journal.fullports": "{ip}: úplné skenování na pozadí dokončeno ({ports} portů, {added} dalších)",
+  "journal.fullports_failed": "{ip}: úplné skenování na pozadí nebylo dokončeno (zařízení je příliš pomalé), cílené porty zachovány"
+}

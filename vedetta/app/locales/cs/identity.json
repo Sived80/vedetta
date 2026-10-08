@@ -1,0 +1,10 @@
+
+{
+  "extra.brand": "Značka",
+  "extra.mdns_model": "Model mDNS",
+  "battery.yes": "Napájeno baterií",
+  "battery.src.api": "nahlášeno zařízením",
+  "battery.src.scan": "z posledního skenování",
+  "battery.src.hint": "odvozeno z modelu",
+  "battery.src.model": "z modelu"
+}

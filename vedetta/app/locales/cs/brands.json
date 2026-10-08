@@ -1,0 +1,13 @@
+{
+  "brands.error.invalid_body": "Neplatný požadavek",
+  "brands.error.invalid_kind": "Neplatný typ pravidla",
+  "brands.error.invalid_text": "Hledaný text musí mít délku 2 až 80 znaků",
+  "brands.error.invalid_brand": "Název značky musí mít délku 1 až 60 znaků",
+  "brands.error.rule_not_found": "Pravidlo nenalezeno",
+  "brands.error.save_failed": "Pravidlo se nepodařilo uložit",
+  "brands.error.update_running": "Aktualizace již probíhá",
+  "brands.error.update_network": "Stahování selhalo, zkontrolujte připojení k internetu ({detail})",
+  "brands.error.update_invalid": "Stažený soubor není platným seznamem předpon MAC adres",
+  "brands.error.update_too_small": "Stažený seznam vypadá neúplně ({detail} záznamů), aktualizace zrušena",
+  "brands.error.update_write": "Aktualizovaný seznam se nepodařilo uložit {detail}"
+}

@@ -7,7 +7,7 @@
 - **The (i) pop-ups** of the device sheet (what decided a name, a brand, a group): a long one is no longer cut at the end of the screen. It opens below the button or above it, wherever there is more room, is never taller than the room and scrolls inside; the same on a phone and on a computer. Scrolling it no longer closes it.
 - **Status line** under the circle ("Updated now · next check in 24 s"): on a narrow screen it no longer breaks in the middle of a phrase; the two parts go one under the other ("Updated now" / "next check in 24 s"), on purpose. The wording is unchanged.
 - **Menu, speed** (Fast / Normal / Relaxed): the time is written inside each button (10 s, 30 s, 1 min); choosing one lights it at once and the menu stays open, so the line under it (when a device is called offline) can be read. Before, the menu closed and, until the next check, no button looked chosen.
-- **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded).
+- **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded); its icon looks as big as theirs (the download arrow fills less of its box).
 
 ## 0.4.7
 - **Card of the devices found, narrow screens**: under about 480 px the *Ignore* and *In progress* buttons were empty (the text went away and the icon that should replace it stayed hidden too). Now the icon is shown.

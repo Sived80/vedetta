@@ -412,6 +412,8 @@
   .menu-link:hover { color: var(--primary-color); }
   .menu-link .mdi { width: 18px; height: 18px; color: var(--secondary-text-color); }
   .menu-link.next { margin-top: 0; border-top: 0; padding-top: 8px; }
+  /* The download arrow fills only 71% of its box (the cog 83%, the crossed eye 92%): a larger box gives it the same apparent size, and the negative margin keeps its centre and the row height. */
+  .menu-link.menu-export .mdi { width: 21px; height: 21px; margin: -1.5px -1.5px -1.5px 0; }
 
   /* Visual polish, shared part: focus ring, card titles, search, touch target. */
   :focus-visible { outline-color: var(--focus-color); }

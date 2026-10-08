@@ -161,7 +161,7 @@
   "kind.doorbell": "zvonek",
   "kind.light": "světlo",
   "kind.plug": "zásuvka",
-  "extra.ha_area": ​​"Oblast (Home Assistant)",
+  "extra.ha_area": "Oblast (Home Assistant)",
   "extra.ha_model": "Model (Home Assistant)",
   "extra.ha_integration": "Integrace (Home Assistant)",
   "rolename.gateway": "Router",

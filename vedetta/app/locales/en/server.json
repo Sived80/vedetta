@@ -176,5 +176,12 @@
   "group.server": "server",
   "group.printer": "printer",
   "group.router": "router",
-  "group.audio": "audio"
+  "group.audio": "audio",
+  "extra.other_device": "Behind this address",
+  "extra.other_device_why": "Why they look different",
+  "identity_shift.reason.dhcp_family": "DHCP family",
+  "identity_shift.reason.group": "recognised type",
+  "identity_shift.reason.dhcp_name": "DHCP name",
+  "identity_shift.reason.mdns_name": "Bonjour name",
+  "identity_shift.reason.ha_model": "model in Home Assistant"
 }

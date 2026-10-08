@@ -337,6 +337,12 @@ class History:
                  fields.get("dhcp_name"), fields.get("dhcp_class")))
             self._db.commit()
 
+    def mac_memory_for(self, device_id: str) -> list[dict]:
+        """The memory per MAC of the MACs seen behind a card, the oldest first."""
+        with self._lock:
+            rows = self._db.execute("SELECT * FROM mac_memory WHERE device_id = ? ORDER BY first_seen", (device_id,)).fetchall()
+        return [dict(r) for r in rows]
+
     def mac_known(self, mac: str) -> bool:
         with self._lock:
             return self._db.execute("SELECT 1 FROM mac_memory WHERE mac = ?", (mac,)).fetchone() is not None

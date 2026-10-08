@@ -23,7 +23,7 @@ MAX_ENTRIES = 400
 PATH = CONFIG_DIR / "journal.jsonl"
 LEVELS = ("min", "normal", "detail")
 # Alerts that also appear at the minimum level.
-IMPORTANT = {"alert.new_device", "alert.ip_conflict", "alert.dhcp_multiple"}
+IMPORTANT = {"alert.new_device", "alert.ip_conflict", "alert.dhcp_multiple", "alert.other_device"}
 
 _entries: deque = deque(maxlen=MAX_ENTRIES)
 _lock = threading.Lock()

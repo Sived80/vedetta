@@ -6,6 +6,7 @@ from .formatters import update_generic_titles
 from .storage import blocklist, devices_config, newdevices, settings
 from .scan import dhcp, latency, probe, scanner
 from .export import mac_shadow
+from .ha import identity_shift
 from . import netutil
 from .applog import logger
 from .storage.history import history
@@ -315,12 +316,28 @@ class DeviceState:
         """Data per MAC for later analysis (export/mac_shadow.py). Never decides anything shown, never raises."""
         try:
             job = mac_shadow.observe(device_id, previous, result, self._last_mac.get(device_id), now)
-            if job:
-                task = asyncio.create_task(asyncio.to_thread(job))
+            judge = identity_shift.due(device_id, (result.get("mac") or "").lower(), now)
+            if job or judge:
+                task = asyncio.create_task(self._shadow_job(device_id, job, result if judge else None, now))
                 self._bg.add(task)
                 task.add_done_callback(self._bg.discard)
         except Exception:
             logger.debug("mac_shadow failed for %s", device_id, exc_info=True)
+
+    async def _shadow_job(self, device_id: str, job, judge_result: dict | None, now: float) -> None:
+        """The memory per MAC is written first (a thread); then, if it is time, the card is judged: two different devices behind it?
+        (ha/identity_shift.py). It only reads and notes; a name, brand or type chosen by hand is never touched."""
+        try:
+            if job:
+                await asyncio.to_thread(job)
+            if judge_result is not None:
+                found = await asyncio.to_thread(identity_shift.evaluate, device_id, judge_result.get("mac"), dict(self._last_mac), now)
+                if found and found["new"] and settings.alerts_enabled():
+                    name = judge_result.get("name") or judge_result.get("ip")
+                    other = identity_shift.describe(found)
+                    self.emit_alert("Dietro %s rispondono due dispositivi diversi: %s" % (name, other), "alert.other_device", name=name, other=other)
+        except Exception:
+            logger.debug("shadow job failed for %s", device_id, exc_info=True)
 
     def _record_presence(self, result: dict, online: bool, ts: float) -> None:
         """Saves only online/offline transitions to the history."""

@@ -176,5 +176,12 @@
   "group.server": "server",
   "group.printer": "stampante",
   "group.router": "router",
-  "group.audio": "audio"
+  "group.audio": "audio",
+  "extra.other_device": "Dietro questo indirizzo",
+  "extra.other_device_why": "Perché sembrano diversi",
+  "identity_shift.reason.dhcp_family": "famiglia DHCP",
+  "identity_shift.reason.group": "tipo riconosciuto",
+  "identity_shift.reason.dhcp_name": "nome DHCP",
+  "identity_shift.reason.mdns_name": "nome Bonjour",
+  "identity_shift.reason.ha_model": "modello in Home Assistant"
 }

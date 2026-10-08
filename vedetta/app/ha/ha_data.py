@@ -11,6 +11,7 @@ from pathlib import Path
 from ..recognition import brand_logo
 from ..storage import devices_config
 from .. import i18n
+from . import identity_shift
 from ..storage.history import History, history
 
 # Order in which the UI shows the groups by type.
@@ -522,7 +523,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "attrs": [
             {"key": k, "label": i18n.t_or("extra." + k, k), "value": str(v)}
             for k, v in extra.items() if k not in ("vendor", "brand") and v not in (None, "")
-        ],
+        ] + identity_shift.attrs_for(device["id"], i18n.t),
     }
 
 

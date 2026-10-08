@@ -4,5 +4,6 @@
   "alert.ip_changed": "{label} changed address: {old} → {new}",
   "alert.dhcp_multiple": "More than one DHCP server on the network: {servers}. One may be unwanted.",
   "alert.ip_conflict": "Duplicate IP: {ip} answers from more than one device ({macs})",
-  "alert.duplicate_merged": "{label}: two cards of the same phone were merged ({old} → {new})"
+  "alert.duplicate_merged": "{label}: two cards of the same phone were merged ({old} → {new})",
+  "alert.other_device": "Two different devices now answer behind {name}: {other}"
 }

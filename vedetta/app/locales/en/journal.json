@@ -14,6 +14,7 @@
   "journal.internet_cgnat": "Internet uplink through provider CGNAT",
   "journal.roles": "Network roles: {roles}; via repeater: {via}",
   "journal.unignored": "{name} is no longer ignored",
+  "journal.forgotten": "{name} forgotten",
   "journal.fullports": "{ip}: full background scan finished ({ports} ports, {added} more)",
   "journal.fullports_failed": "{ip}: full background scan did not finish (device too slow), targeted ports kept"
 }

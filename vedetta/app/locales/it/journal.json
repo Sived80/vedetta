@@ -14,6 +14,7 @@
   "journal.internet_cgnat": "Uscita verso internet tramite CGNAT del provider",
   "journal.roles": "Ruoli di rete: {roles}; tramite ripetitore: {via}",
   "journal.unignored": "{name} non è più ignorato",
+  "journal.forgotten": "{name} dimenticato",
   "journal.fullports": "{ip}: scansione completa in background terminata ({ports} porte, {added} in più)",
   "journal.fullports_failed": "{ip}: scansione completa in background non finita (dispositivo troppo lento), restano le porte mirate"
 }

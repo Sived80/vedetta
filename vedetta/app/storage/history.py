@@ -261,6 +261,12 @@ class History:
             )
             self._db.commit()
 
+    def known_delete(self, mac: str) -> None:
+        """Removes a MAC from the known ones: the app treats it as never seen."""
+        with self._lock:
+            self._db.execute("DELETE FROM known_macs WHERE mac = ?", (mac,))
+            self._db.commit()
+
     def known_ignore(self, macs: list[str] | None) -> None:
         """'new' -> 'ignored' for the given MACs, or for all of them if macs is None."""
         with self._lock:

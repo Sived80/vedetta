@@ -211,8 +211,105 @@
     .fl-tabs .fl-short { display: inline; }
   }
 
-  /* List of the ignored devices dialog. */
-  #ignored .nd-list { padding: 8px 16px 16px; }
+  /* Ignored devices dialog (#ignored): fixed size, a list that scrolls inside, rows of 60 px with the three dots, the + above them. */
+  /* ---- the dialog: one fixed size, whatever the rows (full screen on a phone: the app's own query, restated because this layer wins) */
+  .more-info#ignored { width: min(580px, calc(100vw - 32px)); height: min(560px, 82vh); max-height: none; }
+  @media (max-width: 600px) {
+    .more-info#ignored { width: 100vw; max-width: 100vw; height: 100%; max-height: 100%; }
+  }
+  /* the columns line up: the X above the row icons, the + above the three dots (the right edge follows the width of the scroll bar) */
+  #ignored .mi-header { min-height: 64px; padding: 8px calc(var(--ig-sb, 0px) + 8px) 4px 8px; flex: none; }
+  #ignored .mi-sub { font-size: 14px; }
+  #ignored .ig-add-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 14%, transparent); }
+  #ignored .ig-add-btn:hover { background: color-mix(in srgb, var(--primary-color) 24%, transparent); }
+  #ignored .ig-add-btn .mdi { width: 24px; height: 24px; }
+  #ignored .ig-add-btn[aria-expanded="true"] { background: var(--primary-color); color: #fff; }
+
+  /* ---- the list area: header and footer stay, this scrolls */
+  #ignored .ig-body { position: relative; flex: 1; min-height: 0; border-top: 1px solid transparent; }
+  #ignored .ig-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; overflow-anchor: none; padding: 4px 8px 8px; }
+  #ignored .ig-inner { min-height: 100%; display: flex; flex-direction: column; }
+  #ignored .ig-list { flex: none; }
+
+  /* ---- rows: always 60 px, two lines max */
+  #ignored .ig-item { overflow: hidden; transition: height 0.2s ease, opacity 0.2s ease; }
+  #ignored .ig-item.out { height: 0 !important; opacity: 0; }
+  #ignored .nd-row { flex-wrap: nowrap; height: 60px; min-height: 60px; box-sizing: border-box; gap: 12px; padding: 0 0 0 8px; border-radius: 12px; }
+  #ignored .nd-row.fresh { animation: fresh 1.4s ease-out; }
+  #ignored .nd-text { flex: 1 1 0; min-width: 0; }
+  #ignored .nd-name { line-height: 20px; }
+  #ignored .nd-sub { display: flex; align-items: center; gap: 6px; line-height: 18px; min-width: 0; }
+  #ignored .nd-sub .ids { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #ignored .nd-sub .org { flex: none; display: inline-flex; align-items: center; gap: 3px; opacity: 0.85; }
+  #ignored .nd-sub .org .mdi { width: 14px; height: 14px; }
+  #ignored .nd-sub .org b { font-weight: 400; }
+  #ignored .nd-actions { flex: none; display: flex; align-items: center; gap: 0; margin-left: 0; white-space: nowrap; }
+  #ignored .nd-actions .icon-btn { width: 40px; height: 40px; }
+  #ignored .nd-actions .icon-btn .mdi { width: 22px; height: 22px; }
+  #ignored .nd-ic { width: 32px; height: 32px; flex: none; color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+
+  /* ---- "Forget": the menu item itself becomes Undo; a colour slides across it in 5 s (the countdown). At the end the menu closes and the row folds away. */
+  #ignored .ig-menu .menu-item { position: relative; overflow: hidden; }
+  #ignored .ig-menu .menu-item.counting, #ignored .ig-menu .menu-item.danger.counting { color: var(--primary-color); }
+  #ignored .ig-menu .menu-item .fill { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--primary-color) 24%, transparent);
+    transform: translateX(-100%); animation: ig-fill 5s linear forwards; }
+  #ignored .ig-menu .menu-item.counting > span:not(.fill), #ignored .ig-menu .menu-item.counting > .mdi { position: relative; z-index: 1; }
+  @keyframes ig-fill { to { transform: translateX(0); } }
+  #ignored .ig-menu .menu-item[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #ignored .ig-menu .menu-item .fill { animation: none; transform: translateX(-50%); } }
+
+  /* ---- empty state, inside the same box */
+  #ignored .ig-empty { flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 24px 24px; animation: fade-in 0.25s ease-out; }
+  #ignored .ig-empty.on { display: flex; }
+  #ignored .ig-empty .empty-ic { color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 12%, transparent); margin-bottom: 12px; }
+  #ignored .ig-empty h3 { margin: 0; font-size: 18px; line-height: 26px; font-weight: 500; color: var(--secondary-text-color); }
+
+  /* ---- add by hand: a panel that opens inside the scroll area (it pushes the rows down) */
+  #ignored .ig-addwrap { flex: none; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.2s ease; }
+  #ignored .ig-addwrap.open { grid-template-rows: 1fr; }
+  #ignored .ig-addwrap > div { overflow: hidden; min-height: 0; }
+  #ignored .ig-addwrap:not(.open) > div { visibility: hidden; }
+  #ignored .ig-add { margin: 4px 8px 8px; padding: 12px; border: 1px solid var(--divider-color); border-radius: var(--ha-card-border-radius); background: color-mix(in srgb, var(--primary-color) 5%, var(--card-background-color)); }
+  #ignored .ig-kinds { display: flex; gap: 6px; margin-bottom: 10px; }
+  #ignored .ig-kinds .pill { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--divider-color);
+    background: transparent; color: var(--primary-text-color); font: inherit; font-size: 13px; cursor: pointer; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+  #ignored .ig-kinds .pill:hover { background: var(--ha-hover); }
+  #ignored .ig-kinds .pill[aria-pressed="true"] { background: var(--primary-color); border-color: var(--primary-color); color: #fff; cursor: default; }
+  #ignored .ig-line { display: flex; gap: 8px; align-items: center; }
+  #ignored .ig-field { flex: 1; min-width: 0; height: 44px; padding: 0 16px; border: 0; border-radius: 22px; outline: none; font: inherit; font-size: 16px;
+    background: color-mix(in srgb, var(--primary-text-color) 8%, transparent); color: var(--primary-text-color); }
+  #ignored .ig-field::placeholder { color: var(--secondary-text-color); }
+  #ignored .ig-field:focus { box-shadow: 0 0 0 2px var(--focus-color); }
+  #ignored .ig-field[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--error-color); }
+  #ignored .ig-err.hint { color: var(--secondary-text-color); }
+  #ignored .ig-err { min-height: 18px; margin-top: 6px; padding-left: 16px; font-size: 12px; line-height: 18px; color: var(--error-color); }
+
+  /* ---- footer: fixed height, label of the button never changes its width */
+  #ignored .mi-actions { flex: none; flex-wrap: nowrap; align-items: center; justify-content: space-between; min-height: 64px; box-sizing: border-box; padding: 8px 16px; }
+  #ignored .ig-all { position: relative; overflow: hidden; min-width: 156px; white-space: nowrap; }
+  #ignored .ig-all[hidden] { display: inline-flex; visibility: hidden; }
+  #ignored .ig-all.danger { color: var(--error-color); }
+  #ignored .ig-all .fill { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--primary-color) 24%, transparent); transform: translateX(-100%); animation: ig-fill 5s linear forwards; }
+  #ignored .ig-all.counting, #ignored .ig-all.danger.counting { color: var(--primary-color); }
+  #ignored .ig-all.counting > span:not(.fill), #ignored .ig-all.counting > .mdi { position: relative; z-index: 1; }
+  #ignored .ig-all[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #ignored .ig-all .fill { animation: none; transform: translateX(-50%); } }
+
+  /* ---- popup menu: the app's .menu, one entry */
+  #ignored .menu.ig-menu { width: 200px; padding: 4px 0; z-index: 40; }
+  #ignored .ig-menu .menu-item { min-height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  #ignored .ig-menu .menu-item .mdi { width: 20px; height: 20px; }
+  #ignored .ig-menu .menu-item.danger { color: var(--error-color); }
+  #ignored .ig-menu .menu-item:focus-visible { outline-offset: -2px; background: var(--ha-hover); }
+
+  /* the snackbar lives inside the modal so that "Annulla" stays clickable */
+    .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 480px) {
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #ignored .ig-item, #ignored .ig-addwrap { transition: none; }
+  }
 }
 
 /* Network card title: no text selection or tap highlight (long press). Unlayered, as it was. */

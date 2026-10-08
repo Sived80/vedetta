@@ -3,7 +3,9 @@ import asyncio
 
 from fastapi import APIRouter, HTTPException, Request
 
-from ..storage import blocklist
+from ..scan import dhcp, mdns_listener
+from ..storage import blocklist, journal, newdevices
+from ..storage.history import history
 from .. import i18n
 from ..applog import logger
 
@@ -60,3 +62,52 @@ async def api_ignored_remove(item_id: str, request: Request):
     from ..storage import journal  # late import
     journal.add("normal", "journal.unignored", icon="eye-off", name=item_id)
     return {"items": await asyncio.to_thread(blocklist.list_items)}
+
+
+def _forget_mac(mac: str) -> None:
+    """Forget what the app remembers about a MAC: the known-MAC row (if it is an ignored one), the DHCP name and the Bonjour card."""
+    mac = (newdevices.normalize_mac(mac) or "").upper()
+    if not mac:
+        return
+    row = history.known_all().get(mac)
+    if row and row["status"] == "ignored":
+        history.known_delete(mac)
+    low = mac.lower()
+    ip = (mdns_listener.by_mac.get(low) or {}).get("ip") or (row or {}).get("ip")
+    if dhcp.seen.pop(low, None) is not None:
+        dhcp._save()
+    changed = mdns_listener.by_mac.pop(low, None) is not None
+    if ip and mdns_listener.by_ip.pop(ip, None) is not None:
+        changed = True
+    if changed:
+        mdns_listener._save()
+
+
+@router.post("/api/ignored/forget")
+async def api_ignored_forget(request: Request):
+    """Forget an ignored device: it leaves the list and what the app remembers about it goes too.
+    Body {"id": item id} for a device ignored from a search, or {"mac": ...} for one found on the network."""
+    body = await _json(request)
+    name = ""
+    if isinstance(body.get("id"), str):
+        item = next((i for i in await asyncio.to_thread(blocklist.list_items) if i["id"] == body["id"]), None)
+        if not item:
+            raise HTTPException(404, i18n.t("ignored.error.not_found"))
+        await asyncio.to_thread(blocklist.remove, item["id"])
+        name = item["label"] or item["value"]
+        if item["kind"] == "mac":
+            await asyncio.to_thread(_forget_mac, item["value"])
+        elif item["kind"] == "ip" and mdns_listener.by_ip.pop(item["value"], None) is not None:
+            await asyncio.to_thread(mdns_listener._save)
+    elif isinstance(body.get("mac"), str):
+        mac = newdevices.normalize_mac(body["mac"])
+        if not mac:
+            raise HTTPException(400, i18n.t("ignored.error.invalid"))
+        row = history.known_all().get(mac)
+        name = (row or {}).get("hostname") or mac
+        await asyncio.to_thread(_forget_mac, mac)
+    else:
+        raise HTTPException(400, i18n.t("ignored.error.invalid"))
+    logger.info("Dispositivo ignorato dimenticato: %s", name)
+    journal.add("normal", "journal.forgotten", icon="eye-off", name=name)
+    return {"items": await asyncio.to_thread(blocklist.list_items), "macs": await asyncio.to_thread(newdevices.list_ignored, history)}

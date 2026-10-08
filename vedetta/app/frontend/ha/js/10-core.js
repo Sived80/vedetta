@@ -454,6 +454,35 @@
     S.conn.ok = ok === true;
   }
 
+  // ----------------------------------------------------------------- guided typing
+  // Fields that ask for an address help the typing: in a MAC the colons appear by themselves (and the letters become capitals); in an IP address
+  // the right arrow at the end of the number writes the dot (192.16 -> .1 -> .12 = 192.16.1.12). The colon or the dot typed by hand always works.
+  // kind: "mac" or "ip"; any other kind (a name) is left alone. Usable by any field.
+  function guidedFormat(kind, raw) {
+    if (kind === "mac") return raw.replace(/[^0-9a-fA-F]/g, "").toUpperCase().slice(0, 12).replace(/(..)(?=.)/g, "$1:");
+    var v = raw.replace(/[^0-9.]/g, "").replace(/\.{2,}/g, "."), parts = v.split(".").slice(0, 4).map(function (x) { return x.slice(0, 3); });
+    return parts.join(".").replace(/^\./, "");
+  }
+  function guidedInput(field, kind) {
+    if (kind !== "mac" && kind !== "ip") return;
+    var pos = field.selectionStart, before = field.value.slice(0, pos), atEnd = pos === field.value.length, out = guidedFormat(kind, field.value);
+    if (out === field.value) return;
+    var keep = kind === "mac" ? /[0-9A-F]/ : /[0-9]/, count = before.replace(kind === "mac" ? /[^0-9a-fA-F]/g : /[^0-9]/g, "").length;
+    field.value = out;
+    var np = out.length;
+    if (!atEnd) { var c = 0; np = 0; while (np < out.length && c < count) { if (keep.test(out[np])) c++; np++; } }
+    field.setSelectionRange(np, np);
+  }
+  // true if the key was used (the right arrow wrote a dot)
+  function guidedKey(e, field, kind) {
+    if (kind !== "ip" || e.key !== "ArrowRight" || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return false;
+    var v = field.value;
+    if (field.selectionStart !== v.length || field.selectionEnd !== v.length || !/[0-9]$/.test(v) || v.split(".").length >= 4) return false;
+    e.preventDefault();
+    field.value = v + ".";
+    return true;
+  }
+
   // ----------------------------------------------------------------- menu
   var menuEl = $("menu"), menuBtn = $("btn-menu");
   // Button menu: each setting is a group with a title and a row of round

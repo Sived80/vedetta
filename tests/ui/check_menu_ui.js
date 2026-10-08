@@ -75,6 +75,12 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   pills()[2].click();
   await wait(50);
   check(pills()[2].getAttribute("aria-pressed") === "true" && /5 min/.test(hint()), "cambiando velocita' si accende quella nuova e la riga cambia (" + hint() + ")");
+  // the status line: its two parts stay whole (the second goes under the first on a narrow screen, never a break in the middle of a phrase)
+  const st = doc.getElementById("scan-text");
+  const parts = Array.from(st.querySelectorAll(".st-part")).map((p) => p.textContent);
+  check(parts.length === 2 && !!st.querySelector(".st-sep"), "la riga di stato ha due parti intere e un separatore (" + parts.join(" | ") + ")");
+  check(/prossimo controllo tra \d+ s|next check in \d+ s/.test(parts[1] || ""), "la seconda parte e' il conto alla rovescia, intera");
+  check(st.title === st.dataset.text && st.title.includes(" · "), "il testo completo resta nel tooltip");
   check(errors.length === 0, "nessun errore nella pagina");
   console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

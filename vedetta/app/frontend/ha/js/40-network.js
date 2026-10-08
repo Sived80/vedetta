@@ -389,6 +389,22 @@
 
   // Search status: text and bar (determinate = countdown to the
   // next cycle; indeterminate = something is working).
+  // One line when the whole sentence fits, otherwise its two parts one under the other (measured, so the layout does not depend on it).
+  function fitStatus(textEl) {
+    var box = textEl.parentElement;
+    if (!box || !box.clientWidth) return;
+    var wanted = textEl.classList.contains("stack");
+    textEl.classList.remove("stack");
+    var parts = textEl.querySelectorAll(".st-part"), sep = textEl.querySelector(".st-sep"), need = 0;
+    if (parts.length > 1) {
+      for (var i = 0; i < parts.length; i++) need += parts[i].getBoundingClientRect().width;
+      need += sep ? sep.getBoundingClientRect().width : 0;
+      var free = box.clientWidth - (textEl.getBoundingClientRect().left - box.getBoundingClientRect().left);
+      wanted = need > free + 0.5;
+    } else wanted = false;
+    textEl.classList.toggle("stack", wanted);
+  }
+  window.addEventListener("resize", function () { var el = $("scan-text"); if (el) fitStatus(el); });
   function updateScan() {
     var textEl = $("scan-text");
     if (!textEl) return;
@@ -407,7 +423,13 @@
       if (remaining === 0) { text = t("js.ha.scan.refreshing"); }
       else text = t("js.ha.scan.idle", { ago: ago((S.poll.nextAt - S.poll.interval) / 1000), s: remaining });
     }
-    if (textEl.textContent !== text) { textEl.textContent = text; textEl.title = text; }
+    if (textEl.dataset.text !== text) {
+      // The parts of the sentence ("Updated now" . "next check in 24 s") are kept whole: on a narrow screen the second goes under the first
+      // (see the CSS) instead of the line breaking in the middle of a phrase.
+      textEl.innerHTML = text.split(" · ").map(function (p) { return '<span class="st-part">' + esc(p) + "</span>"; }).join('<span class="st-sep"> · </span>');
+      textEl.dataset.text = text; textEl.title = text;
+    }
+    fitStatus(textEl);
     renderLive();
     var prog = $("progress"), bar = $("progress-bar");
     prog.classList.toggle("indet", busy);

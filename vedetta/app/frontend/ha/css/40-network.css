@@ -53,7 +53,12 @@
 
   /* Scan state: the text always takes two lines, so the button below never moves. */
   .scan-state { display: flex; align-items: flex-start; gap: 8px; min-height: 40px; color: var(--secondary-text-color); font-size: 14px; line-height: 20px; }
-  .scan-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  .scan-text { display: block; min-width: 0; flex: 1; }
+  .scan-text .st-part { display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: top; }
+  .scan-text .st-part:only-child { white-space: normal; }          /* a single message may use two lines */
+  /* Narrow (a phone): the two parts go one under the other, on purpose, and the dot between them is not needed (class set by the script). */
+  .scan-text.stack .st-part { display: block; }
+  .scan-text.stack .st-sep { display: none; }
   .scan-ic { display: flex; flex: none; }
   .scan-ic .mdi { width: 20px; height: 20px; }
   .scan-ic.busy { color: var(--primary-color); animation: pulse 1.2s ease-in-out infinite; }

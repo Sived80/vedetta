@@ -32,7 +32,7 @@ options:
   language: en
   log_level: info
 schema:
-  language: list(en|it)
+  language: list(en|it|cs)
   log_level: list(debug|info|warning|error)
   star_hint: bool?
   interface: str?

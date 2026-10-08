@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **Czech** (Čeština): the whole interface and the server texts are translated, a contribution of **hruba202**. Děkujeme!
+
 ## 0.5.0 · Telaio
 **Telaio** is Italian for *frame*: the frame of Vedetta has been rebuilt, and on it come new windows and a lot of care. Thank you to everyone who sent a report: several fixes in this version come straight from your exports. 🎉
 - **The version is shown** at the bottom of the menu (⋮), small and grey: "Vedetta 0.5.0".

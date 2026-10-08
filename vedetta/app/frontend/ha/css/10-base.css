@@ -394,6 +394,10 @@
   /* Language at half width, theme and responsiveness in one row. */
   .menu .pill.lg.half { flex: 0 0 calc(50% - 3px); }
   .menu .pill.md { flex: 1 1 0; min-width: 0; min-height: 34px; padding: 0 8px; font-size: 13px; }
+  /* Speed buttons: the name and, under it, how often the check runs. */
+  .menu .pill.speed { flex-direction: column; gap: 1px; min-height: 46px; padding: 5px 8px; line-height: 1.2; }
+  .menu .pill.speed .pill-sub { font-size: 11px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+  .menu .pill.speed[aria-pressed="true"] .pill-sub { opacity: 0.85; }
   @media (pointer: coarse) {
     .menu .pill.md { min-height: 40px; }
   }

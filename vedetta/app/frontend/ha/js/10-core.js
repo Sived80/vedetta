@@ -471,6 +471,7 @@
     { id: "saver", poll: 60, miss: 5 }
   ];
   function span(secs) { return secs < 120 ? secs + " s" : Math.round(secs / 60) + " min"; }
+  function everyLabel(secs) { return secs < 60 ? secs + " s" : Math.round(secs / 60) + " min"; }      // how often: 10 s, 30 s, 1 min
   function buildMenu() {
     var html = menuGroup(t("js.ha.menu.language"), (window.VEDETTA_LANGS || []).map(function (l) {
       return pill("lg half", "lang", l[0], l[0] === LANG, l[1]);
@@ -484,11 +485,13 @@
       return pill("md", "view", v, v === view, t("js.ha.menu.view_" + v));
     }).join(""));
     var pollNow = Math.round((S.poll.interval || 30000) / 1000);
-    var cur = null;
+    // The chosen speed is the one that matches what the server runs; right after a choice the server has not told the new
+    // interval yet, so the choice made here stands in until it does (otherwise no button would look chosen).
+    var cur = SPEEDS.filter(function (s) { return s.poll === pollNow && s.miss === S.missLimit; })[0] ||
+      SPEEDS.filter(function (s) { return s.id === S.speedId; })[0] || null;
     var pills = SPEEDS.map(function (s) {
-      var on = s.poll === pollNow && s.miss === S.missLimit;
-      if (on) cur = s;
-      return pill("md", "speed", s.id, on, t("js.ha.menu.speed_" + s.id));
+      return '<button type="button" class="menu-item pill md speed rp" data-speed="' + s.id + '" aria-pressed="' + (s === cur) + '">' +
+        '<span class="pill-main">' + esc(t("js.ha.menu.speed_" + s.id)) + '</span><span class="pill-sub">' + esc(everyLabel(s.poll)) + "</span></button>";
     }).join("");
     var secs = cur ? cur.poll * cur.miss : pollNow * S.missLimit;
     html += menuGroup(t("js.ha.menu.speed"), pills) +
@@ -548,15 +551,18 @@
       var sp = SPEEDS.filter(function (s) { return s.id === item.dataset.speed; })[0];
       if (sp) {
         S.missLimit = sp.miss;
+        S.speedId = sp.id;
         api("/api/settings", { method: "POST", json: { poll_interval: sp.poll, miss_limit: sp.miss } }).catch(function () {});
       }
-      toggleMenu(false);
+      buildMenu();      // the menu stays open: the chosen button lights up at once and the line under it (when a device is called offline) can be read
     } else {
       toggleMenu(false);
     }
   });
   document.addEventListener("click", function (e) {
-    if (!menuEl.hidden && !e.target.closest(".menu-wrap")) toggleMenu(false);
+    // A click inside the menu that redraws it leaves its target outside the page: the path recorded at the click says where it was.
+    var inside = (e.composedPath ? e.composedPath() : []).some(function (n) { return n === menuEl || (n.classList && n.classList.contains("menu-wrap")); });
+    if (!menuEl.hidden && !inside && !e.target.closest(".menu-wrap")) toggleMenu(false);
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && !menuEl.hidden) { toggleMenu(false); menuBtn.focus(); }

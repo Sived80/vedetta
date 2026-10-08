@@ -5,6 +5,7 @@
 - **Scan network**: when the card of the devices found appears the page no longer scrolls down to it; the card opens under the network card and what is below (the log) slides down.
 - **Brand logos**: a logo that is white (Sony) was invisible on the light theme; a logo whose colour would vanish on a theme is drawn in the text colour of that theme.
 - **The (i) pop-ups** of the device sheet (what decided a name, a brand, a group): a long one is no longer cut at the end of the screen. It opens below the button or above it, wherever there is more room, is never taller than the room and scrolls inside; the same on a phone and on a computer. Scrolling it no longer closes it.
+- **Menu, speed** (Fast / Normal / Relaxed): the time is written inside each button (10 s, 30 s, 1 min); choosing one lights it at once and the menu stays open, so the line under it (when a device is called offline) can be read. Before, the menu closed and, until the next check, no button looked chosen.
 - **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded).
 
 ## 0.4.7

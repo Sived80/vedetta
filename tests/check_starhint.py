@@ -29,6 +29,10 @@ assert not starhint.should_show(now - 2 * DAY, now), "troppo giovane: non compar
 assert starhint.should_show(now - 4 * DAY, now), "con qualche giorno di storia compare (anche una installazione vecchia)"
 assert starhint.should_show(now - 400 * DAY, now), "una installazione vecchia la vede dopo l'aggiornamento"
 
+os.environ["VEDETTA_STAR_MIN_AGE_DAYS"] = "0"
+assert starhint.should_show(now - 5, now), "la copia di debug non aspetta"
+os.environ.pop("VEDETTA_STAR_MIN_AGE_DAYS")
+
 # the option switches it off
 os.environ["VEDETTA_STAR_HINT"] = "false"
 assert not starhint.enabled() and not starhint.should_show(now - 9 * DAY, now), "l'opzione la spegne"

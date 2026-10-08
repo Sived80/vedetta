@@ -12,7 +12,7 @@ import time
 from ..paths import DATA_DIR as CONFIG_DIR
 
 STAR_PATH = CONFIG_DIR / "star_hint.json"
-MIN_AGE_DAYS = 3        # how long the installation must have been watching before the invitation can come
+MIN_AGE_DAYS = 3        # how long the installation must have been watching before the invitation can come (VEDETTA_STAR_MIN_AGE_DAYS overrides it: the debug copy)
 
 _done: bool | None = None
 
@@ -50,4 +50,8 @@ def should_show(first_ts: float | None, now: float | None = None) -> bool:
     """True when the invitation may appear: on, never shown, and the installation has history at least MIN_AGE_DAYS old."""
     if not enabled() or done() or not first_ts:
         return False
-    return (now if now is not None else time.time()) - first_ts >= MIN_AGE_DAYS * 86400
+    try:
+        days = float(os.environ.get("VEDETTA_STAR_MIN_AGE_DAYS", MIN_AGE_DAYS))
+    except ValueError:
+        days = MIN_AGE_DAYS
+    return (now if now is not None else time.time()) - first_ts >= days * 86400

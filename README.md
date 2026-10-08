@@ -77,6 +77,8 @@ Every report is read and becomes a fix or a new recognition rule, and Vedetta is
 
 Step by step, the local-app option and the first launch: [Installation](docs/INSTALLATION.md).
 
+⭐ If Vedetta names your devices right, a star helps others find it. *Watch → Custom → Releases* tells you when a new version comes out.
+
 ## Also inside
 
 📱 Sleeping phones remembered · 📊 Presence and latency history · 🔭 Three search levels, you choose the risk · 🏠 Home Assistant and optional MQTT

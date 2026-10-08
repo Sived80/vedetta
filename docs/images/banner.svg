@@ -54,13 +54,7 @@
 
   <!-- text -->
   <g font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
-    <text x="70" y="150" font-size="96" font-weight="800" fill="url(#title)" letter-spacing="-2">Vedetta</text>
-    <text x="74" y="196" font-size="27" fill="#a9c7e8">Know every device on your network.</text>
-    <text x="74" y="236" font-size="18" fill="#6f93b8" letter-spacing="0.4">A Home Assistant app that finds, recognizes and explains.</text>
-    <g font-size="14" font-weight="600" fill="#0a1020">
-      <rect x="74" y="258" width="118" height="28" rx="14" fill="#03a9f4"/><text x="95" y="277">LOCAL ONLY</text>
-      <rect x="204" y="258" width="150" height="28" rx="14" fill="#43a047"/><text x="222" y="277">READ-ONLY HA</text>
-      <rect x="366" y="258" width="132" height="28" rx="14" fill="#ffa600"/><text x="383" y="277">EXPLAINABLE</text>
-    </g>
+    <text x="70" y="172" font-size="96" font-weight="800" fill="url(#title)" letter-spacing="-2">Vedetta</text>
+    <text x="74" y="220" font-size="27" fill="#a9c7e8">Know every device on your network.</text>
   </g>
 </svg>

@@ -59,6 +59,10 @@ items = c.post("/api/ignored", json={"kind": "ip", "value": "192.168.1.24"}).jso
 mdns_listener.by_ip["192.168.1.24"] = {"name": "Cam"}
 assert c.post("/api/ignored/forget", json={"id": items[0]["id"]}).status_code == 200 and "192.168.1.24" not in mdns_listener.by_ip
 
+# a MAC the app never heard of: nothing to forget, so nothing in the journal
+n = len(journal._entries)
+assert c.post("/api/ignored/forget", json={"mac": "AA:BB:CC:00:00:77"}).status_code == 200 and len(journal._entries) == n, "niente da dimenticare: niente nel registro"
+
 # wrong requests
 assert c.post("/api/ignored/forget", json={"id": "nope"}).status_code == 404
 assert c.post("/api/ignored/forget", json={"mac": "zz"}).status_code == 400

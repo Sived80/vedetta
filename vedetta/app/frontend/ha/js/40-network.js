@@ -486,19 +486,31 @@
   flowsDlg.addEventListener("scroll", function (e) {
     if (e.target.id === "fl-panel") flowsDlg.querySelector(".fl-top").classList.toggle("scrolled", e.target.scrollTop > 0);
   }, true);
+  // Saving: one request at a time. A change made while a save is on its way waits for it and is then saved alone with the latest state,
+  // so the server always ends with the last choice (requests sent together can arrive out of order).
+  var flSaving = false, flAgain = false;
+  function flSave() {
+    if (flSaving) { flAgain = true; return; }
+    flSaving = true;
+    var out = {};
+    FL_PROFILES.forEach(function (q) { out[q] = S.fl.flows[q].steps.slice(); });
+    api("/api/flows", { method: "POST", json: { flows: out } }).then(function (r) {
+      if (!flAgain) S.fl = r;
+    }).catch(function (err) {
+      flAgain = false;
+      snack(err && err.message ? err.message : t("js.ha.toast.error"), { kind: "error" });
+      return api("/api/flows").then(function (r) { S.fl = r; renderFlows(); });
+    }).then(function () {
+      flSaving = false;
+      if (flAgain) { flAgain = false; flSave(); }
+    });
+  }
   flowsDlg.addEventListener("change", function (e) {
     if (!e.target.classList.contains("fl-sw")) return;
     var p = e.target.dataset.p, id = e.target.dataset.step, steps = S.fl.flows[p].steps, at = steps.indexOf(id);
     if (e.target.checked && at < 0) steps.push(id); else if (!e.target.checked && at >= 0) steps.splice(at, 1);
     flRefresh();
-    var out = {};
-    FL_PROFILES.forEach(function (q) { out[q] = S.fl.flows[q].steps.slice(); });
-    api("/api/flows", { method: "POST", json: { flows: out } }).then(function (r) {
-      S.fl = r;
-    }).catch(function (err) {
-      snack(err && err.message ? err.message : t("js.ha.toast.error"), { kind: "error" });
-      return api("/api/flows").then(function (r) { S.fl = r; renderFlows(); });
-    });
+    flSave();
   });
 
   // ------------------------------------------------------------ filters

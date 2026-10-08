@@ -64,23 +64,29 @@ async def api_ignored_remove(item_id: str, request: Request):
     return {"items": await asyncio.to_thread(blocklist.list_items)}
 
 
-def _forget_mac(mac: str) -> None:
-    """Forget what the app remembers about a MAC: the known-MAC row (if it is an ignored one), the DHCP name and the Bonjour card."""
+def _forget_mac(mac: str) -> bool:
+    """Forget what the app remembers about a MAC: the known-MAC row (if it is an ignored one), the DHCP name and the Bonjour card.
+    True if there was something to forget."""
     mac = (newdevices.normalize_mac(mac) or "").upper()
     if not mac:
-        return
+        return False
+    found = False
     row = history.known_all().get(mac)
     if row and row["status"] == "ignored":
         history.known_delete(mac)
+        found = True
     low = mac.lower()
     ip = (mdns_listener.by_mac.get(low) or {}).get("ip") or (row or {}).get("ip")
     if dhcp.seen.pop(low, None) is not None:
         dhcp._save()
+        found = True
     changed = mdns_listener.by_mac.pop(low, None) is not None
     if ip and mdns_listener.by_ip.pop(ip, None) is not None:
         changed = True
     if changed:
         mdns_listener._save()
+        found = True
+    return found
 
 
 @router.post("/api/ignored/forget")
@@ -89,6 +95,7 @@ async def api_ignored_forget(request: Request):
     Body {"id": item id} for a device ignored from a search, or {"mac": ...} for one found on the network."""
     body = await _json(request)
     name = ""
+    something = True            # an entry of the list is always something
     if isinstance(body.get("id"), str):
         item = next((i for i in await asyncio.to_thread(blocklist.list_items) if i["id"] == body["id"]), None)
         if not item:
@@ -105,9 +112,10 @@ async def api_ignored_forget(request: Request):
             raise HTTPException(400, i18n.t("ignored.error.invalid"))
         row = history.known_all().get(mac)
         name = (row or {}).get("hostname") or mac
-        await asyncio.to_thread(_forget_mac, mac)
+        something = await asyncio.to_thread(_forget_mac, mac)
     else:
         raise HTTPException(400, i18n.t("ignored.error.invalid"))
-    logger.info("Dispositivo ignorato dimenticato: %s", name)
-    journal.add("normal", "journal.forgotten", icon="eye-off", name=name)
+    if something:
+        logger.info("Dispositivo ignorato dimenticato: %s", name)
+        journal.add("normal", "journal.forgotten", icon="eye-off", name=name)
     return {"items": await asyncio.to_thread(blocklist.list_items), "macs": await asyncio.to_thread(newdevices.list_ignored, history)}

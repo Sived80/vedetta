@@ -24,6 +24,7 @@ const payload = JSON.parse(fs.readFileSync(path.join(__dirname, "flows_payload_"
 delete payload.ui;
 
 const errors = [];
+let serverFlows = null, inflight = 0, maxInflight = 0;
 const posts = [];
 const vc = new VirtualConsole();
 vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.stack) || e.message)));
@@ -42,8 +43,14 @@ const dom = new JSDOM(html, {
         if (opts && opts.method === "POST") {
           if (url.startsWith("/api/flows/reset")) b = JSON.parse(JSON.stringify(payload));
           else {
+            // the network is slow and uneven: the request arrives after a random delay (so requests sent together may arrive out of order)
             const sent = JSON.parse(opts.body);
-            posts.push(sent); b = JSON.parse(JSON.stringify(payload)); Object.keys(sent.flows).forEach((p) => { b.flows[p].steps = sent.flows[p]; });
+            inflight++; maxInflight = Math.max(maxInflight, inflight);
+            return new Promise((res) => setTimeout(() => {
+              inflight--; posts.push(sent); serverFlows = sent.flows;
+              const r = JSON.parse(JSON.stringify(payload)); Object.keys(sent.flows).forEach((p) => { r.flows[p].steps = sent.flows[p]; });
+              res(ok(r));
+            }, Math.random() * 40));
           }
         } else b = JSON.parse(JSON.stringify(payload));
       }
@@ -108,6 +115,21 @@ const click = (el) => el.dispatchEvent(new dom.window.MouseEvent("click", { bubb
   click(q('[data-fl-tab="associative"]'));
   click(q('[data-fl-tab="deep"]'));
   check(qa('.fl-sw[data-p="deep"]').find((i) => i.dataset.step === sw.dataset.step).checked === false, "tornando alla scheda la scelta resta");
+
+  // many quick changes: one save at a time, and the server ends with the last choice, whatever the delays of the network
+  click(q('[data-fl-tab="deep"]'));
+  qa(".fl-grp-h").forEach((g) => { if (g.getAttribute("aria-expanded") !== "true") click(g); });
+  const sws = qa('.fl-sw[data-p="deep"]:not(:disabled)');
+  maxInflight = 0;
+  for (let i = 0; i < 60; i++) { const s = sws[(i * 7) % sws.length]; s.checked = !s.checked; s.dispatchEvent(new dom.window.Event("change", { bubbles: true })); if (i % 9 === 0) await wait(5); }
+  await wait(1500);
+  const onScreen = qa('.fl-sw[data-p="deep"]').filter((x) => x.checked).map((x) => x.dataset.step).sort();
+  const onServer = (serverFlows ? serverFlows.deep : []).slice();
+  const lockedDeep = payload.steps.filter((x) => x.locked_in.includes("deep")).map((x) => x.id);
+  const wanted = Array.from(new Set(onServer.concat(lockedDeep))).sort();
+  check(maxInflight === 1, "un solo salvataggio alla volta (" + maxInflight + ")");
+  check(JSON.stringify(onScreen) === JSON.stringify(wanted), "dopo tanti cambi veloci il server ha l'ultima scelta mostrata a schermo (" + onScreen.length + " contro " + wanted.length + ")");
+  check(q(".fl-chips .risk.r-easy").textContent.startsWith(String(onScreen.length)), "i contatori sono quelli dello schermo");
 
   // arrow keys move between the tabs
   q('[data-fl-tab="deep"]').dispatchEvent(new dom.window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));

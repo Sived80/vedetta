@@ -14,8 +14,10 @@
 
 </div>
 
-<p align="center"><img src="docs/images/hero.png" alt="Vedetta dashboard in tile and list view, light and dark theme, with the device detail sheet" width="100%"></p>
-<p align="center"><sub>Tiles or list · light or dark · one tap to the evidence behind every name</sub></p>
+<p align="center"><img src="docs/images/demo.gif" alt="An unknown device on the network becomes a Sony console after a scan, and its card shows the clues that decided it" width="100%"></p>
+<p align="center"><sub>An unknown device, a scan, a name — and the clues behind it</sub></p>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/group-dark.png"><img src="docs/images/group-light.png" alt="A group of devices on the dashboard: the Sony console, recognized, with its logo and brand" width="100%"></picture></p>
 
 ---
 
@@ -47,6 +49,9 @@ A scanner gives you a list. Vedetta gives you an *answer* and the *reason*. The 
 Every clue is weak on its own. Vedetta weighs them together, counts a repeated fact once, and shows doubt as doubt. The weights are public.
 
 <p align="center"><img src="docs/images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
+
+<p align="center"><img src="docs/images/evidence-popup.png" alt="The pop-up of the Type shows each clue with its weight and the hypotheses that were rejected" width="560"></p>
+<p align="center"><sub>Tap the (i) next to a name, brand or type: every clue, its weight, and what was ruled out</sub></p>
 
 Sources, weights and certainty bars: [Recognition](docs/RECOGNITION.md).
 <div align="center">

@@ -64,7 +64,7 @@ function open(starHint) {
   btn.click();
   const entry = () => menu.querySelector(".star-entry");
   check(entry() && menu.firstElementChild === entry(), "aprendo il menu, la prima voce e' l'invito");
-  check(entry().getAttribute("href") === "https://github.com/Sived80/vedetta" && entry().target === "_blank" && /noopener/.test(entry().rel), "e' un link a GitHub che si apre in un'altra scheda");
+  check(entry().getAttribute("href") === "https://github.com/Sived80/vedetta/tree/main" && entry().target === "_blank" && /noopener/.test(entry().rel), "e' un link a GitHub che si apre in un'altra scheda");
   check(a.posts.length === 1 && a.posts[0] === "POST", "il server viene avvisato subito che e' stata mostrata (una sola volta)");
   // a choice inside the menu rebuilds it: the entry stays while this menu is open, and the server is not asked again
   const speed = menu.querySelector("[data-speed]");

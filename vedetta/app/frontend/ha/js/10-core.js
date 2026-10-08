@@ -476,7 +476,7 @@
   function everyLabel(secs) { return secs < 60 ? secs + " s" : Math.round(secs / 60) + " min"; }      // how often: 10 s, 30 s, 1 min
   // The one-time invitation to star the project: a small star on the menu button, and, the first time the menu is opened, its first
   // entry (a link to GitHub). The server remembers that it was shown, so it never comes back (storage/starhint.py).
-  var STAR_URL = "https://github.com/Sived80/vedetta";
+  var STAR_URL = "https://github.com/Sived80/vedetta/tree/main";       // an address nobody else links to: the visits to it in the repository statistics are the clicks from here (the app sends nothing)
   var starBadge = document.createElement("span");
   starBadge.className = "star-badge";
   starBadge.hidden = true;

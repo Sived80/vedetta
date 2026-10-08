@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse, RedirectResponse, Response, Streamin
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .storage import blocklist, devices_config, journal, newdevices, settings
+from .storage import blocklist, devices_config, journal, newdevices, settings, userlang
 from .ha import ha_registry, ha_tz
 from .scan import mdns_listener, dhcp, scanner, wol
 from . import i18n
@@ -117,12 +117,20 @@ async def healthz():
 
 @app.post("/api/lang/{code}")
 async def api_set_lang(code: str, request: Request):
+    """The language chosen in the menu. "auto" gives the choice back to the automatic one (the language of Home Assistant). The choice is
+    kept on the server for the logged-in Home Assistant user (it follows them to every browser) and in a cookie for the browser."""
+    path = getattr(request.state, "base", "") or "/"      # cookie path = ingress prefix (empty at the root -> "/", as before)
+    user = request.headers.get("x-remote-user-id")
+    if code == "auto":
+        userlang.put(user, None)
+        response = JSONResponse({"lang": "auto"})
+        response.delete_cookie(i18n.COOKIE_NAME, path=path)
+        return response
     if code not in dict(i18n.available()):
         raise HTTPException(404, "Unknown language")
+    userlang.put(user, code)
     response = JSONResponse({"lang": code})
-    # cookie path = ingress prefix (empty at the root -> "/", as before)
-    response.set_cookie(i18n.COOKIE_NAME, code, max_age=i18n.COOKIE_MAX_AGE, samesite="lax",
-                        path=getattr(request.state, "base", "") or "/")
+    response.set_cookie(i18n.COOKIE_NAME, code, max_age=i18n.COOKIE_MAX_AGE, samesite="lax", path=path)
     return response
 
 

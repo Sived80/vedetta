@@ -80,6 +80,7 @@
   {%- endif %}
   <script>
     window.VEDETTA_LANG = {{ lang|tojson }};
+    window.VEDETTA_LANG_AUTO = {{ (lang_auto|default(true))|tojson }};
     window.VEDETTA_I18N = {{ js_strings|tojson }};
     window.VEDETTA_LANGS = {{ languages|tojson }};
   </script>

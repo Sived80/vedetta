@@ -10,6 +10,7 @@
   "js.ha.search_clear": "Vymazat hledání",
   "js.ha.menu": "Nabídka",
   "js.ha.menu.language": "Jazyk",
+  "js.ha.menu.lang_auto": "Automaticky",
   "js.ha.menu.theme": "Vzhled",
   "js.ha.menu.theme_auto": "Automatický",
   "js.ha.menu.theme_light": "Světlý",

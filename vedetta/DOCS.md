@@ -26,7 +26,7 @@ Everything stays at home: no data is sent outside your network.
 
 ## Options
 
-- `language`: default language (`en`, `it` or `cs`); each browser can pick another one.
+- `language`: `auto` (the default) follows the language of Home Assistant, or the browser's; or choose `en`, `it` or `cs` as the default for everyone. Each person can pick their own in the menu (⋮): it is kept on the server for their Home Assistant user, on every device.
 - `log_level`: `debug`, `info`, `warning`, `error`.
 - `star_hint`: `true` by default. Once, after a few days of use, a small star appears on the menu button with a link to the project on GitHub; set `false` to never show it. Nothing is sent anywhere.
 - `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).

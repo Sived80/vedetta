@@ -42,6 +42,7 @@ for code in codes:
     tr = load(code)
     check(bool(tr.get("server.json:lang.name")), f"{code}: names itself (lang.name)")
     check(code in offered, f"{code}: is in the language option of config.yaml ({'|'.join(offered)})")
+    check(bool(tr.get("ha.json:js.ha.menu.lang_auto")), f"{code}: translates the 'Automatic' entry of the language list")
     check(f"`{code}`" in docs, f"{code}: is named in DOCS.md")
     stray = [k for k in tr if k not in en]
     check(not stray, f"{code}: no key that English does not have {stray[:3]}")
@@ -49,6 +50,6 @@ for code in codes:
     check(not bad, f"{code}: placeholders match the English text {bad[:3]}")
     missing = len([k for k in en if k not in tr])
     print(f"info: {code}: {len(tr)} of {len(en)} texts translated ({missing} missing, English is shown for those)")
-check(sorted(offered) == sorted(codes), "the options of config.yaml are exactly the folders of locales")
+check("auto" in offered and sorted(c for c in offered if c != "auto") == sorted(codes), "the options of config.yaml are `auto` plus exactly the folders of locales")
 print("ALL OK" if not failed else f"FAILED: {failed}")
 sys.exit(1 if failed else 0)

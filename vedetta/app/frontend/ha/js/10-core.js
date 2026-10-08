@@ -24,9 +24,11 @@
   var POLL_WATCHDOG_MS = 90000;
 
   // ---------------------------------------------------------------- language
-  // Like static/js/lang.js: ?lang= counts as a choice, otherwise the last saved
-  // choice is restored (the cookie often does not travel inside an iframe).
-  var LANG_KEY = "dash-lang";
+  // The server decides the language: the choice of the logged-in Home Assistant user (kept on the server), the language of Home
+  // Assistant, the browser's. VEDETTA_LANG_AUTO says that nobody picked it. Where the server cannot tell who is looking (no user id), the
+  // last choice made in this browser is restored (the cookie often does not travel inside an iframe). Only a choice is remembered here,
+  // never the language that was simply worked out: that one must be free to follow Home Assistant.
+  var LANG_KEY = "dash-lang-choice";
   function langAvailable(code) {
     var list = window.VEDETTA_LANGS || [];
     for (var i = 0; i < list.length; i++) if (list[i][0] === code) return true;
@@ -34,19 +36,19 @@
   }
   function goLang(code) {
     var next = new URLSearchParams(location.search);
-    next.set("lang", code);
-    location.replace(location.pathname + "?" + next.toString());
+    if (code) next.set("lang", code); else next.delete("lang");
+    location.replace(location.pathname + (next.toString() ? "?" + next.toString() : ""));
   }
   try {
+    localStorage.removeItem("dash-lang");   // the key of the versions before: it held the language shown, not a choice
     if (params.has("lang")) {
       localStorage.setItem(LANG_KEY, LANG);
-    } else {
+    } else if (window.VEDETTA_LANG_AUTO) {
       var savedLang = localStorage.getItem(LANG_KEY);
       if (savedLang && savedLang !== LANG && langAvailable(savedLang)) {
         goLang(savedLang);
         return;
       }
-      localStorage.setItem(LANG_KEY, LANG);
     }
   } catch (err) { /* storage not available: stay on the server's language */ }
 
@@ -579,13 +581,15 @@
     return code;
   }
   function pickLang(code) {
-    if (code === LANG) return;
-    try { localStorage.setItem(LANG_KEY, code); } catch (err) { /* ignore */ }
-    api("/api/lang/" + encodeURIComponent(code), { method: "POST" }).catch(function () {}).then(function () { goLang(code); });
+    var auto = code === "auto";
+    if (auto ? window.VEDETTA_LANG_AUTO : (code === LANG && !window.VEDETTA_LANG_AUTO)) return;
+    try { if (auto) localStorage.removeItem(LANG_KEY); else localStorage.setItem(LANG_KEY, code); } catch (err) { /* ignore */ }
+    api("/api/lang/" + encodeURIComponent(code), { method: "POST" }).catch(function () {}).then(function () { goLang(auto ? "" : code); });
   }
   function langGroup() {
     return '<div class="menu-group"><div class="menu-label">' + esc(t("js.ha.menu.language")) + '</div><button type="button" class="sel-btn rp" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="' +
-      esc(t("js.ha.menu.language")) + '">' + icon("earth", "sel-ic") + '<span class="sel-val">' + esc(langName(LANG)) + "</span>" + icon("chevron-down", "sel-chev") + "</button></div>";
+      esc(t("js.ha.menu.language")) + '">' + icon("earth", "sel-ic") + '<span class="sel-val">' +
+      esc((window.VEDETTA_LANG_AUTO ? t("js.ha.menu.lang_auto") + " · " : "") + langName(LANG)) + "</span>" + icon("chevron-down", "sel-chev") + "</button></div>";
   }
 
   function buildMenu() {
@@ -653,7 +657,8 @@
     var sb = e.target.closest("#lang-btn");
     if (sb) {
       if (selBtn === sb) { closeSelect(false); return; }
-      themedSelect(sb, (window.VEDETTA_LANGS || []).map(function (l) { return [l[0], l[1]]; }), LANG, pickLang);
+      themedSelect(sb, [["auto", t("js.ha.menu.lang_auto")]].concat((window.VEDETTA_LANGS || []).map(function (l) { return [l[0], l[1]]; })),
+        window.VEDETTA_LANG_AUTO ? "auto" : LANG, pickLang);
       return;
     }
     if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }

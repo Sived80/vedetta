@@ -28,7 +28,7 @@ out.mkdir(parents=True, exist_ok=True)
 i18n.use(lang)
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "app/templates")), autoescape=True)
 env.globals["static_version"] = lambda p: "1"
-page = env.get_template("ha.html").render(lang=lang, languages=i18n.available(), js_strings=i18n.js_table(lang), theme="auto",
+page = env.get_template("ha.html").render(lang=lang, lang_auto=True, languages=i18n.available(), js_strings=i18n.js_table(lang), theme="auto",
                                           transparent=False, compact=False, limit=4, request=None)
 
 

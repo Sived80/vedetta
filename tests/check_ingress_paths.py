@@ -50,7 +50,7 @@ DEVICE = {
 }
 LANG = "en"
 CTX = {
-    "ha.html": {"lang": LANG, "languages": i18n.available(), "js_strings": {}, "theme": "auto",
+    "ha.html": {"lang": LANG, "lang_auto": True, "languages": i18n.available(), "js_strings": {}, "theme": "auto",
                 "transparent": False, "compact": False, "limit": 6},
 }
 

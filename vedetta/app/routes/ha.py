@@ -65,12 +65,12 @@ def _hours(hours: int) -> int:
 async def ha_page(request: Request, theme: str = "auto", bg: str = "", compact: str = "0", limit: int = 6):
     """Page. The address parameters reach the template already validated, and it
     writes them on the <html> element before the first paint (no theme flashes)."""
-    lang = i18n.use_request(request)
+    lang, chosen = i18n.resolve_request(request)
     theme = theme if theme in THEMES else "auto"
     return templates.TemplateResponse(
         "ha.html",
         {
-            "request": request, "lang": lang, "languages": i18n.available(), "js_strings": i18n.js_table(lang),
+            "request": request, "lang": lang, "lang_auto": not chosen, "languages": i18n.available(), "js_strings": i18n.js_table(lang),
             "theme": theme, "transparent": bg == "transparent", "compact": _flag(compact),
             "limit": max(1, min(limit, 30)),
         },

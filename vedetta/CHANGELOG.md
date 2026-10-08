@@ -2,7 +2,7 @@
 
 ## Unreleased
 - **Czech** (Čeština): the whole interface and the server texts are translated, a contribution of **hruba202**. Děkujeme!
-- **Language list** in the menu (⋮): one field with a globe and a list in the look of the app replaces the language buttons, ready for more languages; a new language is a folder of texts (see *Add a language* in the development notes).
+- **Language**: the app now follows the language of Home Assistant (or the browser's) and each person can pick their own in the menu (⋮). The choice is kept on the server for their Home Assistant user, so it follows them to every browser and device; "Automatic" gives it back. One field with a globe replaces the language buttons, ready for more languages (a new language is a folder of texts: see *Add a language* in the development notes). The option `language` is now `auto` by default (an installation that has `en` or `it` set keeps it as the default for everyone).
 
 ## 0.5.0 · Telaio
 **Telaio** is Italian for *frame*: the frame of Vedetta has been rebuilt, and on it come new windows and a lot of care. Thank you to everyone who sent a report: several fixes in this version come straight from your exports. 🎉

@@ -1,4 +1,4 @@
-"""Time zone of Home Assistant. The nightly maintenance (03:00) and the time written in the log are the user's own, read from
+"""Time zone (and language) of Home Assistant. The nightly maintenance (03:00) and the time written in the log are the user's own, read from
 Home Assistant (WebSocket command get_config, with the read-only access the app already has). Without Home Assistant (or with
 the access turned off) the container's own time zone is used."""
 import json
@@ -7,6 +7,7 @@ from datetime import datetime, tzinfo
 from zoneinfo import ZoneInfo
 
 from . import ha_registry
+from .. import i18n
 from ..applog import logger
 
 REFRESH_S = 3600
@@ -52,7 +53,9 @@ async def refresh(force: bool = False) -> bool:
             while True:
                 msg = json.loads(await ws.recv())
                 if msg.get("id") == 1:
-                    found = zone_from_config(msg.get("result") if msg.get("success") else None)
+                    config = msg.get("result") if msg.get("success") else None
+                    i18n.set_system_language((config or {}).get("language"))   # the same answer tells the language of Home Assistant
+                    found = zone_from_config(config)
                     break
     except Exception as exc:
         _state["at"] = time.time() - REFRESH_S + RETRY_S

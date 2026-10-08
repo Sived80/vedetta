@@ -68,16 +68,16 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   check(!menu.querySelector("[data-lang]"), "e non ci sono piu' le pillole delle lingue");
   btn().click();
   await wait(30);
-  check(!!list() && list().children.length === langs.length && langs.length >= 3, "si apre l'elenco con tutte le lingue offerte dal server (" + langs.length + ")");
+  check(!!list() && list().children.length === langs.length + 1 && langs.length >= 3, "si apre l'elenco: la voce Automatico e tutte le lingue offerte dal server (" + langs.length + ")");
   check(btn().getAttribute("aria-expanded") === "true" && list().getAttribute("role") === "listbox", "il campo e' segnato aperto e l'elenco e' un listbox");
-  check(list().querySelectorAll('[aria-selected="true"]').length === 1 && list().querySelector('[aria-selected="true"]').dataset.v === lang, "la spunta e' sulla lingua attiva e solo su quella");
+  check(list().querySelectorAll('[aria-selected="true"]').length === 1 && list().querySelector('[aria-selected="true"]').dataset.v === "auto", "la spunta e' su Automatico (nessuno ha scelto) e solo li'");
   const key = (k) => list().dispatchEvent(new w.KeyboardEvent("keydown", { key: k, bubbles: true, cancelable: true }));
   const act = () => Array.from(list().children).findIndex((li) => li.classList.contains("act"));
   const start = act();
   key("ArrowDown");
   check(act() === (start + 1) % langs.length, "freccia giu' sposta l'evidenziazione");
   key("End");
-  check(act() === langs.length - 1, "Fine va all'ultima");
+  check(act() === langs.length, "Fine va all'ultima");
   key("Home");
   check(act() === 0, "Inizio va alla prima");
   key("Escape");
@@ -95,7 +95,7 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   check(!list(), "un secondo tocco sul campo lo chiude");
   btn().click();
   await wait(30);
-  const other = Array.from(list().children).find((li) => li.dataset.v !== ""+lang+"");
+  const other = Array.from(list().children).find((li) => li.dataset.v !== lang && li.dataset.v !== "auto");
   other.click();
   await wait(80);
   check(langPosts.length === 1 && langPosts[0] === "/api/lang/" + other.dataset.v, "scegliere una lingua la invia al server (" + langPosts.join(",") + ")");

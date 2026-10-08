@@ -29,10 +29,10 @@ panel_title: Vedetta
 services:
   - mqtt:want
 options:
-  language: en
+  language: auto
   log_level: info
 schema:
-  language: list(en|it|cs)
+  language: list(auto|en|it|cs)
   log_level: list(debug|info|warning|error)
   star_hint: bool?
   interface: str?

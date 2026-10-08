@@ -10,6 +10,7 @@
   "js.ha.search_clear": "Clear search",
   "js.ha.menu": "Menu",
   "js.ha.menu.language": "Language",
+  "js.ha.menu.lang_auto": "Automatic",
   "js.ha.menu.theme": "Theme",
   "js.ha.menu.theme_auto": "Automatic",
   "js.ha.menu.theme_light": "Light",

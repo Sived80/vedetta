@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question, idea or show your network
+    url: https://github.com/Sived80/vedetta/discussions
+    about: Ask how something works, suggest an idea, or show what Vedetta found on your network.
+  - name: Security problem
+    url: https://github.com/Sived80/vedetta/security/advisories/new
+    about: Report a security problem privately, not in a public issue.

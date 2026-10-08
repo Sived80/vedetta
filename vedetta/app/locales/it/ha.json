@@ -178,6 +178,8 @@
   "js.ha.menu.speed_hint": "Un dispositivo risulta offline dopo circa {t}.",
   "js.ha.log.flap": "ha cambiato stato {n} volte · ora {state}",
   "js.ha.menu.flows": "Metodi di ricerca",
+  "js.ha.menu.star": "Accendi una stella",
+  "js.ha.menu.star_sub": "Se Vedetta ti è stata utile",
   "js.ha.pause.title": "Metti in pausa il controllo",
   "js.ha.pause.resume_title": "Il controllo è in pausa",
   "js.ha.pause.live": "In pausa",

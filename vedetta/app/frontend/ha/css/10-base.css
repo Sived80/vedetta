@@ -415,6 +415,19 @@
   /* The download arrow fills only 71% of its box (the cog 83%, the crossed eye 92%): a larger box gives it the same apparent size, and the negative margin keeps its centre and the row height. */
   .menu-link.menu-export .mdi { width: 21px; height: 21px; margin: -1.5px -1.5px -1.5px 0; }
 
+  /* The one-time invitation to star the project: a small star on the menu button (over the page, nothing moves) and the first entry of the menu. */
+  .star-badge { position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    background: var(--card-background-color); box-shadow: 0 0 0 2px var(--card-background-color); color: var(--warning-color); pointer-events: none;
+    animation: star-ping 2.4s ease-out infinite; }
+  .star-badge[hidden] { display: none; }
+  .star-badge .mdi { width: 12px; height: 12px; color: inherit; }
+  @keyframes star-ping { 0% { box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 2px color-mix(in srgb, var(--warning-color) 55%, transparent); }
+    100% { box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 12px transparent; } }
+  .menu-link.star-entry { margin-top: 0; padding: 12px 2px; border-top: 0; border-bottom: 1px solid var(--divider-color); text-decoration: none; }
+  .star-entry .star-text small { display: block; margin-top: 1px; font-size: 12px; color: var(--secondary-text-color); }
+  .menu-link.star-entry .mdi { width: 22px; height: 22px; color: var(--warning-color); }
+  @media (prefers-reduced-motion: reduce) { .star-badge { animation: none; } }
+
   /* Visual polish, shared part: focus ring, card titles, search, touch target. */
   :focus-visible { outline-color: var(--focus-color); }
   /* Plainer card titles (every .ch-title is in a .card-header, where .card-header .ch-title below wins) */

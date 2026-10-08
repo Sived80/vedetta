@@ -159,6 +159,12 @@ class History:
                 counts[device] = counts.get(device, 0) + 1
         return counts
 
+    def first_event_ts(self) -> float | None:
+        """When the very first presence event was written (how long this installation has been watching), or None."""
+        with self._lock:
+            row = self._db.execute("SELECT MIN(ts) AS ts FROM presence_events").fetchone()
+        return row["ts"] if row else None
+
     def first_presence(self, device_ids: list[str]) -> dict[str, float]:
         """When each card was first seen."""
         if not device_ids:

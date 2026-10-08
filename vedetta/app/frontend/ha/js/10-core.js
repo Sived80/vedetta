@@ -260,6 +260,8 @@
   // ------------------------------------------------------------------ state
   var S = {
     devices: new Map(),
+    starHint: false,        // the server says the one-time star invitation may appear
+    starMenu: false,        // it is in the menu that is open now
     list: [],               // devices in IP order
     rev: 0,
     loaded: false,
@@ -472,8 +474,23 @@
   ];
   function span(secs) { return secs < 120 ? secs + " s" : Math.round(secs / 60) + " min"; }
   function everyLabel(secs) { return secs < 60 ? secs + " s" : Math.round(secs / 60) + " min"; }      // how often: 10 s, 30 s, 1 min
+  // The one-time invitation to star the project: a small star on the menu button, and, the first time the menu is opened, its first
+  // entry (a link to GitHub). The server remembers that it was shown, so it never comes back (storage/starhint.py).
+  var STAR_URL = "https://github.com/Sived80/vedetta";
+  var starBadge = document.createElement("span");
+  starBadge.className = "star-badge";
+  starBadge.hidden = true;
+  starBadge.setAttribute("aria-hidden", "true");
+  starBadge.innerHTML = icon("star");
+  menuBtn.parentNode.appendChild(starBadge);
+  function setStarBadge() { starBadge.hidden = !S.starHint; }
+  function starEntry() {
+    if (!S.starMenu) return "";
+    return '<a class="menu-item menu-link star-entry rp" href="' + STAR_URL + '" target="_blank" rel="noopener noreferrer" data-star="1"><span class="star-text">' +
+      esc(t("js.ha.menu.star")) + "<small>" + esc(t("js.ha.menu.star_sub")) + "</small></span>" + icon("star") + "</a>";
+  }
   function buildMenu() {
-    var html = menuGroup(t("js.ha.menu.language"), (window.VEDETTA_LANGS || []).map(function (l) {
+    var html = starEntry() + menuGroup(t("js.ha.menu.language"), (window.VEDETTA_LANGS || []).map(function (l) {
       return pill("lg half", "lang", l[0], l[0] === LANG, l[1]);
     }).join(""));
     var theme = ROOT.getAttribute("data-theme") || "auto";
@@ -505,8 +522,13 @@
   }
   function toggleMenu(open) {
     if (open === undefined) open = menuEl.hidden;
+    if (!open && S.starMenu) { S.starMenu = false; S.starHint = false; setStarBadge(); }       // it has been seen: the star goes away
     if (open) {
       closePopups("menu");
+      if (S.starHint && !S.starMenu) {
+        S.starMenu = true;
+        api("/api/ha/star", { method: "POST" }).catch(function () { /* the next summary says again if it was not saved */ });
+      }
       buildMenu();
       // The menu sits inside a card that clips whatever goes past its edges: it is
       // positioned relative to the window, below the button, with a maximum height.
@@ -524,6 +546,12 @@
   }
   menuBtn.addEventListener("click", function (e) { e.stopPropagation(); toggleMenu(); });
   menuEl.addEventListener("click", function (e) {
+    var star = e.target.closest("[data-star]");
+    if (star) {
+      star.style.display = "none";                                  // gone at once; the link still opens (the browser follows it)
+      setTimeout(function () { toggleMenu(false); }, 0);
+      return;
+    }
     if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }
     var item = e.target.closest(".menu-item");
     if (!item) return;

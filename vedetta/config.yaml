@@ -34,6 +34,7 @@ options:
 schema:
   language: list(en|it)
   log_level: list(debug|info|warning|error)
+  star_hint: bool?
   interface: str?
   mqtt_host: str?
   mqtt_port: port?

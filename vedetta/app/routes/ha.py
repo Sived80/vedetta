@@ -19,7 +19,7 @@ from ..applog import logger
 from .. import applog, assets, i18n
 from ..ha import ha_data
 from ..ha.device_debug import device_debug
-from ..storage import journal
+from ..storage import journal, starhint
 from ..scan import latency
 from ..recognition import roles
 from ..storage.history import history
@@ -235,7 +235,27 @@ async def api_ha_summary(request: Request):
         state.sorted_devices(), state.poll_info(), state.activity_info(), new_devices, state.rev,
     )
     from ..ha.mqtt_ha import version
-    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version()}
+    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint()}
+
+
+async def _star_hint() -> bool:
+    """Whether the one-time invitation to star the project may appear (storage/starhint.py). The age of the installation is read once."""
+    global _first_ts
+    if not starhint.enabled() or starhint.done():
+        return False
+    if _first_ts is None:
+        _first_ts = await asyncio.to_thread(history.first_event_ts)
+    return starhint.should_show(_first_ts)
+
+
+_first_ts: float | None = None
+
+
+@router.post("/api/ha/star")
+async def api_ha_star():
+    """The invitation has been shown: it will not come back."""
+    await asyncio.to_thread(starhint.mark_done)
+    return {"ok": True}
 
 
 @router.get("/api/ha/logbook")

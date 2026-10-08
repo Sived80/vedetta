@@ -9,6 +9,9 @@ export VEDETTA_INGRESS_ONLY=1
 export VEDETTA_LANGUAGE="$(bashio::config 'language')"
 LOG_LEVEL="$(bashio::config 'log_level')"
 export VEDETTA_LOG_LEVEL="${LOG_LEVEL}"
+if bashio::config.has_value 'star_hint'; then
+    export VEDETTA_STAR_HINT="$(bashio::config 'star_hint')"
+fi
 
 if bashio::config.has_value 'interface'; then
     export VEDETTA_IFACE="$(bashio::config 'interface')"

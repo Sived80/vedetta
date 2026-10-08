@@ -28,6 +28,7 @@ Everything stays at home: no data is sent outside your network.
 
 - `language`: default language (`en` or `it`); each browser can pick another one.
 - `log_level`: `debug`, `info`, `warning`, `error`.
+- `star_hint`: `true` by default. Once, after a few days of use, a small star appears on the menu button with a link to the project on GitHub; set `false` to never show it. Nothing is sent anywhere.
 - `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).
 - `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant
   MQTT service (Mosquitto app) is used, if present.

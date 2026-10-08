@@ -179,6 +179,7 @@
       }
       S.mqtt = sum.mqtt || null;
       S.version = sum.version || "";
+      if (!S.starMenu) { S.starHint = !!sum.star_hint; setStarBadge(); }
       S.activity.search = !!(sum.activity && sum.activity.search);
       S.activity.rescanning = new Set((sum.activity && sum.activity.rescanning) || []);
       if (sum.roles) S.roles = sum.roles;

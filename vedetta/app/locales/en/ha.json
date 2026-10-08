@@ -178,6 +178,8 @@
   "js.ha.menu.speed_hint": "A device is marked offline after about {t}.",
   "js.ha.log.flap": "changed state {n} times · now {state}",
   "js.ha.menu.flows": "Search methods",
+  "js.ha.menu.star": "Light a star",
+  "js.ha.menu.star_sub": "If Vedetta has helped you",
   "js.ha.pause.title": "Pause monitoring",
   "js.ha.pause.resume_title": "Monitoring is paused",
   "js.ha.pause.live": "Paused",

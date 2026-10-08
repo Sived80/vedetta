@@ -83,7 +83,7 @@ def setup(entries):
     s = state_mod.DeviceState()
     alerts = []
     s.emit_alert = lambda msg, key, **p: alerts.append((key, p))
-    s.trigger = lambda force=False: None
+    s.trigger = lambda force=False, reason="": None
     s.devices = {}
     for did, ip, name, online, spans in entries:
         configs.append({"id": did, "ip": ip, "name": name, "scan_info": {}})

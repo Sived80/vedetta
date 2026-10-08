@@ -25,7 +25,7 @@ async def go():
     s = DeviceState()
     alerts = []
     s.emit_alert = lambda msg, key, **p: alerts.append((key, p))
-    s.trigger = lambda force=False: None
+    s.trigger = lambda force=False, reason="": None
     s.devices = {"a": {"online": False, "name": "Telefono"}, "b": {"online": False}, "c": {"online": True}}
     s._last_mac = {"a": "AA:BB:CC:00:00:01", "b": "AA:BB:CC:00:00:02", "c": "AA:BB:CC:00:00:03"}
     arp = {

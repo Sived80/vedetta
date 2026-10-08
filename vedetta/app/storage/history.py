@@ -52,6 +52,13 @@ CREATE TABLE IF NOT EXISTS known_macs (
     status TEXT NOT NULL
 );
 
+-- The /24 blocks of a large network the periodic check has asked, and when (see scan/arpplan.py): it goes round them one by one.
+CREATE TABLE IF NOT EXISTS scan_blocks (
+    block TEXT PRIMARY KEY,
+    ts REAL NOT NULL,
+    found INTEGER NOT NULL DEFAULT 0
+);
+
 -- Shadow data (nothing reads it to decide what a card shows): what each MAC looked like, and what a card carried over
 -- when another MAC started answering at the same address. Only for analysis, see export/mac_shadow.py.
 CREATE TABLE IF NOT EXISTS mac_memory (
@@ -243,6 +250,22 @@ class History:
                 (device_id,),
             ).fetchone()
         return row["mac"] if row else None
+
+    # ---- blocks of a large network asked by the periodic check ----
+    def scan_blocks(self) -> dict[str, float]:
+        """{block: when it was last asked}."""
+        with self._lock:
+            rows = self._db.execute("SELECT block, ts FROM scan_blocks").fetchall()
+        return {r["block"]: r["ts"] for r in rows}
+
+    def scan_blocks_mark(self, found: dict[str, int], ts: float) -> None:
+        """Notes the blocks asked now and how many devices each held."""
+        with self._lock:
+            self._db.executemany(
+                "INSERT INTO scan_blocks (block, ts, found) VALUES (?, ?, ?) ON CONFLICT(block) DO UPDATE SET ts = excluded.ts, found = excluded.found",
+                [(b, ts, int(n)) for b, n in found.items()],
+            )
+            self._db.commit()
 
     # ---- known MACs (new devices on the network) ----
     def known_all(self) -> dict[str, dict]:

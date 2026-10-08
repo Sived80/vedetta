@@ -1,10 +1,13 @@
 import asyncio
+import ipaddress
 import json
+import os
 import time
+from collections import Counter, deque
 
 from .formatters import update_generic_titles
 from .storage import blocklist, devices_config, newdevices, settings
-from .scan import dhcp, latency, probe, scanner
+from .scan import arpplan, dhcp, latency, probe, scanner
 from .export import mac_shadow
 from .ha import identity_shift
 from . import netutil
@@ -14,6 +17,16 @@ from .storage.history import history
 # The check interval is a setting (settings.poll_interval, 10-300 s),
 # re-read on every cycle: see _interval().
 ARP_MAX_AGE = 10
+# Between two automatic cycles at least this long, whoever wakes the loop (a changed address, merged cards, MQTT): an unbroken chain of
+# wake-ups would otherwise ask the network without pause. A refresh asked by the user is never delayed.
+MIN_GAP_S = 10.0
+CHAIN_WINDOW_S = 60.0     # more than CHAIN_WARN wake-ups in this window are written in the log, with their causes
+CHAIN_WARN = 4
+SLOW_CYCLE_S = 30.0       # a cycle that lasts longer is written in the log
+ARP_CYCLE_TIMEOUT_S = 60.0   # arp-scan of the periodic check that does not finish is closed
+ARP_MEMORY_S = 24 * 3600     # on a large network, what a block told is kept this long (see scan/arpplan.py)
+NET_TTL_S = 300.0
+SUMMARY_S = 3600.0        # one line in the log every hour: how the cycles went
 _MAX_TOMBSTONES = 200
 _QUEUE_SIZE = 200
 # Two cards of the same phone (it changed IP and private MAC): merged only if their names are the same and the two were
@@ -66,6 +79,19 @@ class DeviceState:
         self._next_at = 0.0
         self._arp: tuple[float, dict[str, dict]] | None = None
         self._arp_lock = asyncio.Lock()
+        self._arp_mem: dict[str, tuple[float, dict]] = {}   # large network: ip -> (when, host) of what its blocks told so far
+        self._net: tuple[float, str, str] | None = None     # (when, network, own address), re-read every NET_TTL_S
+        self._baseline_blocks: tuple[str, ...] = ()
+        self._plan_info: dict | None = None                  # last plan of a large network: {"network", "total", "done"}
+        self._cause = ""                  # why this cycle starts: "" = the timer, otherwise who woke the loop
+        self._wake_reason = ""
+        self._last_start = 0.0
+        self._chain: deque = deque()
+        self._chain_warned = -1e9
+        self._slow_warned = -1e9
+        self._stat: list[tuple[float, int]] = []            # (duration, addresses asked) of the cycles since the last summary
+        self._stat_since = time.monotonic()
+        self._stat_chains = 0
         self._misses: dict[str, int] = {}
         self._last_seen: dict[str, float] = {}
         self._db_state: dict[str, bool] = {}
@@ -108,10 +134,11 @@ class DeviceState:
             except asyncio.CancelledError:
                 pass
 
-    def trigger(self, force: bool = False) -> None:
-        """Forces an immediate update cycle (force: even while paused)."""
+    def trigger(self, force: bool = False, reason: str = "") -> None:
+        """Forces an immediate update cycle (force: even while paused). `reason` goes in the log if the cycles come in a chain."""
         if force:
             self._force = True
+        self._wake_reason = self._wake_reason or reason
         self._wake.set()
 
     # ---- pause of the periodic check ----
@@ -299,18 +326,126 @@ class DeviceState:
         """Recent ARP table (reuses the one from the check cycle if fresh)."""
         return await self._arp_by_ip(120)
 
+    async def _network(self) -> tuple[str, str] | None:
+        """(network, own address) of the interface, read again every NET_TTL_S; None if it cannot be read."""
+        now = time.monotonic()
+        if self._net is None or now - self._net[0] > NET_TTL_S:
+            try:
+                cidr, own = await netutil.get_local_network()
+                self._net = (now, cidr, own)
+            except Exception:
+                if self._net is None:
+                    return None
+        return self._net[1], self._net[2]
+
+    @staticmethod
+    def _known_ips() -> list[str]:
+        """Addresses of the configured devices first, then of the known ones (thread)."""
+        ips = [c["ip"] for c in devices_config.load_devices() if c.get("ip")]
+        return ips + [r["ip"] for r in history.known_all().values() if r.get("ip")]
+
+    async def _arp_plan(self) -> dict | None:
+        """None: the whole network is asked (up to a /24, as always). Otherwise the plan of a large network (scan/arpplan.py)."""
+        net = await self._network()
+        if net is None:
+            return None
+        try:
+            known = await asyncio.to_thread(self._known_ips)
+            blocks = await asyncio.to_thread(history.scan_blocks)
+            return arpplan.plan(net[0], net[1], known, blocks, force=bool(os.environ.get("VEDETTA_ARP_BLOCKS")))
+        except Exception:
+            logger.exception("Piano ARP fallito: si chiede solo la rete attorno a questo computer")
+            return arpplan.own_block_only(net[1])
+
+    async def _remember(self, hosts: list[dict], plan: dict) -> dict[str, dict]:
+        """Large network: what the blocks asked now replace what was remembered of them; the rest is kept (up to ARP_MEMORY_S), so the
+        view of the network fills in cycle after cycle. The neighbours the system has just seen are added at no cost."""
+        now = time.time()
+        blocks = [ipaddress.ip_network(b) for b in plan["blocks"]]
+        singles = {t for t in plan["targets"] if t not in plan["blocks"]}
+
+        def asked(ip: str) -> bool:
+            return ip in singles or any(ipaddress.ip_address(ip) in b for b in blocks)
+
+        mem = self._arp_mem
+        for ip in [i for i, (ts, _) in mem.items() if asked(i) or now - ts > ARP_MEMORY_S]:
+            del mem[ip]
+        for h in hosts:
+            mem[h["ip"]] = (now, h)
+        for h in await scanner.neighbors(plan["network"]):
+            if h["ip"] not in mem and not asked(h["ip"]):
+                mem[h["ip"]] = (now, h)
+        found = {str(b): sum(1 for i in mem if ipaddress.ip_address(i) in b) for b in blocks}
+        try:
+            await asyncio.to_thread(history.scan_blocks_mark, found, now)
+        except Exception:
+            logger.debug("Blocchi ARP non salvati", exc_info=True)
+        self._baseline_blocks = tuple(set(self._baseline_blocks) | set(plan["fresh"]))
+        self._plan_info = {"network": plan["network"], "total": plan["total"], "done": plan["done"] + len(plan["fresh"])}
+        return {ip: h for ip, (_, h) in mem.items()}
+
     async def _arp_by_ip(self, max_age: float) -> dict[str, dict]:
         async with self._arp_lock:
             now = time.monotonic()
             if self._arp is None or now - self._arp[0] > max_age:
                 try:
-                    hosts = await scanner.arp_scan()
-                    self._arp = (time.monotonic(), {h["ip"]: h for h in hosts})
+                    plan = await self._arp_plan()
+                    if plan is None:
+                        if self._plan_info is not None:
+                            logger.info("Rete di dimensione normale: si chiede tutta ad ogni giro")
+                        self._plan_info = None
+                        hosts = await scanner.arp_scan()
+                        result = {h["ip"]: h for h in hosts}
+                    else:
+                        if self._plan_info is None:
+                            logger.info("Rete grande (%s, %d blocchi da 256 indirizzi): a ogni giro si chiede la rete attorno a questo computer, "
+                                        "i dispositivi noti e un blocco in piu', a turno", plan["network"], plan["total"])
+                        hosts = await scanner.arp_scan(plan["targets"], timeout=ARP_CYCLE_TIMEOUT_S)
+                        result = await self._remember(hosts, plan)
+                    self._asked = len(plan["targets"]) if plan else 0
+                    self._arp = (time.monotonic(), result)
+                except asyncio.TimeoutError:
+                    logger.warning("La ricerca ARP non e' finita in tempo e si e' fermata: si usa l'ultimo risultato")
+                    if self._arp is None:
+                        self._arp = (time.monotonic(), {})
                 except Exception:
                     logger.exception("Scansione ARP fallita")
                     if self._arp is None:
                         self._arp = (time.monotonic(), {})
             return self._arp[1]
+
+    # ---- how the cycles go (a line in the log, only when something is wrong, and one summary an hour) ----
+    def _note_start(self, cause: str) -> None:
+        now = time.monotonic()
+        if cause and cause != "force":
+            self._chain.append((now, cause))
+        while self._chain and now - self._chain[0][0] > CHAIN_WINDOW_S:
+            self._chain.popleft()
+        if len(self._chain) >= CHAIN_WARN and now - self._chain_warned > 600:
+            self._chain_warned = now
+            causes = ", ".join("%s x%d" % (c, n) for c, n in Counter(c for _, c in self._chain).most_common())
+            logger.warning("Controlli a catena: %d avviati da eventi in un minuto (%s); tra due controlli passano almeno %d s",
+                           len(self._chain), causes, MIN_GAP_S)
+            self._stat_chains += 1
+
+    def _note_end(self, started: float) -> None:
+        now = time.monotonic()
+        dur = now - started
+        self._stat.append((dur, getattr(self, "_asked", 0)))
+        if dur > SLOW_CYCLE_S and now - self._slow_warned > 600:
+            self._slow_warned = now
+            logger.warning("Controllo lento: %.0f s (%d indirizzi chiesti sulla rete)", dur, getattr(self, "_asked", 0))
+        if now - self._stat_since >= SUMMARY_S and self._stat:
+            durs = sorted(d for d, _ in self._stat)
+            args = (len(durs), durs[len(durs) // 2], durs[-1], sum(a for _, a in self._stat) // len(self._stat), self._stat_chains)
+            if self._plan_info:
+                logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
+                            "avviati a catena %d volte; rete grande %s: %d blocchi su %d gia' controllati",
+                            *args, self._plan_info["network"], self._plan_info["done"], self._plan_info["total"])
+            else:
+                logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
+                            "avviati a catena %d volte", *args)
+            self._stat, self._stat_since, self._stat_chains = [], now, 0
 
     def _shadow(self, device_id: str, previous: dict | None, result: dict, now: float) -> None:
         """Data per MAC for later analysis (export/mac_shadow.py). Never decides anything shown, never raises."""
@@ -512,7 +647,7 @@ class DeviceState:
             label = device.get("name") or old_ip
             self.emit_alert(f"{label}: IP cambiato {old_ip} -> {new_ip}", "alert.ip_changed",
                             label=label, old=old_ip, new=new_ip)
-            self.trigger()
+            self.trigger(reason="ip_changed")
 
     @staticmethod
     def _duplicate_key(device: dict) -> str | None:
@@ -588,7 +723,7 @@ class DeviceState:
         label = keep.get("name") or old_ip
         self.emit_alert(f"{label}: schede unite (stesso telefono) {drop_id} -> {keep_id}", "alert.duplicate_merged",
                         label=label, old=old_ip if address != old_ip else new_ip, new=address)
-        self.trigger()
+        self.trigger(reason="phones_merged")
 
     async def _save_latency(self) -> None:
         """One average sample per minute per device, in a single transaction."""
@@ -634,8 +769,10 @@ class DeviceState:
                 observed = newdevices.observed_macs(arp, dhcp.seen, skip_ips)
                 observed = {m: o for m, o in observed.items()
                             if not blocklist.matches(mac=m, ip=o["ip"], name=o["hostname"])}
+                baseline, self._baseline_blocks = self._baseline_blocks, ()
                 fresh, current = await asyncio.to_thread(
                     newdevices.evaluate, observed, {c["ip"] for c in configs}, configured_macs, newdevices.own_macs(),
+                    baseline_blocks=baseline,
                 )
             except Exception:
                 logger.exception("Controllo nuovi dispositivi fallito")
@@ -674,7 +811,14 @@ class DeviceState:
             # the next one immediately instead of being lost.
             self._wake.clear()
             if self.paused_remaining() is None or self._force:
+                forced = self._force
                 self._force = False
+                if self._cause and not forced:      # woken by an event, not by the timer: never closer than MIN_GAP_S to the last one
+                    gap = MIN_GAP_S - (time.monotonic() - self._last_start)
+                    if gap > 0:
+                        await asyncio.sleep(gap)
+                self._last_start = time.monotonic()
+                self._note_start(self._cause or ("force" if forced else ""))
                 try:
                     await self.poll_once()
                 except asyncio.CancelledError:
@@ -682,6 +826,7 @@ class DeviceState:
                 except Exception:
                     logger.exception("Ciclo di aggiornamento fallito")
                     self.ready.set()
+                self._note_end(self._last_start)
             else:
                 self.ready.set()
             # Re-read on every cycle: a change from Settings applies immediately
@@ -694,8 +839,10 @@ class DeviceState:
             self._emit(self.poll_info())
             try:
                 await asyncio.wait_for(self._wake.wait(), timeout=wait)
+                self._cause = self._wake_reason or "other"
             except asyncio.TimeoutError:
-                pass
+                self._cause = ""
+            self._wake_reason = ""
 
 
 state = DeviceState()

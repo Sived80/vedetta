@@ -25,7 +25,7 @@ sed -i \
   -e '/^services:$/,/^  - mqtt:want$/d' \
   "$STAGE/$SLUG/config.yaml"
 # The debug copy shows the one-time star invitation at once and again after every restart (to try it): no age needed, memory erased at start.
-sed -i -e '/^set -e$/a export VEDETTA_STAR_MIN_AGE_DAYS=0' -e '/^set -e$/a rm -f /data/star_hint.json' "$STAGE/$SLUG/run.sh"
+sed -i -e '/^set -e$/a export VEDETTA_STAR_MIN_AGE_DAYS=0' -e '/^set -e$/a rm -f /data/star_hint.json' -e '/^set -e$/a export VEDETTA_ARP_BLOCKS=1' "$STAGE/$SLUG/run.sh"
 tar czf - -C "$STAGE" "$SLUG" | ssh -i "$KEY" "root@$HOST" \
   "rm -rf /local_apps/$SLUG && tar xzf - -C /local_apps && ha store reload && if ha apps info local_$SLUG 2>&1 | grep -q '^version: null'; then ha apps install local_$SLUG; else INFO=\$(ha apps info local_$SLUG 2>&1); if [ \"\$(echo \"\$INFO\" | sed -n 's/^version: //p')\" != \"\$(echo \"\$INFO\" | sed -n 's/^version_latest: //p')\" ]; then ha apps update local_$SLUG; else ha apps rebuild local_$SLUG; fi; fi && ha apps start local_$SLUG"
 echo "Sent: the first build may take a few minutes. Then: Settings > Apps > Vedetta (debug) > Show in sidebar."

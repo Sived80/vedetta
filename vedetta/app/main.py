@@ -339,7 +339,7 @@ async def api_settings_set(request: Request):
         before = settings.load()["poll_interval"]
         updated = settings.update(body)
         if updated["poll_interval"] != before:
-            state.trigger()  # the new interval applies immediately: wake the loop
+            state.trigger(reason="settings")  # the new interval applies at once (at most MIN_GAP_S after the last cycle): wake the loop
         return updated
     except ValueError as exc:
         raise HTTPException(400, f"Valore non valido: {exc}")

@@ -385,7 +385,7 @@ class MqttService:
     def _scan(self) -> None:
         """Equivalent to POST /api/refresh."""
         if self._state is not None:
-            self._state.trigger()
+            self._state.trigger(reason="mqtt")
 
     def _adopt(self, topic: str, payload: str) -> None:
         self.sync.adopt(topic, payload)

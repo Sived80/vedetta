@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 from ..applog import logger
 from ..formatters import is_useless_title, truncate_name
 from ..iface import lan_iface
+from .arpplan import parse_neighbors
 from ..recognition.vendor_lookup import resolve_vendor_info
 
 # The container runs on a shared, limited CPU: scanning -p- -sV -O on
@@ -254,9 +255,14 @@ def parse_ssh_hostkey(output: str) -> str | None:
 arp_conflicts: dict[str, list[str]] = {}
 
 
-async def arp_scan() -> list[dict]:
+ARP_TIMEOUT_S = 120.0   # arp-scan that does not finish is closed: the cycle goes on with the last result
+
+
+async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOUT_S) -> list[dict]:
     """Host discovery via ARP: layer 2 only, no ICMP/TCP fallback like nmap
     -sn. On a typical /24 it runs in 1-2 seconds instead of 3-5.
+    targets None: the whole network of the interface (--localnet). Otherwise only those (addresses and CIDR blocks, see
+    scan/arpplan.py), given on the standard input. A scan that does not end within `timeout` seconds is killed and TimeoutError raised.
 
     No logging in here: it is also called on every page refresh (behind
     a 15s cache, see get_cached_arp_by_ip in main.py), not only when
@@ -264,12 +270,34 @@ async def arp_scan() -> list[dict]:
     with routine events invisible to the user, burying in a few minutes
     the useful ones (real scans, errors). Whoever calls it for an
     explicit action (quick_scan) logs at that level."""
+    args = ["arp-scan", f"--interface={lan_iface()}", "-x"] + (["--file=-"] if targets else ["--localnet"])
     proc = await asyncio.create_subprocess_exec(
-        "arp-scan", f"--interface={lan_iface()}", "--localnet", "-x",
+        *args, stdin=asyncio.subprocess.PIPE if targets else None,
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
     )
-    out, _ = await proc.communicate()
+    try:
+        out, _ = await asyncio.wait_for(proc.communicate("\n".join(targets).encode() if targets else None), timeout)
+    except BaseException:       # timeout, or the cycle was cancelled: never leave the process running
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass
+        await proc.wait()
+        raise
     return parse_arp_scan(out.decode(errors="replace"))
+
+
+async def neighbors(net: str | None = None) -> list[dict]:
+    """The neighbours the system has just seen answer (`ip neigh`): they cost no packet. [] if it cannot be read."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "ip", "-4", "-o", "neigh", "show", "dev", lan_iface(),
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+        )
+        out, _ = await asyncio.wait_for(proc.communicate(), 10)
+    except Exception:
+        return []
+    return parse_neighbors(out.decode(errors="replace"), net)
 
 
 def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:

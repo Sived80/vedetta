@@ -6,6 +6,7 @@ to be reported), 'ignored' (discarded by the user). On the very first cycle (met
 key 'newdev_baseline' missing) all the MACs present become 'known' without
 alerts: otherwise the whole LAN would appear "new". The evaluate function is
 synchronous and has no dependencies on the app state, so it can be tested on its own."""
+import ipaddress
 import logging
 import re
 import time
@@ -81,10 +82,20 @@ def readable_label(row: dict) -> str:
     return row.get("hostname") or row.get("brand") or row.get("vendor") or row.get("ip") or row["mac"]
 
 
+def _in_blocks(ip: str | None, blocks: tuple[str, ...]) -> bool:
+    try:
+        return bool(ip) and any(ipaddress.ip_address(ip) in ipaddress.ip_network(b) for b in blocks)
+    except ValueError:
+        return False
+
+
 def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_macs: set[str],
-             ignore_macs: set[str] = frozenset(), hist: History = history, now: float | None = None) -> tuple[list[dict], list[dict]]:
+             ignore_macs: set[str] = frozenset(), hist: History = history, now: float | None = None,
+             baseline_blocks: tuple[str, ...] = ()) -> tuple[list[dict], list[dict]]:
     """Updates known_macs with the observed MACs. Returns (new_to_alert,
-    full_list_of_the_new). A MAC that is already 'new' is not alerted again."""
+    full_list_of_the_new). A MAC that is already 'new' is not alerted again.
+    baseline_blocks: blocks of a large network asked for the first time (scan/arpplan.py): what lives there now is the starting
+    point, like the first search of the network, not a flood of new devices."""
     global _present
     now = time.time() if now is None else now
     observed = {m: o for m, o in observed.items() if m not in ignore_macs}
@@ -106,7 +117,7 @@ def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_mac
         row = rows.get(mac)
         vendor = obs["vendor"] or lookup_vendor(mac)
         if row is None:
-            status = "known" if configured else "new"
+            status = "known" if (configured or _in_blocks(obs["ip"], baseline_blocks)) else "new"
             hist.known_set(mac, now, obs["ip"], vendor, obs["hostname"], status)
             if status == "new":
                 fresh.append({"mac": mac, "ip": obs["ip"], "vendor": vendor, "hostname": obs["hostname"],

@@ -48,10 +48,12 @@ def mark_done() -> None:
 
 def should_show(first_ts: float | None, now: float | None = None) -> bool:
     """True when the invitation may appear: on, never shown, and the installation has history at least MIN_AGE_DAYS old."""
-    if not enabled() or done() or not first_ts:
+    if not enabled() or done():
         return False
     try:
         days = float(os.environ.get("VEDETTA_STAR_MIN_AGE_DAYS", MIN_AGE_DAYS))
     except ValueError:
         days = MIN_AGE_DAYS
-    return (now if now is not None else time.time()) - first_ts >= days * 86400
+    if days <= 0:
+        return True             # the debug copy: no history needed
+    return bool(first_ts) and (now if now is not None else time.time()) - first_ts >= days * 86400

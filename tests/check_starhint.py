@@ -30,7 +30,7 @@ assert starhint.should_show(now - 4 * DAY, now), "con qualche giorno di storia c
 assert starhint.should_show(now - 400 * DAY, now), "una installazione vecchia la vede dopo l'aggiornamento"
 
 os.environ["VEDETTA_STAR_MIN_AGE_DAYS"] = "0"
-assert starhint.should_show(now - 5, now), "la copia di debug non aspetta"
+assert starhint.should_show(now - 5, now) and starhint.should_show(None, now), "la copia di debug non aspetta, nemmeno la storia"
 os.environ.pop("VEDETTA_STAR_MIN_AGE_DAYS")
 
 # the option switches it off

@@ -39,7 +39,7 @@
   "flow.step.tls_ssh.label": "TLS certifikát a SSH klíč",
   "flow.step.tls_ssh.description": "Čte TLS certifikát a SSH klíč.",
  
-"flow.step.tls_ssh.description": "Načte TLS certifikát a SSH klíč.",
+  "flow.step.tls_ssh.description": "Načte TLS certifikát a SSH klíč.",
   "flow.step.local_api.label": "Rozhraní výrobců",
   "flow.step.local_api.description": "Shelly, Sonos, Roku... definice modelu a firmwaru.",
   "flow.step.igmp.label": "IGMP (multicast)",

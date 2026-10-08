@@ -48,9 +48,6 @@ Every clue is weak on its own. Vedetta weighs them together, counts a repeated f
 
 <p align="center"><img src="docs/images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
 
-<p align="center"><img src="docs/images/demo.gif" alt="An unknown device on the network becomes a Sony console after a scan, and its card shows the clues that decided it" width="100%"></p>
-<p align="center"><sub>An unknown device, a scan, a name — and the clues behind it</sub></p>
-
 <p align="center"><img src="docs/images/evidence-popup.png" alt="The pop-up of the Type shows each clue with its weight and the hypotheses that were rejected" width="560"></p>
 <p align="center"><sub>Tap the (i) next to a name, brand or type: every clue, its weight, and what was ruled out</sub></p>
 
@@ -104,6 +101,11 @@ All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 | [Roadmap](docs/ROADMAP.md) | What is done, with date and version, and what is planned |
 | [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
 | [Changelog](vedetta/CHANGELOG.md) | Every version |
+
+## See it in motion
+
+<p align="center"><img src="docs/images/demo.gif" alt="An unknown device on the network becomes a Sony console after a scan, and its card shows the clues that decided it" width="100%"></p>
+<p align="center"><sub>An unknown device, a scan, a name — and the clues behind it</sub></p>
 
 ## 📜 License and credits
 

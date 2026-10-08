@@ -2,6 +2,7 @@
 
 ## Unreleased
 - **Czech** (Čeština): the whole interface and the server texts are translated, a contribution of **hruba202**. Děkujeme!
+- **Language list** in the menu (⋮): one field with a globe and a list in the look of the app replaces the language buttons, ready for more languages; a new language is a folder of texts (see *Add a language* in the development notes).
 
 ## 0.5.0 · Telaio
 **Telaio** is Italian for *frame*: the frame of Vedetta has been rebuilt, and on it come new windows and a lot of care. Thank you to everyone who sent a report: several fixes in this version come straight from your exports. 🎉

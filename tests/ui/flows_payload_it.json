@@ -1,0 +1,278 @@
+{
+ "steps": [
+  {
+   "id": "arp",
+   "label": "Scoperta ARP",
+   "description": "Trova i dispositivi in rete.",
+   "flows": [
+    "initial"
+   ],
+   "locked_in": [
+    "initial"
+   ],
+   "risk": "easy"
+  },
+  {
+   "id": "ha_registry",
+   "label": "Dati di Home Assistant",
+   "description": "Legge da Home Assistant nome, modello e area.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "mdns",
+   "label": "Nomi mDNS",
+   "description": "Legge i nomi annunciati dai dispositivi.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "reverse_names",
+   "label": "Nomi (DNS inverso)",
+   "description": "Chiede il nome ai dispositivi senza nome.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "ssdp",
+   "label": "SSDP/UPnP",
+   "description": "Nome, produttore e modello via UPnP.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "onvif",
+   "label": "ONVIF / WS-Discovery",
+   "description": "Telecamere, stampanti e PC dicono nome e modello.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "rtsp",
+   "label": "RTSP",
+   "description": "Legge l'intestazione dei flussi video.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "netbios_snmp",
+   "label": "NetBIOS e SNMP",
+   "description": "Per PC, stampanti e NAS.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "invasive"
+  },
+  {
+   "id": "ports_fast",
+   "label": "Porte (rapida)",
+   "description": "Cerca le porte aperte, in fretta.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "invasive"
+  },
+  {
+   "id": "ports_all",
+   "label": "Porte (tutte)",
+   "description": "Cerca su tutte le porte, più a lungo.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "risky"
+  },
+  {
+   "id": "service_os",
+   "label": "Servizi",
+   "description": "Riconosce servizi e versioni. Più lenta.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "risky"
+  },
+  {
+   "id": "http_title",
+   "label": "Pagine web",
+   "description": "Conferma le pagine web e ne legge il titolo.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "easy"
+  },
+  {
+   "id": "tls_ssh",
+   "label": "Certificato TLS e chiave SSH",
+   "description": "Legge certificato TLS e chiave SSH.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "invasive"
+  },
+  {
+   "id": "local_api",
+   "label": "Interfacce dei produttori",
+   "description": "Shelly, Sonos, Roku... dichiarano modello e firmware.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "invasive"
+  },
+  {
+   "id": "igmp",
+   "label": "IGMP (multicast)",
+   "description": "Chi riceve flussi multicast. Spenta di default.",
+   "flows": [
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "risky"
+  },
+  {
+   "id": "adapter_probe",
+   "label": "Dispositivi supportati",
+   "description": "Riconosce i dispositivi supportati, come Shelly.",
+   "flows": [
+    "associative",
+    "deep"
+   ],
+   "locked_in": [],
+   "risk": "invasive"
+  }
+ ],
+ "flows": {
+  "initial": {
+   "label": "Ricerca iniziale",
+   "description": "Trova i dispositivi in rete.",
+   "steps": [
+    "arp"
+   ]
+  },
+  "associative": {
+   "label": "Ricerca associativa",
+   "description": "Analizza i dispositivi scelti prima di aggiungerli.",
+   "steps": [
+    "ha_registry",
+    "reverse_names",
+    "onvif",
+    "rtsp",
+    "ports_fast",
+    "http_title",
+    "tls_ssh",
+    "local_api",
+    "adapter_probe"
+   ]
+  },
+  "deep": {
+   "label": "Ricerca approfondita",
+   "description": "Analizza di nuovo i dispositivi aggiunti, anche di notte.",
+   "steps": [
+    "ha_registry",
+    "mdns",
+    "reverse_names",
+    "ssdp",
+    "onvif",
+    "rtsp",
+    "netbios_snmp",
+    "ports_fast",
+    "ports_all",
+    "service_os",
+    "http_title",
+    "tls_ssh",
+    "local_api",
+    "adapter_probe"
+   ]
+  }
+ },
+ "risks": {
+  "easy": {
+   "label": "Non invasivo",
+   "description": "Richieste leggere: non disturbano i dispositivi."
+  },
+  "invasive": {
+   "label": "Invasivo",
+   "description": "Interroga il dispositivo: può comparire nei suoi registri."
+  },
+  "risky": {
+   "label": "Rischioso",
+   "description": "Prove aggressive o lunghe: possono bloccare dispositivi fragili."
+  }
+ },
+ "defaults": {
+  "initial": [
+   "arp"
+  ],
+  "associative": [
+   "ha_registry",
+   "reverse_names",
+   "onvif",
+   "rtsp",
+   "ports_fast",
+   "http_title",
+   "tls_ssh",
+   "local_api",
+   "adapter_probe"
+  ],
+  "deep": [
+   "ha_registry",
+   "mdns",
+   "reverse_names",
+   "ssdp",
+   "onvif",
+   "rtsp",
+   "netbios_snmp",
+   "ports_fast",
+   "ports_all",
+   "service_os",
+   "http_title",
+   "tls_ssh",
+   "local_api",
+   "adapter_probe"
+  ]
+ },
+ "ui": {
+  "js.flows.title": "Metodi di ricerca",
+  "js.flows.hint": "Scegli cosa fa ogni ricerca. Vale dalla prossima.",
+  "js.flows.required": "obbligatoria",
+  "js.flows.reset": "Ripristina predefiniti",
+  "js.ha.more.close": "Chiudi",
+  "menu_title": "Metodi di ricerca"
+ }
+}

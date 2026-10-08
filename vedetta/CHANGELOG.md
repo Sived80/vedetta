@@ -8,6 +8,7 @@
 - **Status line** under the circle ("Updated now · next check in 24 s"): on a narrow screen it no longer breaks in the middle of a phrase; the two parts go one under the other ("Updated now" / "next check in 24 s"), on purpose. The wording is unchanged.
 - **Menu, speed** (Fast / Normal / Relaxed): the time is written inside each button (10 s, 30 s, 1 min); choosing one lights it at once and the menu stays open, so the line under it (when a device is called offline) can be read. Before, the menu closed and, until the next check, no button looked chosen.
 - **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded); its icon looks as big as theirs (the download arrow fills less of its box).
+- **Search methods** window redone: the three searches are tabs (Initial / Associative / Deep); under them the functions of the chosen search sit in three panels by risk (closed at the start), with counters (on / intrusive / risky) that follow the switches. The window keeps its size while switching, only the list scrolls. Texts are shorter.
 
 ## 0.4.7
 - **Card of the devices found, narrow screens**: under about 480 px the *Ignore* and *In progress* buttons were empty (the text went away and the icon that should replace it stayed hidden too). Now the icon is shown.

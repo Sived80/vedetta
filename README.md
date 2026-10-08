@@ -88,6 +88,10 @@ Step by step, the local-app option and the first launch: [Installation](docs/INS
 
 All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 
+## 🌍 Your language?
+
+Vedetta speaks **English, Italian and Czech** (thanks to the community for the Czech). Adding yours takes no code: copy the `en` folder, translate the texts, open a pull request. [Step by step →](docs/DEVELOPMENT.md#add-a-language)
+
 ## Documentation
 
 | Page | What it covers |

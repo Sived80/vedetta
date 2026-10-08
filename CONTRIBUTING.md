@@ -21,7 +21,7 @@ Brands, product signatures and logos live in plain data files. [Development](doc
   ```
   python tools/run_tests.py
   ```
-- Texts shown to the user go in the language files of both languages (English and Italian), never in the code.
+- Texts shown to the user go in the language files (`vedetta/app/locales/<code>/`), never in the code. English is the base; a new language is a new folder ([how](docs/DEVELOPMENT.md#add-a-language)).
 - A colour that comes from outside data must stay readable on the light and the dark theme.
 - Code, comments, commits and documentation are in English. No personal names, addresses or credentials anywhere in the repository.
 - Recognition rules must follow the rule of the project: a clue is weighed by family, doubt is shown as doubt, and the reason can always be shown. See [Recognition](docs/RECOGNITION.md).

@@ -29,6 +29,16 @@ follows a brand you change by hand. Add a brand to the list in `tools/update_log
 are regenerated (logos come from [Simple Icons](https://simpleicons.org) and
 [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons)). Only logos that may be redistributed belong here.
 
+## Add a language
+
+The language list in the menu is built from the folders in [`vedetta/app/locales/`](../vedetta/app/locales), so a new language needs no code:
+
+1. Copy `vedetta/app/locales/en/` to `vedetta/app/locales/<code>/` (the two-letter ISO code, e.g. `es`, `fr`).
+2. Set `lang.name` in `server.json` to the name of the language **in that language** (it is what the menu shows).
+3. Translate the texts. Keep the `{placeholders}` as they are; a text left out is shown in English.
+4. Add the code to `language: list(...)` in `vedetta/config.yaml` and to the `language` line of `vedetta/DOCS.md`.
+5. Open a pull request. The tests (`python tools/run_tests.py`) check that nothing is broken.
+
 ## Development
 
 ```text

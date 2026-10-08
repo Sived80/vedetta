@@ -496,6 +496,7 @@
     html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1">' + esc(t("js.ha.menu.ignored")) + icon("eye-off") + "</button>";
     // Export for analysis: almost invisible on purpose (small, faded icon).
     html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
+    if (S.version) html += '<div class="menu-version">Vedetta ' + esc(S.version) + "</div>";    // which version is running (the bar above the page is Home Assistant's)
     menuEl.innerHTML = html;
   }
   function toggleMenu(open) {

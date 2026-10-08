@@ -400,6 +400,7 @@
   /* Pause menu pill at full width (it is "lg full": must come after .menu .pill.lg). */
   .menu .pill.full { flex: 1 1 100%; }
   .menu-hint { padding: 8px 2px 0; font-size: 12px; color: var(--secondary-text-color); }
+  .menu-version { padding: 10px 2px 2px; font-size: 11px; text-align: right; color: var(--secondary-text-color); opacity: 0.75; user-select: text; }
 
   /* Menu entries that open a dialog: one line each, one under the other, icon on the right. */
   .menu-link { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 10px; padding: 12px 2px 4px;
@@ -407,9 +408,6 @@
   .menu-link:hover { color: var(--primary-color); }
   .menu-link .mdi { width: 18px; height: 18px; color: var(--secondary-text-color); }
   .menu-link.next { margin-top: 0; border-top: 0; padding-top: 8px; }
-  /* Export: a menu entry like the others, but discreet. */
-  .menu-item.menu-export { opacity: 0.55; font-size: 13px; }
-  .menu-item.menu-export:hover, .menu-item.menu-export:focus-visible { opacity: 1; }
 
   /* Visual polish, shared part: focus ring, card titles, search, touch target. */
   :focus-visible { outline-color: var(--focus-color); }

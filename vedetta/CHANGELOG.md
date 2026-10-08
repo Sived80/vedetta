@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- **The version is shown** at the bottom of the menu (⋮), small and grey: "Vedetta 0.4.7".
+- **Menu**: the *Export for analysis* entry has the same colour and size as the entries above it (it was faded).
+
 ## 0.4.7
 - **Card of the devices found, narrow screens**: under about 480 px the *Ignore* and *In progress* buttons were empty (the text went away and the icon that should replace it stayed hidden too). Now the icon is shown.
 

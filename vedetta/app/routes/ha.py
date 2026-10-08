@@ -234,7 +234,8 @@ async def api_ha_summary(request: Request):
     summary = ha_data.build_summary(
         state.sorted_devices(), state.poll_info(), state.activity_info(), new_devices, state.rev,
     )
-    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info()}
+    from ..ha.mqtt_ha import version
+    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version()}
 
 
 @router.get("/api/ha/logbook")

@@ -178,6 +178,7 @@
           pausedTotal: sum.poll.paused_total_ms || null };
       }
       S.mqtt = sum.mqtt || null;
+      S.version = sum.version || "";
       S.activity.search = !!(sum.activity && sum.activity.search);
       S.activity.rescanning = new Set((sum.activity && sum.activity.rescanning) || []);
       if (sum.roles) S.roles = sum.roles;

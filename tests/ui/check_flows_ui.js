@@ -41,8 +41,13 @@ const dom = new JSDOM(html, {
       let b = {};
       if (url.startsWith("/api/flows")) {
         if (opts && opts.method === "POST") {
-          if (url.startsWith("/api/flows/reset")) b = JSON.parse(JSON.stringify(payload));
-          else {
+          if (url.startsWith("/api/flows/reset")) {
+            inflight++; maxInflight = Math.max(maxInflight, inflight);
+            return new Promise((res) => setTimeout(() => {
+              inflight--; serverFlows = { initial: payload.flows.initial.steps.slice(), associative: payload.flows.associative.steps.slice(), deep: payload.flows.deep.steps.slice() };
+              res(ok(JSON.parse(JSON.stringify(payload))));
+            }, Math.random() * 40));
+          } else {
             // the network is slow and uneven: the request arrives after a random delay (so requests sent together may arrive out of order)
             const sent = JSON.parse(opts.body);
             inflight++; maxInflight = Math.max(maxInflight, inflight);
@@ -130,6 +135,20 @@ const click = (el) => el.dispatchEvent(new dom.window.MouseEvent("click", { bubb
   check(maxInflight === 1, "un solo salvataggio alla volta (" + maxInflight + ")");
   check(JSON.stringify(onScreen) === JSON.stringify(wanted), "dopo tanti cambi veloci il server ha l'ultima scelta mostrata a schermo (" + onScreen.length + " contro " + wanted.length + ")");
   check(q(".fl-chips .risk.r-easy").textContent.startsWith(String(onScreen.length)), "i contatori sono quelli dello schermo");
+
+  // a change and, at once, "Reset to defaults" on a slow network, many times: each time the server must end with the defaults, like the screen
+  let stale = 0;
+  const want = JSON.stringify(payload.flows.deep.steps.slice().sort());
+  for (let k = 0; k < 12; k++) {
+    const sw1 = qa('.fl-sw[data-p="deep"]:not(:disabled)')[k % 3];
+    sw1.checked = !sw1.checked; sw1.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
+    click(q('[data-fl="reset"]'));
+    await wait(200);
+    if (JSON.stringify(serverFlows.deep.slice().sort()) !== want) stale++;
+  }
+  check(stale === 0, "dopo cambio + ripristino subito il server ha sempre i predefiniti (" + stale + " volte su 12 con la scelta vecchia)");
+  const resetDeep = qa('.fl-sw[data-p="deep"]').filter((x) => x.checked).map((x) => x.dataset.step).sort();
+  check(resetDeep.length === payload.flows.deep.steps.length + payload.steps.filter((x) => x.locked_in.includes("deep") && !payload.flows.deep.steps.includes(x.id)).length, "e lo schermo mostra i predefiniti");
 
   // arrow keys move between the tabs
   q('[data-fl-tab="deep"]').dispatchEvent(new dom.window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));

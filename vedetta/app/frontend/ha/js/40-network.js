@@ -467,11 +467,7 @@
       grp.nextElementSibling.hidden = !open;
       return;
     }
-    if (e.target.closest('[data-fl="reset"]')) {
-      api("/api/flows/reset", { method: "POST" }).then(function (r) {
-        S.fl = r; renderFlows();
-      }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
-    }
+    if (e.target.closest('[data-fl="reset"]')) flReset();
   });
   flowsDlg.addEventListener("keydown", function (e) {
     var tab = e.target.closest("[data-fl-tab]");
@@ -486,23 +482,32 @@
   flowsDlg.addEventListener("scroll", function (e) {
     if (e.target.id === "fl-panel") flowsDlg.querySelector(".fl-top").classList.toggle("scrolled", e.target.scrollTop > 0);
   }, true);
-  // Saving: one request at a time. A change made while a save is on its way waits for it and is then saved alone with the latest state,
-  // so the server always ends with the last choice (requests sent together can arrive out of order).
-  var flSaving = false, flAgain = false;
+  // Saving: everything that writes to the server (a change, the reset) goes through one queue, one request at a time and in the order of the
+  // clicks: requests sent together can arrive out of order and leave an older choice saved. A change waits for the one on its way and is saved
+  // alone with the latest state (several quick changes make one save).
+  var flChain = Promise.resolve(), flPending = false;
+  function flQueue(fn) { flChain = flChain.then(fn, fn); return flChain; }
   function flSave() {
-    if (flSaving) { flAgain = true; return; }
-    flSaving = true;
-    var out = {};
-    FL_PROFILES.forEach(function (q) { out[q] = S.fl.flows[q].steps.slice(); });
-    api("/api/flows", { method: "POST", json: { flows: out } }).then(function (r) {
-      if (!flAgain) S.fl = r;
-    }).catch(function (err) {
-      flAgain = false;
-      snack(err && err.message ? err.message : t("js.ha.toast.error"), { kind: "error" });
-      return api("/api/flows").then(function (r) { S.fl = r; renderFlows(); });
-    }).then(function () {
-      flSaving = false;
-      if (flAgain) { flAgain = false; flSave(); }
+    if (flPending) return;
+    flPending = true;
+    flQueue(function () {
+      flPending = false;
+      var out = {};
+      FL_PROFILES.forEach(function (q) { out[q] = S.fl.flows[q].steps.slice(); });
+      return api("/api/flows", { method: "POST", json: { flows: out } }).then(function (r) {
+        if (!flPending) S.fl = r;
+      }).catch(function (err) {
+        snack(err && err.message ? err.message : t("js.ha.toast.error"), { kind: "error" });
+        return api("/api/flows").then(function (r) { S.fl = r; renderFlows(); });
+      });
+    });
+  }
+  function flReset() {
+    flQueue(function () {
+      flPending = false;
+      return api("/api/flows/reset", { method: "POST" }).then(function (r) {
+        S.fl = r; renderFlows();
+      }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
     });
   }
   flowsDlg.addEventListener("change", function (e) {

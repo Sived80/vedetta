@@ -22,8 +22,7 @@
   "flow.step.service_os.label": "Služby",
   "flow.step.service_os.description": "Identifikuje služby a verze. Pomalejší.",
   "flow.step.http_title.label": "Webové stránky",
-  "flow.step.http_title.description": "Ověří webové stránky a načte jejich"
-} název.",
+  "flow.step.http_title.description": "Ověří webové stránky a načte jejich název.",
   "flow.step.adapter_probe.label": "Podporovaná zařízení",
   "flow.step.adapter_probe.description": "Rozpoznává podporovaná zařízení, například Shelly.",
   "flow.error.invalid_body": "Neplatný požadavek.",

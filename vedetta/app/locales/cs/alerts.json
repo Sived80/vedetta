@@ -1,0 +1,9 @@
+{
+  "alert.new_device": "Nové zařízení v síti: {label} ({ip})",
+  "error.no_mac": "Pro toto zařízení není známa žádná MAC adresa",
+  "alert.ip_changed": "{label} změnil adresu: {old} → {new}",
+  "alert.dhcp_multiple": "V síti je více než jeden DHCP server: {servers}. Jeden z nich může být nežádoucí.",
+  "alert.ip_conflict": "Duplicitní IP: {ip} – odpovídá více zařízení ({macs})",
+  "alert.duplicate_merged": "{label}: dvě karty téhož telefonu byly sloučeny ({old} → {new})",
+  "alert.other_device": "Za {name} nyní odpovídají dvě různá zařízení: {other}"
+}

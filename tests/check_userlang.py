@@ -100,4 +100,14 @@ data = json.loads(userlang.PATH.read_text(encoding="utf-8"))
 assert len(data) == userlang.MAX_USERS and "u0" not in data and f"u{userlang.MAX_USERS + 19}" in data, "il limite regge e toglie le piu' vecchie"
 assert userlang.put("u519", "cs") and userlang.get("u519") == "cs", "una scelta cambiata si aggiorna"
 
+# 10) the file never goes into an export (it holds Home Assistant user ids): the exports skip it by name
+from app.export import export_zip  # noqa: E402
+assert any(w in userlang.PATH.name.lower() for w in export_zip.SKIP_WORDS), "l'export salta user_lang.json"
+exp = tmp / "export"
+exp.mkdir()
+(exp / "user_lang.json").write_text('{"' + "a" * 32 + '": "it"}', encoding="utf-8")
+(exp / "settings.json").write_text("{}", encoding="utf-8")
+skipped = [f.name for f in exp.iterdir() if any(w in f.name.lower() for w in export_zip.SKIP_WORDS)]
+assert skipped == ["user_lang.json"], skipped
+
 print("TUTTO OK")

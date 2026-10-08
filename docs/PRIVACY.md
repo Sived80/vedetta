@@ -7,6 +7,7 @@ What stays local, what leaves your network, and how to export data for a bug rep
 - 🏡 Everything runs **inside your network**. Data lives in the app’s own `/data`, included in Home Assistant backups.
 - 🌐 The only outbound requests are a periodic update of the MAC-vendor table and the optional public-IP check.
 - ⭐ Once, after a few days, a small star on the menu invites you to star the project. It is only a link to the project page on GitHub, opened by you with a click; the app sends nothing when it is shown, closed or ignored. It can be switched off with the `star_hint` option.
+- 🌍 The language you pick in the menu is remembered on the server for your Home Assistant user, so it follows you to every browser. The only thing stored is an anonymous code of your Home Assistant user next to the language, in `/data`; it never leaves your installation and is not in any export.
 - 🔒 Home Assistant access is **read-only by construction**: only registry reads, no services, no writes.
 - 🚪 The ingress panel only accepts the Supervisor. Passwords are never exported.
 - 📦 *Export for analysis* (menu) builds a file on your own machine and never sends it anywhere. **For the developer** it is masked before it is created and encrypted; **for you** it is your own data, as it is. See [Report a mistake](PRIVACY.md#report-a-mistake) just below.

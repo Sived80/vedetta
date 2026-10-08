@@ -22,7 +22,7 @@ MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by t
 MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
 MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
 FOCUS_DAYS = 14                    # history of a flagged device that goes in the export
-SKIP_WORDS = ("key", "token", "secret", "pass")   # files that might contain credentials
+SKIP_WORDS = ("key", "token", "secret", "pass", "user_lang")   # files that might contain credentials, or the ids of the Home Assistant users
 
 
 def _redact(obj):

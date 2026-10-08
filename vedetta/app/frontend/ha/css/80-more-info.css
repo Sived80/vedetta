@@ -199,6 +199,7 @@
     position: absolute; z-index: 20; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.45;
     background: var(--card-background-color); color: var(--primary-text-color); border: 1px solid var(--divider-color);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); animation: pop-in 0.12s ease-out;
+    overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; box-sizing: border-box;
   }
   .ev-pop-h { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
   .ev-pop-h span, .ev-pop-r { color: var(--secondary-text-color); }

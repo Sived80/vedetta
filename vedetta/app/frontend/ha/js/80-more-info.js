@@ -173,8 +173,15 @@
     host.appendChild(el);
     var hr = host.getBoundingClientRect(), br = btn.getBoundingClientRect(), w = Math.min(300, hr.width - 16);
     el.style.width = w + "px";
-    el.style.top = Math.round(br.bottom - hr.top + 6) + "px";
     el.style.left = Math.round(Math.max(8, Math.min(br.right - hr.left - w + 12, hr.width - w - 8))) + "px";
+    // The same rule on every screen: it opens below the button, or above it when there is more room there, and never taller than the
+    // room (the visible part of the window sheet); what does not fit scrolls inside it.
+    var seenTop = Math.max(hr.top, 0), seenBottom = Math.min(hr.bottom, window.innerHeight || hr.bottom), gap = 6, edge = 10;
+    var below = seenBottom - br.bottom - gap - edge, above = br.top - seenTop - gap - edge, need = el.scrollHeight;
+    var up = need > below && above > below, room = Math.max(120, up ? above : below);
+    el.style.maxHeight = Math.round(room) + "px";
+    var h = Math.min(need, room);
+    el.style.top = Math.round((up ? br.top - hr.top - gap - h : br.bottom - hr.top + gap)) + "px";
     evPop.el = el; evPop.key = key; evPop.btn = btn;
     btn.setAttribute("aria-expanded", "true");
     document.addEventListener("pointerdown", evPopOutside, true);
@@ -188,7 +195,7 @@
   });
   dlg.addEventListener("cancel", function (e) { if (evPop.el) { e.preventDefault(); evPopClose(); } });
   dlg.addEventListener("close", evPopClose);
-  dlg.addEventListener("scroll", evPopClose, true);
+  dlg.addEventListener("scroll", function (e) { if (evPop.el && evPop.el.contains(e.target)) return; evPopClose(); }, true);   // scrolling the pop-up itself does not close it
 
   // Debug mode: why the device has this type, name and brand (data from the server, not in the normal list).
   var dbgFetch = { id: null, at: 0, data: null };

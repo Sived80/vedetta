@@ -170,4 +170,24 @@ finally:
 with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
     assert "data/app.log" in z.namelist() and json.loads(z.read("manifest.json"))["omitted"] == [] and export.last_omitted == []
 state.devices.clear()
+# --- IPv6 addresses and domain names: they name a home as much as an IPv4 address does
+v = anonymize.Anonymizer()
+out = v.text("a 2001:4860:4860::8888 b fe80::1ff:fe23:4567:890a c 2a02:aa::1 again 2001:4860:4860::8888")
+assert "4860" not in out and "fe80" not in out and "2a02" not in out, out
+assert out.count("2001:db8::1") == 2 and "2001:db8::2" in out and "2001:db8::3" in out, out      # the same address, the same placeholder
+assert v.text("loop ::1, any ::, group ff02::c, a time 12:30:45, a fingerprint 9b:e9:0b:ab:cd:ef:01:23") == "loop ::1, any ::, group ff02::c, a time 12:30:45, a fingerprint 9b:e9:0b:ab:cd:ef:01:23"
+out = v.text("reverse name nas-8a3f.casa-rossi.example.com, https://mynas.synology.me:5000/x, host fritz.box, home.lan and NAS-8A3F.Casa-Rossi.example.com")
+assert "rossi" not in out.lower() and "synology" not in out and "fritz" not in out and "home.lan" not in out, out
+assert out.count("host-1.masked.invalid") == 2 and "https://host-2.masked.invalid:5000/x" in out, out   # same name (any case), same placeholder; the port stays
+keep = "pool.ntp.org, www.github.com, dns.quad9.net, dashboard.log, vedetta.db, app.state, settings.json, run.sh, supervisor.api.ingress"
+assert v.text(keep) == keep, v.text(keep)                                    # public infrastructure and file names are not names of a home
+assert v.text(v.text("nas.casa-rossi.example.com 2001:4860:4860::8888")) == v.text("nas.casa-rossi.example.com 2001:4860:4860::8888")   # masking twice changes nothing
+w = anonymize.Anonymizer()
+assert w.leaks("seen at nas.casa-rossi.example.com and 2a02:aa::1") == ["IPv6 address", "domain name"]
+assert w.leaks(w.text("seen at nas.casa-rossi.example.com and 2a02:aa::1")) == [], "what the masking did is clean for the check"
+fixed, n, left = w.repair("seen at nas.casa-rossi.example.com and 2a02:aa::1")
+assert n == 2 and left == [] and "rossi" not in fixed and "2a02" not in fixed, (fixed, n, left)
+m = w.mapping()
+assert m["domain_names"] and m["ipv6"], "the owner can decode the placeholders"
+
 print("TUTTO OK")

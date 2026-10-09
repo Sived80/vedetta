@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **Export for the developer**: domain names (a family name, a dynamic-DNS address, `nas.home.example.com`) and IPv6 addresses are now hidden too, and the safety check before the file is made looks for them; public infrastructure (`github.com`, `pool.ntp.org`, ...) and file names stay readable. Found with a new test that fills a house with random addresses, names and domains.
+
 ## 0.6.0 · Babele
 **Babele** is Italian for *Babel*: Vedetta now speaks more languages and learns to understand yours. The first translation made by the community is here, **Čeština**, and any language can be added with a folder of texts. Thank you, hruba202, and thank you to everyone who sent a report: the care for large networks in this version comes from them. 🎉
 - **Czech** (Čeština): the whole interface and the server texts are translated, a contribution of **hruba202**. Děkujeme!

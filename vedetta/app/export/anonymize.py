@@ -51,6 +51,35 @@ _HOME_DOT = re.compile(r"(?<![\d.])(?:192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,
 _MAC = re.compile(r"(?<![0-9A-Za-z])(?<![^0-9A-Za-z][0-9A-Fa-f]{2}[:\-])(?<!^[0-9A-Fa-f]{2}[:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])(?!\2[0-9A-Fa-f]{2}\2[0-9A-Fa-f]{2})")
 
 
+# IPv6: a global, unique-local or link-local address (the last one carries the MAC) names a home as much as an IPv4 one
+_IPV6 = re.compile(r"(?<![0-9A-Za-z:.-])(?:[0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4}(?![0-9A-Za-z:])")
+_V6_PLACEHOLDER = "2001:db8::"     # the documentation range: it can never be a real address
+# Domain names (a family name, a dynamic-DNS name, "nas.home.example.com"): only with an ending that is really one, so that "dashboard.log"
+# or "app.state" are not names; the public infrastructure that says nothing about a home stays readable.
+_TLDS = ("com|org|net|io|it|de|fr|es|uk|cz|sk|pl|nl|be|ch|at|eu|info|biz|dev|app|cloud|online|xyz|ru|us|me|tv|cc|co|ai|link|site|pro|top|"
+         "local|lan|home|localdomain|internal|box|arpa")
+_DOMAIN = re.compile(r"(?<![\w.@-])(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+(?:%s)(?![\w-])" % _TLDS, re.I)
+_PUBLIC_DOMAINS = ("github.com", "githubusercontent.com", "ghcr.io", "home-assistant.io", "hassio.io", "cloudflare.com", "cloudflare-dns.com",
+                   "google.com", "quad9.net", "ntp.org", "debian.org", "alpinelinux.org", "python.org", "pypi.org", "pythonhosted.org",
+                   "docker.io", "docker.com", "mozilla.org", "microsoft.com", "apple.com", "opendns.com", "adguard.com", "adguard-dns.com")
+
+
+def _public_domain(name: str) -> bool:
+    low = name.lower()
+    return any(low == d or low.endswith("." + d) for d in _PUBLIC_DOMAINS)
+
+
+def _v6_ok(text: str) -> bool:
+    """A real IPv6 address worth hiding: not "::", "::1" or a multicast group (ff02::c), not our own placeholder, and a valid one (a MAC or a time is not)."""
+    try:
+        a = ipaddress.IPv6Address(text)
+    except ValueError:
+        return False
+    if "::" not in text and max(len(g) for g in text.split(":")) <= 2:
+        return False                 # eight pairs of hex digits ("9b:e9:0b:ab:cd:ef:01:23") is a fingerprint, not an address
+    return not (a.is_unspecified or a.is_loopback or a.is_multicast) and not text.lower().startswith(_V6_PLACEHOLDER)
+
+
 def _norm(text: str) -> str:
     return "-".join(w.lower() for w in _WORD.findall(text))
 
@@ -100,6 +129,8 @@ class Anonymizer:
         self._literal: dict[str, str] = {}   # other forms of a mac: 12 hex, last 6 hex
         self._public_known: set[str] = set()
         self._emails: dict[str, str] = {}
+        self._dns: dict[str, int] = {}       # domain name (lower) -> number
+        self._v6: dict[str, int] = {}        # IPv6 address (compressed) -> number
         self._name_re: re.Pattern | None = None
 
     # ------------------------------------------------------------------ collection
@@ -235,6 +266,19 @@ class Anonymizer:
         key = m.group(0).lower()
         return f"email-{self._emails.setdefault(key, len(self._emails) + 1)}@masked.invalid" if not key.endswith("@masked.invalid") else m.group(0)
 
+    def _dns_sub(self, m: re.Match) -> str:
+        name = m.group(0)
+        if _public_domain(name):
+            return name
+        return f"host-{self._dns.setdefault(name.lower(), len(self._dns) + 1)}.masked.invalid"
+
+    def _v6_sub(self, m: re.Match) -> str:
+        raw = m.group(0)
+        if not _v6_ok(raw):
+            return raw
+        key = str(ipaddress.IPv6Address(raw))
+        return f"{_V6_PLACEHOLDER}{self._v6.setdefault(key, len(self._v6) + 1):x}"
+
     def _mac(self, m: re.Match) -> str:
         raw = m.group(0)
         low = raw.lower().replace("-", ":")
@@ -260,6 +304,8 @@ class Anonymizer:
         s = _URL_CREDS.sub(r"\1***:***@", s)
         s = _SECRET_PAIR.sub(r"\1\2***", s)
         s = _MAC.sub(self._mac, s)
+        s = _IPV6.sub(self._v6_sub, s)
+        s = _DOMAIN.sub(self._dns_sub, s)
         s = _IPV4.sub(self._ip, s)
         s = _IPV4_SEP.sub(self._ip_sep, s)
         if self._name_re is None:
@@ -312,6 +358,12 @@ class Anonymizer:
         for m in _EMAIL.finditer(text):
             if not m.group(0).endswith("@masked.invalid"):
                 add("email address", m.group(0))
+        for m in _IPV6.finditer(text):
+            if _v6_ok(m.group(0)):
+                add("IPv6 address", m.group(0))
+        for m in _DOMAIN.finditer(text):
+            if not _public_domain(m.group(0)):
+                add("domain name", m.group(0))
         for m in _SECRET_PAIR.finditer(text):
             if m.group(3) != "***":
                 add("password or token", m.group(3))
@@ -421,5 +473,7 @@ class Anonymizer:
                 "ip_networks": {f"10.{i}.0.x": f"{net}.x" for net, i in self._nets.items()},
                 "public_ips": {self._public_ip(ip): ip for ip in self._pub},
                 "macs": {v: k for k, v in self._macs.items()},
+                "domain_names": {f"host-{i}.masked.invalid": d for d, i in self._dns.items()},
+                "ipv6": {f"{_V6_PLACEHOLDER}{i:x}": a for a, i in self._v6.items()},
                 "names": {v: sorted(k for k, x in {**self._names, **self._areas}.items() if x == v)
                           for v in sorted(set(self._names.values()) | set(self._areas.values()))}}

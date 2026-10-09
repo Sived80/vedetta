@@ -262,6 +262,7 @@ async def until(cond, timeout=10.0):
 async def loop_test():
     gap = 0.6
     state_mod.MIN_GAP_S = gap
+    state_mod.CHAIN_WARN = 2        # a slow machine starts fewer cycles in the same time: the warning must not depend on how many fit
     st = state_mod.DeviceState()
     st._interval = staticmethod(lambda: 3600)
     started = []

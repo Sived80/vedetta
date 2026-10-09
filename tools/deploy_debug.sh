@@ -2,13 +2,14 @@
 # Installs (or updates) a SEPARATE copy of Vedetta on Home Assistant OS, for debugging: "Vedetta (debug)", slug local_vedetta_debug.
 # The copy on the host is replaced as a whole (a file removed in the repository must not stay there: the front-end parts are joined
 # by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (8766), no MQTT (nothing is published to Home Assistant),
-# no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> tools/deploy_debug.sh
+# no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> [SKIP_TESTS=1] tools/deploy_debug.sh
 set -euo pipefail
 HOST="${VEDETTA_HA_HOST:?set VEDETTA_HA_HOST}"
 KEY="${VEDETTA_HA_KEY:-$HOME/.ssh/id_ed25519}"
 SLUG=vedetta_debug
 cd "$(dirname "$0")/.."
-python tools/run_tests.py
+# the tests first (in parallel, a few minutes); SKIP_TESTS=1 when they have just passed on this very code
+if [ "${SKIP_TESTS:-0}" != "1" ]; then python tools/run_tests.py; fi
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 cp -r vedetta "$STAGE/$SLUG"

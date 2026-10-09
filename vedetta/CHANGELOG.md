@@ -1,6 +1,7 @@
 # Changelog
 
-## Unreleased
+## 0.6.0 · Babele
+**Babele** is Italian for *Babel*: Vedetta now speaks more languages and learns to understand yours. The first translation made by the community is here, **Čeština**, and any language can be added with a folder of texts. Thank you, hruba202, and thank you to everyone who sent a report: the care for large networks in this version comes from them. 🎉
 - **Czech** (Čeština): the whole interface and the server texts are translated, a contribution of **hruba202**. Děkujeme!
 - **Language**: the app now follows the language of Home Assistant (or the browser's) and each person can pick their own in the menu (⋮). The choice is kept on the server for their Home Assistant user, so it follows them to every browser and device; "Automatic" gives it back. One field with a globe replaces the language buttons, ready for more languages (a new language is a folder of texts: see *Add a language* in the development notes). The option `language` is now `auto` by default (an installation that has `en` or `it` set keeps it as the default for everyone).
 - **Large networks**: the periodic check asks the whole network only up to a /24 (254 addresses), as always. On a wider network (a /16 has 65,534) it asks, in every cycle, the network around the machine, the known devices and one more block of 256 addresses, in turn; what each block told is kept, so the list fills in and goes on after a restart. A block seen for the first time is a starting point, not a flood of "new devices".

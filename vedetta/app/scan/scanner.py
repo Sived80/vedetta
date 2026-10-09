@@ -284,7 +284,10 @@ async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOU
             pass
         await proc.wait()
         raise
-    return parse_arp_scan(out.decode(errors="replace"))
+    hosts = parse_arp_scan(out.decode(errors="replace"))
+    if not hosts and proc.returncode not in (0, None):
+        raise RuntimeError("arp-scan ended with code %s" % proc.returncode)   # not an empty network: the check keeps the last result
+    return hosts
 
 
 async def neighbors(net: str | None = None) -> list[dict]:

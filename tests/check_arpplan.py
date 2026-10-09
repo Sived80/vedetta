@@ -131,6 +131,20 @@ try:
     assert proc.input == b"10.0.5.0/24\n10.0.9.4" and [h["ip"] for h in hosts] == ["10.0.5.7"], "gli indirizzi vanno sullo standard input"
     run(scanner.arp_scan())
     assert "--localnet" in made[-1][0] and "--file=-" not in made[-1][0], "senza elenco: tutta la rete, come sempre"
+    # an arp-scan that fails and finds nothing is an error (the check keeps the last result), not an empty network
+    made_fail = fake_exec(out=b"")
+
+    async def failing(*a, **k):
+        proc = await made_fail(*a, **k)
+        proc.returncode = 1
+        return proc
+
+    asyncio.create_subprocess_exec = failing
+    try:
+        run(scanner.arp_scan(["10.0.5.0/24"], timeout=5))
+        raise AssertionError("un arp-scan fallito senza risultati doveva dare errore")
+    except RuntimeError:
+        pass
     asyncio.create_subprocess_exec = fake_exec(hang=True)
     t0 = time.monotonic()
     try:
@@ -196,6 +210,9 @@ finally:
     arpplan.plan = real_plan
 assert asked[-1] == ["10.0.5.0/24"], "se il piano si rompe si chiede solo la rete attorno a noi"
 
+assert st._asked <= arpplan.MAX_TARGETS and st._asked >= 256, "gli indirizzi chiesti contano i blocchi per 256"
+assert st._found == len(arp)
+
 # a normal network is asked whole, as always
 async def small_net():
     return "192.168.1.0/24", "192.168.1.5"
@@ -222,8 +239,17 @@ assert run(st3._arp_by_ip(0)) == {"192.168.1.9": {"ip": "192.168.1.9"}}, "l'ulti
 
 
 # ------------------------------------------------------------------------------------------------------ the loop: no chain without pause
+async def until(cond, timeout=10.0):
+    """Waits for a condition without trusting a fixed sleep: a loaded machine is slow, and that must not fail the test."""
+    t0 = time.monotonic()
+    while not cond():
+        assert time.monotonic() - t0 < timeout, "la condizione non si e' avverata in %.0f s" % timeout
+        await asyncio.sleep(0.02)
+
+
 async def loop_test():
-    state_mod.MIN_GAP_S = 0.3
+    gap = 0.6
+    state_mod.MIN_GAP_S = gap
     st = state_mod.DeviceState()
     st._interval = staticmethod(lambda: 3600)
     started = []
@@ -237,22 +263,26 @@ async def loop_test():
     state_mod.logger.warning = lambda msg, *a, **k: warnings.append(msg % a if a else msg)
     task = asyncio.ensure_future(st._loop())
     try:
-        await asyncio.sleep(0.2)
-        assert len(started) == 1, "il primo giro parte subito"
-        for i in range(40):                       # a storm of wake-ups, one every 25 ms, for a second
+        await until(lambda: len(started) == 1)
+        t0 = time.monotonic()
+        for i in range(40):                       # a storm of wake-ups
             st.trigger(reason="ip_changed" if i % 2 else "mqtt")
-            await asyncio.sleep(0.025)
-        await asyncio.sleep(0.5)
+            await asyncio.sleep(0.03)
+        await asyncio.sleep(gap * 2)              # the last wake-up is served too
+        elapsed = time.monotonic() - t0
         n = len(started) - 1
-        assert 1 <= n <= 7, "40 sveglie in un secondo e mezzo: pochi giri, distanziati (%d)" % n
+        assert 1 <= n <= elapsed / gap + 2, "40 sveglie in %.1f s: pochi giri, distanziati (%d)" % (elapsed, n)
         gaps = [b - a for a, b in zip(started, started[1:])]
-        assert min(gaps) >= 0.25, "mai piu' vicini della distanza minima (%.2f)" % min(gaps)
+        assert min(gaps) >= gap * 0.8, "mai piu' vicini della distanza minima (%.2f)" % min(gaps)
         assert any("Controlli a catena" in w and "mqtt" in w and "ip_changed" in w for w in warnings), warnings
         assert sum("Controlli a catena" in w for w in warnings) == 1, "l'avviso e' uno solo, non una pioggia"
         before = len(started)
+        st.trigger(reason="x")
+        await until(lambda: len(started) > before)          # a cycle has just started
+        before, t = len(started), time.monotonic()
         st.trigger(force=True)
-        await asyncio.sleep(0.1)
-        assert len(started) == before + 1, "un aggiornamento chiesto dall'utente non aspetta"
+        await until(lambda: len(started) > before)
+        assert started[-1] - t < gap * 0.5, "un aggiornamento chiesto dall'utente non aspetta (%.2f s)" % (started[-1] - t)
     finally:
         task.cancel()
         state_mod.logger.warning = real_warning

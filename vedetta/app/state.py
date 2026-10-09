@@ -89,7 +89,10 @@ class DeviceState:
         self._chain: deque = deque()
         self._chain_warned = -1e9
         self._slow_warned = -1e9
-        self._stat: list[tuple[float, int]] = []            # (duration, addresses asked) of the cycles since the last summary
+        self._stat: list[tuple[float, int, int]] = []       # (duration, addresses asked, hosts found) of the cycles since the last summary
+        self._asked = 0
+        self._found = 0
+        self._first_blocks_logged = False
         self._stat_since = time.monotonic()
         self._stat_chains = 0
         self._misses: dict[str, int] = {}
@@ -338,6 +341,13 @@ class DeviceState:
                     return None
         return self._net[1], self._net[2]
 
+    def _whole_size(self) -> int:
+        """Addresses of the whole network when it is asked whole (a /24: 256)."""
+        try:
+            return ipaddress.ip_network(self._net[1], strict=False).num_addresses if self._net else 0
+        except ValueError:
+            return 0
+
     @staticmethod
     def _known_ips() -> list[str]:
         """Addresses of the configured devices first, then of the known ones (thread)."""
@@ -402,7 +412,11 @@ class DeviceState:
                                         "i dispositivi noti e un blocco in piu', a turno", plan["network"], plan["total"])
                         hosts = await scanner.arp_scan(plan["targets"], timeout=ARP_CYCLE_TIMEOUT_S)
                         result = await self._remember(hosts, plan)
-                    self._asked = len(plan["targets"]) if plan else 0
+                    self._asked = sum(ipaddress.ip_network(x).num_addresses for x in plan["targets"]) if plan else self._whole_size()
+                    self._found = len(result)
+                    if plan and not self._first_blocks_logged:
+                        self._first_blocks_logged = True
+                        logger.info("Primo giro a blocchi: %d indirizzi chiesti, %d host trovati", self._asked, len(hosts))
                     self._arp = (time.monotonic(), result)
                 except asyncio.TimeoutError:
                     logger.warning("La ricerca ARP non e' finita in tempo e si e' fermata: si usa l'ultimo risultato")
@@ -431,20 +445,21 @@ class DeviceState:
     def _note_end(self, started: float) -> None:
         now = time.monotonic()
         dur = now - started
-        self._stat.append((dur, getattr(self, "_asked", 0)))
+        self._stat.append((dur, self._asked, self._found))
         if dur > SLOW_CYCLE_S and now - self._slow_warned > 600:
             self._slow_warned = now
-            logger.warning("Controllo lento: %.0f s (%d indirizzi chiesti sulla rete)", dur, getattr(self, "_asked", 0))
+            logger.warning("Controllo lento: %.0f s (%d indirizzi chiesti sulla rete)", dur, self._asked)
         if now - self._stat_since >= SUMMARY_S and self._stat:
-            durs = sorted(d for d, _ in self._stat)
-            args = (len(durs), durs[len(durs) // 2], durs[-1], sum(a for _, a in self._stat) // len(self._stat), self._stat_chains)
+            durs = sorted(s[0] for s in self._stat)
+            n = len(self._stat)
+            args = (n, durs[n // 2], durs[-1], sum(s[1] for s in self._stat) // n, sum(s[2] for s in self._stat) // n, self._stat_chains)
             if self._plan_info:
                 logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
-                            "avviati a catena %d volte; rete grande %s: %d blocchi su %d gia' controllati",
+                            "host trovati in media %d, avviati a catena %d volte; rete grande %s: %d blocchi su %d gia' controllati",
                             *args, self._plan_info["network"], self._plan_info["done"], self._plan_info["total"])
             else:
                 logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
-                            "avviati a catena %d volte", *args)
+                            "host trovati in media %d, avviati a catena %d volte", *args)
             self._stat, self._stat_since, self._stat_chains = [], now, 0
 
     def _shadow(self, device_id: str, previous: dict | None, result: dict, now: float) -> None:

@@ -57,7 +57,8 @@ for template in sorted(templates):
     if n == 0:
         combos = [()]
     elif n <= 3:
-        combos = itertools.islice(itertools.product(SAMPLES, repeat=n), 4000) if n == 3 else itertools.product(SAMPLES, repeat=n)
+        # two placeholders: every pair; three: 800 combinations spread over all of them (not the first ones), which is plenty
+        combos = itertools.islice(itertools.product(SAMPLES, repeat=n), 0, None, len(SAMPLES) ** 3 // 800) if n == 3 else itertools.product(SAMPLES, repeat=n)
     else:
         combos = [tuple(SAMPLES[(i + k) % len(SAMPLES)] for k in range(n)) for i in range(len(SAMPLES))]
     for combo in combos:

@@ -186,6 +186,10 @@ def build_zip() -> bytes:
         pending = None
     manifest["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
     manifest["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
+    try:
+        manifest["service"] = state.diagnostics()      # sizes, times and counts of the service: no address, no name
+    except Exception as exc:
+        manifest["notes"].append(f"service: {exc!r}")
     manifest["phone_merge"] = state.merge_report         # counts: why two cards of the same phone were (not) merged, without any name
     manifest["notes"].append("anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)")
     buf = io.BytesIO()

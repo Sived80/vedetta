@@ -27,6 +27,7 @@ ARP_CYCLE_TIMEOUT_S = 60.0   # arp-scan of the periodic check that does not fini
 ARP_MEMORY_S = 24 * 3600     # on a large network, what a block told is kept this long (see scan/arpplan.py)
 NET_TTL_S = 300.0
 SUMMARY_S = 3600.0        # one line in the log every hour: how the cycles went
+_PROCESS_START = time.time()
 _MAX_TOMBSTONES = 200
 _QUEUE_SIZE = 200
 # Two cards of the same phone (it changed IP and private MAC): merged only if their names are the same and the two were
@@ -92,6 +93,10 @@ class DeviceState:
         self._stat: list[tuple[float, int, int]] = []       # (duration, addresses asked, hosts found) of the cycles since the last summary
         self._asked = 0
         self._found = 0
+        self._total_cycles = 0
+        self._slowest = 0.0
+        self._total_chains = 0
+        self._last_summary: dict | None = None
         self._first_blocks_logged = False
         self._stat_since = time.monotonic()
         self._stat_chains = 0
@@ -428,6 +433,32 @@ class DeviceState:
                         self._arp = (time.monotonic(), {})
             return self._arp[1]
 
+    def diagnostics(self) -> dict:
+        """How the service is doing, for the export: sizes, times and counts, never an address or a name."""
+        out: dict = {"uptime_s": int(time.time() - _PROCESS_START), "interval_s": self._interval(), "paused": self.paused_remaining() is not None,
+                     "devices": len(self.devices)}
+        try:
+            if self._net:
+                net = ipaddress.ip_network(self._net[1], strict=False)
+                out["network"] = {"prefix": net.prefixlen, "addresses": net.num_addresses,
+                                  "mode": "blocks" if self._plan_info else "whole"}
+                if self._plan_info:
+                    out["network"].update({"blocks_total": self._plan_info["total"], "blocks_done": self._plan_info["done"]})
+        except ValueError:
+            pass
+        out["arp"] = {"addresses_asked": self._asked, "hosts_found": self._found}
+        out["cycles"] = {"since_start": self._total_cycles, "slowest_s": round(self._slowest, 1), "chains": self._total_chains,
+                         "last_hour": self._last_summary}
+        try:
+            with open("/proc/self/status", encoding="ascii") as fh:
+                for line in fh:
+                    if line.startswith(("VmRSS:", "Threads:")):
+                        key, value = line.split(":", 1)
+                        out["rss_mb" if key == "VmRSS" else "threads"] = int(value.split()[0]) // (1024 if key == "VmRSS" else 1)
+        except (OSError, ValueError):
+            pass
+        return out
+
     # ---- how the cycles go (a line in the log, only when something is wrong, and one summary an hour) ----
     def _note_start(self, cause: str) -> None:
         now = time.monotonic()
@@ -441,11 +472,14 @@ class DeviceState:
             logger.warning("Controlli a catena: %d avviati da eventi in un minuto (%s); tra due controlli passano almeno %d s",
                            len(self._chain), causes, MIN_GAP_S)
             self._stat_chains += 1
+            self._total_chains += 1
 
     def _note_end(self, started: float) -> None:
         now = time.monotonic()
         dur = now - started
         self._stat.append((dur, self._asked, self._found))
+        self._total_cycles += 1
+        self._slowest = max(self._slowest, dur)
         if dur > SLOW_CYCLE_S and now - self._slow_warned > 600:
             self._slow_warned = now
             logger.warning("Controllo lento: %.0f s (%d indirizzi chiesti sulla rete)", dur, self._asked)
@@ -460,6 +494,8 @@ class DeviceState:
             else:
                 logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
                             "host trovati in media %d, avviati a catena %d volte", *args)
+            self._last_summary = {"cycles": n, "median_s": round(durs[n // 2], 1), "max_s": round(durs[-1], 1), "chains": self._stat_chains,
+                                  "addresses_asked": args[3], "hosts_found": args[4]}
             self._stat, self._stat_since, self._stat_chains = [], now, 0
 
     def _shadow(self, device_id: str, previous: dict | None, result: dict, now: float) -> None:

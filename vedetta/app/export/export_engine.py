@@ -219,6 +219,10 @@ def _gather(p: Prepared, since: float | None, until: float | None) -> None:
     m["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
     m["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
     m["phone_merge"] = state.merge_report
+    try:
+        m["service"] = state.diagnostics()      # sizes, times and counts of the service: no address, no name
+    except Exception as exc:
+        m["notes"].append(f"service: {exc!r}")
     m["period"] = {"from": since, "until": until, "all": since is None}
     add = lambda name, text: p.files.__setitem__(name, ["text", text])                      # noqa: E731
     if data_dir.exists():

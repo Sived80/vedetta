@@ -213,6 +213,17 @@ assert asked[-1] == ["10.0.5.0/24"], "se il piano si rompe si chiede solo la ret
 assert st._asked <= arpplan.MAX_TARGETS and st._asked >= 256, "gli indirizzi chiesti contano i blocchi per 256"
 assert st._found == len(arp)
 
+# what the export says about the service: sizes, times and counts, never an address
+import json  # noqa: E402
+import re  # noqa: E402
+st._note_end(time.monotonic() - 1.5)
+d = st.diagnostics()
+assert (d["network"]["prefix"], d["network"]["addresses"], d["network"]["mode"]) == (16, 65536, "blocks") and d["network"]["blocks_total"] >= 1, d["network"]
+assert d["arp"]["addresses_asked"] == st._asked and d["cycles"]["since_start"] == 1 and d["cycles"]["slowest_s"] >= 1.5, d
+assert d["devices"] == 0 and d["uptime_s"] >= 0 and d["interval_s"] > 0
+text = json.dumps(d)
+assert not re.search(r"\d+\.\d+\.\d+\.\d+", text) and "10.0." not in text, "nessun indirizzo nel blocco service"
+
 # a normal network is asked whole, as always
 async def small_net():
     return "192.168.1.0/24", "192.168.1.5"
@@ -224,6 +235,7 @@ st2 = state_mod.DeviceState()
 run(st2._arp_by_ip(0))
 assert asked == [None], "una /24 si chiede tutta (--localnet), niente blocchi"
 assert st2._plan_info is None and st2._arp_mem == {}
+assert st2.diagnostics()["network"] == {"prefix": 24, "addresses": 256, "mode": "whole"}, st2.diagnostics()["network"]
 
 # an ARP that does not finish: the cycle goes on with the last result
 async def late_arp(targets=None, timeout=0):

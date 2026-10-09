@@ -79,6 +79,8 @@ assert E.filter_jsonl((tmp / "journal.jsonl").read_text(encoding="utf-8"), since
 f = zip_of(E.build("me", 1, 0))
 man = json.loads(f["manifest.json"])
 assert man["dest"] == "me" and "check" not in man and not (tmp / export.MAPPING_FILE).exists()
+assert man["service"]["uptime_s"] >= 0 and "cycles" in man["service"] and "arp" in man["service"], "il manifesto dice come va il servizio"
+assert not __import__("re").search(r"\d+\.\d+\.\d+\.\d+", json.dumps(man["service"])), "e senza nessun indirizzo"
 assert b"192.168.77.20" in f["data/settings.json"] and b"Giulia" in f["data/dashboard.log"] and b"f0:18:98:aa:bb:cc" in f["state/devices_compact.json"].lower()
 assert b"hunter2" not in f["data/settings.json"] and b'"***"' in f["data/settings.json"]
 assert b"three days" not in f["data/dashboard.log"] and b'"old"' not in f["data/journal.jsonl"] and b'"in"' in f["data/journal.jsonl"]

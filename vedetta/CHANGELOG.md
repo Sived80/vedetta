@@ -1,6 +1,7 @@
 # Changelog
 
-## Unreleased
+## 0.6.1 · Velo
+**Velo** is Italian for *veil*: a small update that makes the export for the developer hide more of your home. Domain names (a family name, a dynamic-DNS address) and IPv6 addresses are now covered, as are the addresses and names that already were. Thank you to everyone who sends an export: it is the reason we look at it so closely. 🎉
 - **Export for the developer**: domain names (a family name, a dynamic-DNS address, `nas.home.example.com`) and IPv6 addresses are now hidden too, and the safety check before the file is made looks for them; public infrastructure (`github.com`, `pool.ntp.org`, ...) and file names stay readable. Found with a new test that fills a house with random addresses, names and domains.
 
 ## 0.6.0 · Babele

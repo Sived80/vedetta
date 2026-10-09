@@ -13,3 +13,7 @@ node_modules/
 
 # Worktrees of the helper agents
 .claude/
+
+# local measurement files (tools/coveragerc)
+.coverage_data/
+.coverage*

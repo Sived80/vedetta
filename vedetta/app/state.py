@@ -24,6 +24,11 @@ CHAIN_WINDOW_S = 60.0     # more than CHAIN_WARN wake-ups in this window are wri
 CHAIN_WARN = 4
 SLOW_CYCLE_S = 30.0       # a cycle that lasts longer is written in the log
 ARP_CYCLE_TIMEOUT_S = 60.0   # arp-scan of the periodic check that does not finish is closed
+# A normal network (up to a /24): a sweep of every address (about 625 requests in a burst) at every check is more than presence needs, and a
+# weak Wi-Fi, a repeater or a mesh feels it. The whole network is asked once in FULL_SWEEP_S (to find the new devices); the checks between ask
+# only the devices that are configured. Every ARP request is paced SWEEP_INTERVAL_MS apart instead of in a burst.
+FULL_SWEEP_S = 300.0
+SWEEP_INTERVAL_MS = 20
 ARP_MEMORY_S = 24 * 3600     # on a large network, what a block told is kept this long (see scan/arpplan.py)
 NET_TTL_S = 300.0
 SUMMARY_S = 3600.0        # one line in the log every hour: how the cycles went
@@ -80,7 +85,8 @@ class DeviceState:
         self._next_at = 0.0
         self._arp: tuple[float, dict[str, dict]] | None = None
         self._arp_lock = asyncio.Lock()
-        self._arp_mem: dict[str, tuple[float, dict]] = {}   # large network: ip -> (when, host) of what its blocks told so far
+        self._arp_mem: dict[str, tuple[float, dict]] = {}   # ip -> (when, host) of what the ARP told so far (large network: its blocks; normal: the last sweep)
+        self._last_full: float | None = None                 # when the whole network was last asked (None: at the next check)
         self._net: tuple[float, str, str] | None = None     # (when, network, own address), re-read every NET_TTL_S
         self._baseline_blocks: tuple[str, ...] = ()
         self._plan_info: dict | None = None                  # last plan of a large network: {"network", "total", "done"}
@@ -146,6 +152,7 @@ class DeviceState:
         """Forces an immediate update cycle (force: even while paused). `reason` goes in the log if the cycles come in a chain."""
         if force:
             self._force = True
+            self._last_full = None            # a refresh asked by hand asks the whole network again
         self._wake_reason = self._wake_reason or reason
         self._wake.set()
 
@@ -399,6 +406,28 @@ class DeviceState:
         self._plan_info = {"network": plan["network"], "total": plan["total"], "done": plan["done"] + len(plan["fresh"])}
         return {ip: h for ip, (_, h) in mem.items()}
 
+    @staticmethod
+    def _configured_ips() -> list[str]:
+        """Addresses of the configured devices (thread)."""
+        return [c["ip"] for c in devices_config.load_devices() if c.get("ip")]
+
+    async def _arp_small(self) -> tuple[dict[str, dict], int]:
+        """A normal network: the whole network at most every FULL_SWEEP_S, the configured devices in the checks between. Returns the view
+        of the ARP (what the last sweep found, updated by the devices asked since) and how many addresses were asked now."""
+        now = time.monotonic()
+        known = await asyncio.to_thread(self._configured_ips)
+        if not known or self._last_full is None or now - self._last_full >= FULL_SWEEP_S:
+            hosts = await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS)
+            self._arp_mem = {h["ip"]: (time.time(), h) for h in hosts}
+            self._last_full = now
+            return {ip: h for ip, (_, h) in self._arp_mem.items()}, self._whole_size()
+        hosts = await scanner.arp_scan(known, timeout=ARP_CYCLE_TIMEOUT_S, interval_ms=SWEEP_INTERVAL_MS)
+        for ip in known:
+            self._arp_mem.pop(ip, None)                # whoever was asked and does not answer is gone from the view
+        for h in hosts:
+            self._arp_mem[h["ip"]] = (time.time(), h)
+        return {ip: h for ip, (_, h) in self._arp_mem.items()}, len(known)
+
     async def _arp_by_ip(self, max_age: float) -> dict[str, dict]:
         async with self._arp_lock:
             now = time.monotonic()
@@ -407,17 +436,16 @@ class DeviceState:
                     plan = await self._arp_plan()
                     if plan is None:
                         if self._plan_info is not None:
-                            logger.info("Rete di dimensione normale: si chiede tutta ad ogni giro")
+                            logger.info("Rete di dimensione normale: tutta la rete ogni %d minuti, nei giri in mezzo solo i dispositivi configurati", FULL_SWEEP_S // 60)
                         self._plan_info = None
-                        hosts = await scanner.arp_scan()
-                        result = {h["ip"]: h for h in hosts}
+                        result, asked = await self._arp_small()
                     else:
                         if self._plan_info is None:
                             logger.info("Rete grande (%s, %d blocchi da 256 indirizzi): a ogni giro si chiede la rete attorno a questo computer, "
                                         "i dispositivi noti e un blocco in piu', a turno", plan["network"], plan["total"])
                         hosts = await scanner.arp_scan(plan["targets"], timeout=ARP_CYCLE_TIMEOUT_S)
                         result = await self._remember(hosts, plan)
-                    self._asked = sum(ipaddress.ip_network(x).num_addresses for x in plan["targets"]) if plan else self._whole_size()
+                    self._asked = sum(ipaddress.ip_network(x).num_addresses for x in plan["targets"]) if plan else asked
                     self._found = len(result)
                     if plan and not self._first_blocks_logged:
                         self._first_blocks_logged = True

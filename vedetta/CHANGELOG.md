@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2 · Respiro
+**Respiro** is Italian for *breath*: a small update that lets your network breathe. Vedetta no longer asks every address of the network at every check, which a weak Wi-Fi, a repeater or a mesh could feel as a burst. Thank you to everyone who reported it, with such careful tests.
+- **Lighter checks on a normal network** (up to a /24): the whole network is asked once every 5 minutes, to find new devices; the checks in between ask only the devices that are configured (for 46 devices, 46 requests instead of about 625). Every request is spaced 20 ms from the next instead of a burst of about 500 packets a second.
+- What changes for you: a *new* device can take up to 5 minutes to appear, and a device that changed address is followed within 5 minutes; *Scan network* and the refresh by hand still ask the whole network at once. Presence of the known devices works as before.
+
 ## 0.6.1 · Velo
 **Velo** is Italian for *veil*: a small update that makes the export for the developer hide more of your home. Domain names (a family name, a dynamic-DNS address) and IPv6 addresses are now covered, as are the addresses and names that already were. Thank you to everyone who sends an export: it is the reason we look at it so closely. 🎉
 - **Export for the developer**: domain names (a family name, a dynamic-DNS address, `nas.home.example.com`) and IPv6 addresses are now hidden too, and the safety check before the file is made looks for them; public infrastructure (`github.com`, `pool.ntp.org`, ...) and file names stay readable. Found with a new test that fills a house with random addresses, names and domains.

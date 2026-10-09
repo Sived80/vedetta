@@ -258,7 +258,7 @@ arp_conflicts: dict[str, list[str]] = {}
 ARP_TIMEOUT_S = 120.0   # arp-scan that does not finish is closed: the cycle goes on with the last result
 
 
-async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOUT_S) -> list[dict]:
+async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOUT_S, interval_ms: int | None = None) -> list[dict]:
     """Host discovery via ARP: layer 2 only, no ICMP/TCP fallback like nmap
     -sn. On a typical /24 it runs in 1-2 seconds instead of 3-5.
     targets None: the whole network of the interface (--localnet). Otherwise only those (addresses and CIDR blocks, see
@@ -269,8 +269,13 @@ async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOU
     the user launches a search - logging it anyway would have filled the buffer
     with routine events invisible to the user, burying in a few minutes
     the useful ones (real scans, errors). Whoever calls it for an
-    explicit action (quick_scan) logs at that level."""
+    explicit action (quick_scan) logs at that level.
+
+    interval_ms: minimum pause between two packets (arp-scan --interval, milliseconds). Without it arp-scan sends about 500 packets a
+    second, a burst that a weak Wi-Fi, a repeater or a mesh feels; with 20 ms the same sweep is spread over a few seconds."""
     args = ["arp-scan", f"--interface={lan_iface()}", "-x"] + (["--file=-"] if targets else ["--localnet"])
+    if interval_ms:
+        args.append(f"--interval={int(interval_ms)}")
     proc = await asyncio.create_subprocess_exec(
         *args, stdin=asyncio.subprocess.PIPE if targets else None,
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,

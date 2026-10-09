@@ -166,7 +166,7 @@ async def fake_net():
     return "10.0.0.0/16", "10.0.5.20"
 
 
-async def fake_arp(targets=None, timeout=0):
+async def fake_arp(targets=None, timeout=0, interval_ms=None):
     asked.append(list(targets) if targets else None)
     hosts = []
     for t in targets or []:
@@ -238,7 +238,7 @@ assert st2._plan_info is None and st2._arp_mem == {}
 assert st2.diagnostics()["network"] == {"prefix": 24, "addresses": 256, "mode": "whole"}, st2.diagnostics()["network"]
 
 # an ARP that does not finish: the cycle goes on with the last result
-async def late_arp(targets=None, timeout=0):
+async def late_arp(targets=None, timeout=0, interval_ms=None):
     raise asyncio.TimeoutError()
 
 

@@ -217,8 +217,9 @@ _TLS_PORTS = {443, 8443, 4443, 9443, 10443, 5001, 5986, 8006, 8883, 993, 995, 63
 async def tls_ssh_scan(ip: str, ports: list[dict], timeout: int = 20) -> dict:
     """ssl-cert and ssh-hostkey only on the open ports that can speak TLS or SSH."""
     chosen = sorted({p["port"] for p in ports
-                     if p["port"] in _TLS_PORTS or p["port"] == 22
-                     or any(s in (p.get("service") or "") for s in ("https", "ssl", "ssh"))})
+                     if not is_print_port(p)               # a printer prints what it is sent, a TLS hello included
+                     and (p["port"] in _TLS_PORTS or p["port"] == 22
+                          or any(s in (p.get("service") or "") for s in ("https", "ssl", "ssh")))})
     if not chosen:
         return {}
     xml_text = await _run_nmap(["-Pn", "-p", ",".join(map(str, chosen[:12])), "--script", "ssl-cert,ssh-hostkey",
@@ -902,6 +903,17 @@ def _categorize_port(port: int, service: str | None) -> str:
 
 EPHEMERAL_PORT_START = 49152  # IANA dynamic/private range: never a stable service
 
+# Where a printer prints whatever arrives: HP JetDirect (9100-9107) and LPD (515). Nothing is ever sent to these ports (nmap itself leaves 9100-9107 out of its version detection for the same reason): the
+# probes of the search would come out of the printer on paper ("GET / HTTP/1.0 Host: ...").
+PRINT_PORTS = frozenset(range(9100, 9108)) | {515}
+_PRINT_SERVICES = ("jetdirect", "printer", "pdl-datastream", "lpd")
+
+
+def is_print_port(entry: dict) -> bool:
+    """A port where a printer prints whatever it is sent: by its number, or by the service name that nmap read on it (a printer can listen elsewhere)."""
+    service = (entry.get("service") or "").lower()
+    return entry["port"] in PRINT_PORTS or any(name in service for name in _PRINT_SERVICES)
+
 def _der_item(buf: bytes, pos: int) -> tuple[int, int, int]:
     """(tag, content start, content end) of the DER element in buf[pos:]."""
     tag, ln = buf[pos], buf[pos + 1]
@@ -987,6 +999,8 @@ async def _confirm_http_port(ip: str, port: int, timeout: float = 1.5) -> dict |
     host all turn out to be real HTTP (rare but it happened: a main app +
     a lighter internal console), there must be a way to choose which one to
     propose. None if the port does not speak HTTP."""
+    if port in PRINT_PORTS:
+        return None            # a printer prints what it is sent
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout=timeout)
         writer.write(f"GET / HTTP/1.0\r\nHost: {ip}\r\n\r\n".encode())
@@ -1068,8 +1082,11 @@ async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
     stable_ports = [p for p in ports if p["port"] < EPHEMERAL_PORT_START]
     if not stable_ports:
         return
-    results = await asyncio.gather(*(_confirm_http_port(ip, p["port"]) for p in stable_ports))
-    for p, found in zip(stable_ports, results):
+    asked = [p for p in stable_ports if not is_print_port(p)]       # a printing port gets nothing: it would print it
+    results = await asyncio.gather(*(_confirm_http_port(ip, p["port"]) for p in asked))
+    found_on = {id(p): found for p, found in zip(asked, results)}
+    for p in stable_ports:
+        found = found_on.get(id(p))
         p["http_body_size"] = found["size"] if found else None
         p["web_ui"] = bool(found and found["usable"])
         p["web_scheme"] = found["scheme"] if found else "http"

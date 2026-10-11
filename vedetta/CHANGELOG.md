@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3 · Sordina
+**Sordina** is Italian for *mute*: a quiet fix. Vedetta no longer sends anything to the printing ports of a printer.
+- **Printers**: the web check and the certificate check asked every open port of a device, including the raw printing ports (9100-9107 and 515). A printer prints whatever arrives there, so a few sheets with the text of the request could come out. Those ports are now left alone; everything else is checked as before. Thank you to the person who reported it.
+
 ## 0.6.2 · Respiro
 **Respiro** is Italian for *breath*: a small update that lets your network breathe. Vedetta no longer asks every address of the network at every check, which a weak Wi-Fi, a repeater or a mesh could feel as a burst. Thank you to everyone who reported it, with such careful tests.
 - **Lighter checks on a normal network** (up to a /24): the whole network is asked once every 5 minutes, to find new devices; the checks in between ask only the devices that are configured (for 46 devices, 46 requests instead of about 625). Every request is spaced 20 ms from the next instead of a burst of about 500 packets a second.

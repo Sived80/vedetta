@@ -111,6 +111,12 @@ Vedetta speaks **English, Italian and Czech** (thanks to the community for the C
 <p align="center"><img src="docs/images/demo.gif" alt="An unknown device on the network becomes a Sony console after a scan, and its card shows the clues that decided it" width="100%"></p>
 <p align="center"><sub>An unknown device, a scan, a name — and the clues behind it</sub></p>
 
+## ☕ Support the project
+
+Vedetta is free and open source, and it stays that way. If it saved you time, you can help to keep it going:
+
+<p align="center"><a href="https://ko-fi.com/B8D228NOWZ"><img height="36" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Vedetta on Ko-fi"></a></p>
+
 ## 📜 License and credits
 
 Vedetta is open source under the **[MIT License](LICENSE)**. Everything it builds on is listed, with its license, in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

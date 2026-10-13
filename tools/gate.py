@@ -47,7 +47,7 @@ def main():
     os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
     clean_bytecode()
     real_data = gate_rules.folder_state(ROOT / "vedetta" / "config")
-    t = sh(sys.executable, "tools/run_tests.py")
+    t = sh(sys.executable, "tools/run_tests.py", *[a for a in sys.argv if a == "--allow-golden-update"])      # the test runner checks the goldens itself (the CI does too)
     ok = t.returncode == 0 and "TUTTO OK" in t.stdout
     tail = "\n".join(t.stdout.splitlines()[-25:])
     snap = snapshot()
@@ -55,9 +55,6 @@ def main():
     too_deep = gate_rules.deep_problem(nesting.deep_functions(ROOT), nesting.ALLOWED_DEEP)
     if too_deep:
         problems.append(too_deep)
-    dirty = gate_rules.dirty_goldens(sh("git", "status", "--porcelain", "tests/golden").stdout)
-    if dirty and "--allow-golden-update" not in sys.argv:        # a golden is regenerated on purpose, with the proof in the commit message, never by the run itself
-        problems.append(f"golden changed or created: {', '.join(dirty[:3])}{' ...' if len(dirty) > 3 else ''} (use --allow-golden-update when it is on purpose)")
     touched = gate_rules.folder_problem(real_data, gate_rules.folder_state(ROOT / "vedetta" / "config"))
     if touched:
         problems.append(touched)

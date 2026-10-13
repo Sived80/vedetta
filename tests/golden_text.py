@@ -11,3 +11,11 @@ def lf(value):
     if isinstance(value, dict):
         return {k: lf(v) for k, v in value.items()}
     return value
+
+
+def ignore_file_size(results, name):
+    """The manifest lists the size in bytes of every exported file; a file the app rewrites itself has a platform-dependent size (CRLF adds one byte per line), so that one size is left out of the comparison."""
+    for scenario in results.values():
+        files = (scenario["entries"].get("manifest.json") or {}).get("files", {})
+        if name in files:
+            files[name] = None

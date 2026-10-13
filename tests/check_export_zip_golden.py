@@ -29,7 +29,7 @@ from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.state import state  # noqa: E402
 from app.storage import devices_config, history as history_mod  # noqa: E402
 from app.storage.history import History  # noqa: E402
-from golden_text import lf  # noqa: E402
+from golden_text import ignore_file_size, lf  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "export_zip.json"
 VOLATILE = ("created", "python", "platform", "service", "time", "version")
@@ -133,6 +133,8 @@ if os.environ.get("ZIP_GOLDEN_UPDATE") or not GOLDEN.exists():
     GOLDEN.write_text(json.dumps(out, sort_keys=True, indent=1), encoding="utf-8")
     print("golden written")
 want = lf(json.loads(GOLDEN.read_text(encoding="utf-8")))
+for _results in (out, want):
+    ignore_file_size(_results, "data/devices.yaml")
 for sc in want:
     assert sorted(out[sc]["entries"]) == sorted(want[sc]["entries"]), (sc, sorted(out[sc]["entries"]), sorted(want[sc]["entries"]))
     for n in want[sc]["entries"]:

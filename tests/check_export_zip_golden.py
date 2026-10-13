@@ -29,7 +29,7 @@ from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.state import state  # noqa: E402
 from app.storage import devices_config, history as history_mod  # noqa: E402
 from app.storage.history import History  # noqa: E402
-from golden_text import ignore_file_size, lf  # noqa: E402
+from golden_text import first_difference, ignore_file_size, lf  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "export_zip.json"
 VOLATILE = ("created", "python", "platform", "service", "time", "version")
@@ -138,8 +138,8 @@ for _results in (out, want):
 for sc in want:
     assert sorted(out[sc]["entries"]) == sorted(want[sc]["entries"]), (sc, sorted(out[sc]["entries"]), sorted(want[sc]["entries"]))
     for n in want[sc]["entries"]:
-        assert out[sc]["entries"][n] == want[sc]["entries"][n], "%s %s differs: %s" % (sc, n, json.dumps([out[sc]["entries"][n], want[sc]["entries"][n]], default=str)[:600])
-    assert out[sc] == want[sc], sc
+        assert out[sc]["entries"][n] == want[sc]["entries"][n], "%s %s differs at %s" % (sc, n, first_difference(out[sc]["entries"][n], want[sc]["entries"][n]))
+    assert out[sc] == want[sc], (sc, first_difference(out[sc], want[sc]))
 a = out["all"]["entries"]
 assert out["corrupt"]["omitted"] and len(json.loads(out["corrupt"]["entries"]["state/focus.json"])["devices"]) == 1 and "state/journal.json" in a, "scenarios too uniform"
 assert "state/focus.json" in a and "data/vedetta.db" in a and "data/blob.bin" not in a and "data/api_key.json" not in a and out["bigdb"]["entries"]["manifest.json"]["notes"], "scenarios too uniform"

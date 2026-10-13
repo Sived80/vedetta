@@ -70,6 +70,8 @@ try:
     for name in CTX:
         # the HEAD templates do not use `base`: with base="" the result must match
         before = render(head_env, name)
+        # the script tag of the page is now the entry of the modules (it was ha.js): a HEAD from before that change is compared as if it already had it
+        before = before.replace('<script src="/static/ha/ha.js?v=1"></script>', '<script type="module" src="/static/ha/js/app.js?v=1"></script>')
         after = render(new_env, name, base="")
         assert before == after, "HTML con prefisso vuoto diverso da HEAD: " + name
         # and also when passing a context without `base` (undefined variable = empty string)

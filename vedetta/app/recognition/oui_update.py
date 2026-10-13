@@ -3,17 +3,18 @@
 copy lives in config/oui-ieee.txt (a deploy replaces app/, not config/)
 and takes precedence over the one included in the app. Used by the interface, by
 the nightly maintenance and by tools/update_oui.py."""
+from .. import atomic
+from itertools import chain
 import csv
 import html
 import io
 import logging
-import os
 import re
-import tempfile
 import time
 import urllib.request
 
 from . import brands
+from . import vendor_lookup
 
 logger = logging.getLogger("dashboard")
 
@@ -80,7 +81,7 @@ def build(texts, min_blocks: int = MIN_BLOCKS) -> tuple[str, int]:
     OuiUpdateError if they are not valid registries or have fewer than min_blocks blocks."""
     if isinstance(texts, str):
         texts = [texts]
-    rows = [row for text in texts for row in convert_ieee(text)]
+    rows = list(chain.from_iterable(convert_ieee(text) for text in texts))
     if not rows:
         raise OuiUpdateError("invalid")
     if len(rows) < min_blocks:
@@ -106,22 +107,12 @@ def download(urls=None) -> list[str]:
 
 
 def write_atomic(path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=".oui-", suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-            f.write(content)
-        os.replace(tmp, path)
-    except BaseException:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
-        raise
+    atomic.write_atomic(path, lambda f: f.write(content), ".oui-", newline="\n")
 
 
 def install(texts, min_blocks: int = MIN_BLOCKS) -> dict:
     """Converts, checks and installs the IEEE registries in config/ (no network: it is
     the testable part). Touches nothing if the checks fail."""
-    from . import vendor_lookup  # late import: tools/update_oui.py only uses convert/build
     content, blocks = build(texts, min_blocks)
     try:
         write_atomic(vendor_lookup.USER_OUI_PATH, content)

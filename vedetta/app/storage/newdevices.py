@@ -82,13 +82,6 @@ def readable_label(row: dict) -> str:
     return row.get("hostname") or row.get("brand") or row.get("vendor") or row.get("ip") or row["mac"]
 
 
-def _in_blocks(ip: str | None, blocks: tuple[str, ...]) -> bool:
-    try:
-        return bool(ip) and any(ipaddress.ip_address(ip) in ipaddress.ip_network(b) for b in blocks)
-    except ValueError:
-        return False
-
-
 def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_macs: set[str],
              ignore_macs: set[str] = frozenset(), hist: History = history, now: float | None = None,
              baseline_blocks: tuple[str, ...] = ()) -> tuple[list[dict], list[dict]]:
@@ -101,35 +94,68 @@ def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_mac
     observed = {m: o for m, o in observed.items() if m not in ignore_macs}
     _present = set(observed)
     rows = hist.known_all()
-
     if hist.meta_get(BASELINE_KEY) is None:
-        if not observed:
-            return [], []  # empty ARP (error or network off): the baseline waits
-        for mac, obs in observed.items():
-            hist.known_set(mac, now, obs["ip"], obs["vendor"] or lookup_vendor(mac), obs["hostname"], "known")
-        hist.meta_set(BASELINE_KEY, str(int(now)))
-        logger.info("Nuovi dispositivi: baseline di %d MAC, nessun avviso", len(observed))
+        _seed_baseline(observed, hist, now)
         return [], []
-
+    this_round = _Round(hist, configured_ips, configured_macs, baseline_blocks, now)
     fresh: list[dict] = []
     for mac, obs in observed.items():
-        configured = (obs["ip"] in configured_ips) or (mac in configured_macs)
-        row = rows.get(mac)
+        entry = this_round.register(mac, obs, rows.get(mac))
+        if entry is not None:
+            fresh.append(entry)
+    return fresh, list_new(hist)
+
+
+def _seed_baseline(observed: dict, hist: History, now: float) -> None:
+    """The first search of a network: whatever is on it is the starting point, known, with no alert. An empty ARP (error or network off): the baseline waits."""
+    if not observed:
+        return
+    for mac, obs in observed.items():
+        hist.known_set(mac, now, obs["ip"], obs["vendor"] or lookup_vendor(mac), obs["hostname"], "known")
+    hist.meta_set(BASELINE_KEY, str(int(now)))
+    logger.info("Nuovi dispositivi: baseline di %d MAC, nessun avviso", len(observed))
+
+
+class _Round:
+    """One evaluation of the MACs seen on the network: what they are compared with (the configured addresses and MACs, the blocks of a baseline) and where it writes (the history, at `now`)."""
+
+    def __init__(self, hist: History, configured_ips: set, configured_macs: set, baseline_blocks: tuple, now: float):
+        self.hist, self.configured_ips, self.configured_macs, self.baseline_blocks, self.now = hist, configured_ips, configured_macs, baseline_blocks, now
+
+    def register(self, mac: str, obs: dict, row: dict | None) -> dict | None:
+        """Registers one observed MAC; returns the alert entry if it is a new device."""
+        configured = (obs["ip"] in self.configured_ips) or (mac in self.configured_macs)
         vendor = obs["vendor"] or lookup_vendor(mac)
         if row is None:
-            status = "known" if (configured or _in_blocks(obs["ip"], baseline_blocks)) else "new"
-            hist.known_set(mac, now, obs["ip"], vendor, obs["hostname"], status)
-            if status == "new":
-                fresh.append({"mac": mac, "ip": obs["ip"], "vendor": vendor, "hostname": obs["hostname"],
-                              "first_seen": now, **_brand_fields(mac, obs["hostname"])})
-            continue
+            return self._register_new(mac, obs, configured, vendor)
+        self._update_known(mac, obs, configured, vendor, row)
+        return None
+
+    def _register_new(self, mac: str, obs: dict, configured: bool, vendor: str | None) -> dict | None:
+        """A MAC never seen before: recorded as known if it is configured or lives in a baseline block, otherwise as new.
+        Returns the alert entry for a new one, None for a known one."""
+        status = "known" if (configured or _in_blocks(obs["ip"], self.baseline_blocks)) else "new"
+        self.hist.known_set(mac, self.now, obs["ip"], vendor, obs["hostname"], status)
+        if status != "new":
+            return None
+        return {"mac": mac, "ip": obs["ip"], "vendor": vendor, "hostname": obs["hostname"],
+                "first_seen": self.now, **_brand_fields(mac, obs["hostname"])}
+
+    def _update_known(self, mac: str, obs: dict, configured: bool, vendor: str | None, row: dict) -> None:
+        """A MAC already in the table: a new one that is now configured becomes known; the table is written only if something changed."""
         status = "known" if (row["status"] == "new" and configured) else row["status"]
         ip = obs["ip"] or row["ip"]
         hostname = obs["hostname"] or row["hostname"]
         vendor = vendor or row["vendor"]
         if (status, ip, hostname, vendor) != (row["status"], row["ip"], row["hostname"], row["vendor"]):
-            hist.known_set(mac, row["first_seen"], ip, vendor, hostname, status)
-    return fresh, list_new(hist)
+            self.hist.known_set(mac, row["first_seen"], ip, vendor, hostname, status)
+
+
+def _in_blocks(ip: str | None, blocks: tuple[str, ...]) -> bool:
+    try:
+        return bool(ip) and any(ipaddress.ip_address(ip) in ipaddress.ip_network(b) for b in blocks)
+    except ValueError:
+        return False
 
 
 def sync_present(macs: set[str]) -> None:
@@ -141,13 +167,10 @@ def sync_present(macs: set[str]) -> None:
 
 def list_new(hist: History = history) -> list[dict]:
     """The 'new' devices, in the API format."""
-    out = []
-    for r in hist.known_all().values():
-        if r["status"] == "new" and (_present is None or r["mac"] in _present):
-            out.append({
+    out = [{
                 "mac": r["mac"], "ip": r["ip"], "vendor": lookup_vendor(r["mac"]) or r["vendor"],
                 "hostname": r["hostname"], "first_seen": r["first_seen"], **_brand_fields(r["mac"], r["hostname"]),
-            })
+            } for r in hist.known_all().values() if r["status"] == "new" and (_present is None or r["mac"] in _present)]
     return sorted(out, key=lambda d: d["first_seen"])
 
 

@@ -1,0 +1,4 @@
+{
+  "_comment": "DHCP vendor class identifiers (option 60, lower case, spaces removed) that name a kind of device by their first letters. A device that sends one of these is a games console; add a row to recognise another one.",
+  "console": ["ps3", "ps4", "ps5", "playstation", "xbox", "nintendo"]
+}

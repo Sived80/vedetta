@@ -48,11 +48,16 @@ BATTERY. Attribute battery = yes | no | None (unknown) with battery_source:
 import time
 
 from . import brands
+from .. import procfs
 from ..scan import dhcp
 from .vendor_lookup import is_private_mac, lookup_vendor
 from .brands import normalize_brand
 
 MOBILE_THRESHOLD = 3
+# What each clue adds to (or takes from) the mobile score; the DHCP clues have their own table in scan/dhcp.py.
+MOBILE_WEIGHTS = {"name_weak": 2, "model_mobile": 3, "model_laptop": 2, "model_fixed": -3, "churn_strong": 2, "churn_weak": 1,
+                  "mac_rotation": 3, "mobile_service": 3, "no_ports": 1, "plays_video": -4, "fixed_battery": -4}
+_W = MOBILE_WEIGHTS
 CHURN_WINDOW_DAYS = 7
 CHURN_REFRESH_S = 600
 _CHURN_WEAK, _CHURN_STRONG = 6, 14
@@ -64,23 +69,35 @@ _gateway_cache: dict = {"value": _NO_GATEWAY}
 def default_gateway(route_path: str = "/proc/net/route") -> str | None:
     """IP of the default gateway (from /proc/net/route, Linux); None if it cannot be read.
     Computed only once: a home LAN's gateway does not change."""
-    if _gateway_cache["value"] is not _NO_GATEWAY and route_path == "/proc/net/route":
+    is_system_path = route_path == "/proc/net/route"
+    if _gateway_cache["value"] is not _NO_GATEWAY and is_system_path:
         return _gateway_cache["value"]
-    gateway = None
-    try:
-        with open(route_path, encoding="ascii") as f:
-            next(f, None)
-            for line in f:
-                cols = line.split()
-                if len(cols) > 2 and cols[1] == "00000000" and int(cols[3], 16) & 2:
-                    raw = int(cols[2], 16).to_bytes(4, "little")
-                    gateway = ".".join(str(b) for b in raw)
-                    break
-    except (OSError, ValueError, StopIteration):
-        gateway = None
-    if route_path == "/proc/net/route" and gateway:
+    gateway = _read_gateway(route_path)
+    if is_system_path and gateway:
         _gateway_cache["value"] = gateway
     return gateway
+
+
+def _read_gateway(route_path: str) -> str | None:
+    """The gateway of the first default route of the file; None if there is none or the file cannot be read."""
+    try:
+        for cols in procfs.table(route_path):
+            if _is_default_route(cols):
+                return _gateway_text(cols[2])
+    except ValueError:         # a bad number (or a byte that is not ASCII) ends the reading with no answer
+        pass
+    return None
+
+
+def _is_default_route(cols: list[str]) -> bool:
+    """A line of /proc/net/route that is the default route and has the gateway flag (RTF_GATEWAY) set."""
+    return len(cols) > 2 and cols[1] == "00000000" and bool(int(cols[3], 16) & 2)
+
+
+def _gateway_text(hex_address: str) -> str:
+    """Dotted address from the little-endian hexadecimal field of /proc/net/route."""
+    raw = int(hex_address, 16).to_bytes(4, "little")
+    return ".".join(str(b) for b in raw)
 
 
 def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None = None, declared=(),
@@ -88,29 +105,47 @@ def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None =
                    raw_vendor: str | None = None) -> dict:
     """Two-level brand (see the module docstring). raw_vendor is the raw
     name from nmap/arp-scan, used only if the prefix database does not know the MAC."""
-    vendor = lookup_vendor(mac)
-    if vendor is None and raw_vendor and not is_private_mac(mac):
-        vendor = normalize_brand(raw_vendor)
+    vendor = _vendor_of_mac(mac, raw_vendor)
     found = brands.resolve(vendor, names=list(names), upnp_manufacturer=upnp_manufacturer, declared=declared,
                            web_text=web_text, os_family=os_family, is_gateway=is_gateway)
     role = found["role"] or ("private" if is_private_mac(mac) else None)
-    source = found["source"]
-    # Confirmed also when the chosen source is another one but the device declares the
-    # same brand (e.g. name "SONY XR-55X92K" and UPnP manufacturer "Sony").
     declared_brands = {brands.known_brand(v) for v in (upnp_manufacturer, *declared) if v}
-    if not found["brand"]:
-        evidence = None
-    elif source == "declared" or found["brand"] in declared_brands \
-            or (source == "oui" and role == "brand" and not is_private_mac(mac))             or (role == "brand" and not is_private_mac(mac) and brands.known_brand(vendor) == found["brand"]):  # MAC and name agree
-        evidence = "confirmed"
-    else:
-        evidence = "plausible"
+    evidence = _brand_evidence(found, role, vendor, mac, declared_brands)
     generic = None
     if not found["brand"]:
         generic = next((str(v).strip() for v in (upnp_manufacturer, *declared) if v and str(v).strip()), None)
     return {"vendor": vendor, "vendor_role": role, "brand": found["brand"],
-            "brand_source": source, "brand_confidence": found["confidence"],
+            "brand_source": found["source"], "brand_confidence": found["confidence"],
             "brand_evidence": evidence, "brand_declared": generic}
+
+
+def _vendor_of_mac(mac, raw_vendor):
+    """The manufacturer of the MAC prefix; if the database does not know it, the cleaned raw name (but not for a random MAC)."""
+    vendor = lookup_vendor(mac)
+    if vendor is None and raw_vendor and not is_private_mac(mac):
+        vendor = normalize_brand(raw_vendor)
+    return vendor
+
+
+def _brand_evidence(found, role, vendor, mac, declared_brands):
+    """"confirmed" when the device declares the brand or the MAC prefix agrees; "plausible" for any other inference; None without a brand."""
+    if not found["brand"]:
+        return None
+    source = found["source"]
+    # Confirmed also when the chosen source is another one but the device declares the
+    # same brand (e.g. name "SONY XR-55X92K" and UPnP manufacturer "Sony").
+    if (source == "declared" or found["brand"] in declared_brands
+            or _oui_brand_mac(source, role, mac) or _mac_and_name_agree(role, mac, vendor, found["brand"])):  # MAC and name agree
+        return "confirmed"
+    return "plausible"
+
+
+def _oui_brand_mac(source, role, mac) -> bool:
+    return source == "oui" and role == "brand" and not is_private_mac(mac)
+
+
+def _mac_and_name_agree(role, mac, vendor, brand) -> bool:
+    return role == "brand" and not is_private_mac(mac) and brands.known_brand(vendor) == brand
 
 
 def battery_assess(*, api: bool | None = None, scan: str | None = None, texts=(),
@@ -138,28 +173,25 @@ _macs: dict = {"ts": 0.0, "data": {}}
 def presence_churn(device_id: str, now: float | None = None) -> int:
     """Online/offline transitions of the device in the last 7 days. A single
     query for all devices, refreshed every 10 minutes."""
-    now = time.time() if now is None else now
-    if now - _churn["ts"] > CHURN_REFRESH_S:
-        try:
-            from ..storage.history import history  # late import: opens the database
-            _churn["data"] = history.presence_flaps(now - CHURN_WINDOW_DAYS * 86400)
-        except Exception:
-            pass  # keep the last known value (or none)
-        _churn["ts"] = now
-    return _churn["data"].get(device_id, 0)
+    return _window_count(_churn, "presence_flaps", device_id, now)
 
 
 def presence_mac_changes(device_id: str, now: float | None = None) -> int:
     """How many different private MACs this card has used in the last 7 days (see History.private_mac_counts)."""
+    return _window_count(_macs, "private_mac_counts", device_id, now)
+
+
+def _window_count(cache: dict, query: str, device_id: str, now: float | None) -> int:
+    """The count of a device from a history query over the last CHURN_WINDOW_DAYS days: one query for all the devices, refreshed at most every CHURN_REFRESH_S."""
     now = time.time() if now is None else now
-    if now - _macs["ts"] > CHURN_REFRESH_S:
+    if now - cache["ts"] > CHURN_REFRESH_S:
         try:
-            from ..storage.history import history
-            _macs["data"] = history.private_mac_counts(now - CHURN_WINDOW_DAYS * 86400)
+            from ..storage.history import history  # late import: opens the database
+            cache["data"] = getattr(history, query)(now - CHURN_WINDOW_DAYS * 86400)
         except Exception:
-            pass
-        _macs["ts"] = now
-    return _macs["data"].get(device_id, 0)
+            pass  # keep the last known value (or none)
+        cache["ts"] = now
+    return cache["data"].get(device_id, 0)
 
 
 def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | None,
@@ -170,36 +202,65 @@ def mobile_assess(*, mac: str | None, name_is_mobile: bool, has_ports: bool | No
     """"Phone/tablet/laptop" score (see the module docstring).
     Returns {"mobile": bool, "score": int, "reason": main clue}."""
     score, reason = dhcp.mobile_score(mac, name_is_mobile, has_ports)
-    if name_weak and not name_is_mobile:
-        score, reason = score + 2, reason or "nome"  # "Android" in the name: weak clue
-    if model_class == "mobile":
-        score, reason = score + 3, reason if score > 0 and reason else "model"
-    elif model_class == "laptop":
-        score, reason = score + 2, reason if score > 0 and reason else "model"
-    elif model_class == "fixed":
-        score -= 3
-    # Online/offline alternation counts only with a private MAC (phones) or a recognized
-    # laptop: a TV or a fixed PC, which are switched off every evening, have the manufacturer's MAC.
-    if dhcp.is_private_mac(mac) or model_class == "laptop":
-        if churn >= _CHURN_STRONG:
-            score, reason = score + 2, reason or "presence"
-        elif churn >= _CHURN_WEAK:
-            score, reason = score + 1, reason or "presence"
-    # Two or more different private MACs on the same card: a phone or tablet that rotates its Wi-Fi address. A new network
-    # card has a global MAC, so a replaced PC does not count; a MAC lent by a repeater is left out by the history.
-    if mac_changes >= 2:
-        score, reason = score + 3, reason if reason not in (None, "MAC privato") else "MAC privati diversi"
+    score, reason = _name_clue(score, reason, name_is_mobile, name_weak)
+    score, reason = _model_clue(score, reason, model_class)
+    score, reason = _churn_clue(score, reason, mac, model_class, churn)
+    score, reason = _mac_rotation_clue(score, reason, mac_changes)
     if mobile_service:
-        score, reason = score + 3, reason or "servizio mobile"  # announced only by phones and tablets
+        score, reason = score + _W["mobile_service"], reason or "servizio mobile"  # announced only by phones and tablets
     # No listening service confirms any other clue (phones have none);
     # on its own it does not count: many IoT devices have no ports either.
     if has_ports is False and score > 0:
-        score += 1
-    if media_receiver:
-        score -= 4  # receives or plays video (cast, mirroring, renderer): TV, stick, box
-        reason = None
-    if battery == "yes" and battery_source in ("api", "scan", "hint"):
-        score -= 4  # battery-powered but networked and fixed: not a phone
-        reason = None
+        score += _W["no_ports"]
+    score, reason = _veto_clues(score, reason, media_receiver, battery, battery_source)
     return {"mobile": score >= MOBILE_THRESHOLD, "score": score, "reason": reason if score >= MOBILE_THRESHOLD else None,
             "threshold": MOBILE_THRESHOLD}
+
+
+def _name_clue(score, reason, name_is_mobile, name_weak):
+    """"Android" in the name (a weak clue) when the name is not already a phone-like one."""
+    if name_weak and not name_is_mobile:
+        return score + _W["name_weak"], reason or "nome"
+    return score, reason
+
+
+def _model_clue(score, reason, model_class):
+    """The model class: mobile and laptop add points (and, if nothing else said it, are the reason), fixed takes points away."""
+    if model_class == "mobile":
+        return score + _W["model_mobile"], reason if score > 0 and reason else "model"
+    if model_class == "laptop":
+        return score + _W["model_laptop"], reason if score > 0 and reason else "model"
+    if model_class == "fixed":
+        return score + _W["model_fixed"], reason
+    return score, reason
+
+
+def _churn_clue(score, reason, mac, model_class, churn):
+    # Online/offline alternation counts only with a private MAC (phones) or a recognized
+    # laptop: a TV or a fixed PC, which are switched off every evening, have the manufacturer's MAC.
+    if not (dhcp.is_private_mac(mac) or model_class == "laptop"):
+        return score, reason
+    if churn >= _CHURN_STRONG:
+        return score + _W["churn_strong"], reason or "presence"
+    if churn >= _CHURN_WEAK:
+        return score + _W["churn_weak"], reason or "presence"
+    return score, reason
+
+
+def _mac_rotation_clue(score, reason, mac_changes):
+    # Two or more different private MACs on the same card: a phone or tablet that rotates its Wi-Fi address. A new network
+    # card has a global MAC, so a replaced PC does not count; a MAC lent by a repeater is left out by the history.
+    if mac_changes >= 2:
+        return score + _W["mac_rotation"], reason if reason not in (None, "MAC privato") else "MAC privati diversi"
+    return score, reason
+
+
+def _veto_clues(score, reason, media_receiver, battery, battery_source):
+    """The negative clues: a device that plays video, or that is battery-powered but networked and fixed, is not a phone."""
+    if media_receiver:
+        score += _W["plays_video"]  # receives or plays video (cast, mirroring, renderer): TV, stick, box
+        reason = None
+    if battery == "yes" and battery_source in ("api", "scan", "hint"):
+        score += _W["fixed_battery"]  # battery-powered but networked and fixed: not a phone
+        reason = None
+    return score, reason

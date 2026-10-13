@@ -9,8 +9,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app.scan import scanner as scan_web  # noqa: E402
-scan_nmap = scan_web   # (in this version the web check and the certificate scripts are in the same module)
+from app.scan import scan_nmap, scan_web  # noqa: E402
 
 CONNECTED: list = []
 WRITTEN: list = []

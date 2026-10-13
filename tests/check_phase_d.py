@@ -34,7 +34,7 @@ async def main():
     cfg = {"id": "d1", "ip": "1.1.1.1"}
     current = {"d1": cfg}
     events = []
-    st._emit = lambda e: events.append(e)
+    st.emit_event = lambda e: events.append(e)
     st.render = lambda d: {"card": "c", "row": "r"}
 
     # 1) first check online

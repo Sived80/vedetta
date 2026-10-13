@@ -20,11 +20,6 @@ from .discovery import parse_description
 _TIMEOUT = 3.0
 
 
-def _xml_tag(text: str, tag: str) -> str | None:
-    m = re.search(r"<%s>([^<]*)</%s>" % (tag, tag), text)
-    return m.group(1).strip() if m and m.group(1).strip() else None
-
-
 def parse_shelly(data: dict) -> dict:
     if not isinstance(data, dict) or not (data.get("mac") and (data.get("type") or data.get("model") or data.get("gen"))):
         return {}
@@ -51,6 +46,11 @@ def parse_roku(text: str) -> dict:
             "api_fw": _xml_tag(text, "software-version")}
 
 
+def _xml_tag(text: str, tag: str) -> str | None:
+    m = re.search(r"<%s>([^<]*)</%s>" % (tag, tag), text)
+    return m.group(1).strip() if m and m.group(1).strip() else None
+
+
 def parse_sonos(text: str) -> dict:
     info = parse_description(text)
     if "sonos" not in (info.get("manufacturer") or "").lower():
@@ -60,41 +60,90 @@ def parse_sonos(text: str) -> dict:
 
 def parse_esphome_events(text: str) -> dict:
     """First 'ping' event of the ESPHome web server: {"title": name, ...}."""
+    for raw in _ping_data_lines(text):
+        try:
+            data = json.loads(raw)
+        except ValueError:
+            return {}
+        if isinstance(data, dict) and data.get("title"):
+            return {"api_source": "esphome", "api_fw": "ESPHome", "api_name": data["title"]}
+    return {}
+
+
+def _ping_data_lines(text: str):
+    """The `data:` lines that follow an `event: ping` line (within the next two lines), in the order they appear."""
     lines = text.splitlines()
     for i, line in enumerate(lines):
         if line.strip() == "event: ping":
-            for nxt in lines[i + 1:i + 3]:
-                if nxt.startswith("data:"):
-                    try:
-                        data = json.loads(nxt[5:].strip())
-                    except ValueError:
-                        return {}
-                    if isinstance(data, dict) and data.get("title"):
-                        return {"api_source": "esphome", "api_fw": "ESPHome", "api_name": data["title"]}
-    return {}
-
-
-async def _esphome(client: httpx.AsyncClient, ip: str) -> dict:
-    """Reads only the beginning of the /events stream (which otherwise stays open)."""
-    buf = ""
-    try:
-        async with client.stream("GET", f"http://{ip}/events") as resp:
-            if resp.status_code != 200 or "event-stream" not in resp.headers.get("content-type", ""):
-                return {}
-            async for chunk in resp.aiter_text():
-                buf += chunk
-                found = parse_esphome_events(buf)
-                if found or len(buf) > 4096:
-                    return found
-    except Exception:
-        return {}
-    return {}
+            yield from (nxt[5:].strip() for nxt in lines[i + 1:i + 3] if nxt.startswith("data:"))
 
 
 def parse_cast(data: dict) -> dict:
     if not isinstance(data, dict) or not (data.get("name") or data.get("build_version")):
         return {}
     return {"api_source": "cast", "api_name": data.get("name"), "api_fw": data.get("cast_build_revision") or data.get("build_version")}
+
+
+def plan(ip: str, ports) -> list[tuple[str, str]]:
+    """Pure: the (kind, URL) requests worth making for the open ports, in the order in which an answer wins. ESPHome is separate (a stream)."""
+    ports = set(ports)
+    out: list[tuple[str, str]] = []
+    if 80 in ports:
+        out += [("shelly", f"http://{ip}/shelly"), ("tasmota", f"http://{ip}/cm?cmnd=Status%200")]
+    if 1400 in ports:
+        out.append(("sonos", f"http://{ip}:1400/xml/device_description.xml"))
+    if 8060 in ports:
+        out.append(("roku", f"http://{ip}:8060/query/device-info"))
+    if 8008 in ports:
+        out.append(("cast", f"http://{ip}:8008/setup/eureka_info"))
+    return out
+
+
+def interpret(kind: str, text: str) -> dict:
+    """Pure: what the answer of one interface says about the device ({} if it is not the expected shape)."""
+    try:
+        if kind in ("shelly", "tasmota", "cast"):
+            return {"shelly": parse_shelly, "tasmota": parse_tasmota, "cast": parse_cast}[kind](json.loads(text))
+        return {"sonos": parse_sonos, "roku": parse_roku}[kind](text)
+    except ValueError:
+        return {}
+
+
+async def probe(ip: str, ports, transport=None) -> dict:
+    """Tries only the interfaces of the open ports; the first one that answers
+    with the expected shape wins. {} if none. `transport` lets a test replace the network (httpx.MockTransport)."""
+    ports = set(ports)
+    requests = plan(ip, ports)
+    if not requests:
+        return {}
+    async with httpx.AsyncClient(timeout=_TIMEOUT, follow_redirects=False, transport=transport) as client:
+        jobs = [(kind, _get(client, url)) for kind, url in requests]
+        if 80 in ports:
+            jobs.append(("esphome", asyncio.wait_for(_esphome(client, ip), _TIMEOUT)))
+        results = await asyncio.gather(*(j for _, j in jobs), return_exceptions=True)
+    return _first_answer([kind for kind, _ in jobs], results)
+
+
+async def _esphome(client: httpx.AsyncClient, ip: str) -> dict:
+    """Reads only the beginning of the /events stream (which otherwise stays open)."""
+    try:
+        async with client.stream("GET", f"http://{ip}/events") as resp:
+            if resp.status_code != 200 or "event-stream" not in resp.headers.get("content-type", ""):
+                return {}
+            return await _first_ping(resp)
+    except Exception:
+        return {}
+
+
+async def _first_ping(resp) -> dict:
+    """What the stream says about the device, as soon as it says it (or {} when the stream ends or 4 KiB went by with nothing)."""
+    buf = ""
+    async for chunk in resp.aiter_text():
+        buf += chunk
+        found = parse_esphome_events(buf)
+        if found or len(buf) > 4096:
+            return found
+    return {}
 
 
 async def _get(client: httpx.AsyncClient, url: str):
@@ -107,44 +156,17 @@ async def _get(client: httpx.AsyncClient, url: str):
     return resp
 
 
-async def probe(ip: str, ports) -> dict:
-    """Tries only the interfaces of the open ports; the first one that answers
-    with the expected shape wins. {} if none."""
-    ports = set(ports)
-    out: dict = {}
-    async with httpx.AsyncClient(timeout=_TIMEOUT, follow_redirects=False) as client:
-        jobs = []
-        if 80 in ports:
-            jobs.append(("shelly", _get(client, f"http://{ip}/shelly")))
-            jobs.append(("tasmota", _get(client, f"http://{ip}/cm?cmnd=Status%200")))
-        if 1400 in ports:
-            jobs.append(("sonos", _get(client, f"http://{ip}:1400/xml/device_description.xml")))
-        if 8060 in ports:
-            jobs.append(("roku", _get(client, f"http://{ip}:8060/query/device-info")))
-        if 8008 in ports:
-            jobs.append(("cast", _get(client, f"http://{ip}:8008/setup/eureka_info")))
-        if not jobs:
-            return {}
-        if 80 in ports:
-            jobs.append(("esphome", asyncio.wait_for(_esphome(client, ip), _TIMEOUT)))
-        results = await asyncio.gather(*(j for _, j in jobs), return_exceptions=True)
-    for (kind, _), resp in zip(jobs, results):
-        if resp is None or isinstance(resp, Exception):
-            continue
-        if kind == "esphome":
-            if resp:
-                out = resp
-                break
-            continue
-        try:
-            if kind in ("shelly", "tasmota", "cast"):
-                data = json.loads(resp.text)
-                found = {"shelly": parse_shelly, "tasmota": parse_tasmota, "cast": parse_cast}[kind](data)
-            else:
-                found = {"sonos": parse_sonos, "roku": parse_roku}[kind](resp.text)
-        except ValueError:
-            continue
+def _first_answer(kinds: list[str], results: list) -> dict:
+    """The first request, in the order of the plan, whose answer has the expected shape (empty fields dropped, except for the ESPHome stream); {} if none."""
+    for kind, resp in zip(kinds, results):
+        found = _answer_of(kind, resp)
         if found:
-            out = {k: v for k, v in found.items() if v}
-            break
-    return out
+            return {k: v for k, v in found.items() if v} if kind != "esphome" else found
+    return {}
+
+
+def _answer_of(kind: str, resp) -> dict:
+    """What one finished request says about the device: {} if it failed (no answer, an exception) or if the answer is not of the expected shape."""
+    if resp is None or isinstance(resp, Exception):
+        return {}
+    return resp if kind == "esphome" else interpret(kind, resp.text)

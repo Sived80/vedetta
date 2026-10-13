@@ -81,6 +81,8 @@
   "alert.port_opened": "{label}: new open port {ports}",
   "alert.port_closed": "{label}: port no longer open {ports}",
   "error.invalid_name": "Invalid name",
+  "error.invalid_body": "Invalid request",
+  "error.invalid_port": "Invalid port",
   "log.title": "Log",
   "log.subtitle": "Last {n} events (cleared on every service restart)",
   "log.back_title": "Back to the dashboard",

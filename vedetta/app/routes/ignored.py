@@ -7,20 +7,14 @@ from ..scan import dhcp, mdns_listener
 from ..storage import blocklist, journal, newdevices
 from ..storage.history import history
 from .. import i18n
+from .bodies import json_dict
 from ..applog import logger
 
 router = APIRouter()
 
 
 async def _json(request: Request) -> dict:
-    i18n.use_request(request)
-    try:
-        body = await request.json()
-    except ValueError:
-        body = None
-    if not isinstance(body, dict):
-        raise HTTPException(400, i18n.t("ignored.error.invalid"))
-    return body
+    return await json_dict(request, "ignored.error.invalid")
 
 
 @router.get("/api/ignored")
@@ -59,7 +53,6 @@ async def api_ignored_remove(item_id: str, request: Request):
     if not await asyncio.to_thread(blocklist.remove, item_id):
         raise HTTPException(404, i18n.t("ignored.error.not_found"))
     logger.info("Dispositivo ignorato ripristinato: %s", item_id)
-    from ..storage import journal  # late import
     journal.add("normal", "journal.unignored", icon="eye-off", name=item_id)
     return {"items": await asyncio.to_thread(blocklist.list_items)}
 
@@ -70,23 +63,41 @@ def _forget_mac(mac: str) -> bool:
     mac = (newdevices.normalize_mac(mac) or "").upper()
     if not mac:
         return False
-    found = False
     row = history.known_all().get(mac)
-    if row and row["status"] == "ignored":
-        history.known_delete(mac)
-        found = True
+    found = _drop_ignored_row(mac, row)
     low = mac.lower()
     ip = (mdns_listener.by_mac.get(low) or {}).get("ip") or (row or {}).get("ip")
-    if dhcp.seen.pop(low, None) is not None:
-        dhcp._save()
+    if _drop_dhcp_name(low):
         found = True
-    changed = mdns_listener.by_mac.pop(low, None) is not None
+    if _drop_bonjour_card(low, ip):
+        found = True
+    return found
+
+
+def _drop_ignored_row(mac: str, row: dict | None) -> bool:
+    """Delete the known-MAC row when it is an ignored one. True if it was deleted."""
+    if row and row["status"] == "ignored":
+        history.known_delete(mac)
+        return True
+    return False
+
+
+def _drop_dhcp_name(low_mac: str) -> bool:
+    """Forget the DHCP name seen for a (lowercase) MAC. True if there was one."""
+    if dhcp.seen.pop(low_mac, None) is None:
+        return False
+    dhcp._save()
+    return True
+
+
+def _drop_bonjour_card(low_mac: str, ip: str | None) -> bool:
+    """Forget the Bonjour card of a (lowercase) MAC and of its IP. True if one of the two existed."""
+    changed = mdns_listener.by_mac.pop(low_mac, None) is not None
     if ip and mdns_listener.by_ip.pop(ip, None) is not None:
         changed = True
     if changed:
         mdns_listener._save()
-        found = True
-    return found
+    return changed
 
 
 @router.post("/api/ignored/forget")
@@ -94,28 +105,36 @@ async def api_ignored_forget(request: Request):
     """Forget an ignored device: it leaves the list and what the app remembers about it goes too.
     Body {"id": item id} for a device ignored from a search, or {"mac": ...} for one found on the network."""
     body = await _json(request)
-    name = ""
-    something = True            # an entry of the list is always something
     if isinstance(body.get("id"), str):
-        item = next((i for i in await asyncio.to_thread(blocklist.list_items) if i["id"] == body["id"]), None)
-        if not item:
-            raise HTTPException(404, i18n.t("ignored.error.not_found"))
-        await asyncio.to_thread(blocklist.remove, item["id"])
-        name = item["label"] or item["value"]
-        if item["kind"] == "mac":
-            await asyncio.to_thread(_forget_mac, item["value"])
-        elif item["kind"] == "ip" and mdns_listener.by_ip.pop(item["value"], None) is not None:
-            await asyncio.to_thread(mdns_listener._save)
+        name, something = await _forget_listed_item(body["id"]), True      # an entry of the list is always something
     elif isinstance(body.get("mac"), str):
-        mac = newdevices.normalize_mac(body["mac"])
-        if not mac:
-            raise HTTPException(400, i18n.t("ignored.error.invalid"))
-        row = history.known_all().get(mac)
-        name = (row or {}).get("hostname") or mac
-        something = await asyncio.to_thread(_forget_mac, mac)
+        name, something = await _forget_found_mac(body["mac"])
     else:
         raise HTTPException(400, i18n.t("ignored.error.invalid"))
     if something:
         logger.info("Dispositivo ignorato dimenticato: %s", name)
         journal.add("normal", "journal.forgotten", icon="eye-off", name=name)
     return {"items": await asyncio.to_thread(blocklist.list_items), "macs": await asyncio.to_thread(newdevices.list_ignored, history)}
+
+
+async def _forget_listed_item(item_id: str) -> str:
+    """Remove an entry of the ignore list (and what is remembered about it). Returns the name to show in the journal."""
+    item = next((i for i in await asyncio.to_thread(blocklist.list_items) if i["id"] == item_id), None)
+    if not item:
+        raise HTTPException(404, i18n.t("ignored.error.not_found"))
+    await asyncio.to_thread(blocklist.remove, item["id"])
+    if item["kind"] == "mac":
+        await asyncio.to_thread(_forget_mac, item["value"])
+    elif item["kind"] == "ip" and mdns_listener.by_ip.pop(item["value"], None) is not None:
+        await asyncio.to_thread(mdns_listener._save)
+    return item["label"] or item["value"]
+
+
+async def _forget_found_mac(raw_mac: str) -> tuple[str, bool]:
+    """Forget a device found on the network. Returns (name for the journal, whether there was something to forget)."""
+    mac = newdevices.normalize_mac(raw_mac)
+    if not mac:
+        raise HTTPException(400, i18n.t("ignored.error.invalid"))
+    row = history.known_all().get(mac)
+    name = (row or {}).get("hostname") or mac
+    return name, await asyncio.to_thread(_forget_mac, mac)

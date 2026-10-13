@@ -19,6 +19,8 @@ import xml.etree.ElementTree as ET
 from urllib.parse import unquote
 
 from ..applog import logger
+from . import scan_common
+import contextlib
 
 WSD_ADDR = ("239.255.255.250", 3702)
 _PROBE = (
@@ -31,11 +33,7 @@ _PROBE = (
     '<w:Action e:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</w:Action>'
     "</e:Header><e:Body><d:Probe/></e:Body></e:Envelope>"
 )
-_ONVIF_SCOPE = re.compile(r"^onvif://www\.onvif\.org/(name|hardware|location|manufacturer|mfr|type|model)/(.+)$", re.I)
-
-
-def _local(tag: str) -> str:
-    return tag.rsplit("}", 1)[-1]
+_ONVIF_SCOPE = re.compile(r"^onvif://www\.onvif\.org/(name|hardware|location|manufacturer|mfr|type|model)/(.+)$", re.IGNORECASE)
 
 
 def parse_probe_match(data: bytes) -> dict | None:
@@ -44,21 +42,31 @@ def parse_probe_match(data: bytes) -> dict | None:
         root = ET.fromstring(data)
     except ET.ParseError:
         return None
-    types = scopes = xaddrs = ""
-    found = False
-    for el in root.iter():
-        name = _local(el.tag)
-        if name == "ProbeMatch":
-            found = True
-        elif name == "Types" and el.text:
-            types = el.text.strip()
-        elif name == "Scopes" and el.text:
-            scopes = el.text.strip()
-        elif name == "XAddrs" and el.text:
-            xaddrs = el.text.strip()
+    found, texts = _scan_probe_match(root)
     if not found:
         return None
-    info: dict = {"types": [t.split(":")[-1] for t in types.split()], "xaddrs": xaddrs.split()}
+    info: dict = {"types": [t.split(":")[-1] for t in texts["Types"].split()], "xaddrs": texts["XAddrs"].split()}
+    onvif = _onvif_scopes(texts["Scopes"])
+    _add_onvif_fields(info, onvif)
+    info["onvif"] = bool(onvif) or any("NetworkVideoTransmitter" in t for t in info["types"])
+    return info
+
+
+def _scan_probe_match(root) -> tuple[bool, dict[str, str]]:
+    """Whether the document holds a ProbeMatch element, and the stripped text of the LAST non-empty Types, Scopes and XAddrs elements ("" if none)."""
+    found = False
+    texts = {"Types": "", "Scopes": "", "XAddrs": ""}
+    for el in root.iter():
+        name = el.tag.rsplit("}", 1)[-1]
+        if name == "ProbeMatch":
+            found = True
+        elif name in texts and el.text:
+            texts[name] = el.text.strip()
+    return found, texts
+
+
+def _onvif_scopes(scopes: str) -> dict[str, list[str]]:
+    """The ONVIF scopes of a space-separated list, by lower-case key ("mfr" counts as "manufacturer"), values decoded in order of appearance."""
     onvif: dict[str, list[str]] = {}
     for scope in scopes.split():
         m = _ONVIF_SCOPE.match(scope)
@@ -66,13 +74,16 @@ def parse_probe_match(data: bytes) -> dict | None:
             key = m.group(1).lower()
             key = "manufacturer" if key == "mfr" else key
             onvif.setdefault(key, []).append(unquote(m.group(2)).replace("_", " ").strip())
+    return onvif
+
+
+def _add_onvif_fields(info: dict, onvif: dict[str, list[str]]) -> None:
+    """Copy the first non-empty value of each known ONVIF key into `info` (name, hardware, manufacturer, model, then location)."""
     for key in ("name", "hardware", "manufacturer", "model"):
         if onvif.get(key):
             info[key] = onvif[key][0]
     if onvif.get("location"):
         info["location"] = onvif["location"][0]
-    info["onvif"] = bool(onvif) or any("NetworkVideoTransmitter" in t for t in info["types"])
-    return info
 
 
 class _Collector(asyncio.DatagramProtocol):
@@ -85,8 +96,10 @@ class _Collector(asyncio.DatagramProtocol):
             self.found[addr[0]] = info
 
 
-async def wsd_scan(own_ip: str | None = None, timeout: float = 3.0) -> dict[str, dict]:
-    """WS-Discovery Probe in multicast; {ip: fields} for each device that answers.
+async def _collect(factory, payload: bytes, dest: tuple[str, int], own_ip: str | None, timeout: float, label: str):
+    """The only place that touches the network for the multicast protocols: sends `payload` twice (UDP) to `dest`, listens `timeout`
+    seconds with the protocol made by `factory`, and returns that protocol (its `found` holds what was heard) or None if the network is not
+    available. Tests replace this function with one that feeds recorded packets to the protocol.
     asyncio datagram endpoint (it also works with uvloop, which has no sock_recvfrom)."""
     loop = asyncio.get_running_loop()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -94,27 +107,30 @@ async def wsd_scan(own_ip: str | None = None, timeout: float = 3.0) -> dict[str,
     try:
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
         if own_ip:
-            try:
+            with contextlib.suppress(OSError):
                 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(own_ip))
-            except OSError:
-                pass
         sock.bind((own_ip or "", 0))
         sock.setblocking(False)
-        transport, proto = await loop.create_datagram_endpoint(_Collector, sock=sock)
-        msg = _PROBE.format(mid=uuid.uuid4()).encode()
+        transport, proto = await loop.create_datagram_endpoint(factory, sock=sock)
         for _ in range(2):  # UDP: two sends to be safe
-            transport.sendto(msg, WSD_ADDR)
+            transport.sendto(payload, dest)
             await asyncio.sleep(0.1)
         await asyncio.sleep(timeout)
-        found = dict(proto.found)
+        return proto
     except OSError as exc:
-        logger.warning("WS-Discovery non disponibile: %s", exc)
-        found = {}
+        logger.warning("%s non disponibile: %s", label, exc)
+        return None
     finally:
         if transport:
             transport.close()
         else:
             sock.close()
+
+
+async def wsd_scan(own_ip: str | None = None, timeout: float = 3.0) -> dict[str, dict]:
+    """WS-Discovery Probe in multicast; {ip: fields} for each device that answers."""
+    proto = await _collect(_Collector, _PROBE.format(mid=uuid.uuid4()).encode(), WSD_ADDR, own_ip, timeout, "WS-Discovery")
+    found = dict(proto.found) if proto else {}
     logger.info("WS-Discovery: %d dispositivi hanno risposto", len(found))
     return found
 
@@ -138,6 +154,8 @@ def parse_rtsp_response(text: str) -> dict | None:
 
 async def rtsp_probe(ip: str, port: int = 554, timeout: float = 2.5) -> dict:
     """Unauthenticated RTSP OPTIONS: {} if the port does not answer as RTSP."""
+    if port in scan_common.NO_REQUEST_PORTS:
+        return {}        # never text to a printing or control port
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port), timeout)
     except (OSError, asyncio.TimeoutError):
@@ -155,10 +173,8 @@ async def rtsp_probe(ip: str, port: int = 554, timeout: float = 2.5) -> dict:
         return {}
     finally:
         writer.close()
-        try:
+        with contextlib.suppress(OSError):
             await writer.wait_closed()
-        except OSError:
-            pass
     return parse_rtsp_response(data.decode("latin-1", "replace")) or {}
 
 
@@ -174,8 +190,9 @@ class _Locations(asyncio.DatagramProtocol):
 
     def datagram_received(self, data: bytes, addr) -> None:
         m = _LOCATION.search(data)
-        if m:
-            self.found.setdefault(addr[0], set()).add(m.group(1).decode("latin-1", "replace"))
+        location = m.group(1).decode("latin-1", "replace") if m else None
+        if location and scan_common.safe_location(location, addr[0]):      # a URL that a device names is fetched only if it points back at that device (see check_ssdp_location.py)
+            self.found.setdefault(addr[0], set()).add(location)
 
 
 def parse_description(xml_text: str) -> dict:
@@ -193,50 +210,29 @@ def parse_description(xml_text: str) -> dict:
     return out
 
 
-async def ssdp_devices(own_ip: str | None = None, timeout: float = 3.0) -> dict[str, dict]:
-    """M-SEARCH ssdp:all and reading of the descriptors: {ip: {types, name, manufacturer, model}}."""
+async def ssdp_devices(own_ip: str | None = None, timeout: float = 3.0, http_transport=None, skip: frozenset = frozenset()) -> dict[str, dict]:
+    """M-SEARCH ssdp:all and reading of the descriptors: {ip: {types, name, manufacturer, model}}. `skip` = the addresses that must not be touched (touch_policy): their descriptor is not fetched.
+    `http_transport` lets a test replace the HTTP network (httpx.MockTransport)."""
     import httpx  # late: only needed here
 
-    loop = asyncio.get_running_loop()
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-    transport = None
-    try:
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        if own_ip:
-            try:
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(own_ip))
-            except OSError:
-                pass
-        sock.bind((own_ip or "", 0))
-        sock.setblocking(False)
-        transport, proto = await loop.create_datagram_endpoint(_Locations, sock=sock)
-        for _ in range(2):
-            transport.sendto(_MSEARCH.encode(), SSDP_ADDR)
-            await asyncio.sleep(0.1)
-        await asyncio.sleep(timeout)
-        locations = {ip: sorted(locs)[:4] for ip, locs in proto.found.items()}
-    except OSError as exc:
-        logger.warning("SSDP non disponibile: %s", exc)
-        locations = {}
-    finally:
-        if transport:
-            transport.close()
-        else:
-            sock.close()
+    proto = await _collect(_Locations, _MSEARCH.encode(), SSDP_ADDR, own_ip, timeout, "SSDP")
+    locations = {ip: sorted(locs)[:4] for ip, locs in proto.found.items() if ip not in skip} if proto else {}
 
-    async def describe(client, ip, urls):
-        merged: dict = {"types": []}
-        for url in urls:
-            try:
-                resp = await client.get(url)
-                info = parse_description(resp.text)
-            except Exception:
-                continue
-            merged["types"] += [t for t in info.pop("types") if t not in merged["types"]]
-            for k, v in info.items():
-                merged.setdefault(k, v)
-        return ip, merged
-
-    async with httpx.AsyncClient(timeout=4) as client:
-        results = await asyncio.gather(*(describe(client, ip, urls) for ip, urls in locations.items()))
+    async with httpx.AsyncClient(timeout=4, transport=http_transport) as client:
+        results = await asyncio.gather(*(_describe_ssdp(client, ip, urls) for ip, urls in locations.items()))
     return {ip: info for ip, info in results if info.get("types") or info.get("name")}
+
+
+async def _describe_ssdp(client, ip, urls):
+    """The descriptors of one device, merged: every type, and the first value seen for each other field."""
+    merged: dict = {"types": []}
+    for url in urls:
+        try:
+            resp = await client.get(url)
+            info = parse_description(resp.text)
+        except Exception:
+            continue
+        merged["types"] += [t for t in info.pop("types") if t not in merged["types"]]
+        for k, v in info.items():
+            merged.setdefault(k, v)
+    return ip, merged

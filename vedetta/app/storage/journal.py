@@ -17,6 +17,7 @@ import time
 from collections import deque
 
 from ..applog import logger
+from ..atomic import write_atomic
 from .settings import CONFIG_DIR
 
 MAX_ENTRIES = 400
@@ -52,6 +53,24 @@ def _load() -> None:
     _seq = itertools.count(last + 1)
 
 
+def _too_big() -> bool:
+    """Is the file over 400 bytes per entry of the limit (about twice what is kept)? A size that cannot be read counts as not big."""
+    try:
+        return PATH.exists() and PATH.stat().st_size > 400 * MAX_ENTRIES
+    except OSError:
+        return False
+
+
+def _store(entry: dict) -> None:
+    """Appends the entry; a file over the limit is compacted instead: rewritten whole with the entries in memory."""
+    PATH.parent.mkdir(parents=True, exist_ok=True)
+    if _too_big():
+        write_atomic(PATH, lambda f: f.write("".join(json.dumps(e) + "\n" for e in _entries)), ".journal-")      # in one step: a crash leaves the old file, not a half
+        return
+    with PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
+
+
 def add(level: str, key: str, icon: str = "history", **params) -> None:
     """New entry (level: normal | detail). Never raises: the log is auxiliary."""
     try:
@@ -60,17 +79,7 @@ def add(level: str, key: str, icon: str = "history", **params) -> None:
             entry = {"id": next(_seq), "ts": time.time(), "level": level, "key": key, "icon": icon,
                      "params": {k: (v if isinstance(v, (int, float)) else str(v)) for k, v in params.items()}}
             _entries.append(entry)
-            PATH.parent.mkdir(parents=True, exist_ok=True)
-            # File compacted when it exceeds twice the maximum, otherwise append only.
-            try:
-                big = PATH.exists() and PATH.stat().st_size > 400 * MAX_ENTRIES
-            except OSError:
-                big = False
-            if big:
-                PATH.write_text("".join(json.dumps(e) + "\n" for e in _entries), encoding="utf-8")
-            else:
-                with PATH.open("a", encoding="utf-8") as f:
-                    f.write(json.dumps(entry) + "\n")
+            _store(entry)
     except Exception:
         logger.exception("Registro eventi: voce non salvata")
 

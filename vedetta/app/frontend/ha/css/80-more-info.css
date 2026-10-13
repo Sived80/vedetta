@@ -5,7 +5,9 @@
 @layer components {
   /* Flag button of the More info actions */
   .mi-flag { margin-right: auto; border: 1px solid var(--divider-color); }
-  .mi-flag.on { color: var(--primary-color); border-color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 14%, transparent); }
+  /* On: orange (the colour of attention in the page) and with a word, so that it never depends on the colour alone. */
+  .mi-flag.on { width: auto; gap: 6px; padding-inline: 8px 12px; color: var(--warning-text-color, var(--warning-color)); border-color: var(--warning-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
+  .mi-flag-txt { font-size: 13px; font-weight: 500; line-height: 1; white-space: nowrap; }
 
   @media (pointer: coarse) {
     /* Touch target of the segmented buttons on coarse pointers */
@@ -22,7 +24,14 @@
     color: var(--c); background: color-mix(in srgb, var(--c) 18%, transparent);
   }
   .hero-ic .mdi { width: 28px; height: 28px; }
-  .hero-state { font-size: 28px; line-height: 36px; font-weight: 500; color: var(--c); }
+  .hero-state { display: flex; align-items: baseline; gap: 12px; font-size: 28px; line-height: 36px; font-weight: 500; color: var(--c); }
+  /* online / offline one on the other: the cell is as wide as the wider word, so what is beside it does not move */
+  .hero-st { display: grid; }
+  .hero-st > span { grid-area: 1 / 1; }
+  .hs-hide { visibility: hidden; }
+  /* The words of the state of analysis (analysis/status.py), beside the state; the colour is never alone: the words and the sign on the icon say it */
+  .hero-an { flex: none; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; color: var(--warning-text-color, var(--warning-color)); }
+  .hero-an[data-s="settling"], .hero-an[data-s="unresolved"] { color: var(--secondary-text-color); }
   .hero-sub { font-size: 14px; color: var(--secondary-text-color); }
 
   /* Sections */

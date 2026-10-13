@@ -81,6 +81,8 @@
   "alert.port_opened": "{label}: nový otevřený port {ports}",
   "alert.port_closed": "{label}: port již není otevřený {ports}",
   "error.invalid_name": "Neplatný název",
+  "error.invalid_body": "Neplatný požadavek",
+  "error.invalid_port": "Neplatný port",
   "log.title": "Protokol",
   "log.subtitle": "Posledních {n} událostí (vymazáno při každém restartu služby)",
   "log.back_title": "Zpět na přehled",

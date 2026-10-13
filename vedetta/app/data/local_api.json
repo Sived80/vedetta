@@ -1,0 +1,12 @@
+{
+  "_comment": "Local interfaces that a device can answer on (api_source of the scan). api_types: which group the answer points to and how much it weighs ('declared' = a declared fact; a number = that many points). An IoT answer says 'smart device', not what it does, so it only feeds the platform clue. platform_adapters: the beginnings of the names of the adapters whose answer comes from the direct API of an IoT platform.",
+  "api_types": {
+    "shelly": {"group": "iot", "weight": "declared"},
+    "tasmota": {"group": "iot", "weight": 2},
+    "esphome": {"group": "iot", "weight": 3},
+    "cast": {"group": "media", "weight": "declared"},
+    "roku": {"group": "media", "weight": "declared"},
+    "sonos": {"group": "audio", "weight": "declared"}
+  },
+  "platform_adapters": ["shelly"]
+}

@@ -25,14 +25,6 @@ def _network(cidr: str) -> ipaddress.IPv4Network | None:
     return net if net.version == 4 else None
 
 
-def _in(ip: str, net: ipaddress.IPv4Network) -> bool:
-    try:
-        addr = ipaddress.ip_address(ip)
-    except ValueError:
-        return False
-    return addr.version == 4 and addr in net
-
-
 def block_of(ip: str) -> str | None:
     """The /24 that holds an address ("192.168.1.0/24"), None if it is not an IPv4 address."""
     try:
@@ -46,36 +38,72 @@ def plan(cidr: str, own_ip: str | None, known_ips: list[str], block_ts: dict[str
     targets = what arp-scan is given; blocks = the /24 blocks asked whole in this cycle (own first); total = blocks in the network;
     done = how many of them have been asked at least once (before this cycle); fresh = the blocks asked for the very first time now
     (their devices are a starting point, not "new devices": see storage/newdevices.py). block_ts = {block: when it was last asked}."""
+    scope = _scope(cidr, own_ip, force)
+    if scope is None:
+        return None
+    net, own = scope
+    if net.prefixlen < WIDEST_PREFIX:
+        if own is None:          # wider than a /16 and we do not know where we are: only the devices already known
+            return _known_only_plan(net, known_ips)
+        net = ipaddress.ip_network(f"{own_ip}/{WIDEST_PREFIX}", strict=False)
+    return _blocks_plan(net, own, known_ips, block_ts)
+
+
+def _scope(cidr: str, own_ip: str | None, force: bool):
+    """(network to plan on, own /24 or None), or None when the whole network is simply asked (small network, or unreadable)."""
     net = _network(cidr)
     own = block_of(own_ip) if own_ip else None
     if net is not None and net.prefixlen >= FULL_PREFIX and force and own:
-        net = ipaddress.ip_network(own)     # `force` (only for trying it out on a small network, VEDETTA_ARP_BLOCKS): the /24 is treated as a block
-    elif net is None or net.prefixlen >= FULL_PREFIX:
+        return ipaddress.ip_network(own), own      # `force` (only for trying it out on a small network, VEDETTA_ARP_BLOCKS): the /24 is treated as a block
+    if net is None or net.prefixlen >= FULL_PREFIX:
         return None
-    if net.prefixlen < WIDEST_PREFIX:
-        if own is None:          # wider than a /16 and we do not know where we are: only the devices already known
-            singles = [str(a) for a in dict.fromkeys(ip for ip in known_ips if _in(ip, net))][:MAX_KNOWN]
-            return {"network": str(net), "targets": singles, "blocks": [], "total": 0, "done": 0, "fresh": []}
-        net = ipaddress.ip_network(f"{own_ip}/{WIDEST_PREFIX}", strict=False)
+    return net, own
+
+
+def _known_only_plan(net, known_ips: list[str]) -> dict:
+    """A network wider than a /16 and no idea where this machine is: only the devices already known (no blocks)."""
+    singles = [str(a) for a in dict.fromkeys(ip for ip in known_ips if _in(ip, net))][:MAX_KNOWN]
+    return {"network": str(net), "targets": singles, "blocks": [], "total": 0, "done": 0, "fresh": []}
+
+
+def _in(ip: str, net: ipaddress.IPv4Network) -> bool:
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return addr.version == 4 and addr in net
+
+
+def _blocks_plan(net, own: str | None, known_ips: list[str], block_ts: dict[str, float]) -> dict:
+    """The plan of a network walked block by block: own block, the block that waited longest, and the known devices outside them."""
     blocks = [str(b) for b in net.subnets(new_prefix=FULL_PREFIX)]
+    asked = _blocks_to_ask(blocks, own, block_ts)
+    singles = _known_singles(known_ips, net, [ipaddress.ip_network(b) for b in asked])
+    return {"network": str(net), "targets": asked + singles, "blocks": asked, "total": len(blocks),
+            "done": sum(1 for b in blocks if b in block_ts), "fresh": [b for b in asked if b != own and b not in block_ts]}
+
+
+def _blocks_to_ask(blocks: list[str], own: str | None, block_ts: dict[str, float]) -> list[str]:
+    """Own block first, then the other block that has waited longest (never asked first, in address order)."""
     others = [b for b in blocks if b != own]
-    # the block that has waited longest (never asked first, in address order)
     chosen = min(others, key=lambda b: (block_ts.get(b, -1.0), blocks.index(b))) if others else None
-    asked = [b for b in (own, chosen) if b]
-    nets = [ipaddress.ip_network(b) for b in asked]
+    return [b for b in (own, chosen) if b]
+
+
+def _known_singles(known_ips: list[str], net, asked_nets: list) -> list[str]:
+    """The known devices of the network that no asked block already covers, in the given order (the configured ones first), no repeats."""
     singles = []
-    for ip in dict.fromkeys(known_ips):      # in the given order (the configured devices first), no repeats
+    for ip in dict.fromkeys(known_ips):
         try:
             addr = ipaddress.ip_address(ip)
         except ValueError:
             continue
-        if addr.version != 4 or addr not in net or any(addr in n for n in nets):
+        if addr.version != 4 or addr not in net or any(addr in n for n in asked_nets):
             continue
         singles.append(str(addr))
         if len(singles) >= MAX_KNOWN:
             break
-    return {"network": str(net), "targets": asked + singles, "blocks": asked, "total": len(blocks),
-            "done": sum(1 for b in blocks if b in block_ts), "fresh": [b for b in asked if b != own and b not in block_ts]}
+    return singles
 
 
 def own_block_only(own_ip: str | None) -> dict | None:

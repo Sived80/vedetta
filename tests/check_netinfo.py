@@ -61,10 +61,10 @@ assert naming.pick([("tls", naming.cn_host("commonName=pve.local/organizationNam
 assert naming.cn_host("commonName=*.hiservert.com") is None and naming.cn_host("commonName=tplinkwifi.net") is None
 assert naming.pick([("tls", naming.cn_host("commonName=4356345988971635954/organizationName=Google Inc"))]) == (None, None)
 # Full background scan: merge of the ports (the new entry prevails, the others stay).
-from app.scan import rescan  # noqa: E402
-m = rescan._merge_ports([{"label": "80 · http"}, {"label": "12345"}], [{"label": "80 · nginx"}, {"label": "22 · ssh"}])
+from app.scan import rescan, rescan_background  # noqa: E402
+m = rescan_background.merge_ports([{"label": "80 · http"}, {"label": "12345"}], [{"label": "80 · nginx"}, {"label": "22 · ssh"}])
 assert [p["label"] for p in m] == ["22 · ssh", "80 · nginx", "12345"], m
-assert 80 in rescan._FAST_SET and 12345 not in rescan._FAST_SET
+assert 80 in rescan_background.FAST_SET and 12345 not in rescan_background.FAST_SET
 # Page title as a weak name source: only if it looks like a name.
 assert naming.title_name("Termostato - Main Menu") == "Termostato"
 assert naming.title_name("Tasmota_gateway_zigbee Main Menu") == "Tasmota_gateway_zigbee"

@@ -1,0 +1,10 @@
+# Misura di copertura dei test (solo sul PC di sviluppo): python -m coverage run --rcfile=tools/coveragerc tools/run_tests.py
+[run]
+parallel = true
+source = app
+omit =
+    */__pycache__/*
+    vedetta/app/static/*
+[report]
+skip_empty = true
+show_missing = false

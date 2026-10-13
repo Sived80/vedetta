@@ -11,7 +11,7 @@ def port(label, confirmed=True):
     return {"label": label, "confirmed": confirmed}
 
 
-roles._state.update(by_ip={"192.168.50.1": {"gateway": "route"}, "192.168.50.105": {"repeater": "upnp"}},
+roles._rt.roles.update(by_ip={"192.168.50.1": {"gateway": "route"}, "192.168.50.105": {"repeater": "upnp"}},
                     types={"192.168.50.113": ["MediaRenderer", "Basic", "dial"], "192.168.50.1": ["MediaServer"]})
 router = {"ip": "192.168.50.1", "name": "EX233v", "brand": "TP-Link",
           "extra": {"tls_issuer": "commonName=TP-LINK SOHO Router CA/organizationName=EX233v"},
@@ -43,6 +43,6 @@ for device, expected in cases:
     got = ha_data.infer_type(device)
     assert got == expected, (device["name"], expected, got, ha_data.type_scores(device))
 # The router without a role (first moments after startup) does not become a PC because of SMB ports.
-roles._state.update(by_ip={}, types={})
+roles._rt.roles.update(by_ip={}, types={})
 assert ha_data.infer_type(router) != "pc", ha_data.type_scores(router)
 print("TUTTO OK")

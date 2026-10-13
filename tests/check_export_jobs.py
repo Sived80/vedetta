@@ -19,7 +19,7 @@ from app.storage import devices_config
 from app.scan import dhcp, mdns_listener
 from app.ha import ha_registry
 from app import paths
-from app.routes import ha as routes_ha  # noqa: E402
+from app.routes import export_routes as routes_ha  # noqa: E402     (the export routes; the name is kept so that nothing else in the test changes)
 from app.storage import history as history_mod  # noqa: E402
 from app.storage.history import History  # noqa: E402
 from app.state import state  # noqa: E402

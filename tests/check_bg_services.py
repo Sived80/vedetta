@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app.storage import devices_config
-from app.scan import rescan, scanner  # noqa: E402
+from app.scan import rescan, rescan_background, scanner  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())
 devices_config.DEVICES_PATH = tmp / "devices.yaml"
@@ -40,8 +40,8 @@ async def fake_refresh(*a, **k):
     return None
 
 scanner._run_nmap = fake_nmap
-rescan.state.refresh_device = fake_refresh
-asyncio.run(rescan._full_ports_background(did, "10.0.0.103"))
+rescan_background.state.refresh_device = fake_refresh
+asyncio.run(rescan_background._full_ports_background(did, "10.0.0.103"))
 info = devices_config.load_devices()[0]["scan_info"]
 labels = [p["label"] for p in info["ports"]]
 assert any("40027" in l and "Amazon FireTV Stick" in l for l in labels), labels

@@ -14,213 +14,19 @@ Structure:
   state.subscribe() bus and publishes only the changes.
 Does not import state/applog at module level: it comes from start()."""
 import asyncio
-import json
 import logging
 import os
-import re
-import time
-import zlib
-from pathlib import Path
 
 from ..storage import settings
+from .mqtt_config import _env_config, _port, _stored_config, resolve_config  # noqa: F401
+from .mqtt_payloads import DISCOVERY_PREFIX, HUB_ID, HUB_STATE_TOPIC, SCAN_TOPIC, STATUS_TOPIC, _SLUG_RE, _add_device_entries, _fmt_time, _is_published, _j, _origin, build_desired, config_topic, device_attrs, device_config, device_topics, hub_config, hub_state, slug, version  # noqa: F401
+from . import ha_data
 
 logger = logging.getLogger("dashboard")
 
-STATUS_TOPIC = "vedetta/status"
 HA_STATUS_TOPIC = "homeassistant/status"
-DISCOVERY_PREFIX = "homeassistant"
-SCAN_TOPIC = "vedetta/hub/scan/set"
-HUB_STATE_TOPIC = "vedetta/hub/state"
-HUB_ID = "vedetta_hub"
 PERIODIC_SECONDS = 60  # counters refresh even without events
 WATCHED_EVENTS = ("device", "removed", "new_devices")
-
-_SLUG_RE = re.compile(r"[^a-z0-9_-]+")
-
-
-def version() -> str:
-    """Version from the environment or from the VERSION file in the root (or in the image)."""
-    env = os.environ.get("VEDETTA_VERSION", "").strip()
-    if env:
-        return env
-    try:
-        return (Path(__file__).resolve().parent.parent.parent / "VERSION").read_text(encoding="utf-8").strip() or "dev"
-    except OSError:
-        return "dev"
-
-
-# ---------------- configuration ----------------
-def _port(value, default: int = 1883) -> int:
-    try:
-        port = int(str(value).strip())
-    except (TypeError, ValueError):
-        return default
-    return port if 1 <= port <= 65535 else default
-
-
-def resolve_config(stored: dict, env) -> dict | None:
-    """Effective configuration, or None if MQTT is off. The environment wins,
-    field by field (if user/password are missing the stored one is used)."""
-    host = (env.get("VEDETTA_MQTT_HOST") or "").strip()
-    if host:
-        return {
-            "source": "env", "host": host,
-            "port": _port(env.get("VEDETTA_MQTT_PORT"), 1883),
-            "user": env.get("VEDETTA_MQTT_USER") or stored.get("mqtt_user") or "",
-            "password": env.get("VEDETTA_MQTT_PASSWORD") or stored.get("mqtt_password") or "",
-        }
-    if stored.get("mqtt_enabled") and stored.get("mqtt_host"):
-        return {
-            "source": "settings", "host": stored["mqtt_host"], "port": _port(stored.get("mqtt_port")),
-            "user": stored.get("mqtt_user") or "", "password": stored.get("mqtt_password") or "",
-        }
-    return None
-
-
-# ---------------- building topics and payloads (pure) ----------------
-def slug(device_id: str) -> str:
-    """Identifier suitable for topics and unique_id: lowercase, [a-z0-9_-]. If the
-    cleanup alters the id a CRC is appended, so two different ids do not collide."""
-    raw = str(device_id)
-    clean = _SLUG_RE.sub("_", raw.lower()).strip("_") or "x"
-    if clean != raw:
-        clean += "_" + format(zlib.crc32(raw.encode("utf-8")) & 0xFFFFFF, "06x")
-    return clean
-
-
-def config_topic(object_id: str) -> str:
-    return f"{DISCOVERY_PREFIX}/device/{object_id}/config"
-
-
-def _origin() -> dict:
-    return {"name": "Vedetta", "sw": version()}
-
-
-def _fmt_time(ts) -> str | None:
-    if not ts:
-        return None
-    return time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime(ts))
-
-
-def device_topics(device_id: str) -> dict[str, str]:
-    base = "vedetta/dev/" + slug(device_id)
-    return {"config": config_topic("vedetta_" + slug(device_id)),
-            "state": base + "/state", "attrs": base + "/attrs", "latency": base + "/latency"}
-
-
-def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
-    """Discovery payload of a network device: device_tracker,
-    connectivity binary_sensor and (if the latency is known) latency sensor."""
-    sid = slug(dev["id"])
-    uid = "vedetta_" + sid
-    topics = device_topics(dev["id"])
-    device = {
-        "identifiers": [uid],
-        "name": dev.get("name") or dev.get("ip") or dev["id"],
-        "via_device": HUB_ID,
-    }
-    # No "connections" with the MAC: HA would merge this device with the real one (Shelly, TV...) instead of keeping it
-    # under "Vedetta". The network device is a sub-device of Vedetta (via_device).
-    brand = dev.get("brand") or dev.get("vendor")
-    if brand:
-        device["manufacturer"] = brand
-    if kind:
-        device["model"] = kind
-    cmps = {
-        "tracker": {
-            "p": "device_tracker", "unique_id": uid + "_tracker", "name": None,
-            "state_topic": topics["state"], "json_attributes_topic": topics["attrs"],
-            "source_type": "router", "payload_home": "home", "payload_not_home": "not_home",
-        },
-        "connectivity": {
-            "p": "binary_sensor", "unique_id": uid + "_connectivity", "name": "Connectivity",
-            "device_class": "connectivity", "state_topic": topics["state"],
-            "payload_on": "home", "payload_off": "not_home",
-        },
-    }
-    if with_latency:
-        cmps["latency"] = {
-            "p": "sensor", "unique_id": uid + "_latency", "name": "Latency",
-            "unit_of_measurement": "ms", "device_class": "duration", "state_class": "measurement",
-            "entity_category": "diagnostic", "state_topic": topics["latency"],
-        }
-    return {"dev": device, "o": _origin(), "cmps": cmps, "availability_topic": STATUS_TOPIC}
-
-
-def device_attrs(dev: dict, kind: str | None) -> dict:
-    return {
-        "ip": dev.get("ip"), "mac": dev.get("mac"),
-        "brand": dev.get("brand") or dev.get("vendor"), "type": kind,
-        "latency_ms": dev.get("latency_ms"),
-        "last_seen": None if dev.get("online") else _fmt_time(dev.get("last_seen")),
-        "source_type": "router",
-    }
-
-
-def hub_config() -> dict:
-    def sensor(key: str, name: str, unit: str | None = None) -> dict:
-        c = {"p": "sensor", "unique_id": f"{HUB_ID}_{key}", "name": name, "state_topic": HUB_STATE_TOPIC,
-             "value_template": "{{ value_json.%s }}" % key, "state_class": "measurement"}
-        if unit:
-            c["unit_of_measurement"] = unit
-            c["device_class"] = "duration"
-        return c
-    return {
-        "dev": {"identifiers": [HUB_ID], "name": "Vedetta", "manufacturer": "Vedetta",
-                "model": "Network dashboard", "sw_version": version()},
-        "o": _origin(),
-        "cmps": {
-            "online": sensor("online", "Devices online"),
-            "offline": sensor("offline", "Devices offline"),
-            "mobile_online": sensor("mobile_online", "Mobile devices online"),
-            "new_devices": sensor("new_devices", "New devices"),
-            "latency_avg": sensor("latency_avg", "Average latency", "ms"),
-            "scan": {"p": "button", "unique_id": HUB_ID + "_scan", "name": "Scan now",
-                     "command_topic": SCAN_TOPIC, "payload_press": "PRESS"},
-        },
-        "availability_topic": STATUS_TOPIC,
-    }
-
-
-def hub_state(devices: list[dict], new_count: int) -> dict:
-    online = [d for d in devices if d.get("online")]
-    lat = [d["latency_ms"] for d in online if d.get("latency_ms") is not None]
-    return {
-        "online": len(online), "offline": len(devices) - len(online),
-        "mobile_online": sum(1 for d in online if d.get("is_mobile")),
-        "new_devices": new_count,
-        "latency_avg": round(sum(lat) / len(lat)) if lat else None,
-    }
-
-
-def _j(obj) -> str:
-    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-
-
-def build_desired(devices: dict[str, dict], kinds: dict[str, str], new_count: int,
-                  latency_seen: set[str], shared: set[str] | None = None) -> dict[str, str]:
-    """Map of topic -> payload for everything that must be published right now.
-    latency_seen: ids of the devices whose latency has been known at least
-    once (it stays a stable entity even when the measurement is missing); updated here.
-    shared: ids of the devices the user chose to share with HA (None = all, for tests); the others
-    are not published and, if they had been published, disappear from HA (see Sync.diff). Vedetta's counters
-    always count all the devices."""
-    out: dict[str, str] = {config_topic(HUB_ID): _j(hub_config()),
-                           HUB_STATE_TOPIC: _j(hub_state(list(devices.values()), new_count))}
-    for did, dev in devices.items():
-        if shared is not None and did not in shared:
-            continue
-        if dev.get("latency_ms") is not None:
-            latency_seen.add(did)
-        topics = device_topics(did)
-        kind = kinds.get(did)
-        out[topics["config"]] = _j(device_config(dev, kind, did in latency_seen))
-        out[topics["state"]] = "home" if dev.get("online") else "not_home"
-        out[topics["attrs"]] = _j(device_attrs(dev, kind))
-        if did in latency_seen:
-            out[topics["latency"]] = "None" if dev.get("latency_ms") is None else str(dev["latency_ms"])
-    latency_seen.intersection_update(devices if shared is None else {d for d in devices if d in shared})  # gone/not shared: out of memory
-    return out
 
 
 class Sync:
@@ -257,6 +63,23 @@ class Sync:
 
 
 # ---------------- service ----------------
+def _is_own_retained(topic: str, retain, payload: str) -> bool:
+    """A retained, non-empty message that Vedetta itself published earlier (device topics or its discovery configs)."""
+    return bool(retain and payload and (topic.startswith("vedetta/dev/") or (
+        topic.startswith(DISCOVERY_PREFIX + "/device/vedetta_") and topic.endswith("/config"))))
+
+
+async def _next_event(state, queue):
+    """Waits for the next bus event: (queue, event). A queue dropped by the state (too slow) is replaced by a fresh one and a timeout
+    (the periodic round) gives no event."""
+    if not state.is_subscribed(queue):  # disconnected because it was slow: restart
+        return state.subscribe(), None
+    try:
+        return queue, await asyncio.wait_for(queue.get(), PERIODIC_SECONDS)
+    except asyncio.TimeoutError:
+        return queue, None  # periodic round: update the counters
+
+
 class MqttService:
     def __init__(self) -> None:
         self.client = None
@@ -278,7 +101,7 @@ class MqttService:
         self._state = state
         self._loop = asyncio.get_running_loop()
         self._started = True
-        self._new_count = len(getattr(state, "_newdev_macs", ()) or ())
+        self._new_count = len(getattr(getattr(state, "_new", None), "macs", ()) or ())
         self._task = asyncio.create_task(self._run())
         await self._apply_config()
 
@@ -372,8 +195,7 @@ class MqttService:
             self._call(self._resync)  # HA has restarted: republish the discovery
         elif msg.topic == SCAN_TOPIC and payload == "PRESS" and not msg.retain:
             self._call(self._scan)
-        elif msg.retain and payload and (msg.topic.startswith("vedetta/dev/") or (
-                msg.topic.startswith(DISCOVERY_PREFIX + "/device/vedetta_") and msg.topic.endswith("/config"))):
+        elif _is_own_retained(msg.topic, msg.retain, payload):
             self._call(lambda t=msg.topic, p=payload: self._adopt(t, p))
 
     def _call(self, fn) -> None:
@@ -407,7 +229,6 @@ class MqttService:
         if client is None or not self.connected or self._state is None:
             return
         try:
-            from . import ha_data
             devices = dict(self._state.devices)
             cfg = ha_data.config_map()
             kinds = {did: ha_data.effective_type(d, cfg.get(did)) for did, d in devices.items()}
@@ -418,34 +239,36 @@ class MqttService:
         except Exception:
             logger.exception("MQTT: pubblicazione fallita")
 
+    async def _absorb_burst(self, queue, event: dict) -> None:
+        """A watched event arrived: wait a moment, take the events that piled up, and remember the last new-devices count."""
+        await asyncio.sleep(0.5)  # group bursts of events
+        while not queue.empty():
+            extra = queue.get_nowait()
+            if extra.get("type") == "new_devices":
+                event = extra
+        if event.get("type") == "new_devices":
+            self._new_count = int(event.get("count") or 0)
+
     async def _run(self) -> None:
         state = self._state
         queue = state.subscribe()
         try:
             while True:
-                if not state.is_subscribed(queue):  # disconnected because it was slow: restart
-                    queue = state.subscribe()
-                    event: dict | None = None
-                else:
-                    try:
-                        event = await asyncio.wait_for(queue.get(), PERIODIC_SECONDS)
-                    except asyncio.TimeoutError:
-                        event = None  # periodic round: update the counters
-                if event is not None:
-                    if event.get("type") not in WATCHED_EVENTS:
-                        continue
-                    await asyncio.sleep(0.5)  # group bursts of events
-                    while not queue.empty():
-                        extra = queue.get_nowait()
-                        if extra.get("type") == "new_devices":
-                            event = extra
-                    if event.get("type") == "new_devices":
-                        self._new_count = int(event.get("count") or 0)
-                self._publish_changes()
+                queue = await self._turn(queue)
         except asyncio.CancelledError:
             pass
         finally:
             state.unsubscribe(queue)
+
+    async def _turn(self, queue):
+        """One turn of the loop: wait for an event, publish what changed (a periodic round has no event and publishes too; an event that is not watched does not). Returns the queue to use next."""
+        queue, event = await _next_event(self._state, queue)
+        if event is not None:
+            if event.get("type") not in WATCHED_EVENTS:
+                return queue
+            await self._absorb_burst(queue, event)
+        self._publish_changes()
+        return queue
 
     # ---- state for the APIs (without password) ----
     def status(self) -> dict:

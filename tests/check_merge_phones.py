@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
+from app import identity_upkeep  # noqa: E402
 from app.storage import devices_config, history as history_mod
 from app.recognition import identity  # noqa: E402
 from app.storage.history import History  # noqa: E402
@@ -46,7 +47,7 @@ H.reassign_device("y", "x")
 assert H.first_presence(["y"]) == {} and abs(H.first_presence(["x"])["x"] - (now - 10 * hour)) < 5
 
 # --- merging, with the history and the configuration replaced by fakes
-state_mod.history = H
+state_mod.history = identity_upkeep.history = H
 configs = []
 log = []
 
@@ -77,7 +78,7 @@ def setup(entries):
     """entries: id, ip, name, online, first_seen_hours_ago, [(online_from_h, online_to_h)...]"""
     global H
     H = History(Path(tempfile.mkdtemp()) / "t2.db")
-    state_mod.history = H
+    state_mod.history = identity_upkeep.history = H
     configs.clear()
     log.clear()
     s = state_mod.DeviceState()

@@ -1,6 +1,7 @@
+"""Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded
+for display, and the quality labels of a Wi-Fi signal and of a LAN link speed."""
 import re
 
-from .i18n import t
 
 MAX_NAME_LEN = 40
 
@@ -38,10 +39,10 @@ def update_generic_titles(devices: list[dict]) -> None:
     global _generic_titles
     seen: dict[str, int] = {}
     for d in devices:
-        t = normalize_title(((d.get("scan_info") or {}).get("http_title")))
-        if t:
-            seen[t] = seen.get(t, 0) + 1
-    _generic_titles = {t for t, n in seen.items() if n >= 2}
+        title = normalize_title((d.get("scan_info") or {}).get("http_title"))
+        if title:
+            seen[title] = seen.get(title, 0) + 1
+    _generic_titles = {title for title, n in seen.items() if n >= 2}
 
 
 def is_useless_title(title: str | None) -> bool:

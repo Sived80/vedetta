@@ -15,4 +15,4 @@ Sharing devices with Home Assistant uses MQTT discovery.
 
 > [!TIP]
 > Without MQTT everything else works — search, recognition, Home Assistant lookups, history. Only the **Share with HA** button
-> (and the *Vedetta* device with its counters) needs it, and it stays hidden until a broker is connected.
+> (and the *Vedetta* device with its counters) needs it, and it stays disabled until a broker is connected.

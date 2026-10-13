@@ -233,7 +233,7 @@ else:
         text = "".join(chunks)
         assert chunks[0] == "retry: 3000\n\n" and "event: poll" in text and "event: activity" in text
         assert "event: new_devices" in text and '"count": 1' in text
-        assert not state._subscribers, "la sottoscrizione va chiusa"
+        assert not state._bus.subscribers, "la sottoscrizione va chiusa"
 
     asyncio.run(run_routes())
     print("ok: route /api/ha/* chiamate con stato finto (devices, summary, logbook, history, SSE)")
@@ -246,7 +246,7 @@ assert all(k.startswith(("ha.", "js.ha.")) for k in en), "solo chiavi ha.* e js.
 for k in en:  # same placeholders in both languages
     assert sorted(re.findall(r"\{(\w+)\}", en[k])) == sorted(re.findall(r"\{(\w+)\}", it[k])), k
 from app import assets  # noqa: E402
-src = assets.bundle("ha/ha.js")
+src = assets.js_source()
 
 
 def have(key):

@@ -2,6 +2,7 @@
 Usage (from the vedetta/ folder): python ../tests/ui/build_page.py <out_dir> [it|en]"""
 import json
 import logging
+import os
 import re
 import sys
 import tempfile
@@ -9,6 +10,7 @@ import time
 import types
 from pathlib import Path
 
+os.environ.setdefault("VEDETTA_DATA_DIR", tempfile.mkdtemp())   # importing the app opens its database and its log: in a private folder, never in the real config/ folder (the gate checks it)
 ROOT = Path(__file__).resolve().parents[2] / "vedetta"
 sys.path.insert(0, str(ROOT))
 try:
@@ -32,13 +34,34 @@ page = env.get_template("ha.html").render(lang=lang, lang_auto=True, languages=i
                                           transparent=False, compact=False, limit=4, request=None)
 
 
+def classic_script() -> str:
+    """The modules as ONE classic script, for jsdom (it does not run ES modules): every module after the ones it imports (the order in which a browser runs them), without the imports and the exports, in one function:
+    what they do is what the pieces of one function did before. (What a browser does with the real modules is checked by tests/check_js_boot.js and tests/check_js_modules.py.)"""
+    texts = {p.name: p.read_text(encoding="utf-8") for p in assets.module_files()}
+    order, seen = [], set()
+
+    def visit(name):
+        if name in seen:
+            return
+        seen.add(name)
+        for m in re.finditer(r'^import (?:\{[^}]*\} from )?"\./([\w-]+\.js)";$', texts[name], re.M):
+            visit(m.group(1))
+        order.append(name)
+
+    visit("app.js")
+    body = [re.sub(r"^export ", "", re.sub(r"^import .*;\n", "", texts[name], flags=re.M), flags=re.M) for name in order]
+    return '(function () {\n"use strict";\n' + "\n".join(body) + "\n})();\n"
+
+
 def served(url: str) -> str:
-    """A static file as the app serves it: ha.js and ha.css are put together from their parts (app/assets.py)."""
+    """A static file as the app serves it: ha.css is put together from its parts (app/assets.py); the script, which a browser loads as modules, goes to jsdom as one classic script."""
     rel = url.split("?")[0].lstrip("/").removeprefix("static/")
+    if rel == "ha/js/app.js":
+        return classic_script()
     return assets.bundle(rel) if rel in assets.BUNDLES else (ROOT / "app" / "static" / rel).read_text(encoding="utf-8")
 
 
-page = re.sub(r'<script src="([^"]+)"></script>', lambda m: "<script>" + served(m.group(1)) + "</script>", page)
+page = re.sub(r'<script (?:type="module" )?src="([^"]+)"></script>', lambda m: "<script>" + served(m.group(1)) + "</script>", page)
 (out / "page.html").write_text(page, encoding="utf-8")
 
 now = time.time()

@@ -8,14 +8,14 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import netutil  # noqa: E402
+from app import arpview, netutil  # noqa: E402
 from app import state as state_mod  # noqa: E402
 from app.scan import scanner  # noqa: E402
 from app.storage import devices_config  # noqa: E402
 from app.storage.history import History  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())
-state_mod.history = History(tmp / "vedetta.db")
+state_mod.history = arpview.history = History(tmp / "vedetta.db")
 calls = []
 answers = {"192.168.1.10": "aa:bb:cc:00:00:10", "192.168.1.11": "aa:bb:cc:00:00:11", "192.168.1.50": "aa:bb:cc:00:00:50"}   # .50: a device nobody configured
 
@@ -43,12 +43,12 @@ def run(coro):
 st = state_mod.DeviceState()
 # 1) the first check sweeps the whole network, paced
 view = run(st._arp_by_ip(0))
-assert calls[-1] == (None, state_mod.SWEEP_INTERVAL_MS), calls[-1]
+assert calls[-1] == (None, arpview.SWEEP_INTERVAL_MS), calls[-1]
 assert set(view) == set(answers), view
 # 2) the checks that follow ask only the configured devices (3 addresses, not the 254 of the network), still paced
 for _ in range(4):
     view = run(st._arp_by_ip(0))
-    assert calls[-1] == (["192.168.1.10", "192.168.1.11", "192.168.1.12"], state_mod.SWEEP_INTERVAL_MS), calls[-1]
+    assert calls[-1] == (["192.168.1.10", "192.168.1.11", "192.168.1.12"], arpview.SWEEP_INTERVAL_MS), calls[-1]
 assert [c[0] for c in calls].count(None) == 1, "one sweep only"
 assert "192.168.1.50" in view, "what the last sweep found is kept: a device nobody configured does not vanish from the view between sweeps"
 # 3) a configured device that stops answering leaves the view at once; one that comes back returns
@@ -59,7 +59,7 @@ answers["192.168.1.11"] = "aa:bb:cc:00:00:11"
 assert "192.168.1.11" in run(st._arp_by_ip(0))
 # 4) after FULL_SWEEP_S the whole network is asked again, and what the sweep does not find is gone
 del answers["192.168.1.50"]
-st._last_full -= state_mod.FULL_SWEEP_S + 1
+st._view.last_full -= arpview.FULL_SWEEP_S + 1
 view = run(st._arp_by_ip(0))
 assert calls[-1][0] is None and "192.168.1.50" not in view and set(view) == {"192.168.1.10", "192.168.1.11"}, (calls[-1], view)
 # 5) a refresh asked by hand sweeps the whole network at the next check
@@ -67,7 +67,7 @@ run(st._arp_by_ip(0))
 assert calls[-1][0] is not None
 st.trigger(force=True)
 run(st._arp_by_ip(0))
-assert calls[-1][0] is None and st._last_full is not None
+assert calls[-1][0] is None and st._view.last_full is not None
 # 6) with nothing configured there is nothing to ask in between: the whole network every time (as before)
 configured.clear()
 run(st._arp_by_ip(0))
@@ -78,7 +78,7 @@ configured.extend({"id": str(i), "ip": f"192.168.1.{100 + i}"} for i in range(46
 st2 = state_mod.DeviceState()
 run(st2._arp_by_ip(0))
 run(st2._arp_by_ip(0))
-assert len(calls[-1][0]) == 46 and st2._asked == 46, "46 addresses a check instead of 254"
+assert len(calls[-1][0]) == 46 and st2._view.asked == 46, "46 addresses a check instead of 254"
 # 8) the scanner puts the pause between packets on the command line, and only when asked to
 made = []
 real_exec = asyncio.create_subprocess_exec

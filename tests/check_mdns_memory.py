@@ -53,4 +53,17 @@ assert res["name"] == "iPhone-di-Caio" and res["auto_name"][:2] == ("iPhone-di-C
 # the scan, if it has a name, wins over the remembered one
 res = asyncio.run(probe.probe_device({**phone, "scan_info": {"mdns_name": "Nome nuovo"}}))
 assert res["name"] == "Nome nuovo"
+# the Alexa app announces "expiscor" from every phone it runs on: that is the label of the service, not the name of the device
+ARP["10.0.0.113"] = "42:4b:cd:00:00:a4"
+mdns_listener.record("10.0.0.113", "_amazon-expiscor._udp", "expiscor", "")
+label_only = mdns_listener.lookup("42:4b:cd:00:00:a4")
+assert label_only["name"] == "expiscor"                                   # remembered as it came (nothing is lost) ...
+assert mdns_listener.as_scan_info(label_only) == {"mdns_services": "_amazon-expiscor._udp"}      # ... but it is not told as the name of the device
+mdns_listener.record("10.0.0.113", "_companion-link._tcp", "iPhone-di-Anna", "")
+mdns_listener.record("10.0.0.113", "_amazon-expiscor._udp", "expiscor", "")
+assert mdns_listener.as_scan_info(mdns_listener.lookup("42:4b:cd:00:00:a4"))["mdns_name"] == "iPhone-di-Anna"       # a real name stays, whatever the order
+mdns_listener.record("10.0.0.113", "_http._tcp", "web", "")
+assert mdns_listener.as_scan_info({"name": "web", "services": ["_amazon-expiscor._udp", "_http._tcp"]})["mdns_name"] == "web"   # another service: the name counts
+assert mdns_listener.as_scan_info({"name": "old", "services": []})["mdns_name"] == "old"                                         # a record with no services (older memory) keeps its name
+
 print("TUTTO OK")

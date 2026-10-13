@@ -2,12 +2,12 @@
 "alerts" = show the alerts (new open port, new device...);
 "poll_interval" = seconds between one check and the next (fixed values).
 Unknown keys are ignored: the file contains only the known ones."""
+from ..atomic import write_atomic
 import json
 import logging
-import os
-import tempfile
 
 from ..scan import flows
+from ..scan.scan_common import NO_REQUEST_PORTS
 
 from ..paths import DATA_DIR as CONFIG_DIR
 SETTINGS_PATH = CONFIG_DIR / "settings.json"
@@ -42,7 +42,7 @@ def valid_value(key: str, value) -> bool:
 
 def mqtt_valid(key: str, value) -> bool:
     if key == "mqtt_port":
-        return type(value) is int and 1 <= value <= 65535
+        return type(value) is int and 1 <= value <= 65535 and value not in NO_REQUEST_PORTS      # never a printing or control port: the service would send MQTT bytes there
     if key == "mqtt_host":
         return isinstance(value, str) and len(value) <= 253 and not any(c.isspace() for c in value)
     if key in ("mqtt_user", "mqtt_password"):
@@ -62,21 +62,6 @@ def load() -> dict:
             if key in data and valid_value(key, data[key]):
                 result[key] = data[key]
     return result
-
-
-def _save(data: dict) -> None:
-    """Atomic write: temporary file in the same folder + os.replace
-    (like devices_config._save)."""
-    SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=SETTINGS_PATH.parent, prefix=".settings-", suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, SETTINGS_PATH)
-    except BaseException:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
-        raise
 
 
 def _stored_flows() -> dict[str, list[str]]:
@@ -120,6 +105,12 @@ def _save_all(data: dict, stored_flows: dict[str, list[str]], mqtt: dict | None 
     if stored_flows:
         out["flows"] = stored_flows
     _save(out)
+
+
+def _save(data: dict) -> None:
+    """Atomic write: temporary file in the same folder + os.replace
+    (like devices_config._save)."""
+    write_atomic(SETTINGS_PATH, lambda f: json.dump(data, f, ensure_ascii=False, indent=2), ".settings-")
 
 
 def update(changes: dict) -> dict:

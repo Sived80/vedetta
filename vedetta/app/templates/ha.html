@@ -85,6 +85,6 @@
     window.VEDETTA_LANGS = {{ languages|tojson }};
   </script>
   <script src="{{ base }}/static/ha/icons.js?v={{ static_version('ha/icons.js') }}"></script>
-  <script src="{{ base }}/static/ha/ha.js?v={{ static_version('ha/ha.js') }}"></script>
+  <script type="module" src="{{ base }}/static/ha/js/app.js?v={{ static_version('ha/js') }}"></script>
 </body>
 </html>

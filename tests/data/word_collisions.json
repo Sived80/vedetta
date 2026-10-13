@@ -1,0 +1,122 @@
+{
+ "_comment": "Decisions on the words that are both the name of a maker and a word of function (tools/word_collisions.py, tests/check_word_collisions.py). meaning: same | multi | different (a homonym, with a fence). Decided 2026-10-12 from the data files; a new collision must be added here with its note.",
+ "decisions": {
+  "bose": {
+   "meaning": "multi",
+   "note": "speakers and headphones: a weak prior"
+  },
+  "brother": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "canon": {
+   "meaning": "multi",
+   "note": "printers and cameras: a weak prior"
+  },
+  "dell": {
+   "meaning": "multi",
+   "note": "computers, but also phones, servers and monitors: a weak prior"
+  },
+  "epson": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "esphome": {
+   "meaning": "same",
+   "note": "chip and firmware of microcontrollers: same as the word microcontroller"
+  },
+  "espressif": {
+   "meaning": "same",
+   "note": "chip and firmware of microcontrollers: same as the word microcontroller"
+  },
+  "fritz": {
+   "meaning": "same",
+   "note": "makes routers or their firmware: same as the word router"
+  },
+  "home assistant": {
+   "meaning": "same",
+   "note": "the home automation hub: same as the type Home Assistant"
+  },
+  "homeassistant": {
+   "meaning": "same",
+   "note": "the home automation hub: same as the type Home Assistant"
+  },
+  "hue": {
+   "meaning": "same",
+   "note": "smart lighting: same as the iot words"
+  },
+  "kyocera": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "lenovo": {
+   "meaning": "multi",
+   "note": "computers, but also phones, servers and monitors: a weak prior"
+  },
+  "lexmark": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "mikrotik": {
+   "meaning": "same",
+   "note": "makes routers or their firmware: same as the word router"
+  },
+  "netgear": {
+   "meaning": "multi",
+   "note": "routers, switches, cameras: a weak prior (and a dual maker)"
+  },
+  "nintendo": {
+   "meaning": "same",
+   "note": "makes consoles: same as the word console"
+  },
+  "openwrt": {
+   "meaning": "same",
+   "note": "makes routers or their firmware: same as the word router"
+  },
+  "proxmox": {
+   "meaning": "same",
+   "note": "a hypervisor: the word server and the maker agree"
+  },
+  "qnap": {
+   "meaning": "same",
+   "note": "makes NAS and storage servers: same as the word server"
+  },
+  "ricoh": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "roku": {
+   "meaning": "same",
+   "note": "makes streaming boxes: same as the media words"
+  },
+  "sonos": {
+   "meaning": "same",
+   "note": "makes speakers: same as the word speaker"
+  },
+  "synology": {
+   "meaning": "same",
+   "note": "makes NAS and storage servers: same as the word server"
+  },
+  "tenda": {
+   "meaning": "different",
+   "fence": "dual",
+   "note": "Tenda makes network equipment; tenda is also the curtain (curtain, awning): fenced by the role dual (data/brands.json), tests/check_dual_maker_words.py"
+  },
+  "truenas": {
+   "meaning": "same",
+   "note": "makes NAS and storage servers: same as the word server"
+  },
+  "ubiquiti": {
+   "meaning": "multi",
+   "note": "routers, switches, access points and cameras (UniFi Protect): the word router is only a weak prior for it"
+  },
+  "xerox": {
+   "meaning": "same",
+   "note": "makes printers (and copiers): the word printer and the maker point to the same thing"
+  },
+  "zyxel": {
+   "meaning": "same",
+   "note": "makes routers or their firmware: same as the word router"
+  }
+ }
+}

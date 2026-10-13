@@ -1,0 +1,9618 @@
+[
+{
+"masked": "10.0.0.243   10.0.0.209 AA-BB-CC-00-00-01 None 10.1.0.29 AA-BB-CC-00-00-02 iPhone-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1110f1": "000004",
+"3e131b": "000002",
+"73cf02": "000003",
+"aabbcc1110f1": "aabbcc000004",
+"aabbcc3e131b": "aabbcc000002",
+"aabbcc73cf02": "aabbcc000003",
+"aabbcc877952": "aabbcc000001",
+"c1913e": "000005",
+"f01898c1913e": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:11:10:f1": "aa:bb:cc:00:00:04",
+"aa:bb:cc:3e:13:1b": "aa:bb:cc:00:00:02",
+"aa:bb:cc:73:cf:02": "aa:bb:cc:00:00:03",
+"aa:bb:cc:87:79:52": "aa:bb:cc:00:00:01",
+"f0:18:98:c1:91:3e": "f0:18:98:00:00:05"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.129": 2,
+"93.184.216.239": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.129",
+"93.184.216.239"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.120  PC-1 None f0:18:98:00:00:01  None   Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 3,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2cec1c": "000002",
+"86c575": "000003",
+"e08fe1": "000001",
+"f018982cec1c": "f01898000002",
+"f0189886c575": "f01898000003",
+"f01898e08fe1": "f01898000001"
+},
+"_macs": {
+"f0:18:98:2c:ec:1c": "f0:18:98:00:00:02",
+"f0:18:98:86:c5:75": "f0:18:98:00:00:03",
+"f0:18:98:e0:8f:e1": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 2,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.237": 2,
+"93.184.216.5": 3,
+"93.184.216.6": 1
+},
+"_public_known": [
+"81.2.3.237",
+"93.184.216.6"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.192 f0:18:98:00:00:01 PC-1 10.0.0.227 f0:18:98:00:00:02 10.0.0.227 10.1.0.103 f0:18:98:00:00:03 Device-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 3,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3286e3": "000004",
+"720a56": "000002",
+"b256dc": "000001",
+"f018983286e3": "f01898000004",
+"f01898720a56": "f01898000002",
+"f01898b256dc": "f01898000001",
+"f01898f49f7a": "f01898000003",
+"f49f7a": "000003"
+},
+"_macs": {
+"f0:18:98:32:86:e3": "f0:18:98:00:00:04",
+"f0:18:98:72:0a:56": "f0:18:98:00:00:02",
+"f0:18:98:b2:56:dc": "f0:18:98:00:00:01",
+"f0:18:98:f4:9f:7a": "f0:18:98:00:00:03"
+},
+"_names": {
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"192.168.0": 0,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.145  10.0.0.145 10.1.0.48  Shelly-1 x f0:18:98:00:00:01 Device-3 10.2.0.74 f0:18:98:00:00:02 Device-3 10.3.0.12 AA-BB-CC-00-00-03 Device-2 10.2.0.32 f0:18:98:00:00:04 PC-1 Device-2 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0fcbbc": "000006",
+"2dca32": "000003",
+"7d85f6": "000008",
+"954e4f": "000005",
+"a42cf0": "000004",
+"aabbcc2dca32": "aabbcc000003",
+"aabbcc7d85f6": "aabbcc000008",
+"aef903": "000001",
+"c2f8b8": "000009",
+"f018980fcbbc": "f01898000006",
+"f01898426055": "f01898000002",
+"f01898954e4f": "f01898000005",
+"f01898a42cf0": "f01898000004",
+"f01898aef903": "f01898000001",
+"f01898c2f8b8": "f01898000009",
+"f01898fa93e0": "f01898000007",
+"fa93e0": "000007"
+},
+"_macs": {
+"aa:bb:cc:2d:ca:32": "aa:bb:cc:00:00:03",
+"aa:bb:cc:7d:85:f6": "aa:bb:cc:00:00:08",
+"f0:18:98:0f:cb:bc": "f0:18:98:00:00:06",
+"f0:18:98:42:60:55": "f0:18:98:00:00:02",
+"f0:18:98:95:4e:4f": "f0:18:98:00:00:05",
+"f0:18:98:a4:2c:f0": "f0:18:98:00:00:04",
+"f0:18:98:ae:f9:03": "f0:18:98:00:00:01",
+"f0:18:98:c2:f8:b8": "f0:18:98:00:00:09",
+"f0:18:98:fa:93:e0": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1,
+"172.16.1": 2,
+"192.168.0": 3,
+"192.168.2": 4
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  nas 10.0.0.145 AA-BB-CC-00-00-01 10.0.0.145 10.1.0.226  iPhone-1 10.2.0.201 f0:18:98:00:00:02 PC-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4aba39": "000005",
+"579ffc": "000002",
+"aabbcc925654": "aabbcc000003",
+"aabbccdba163": "aabbcc000001",
+"dba163": "000001",
+"e16367": "000004",
+"f018984aba39": "f01898000005",
+"f01898579ffc": "f01898000002",
+"f01898e16367": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:92:56:54": "aa:bb:cc:00:00:03",
+"aa:bb:cc:db:a1:63": "aa:bb:cc:00:00:01",
+"f0:18:98:4a:ba:39": "f0:18:98:00:00:05",
+"f0:18:98:57:9f:fc": "f0:18:98:00:00:02",
+"f0:18:98:e1:63:67": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 1,
+"172.16.1": 2,
+"192.168.0": 0
+},
+"_pub": {
+"81.2.3.115": 2,
+"93.184.216.17": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.115",
+"93.184.216.17"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.7 f0:18:98:00:00:01 Lightbulb-1 10.1.0.92 AA-BB-CC-00-00-02 10.1.0.92 10.2.0.44  Hub-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"93db41": "000002",
+"aa8ea7": "000001",
+"aabbcc93db41": "aabbcc000002",
+"aabbccea92e3": "aabbcc000003",
+"ea92e3": "000003",
+"f01898aa8ea7": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:93:db:41": "aa:bb:cc:00:00:02",
+"aa:bb:cc:ea:92:e3": "aa:bb:cc:00:00:03",
+"f0:18:98:aa:8e:a7": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 2,
+"192.168.0": 1,
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.91": 2,
+"93.184.216.182": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.91",
+"93.184.216.182"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.50 AA-BB-CC-00-00-01 Device-1 10.1.0.105 AA-BB-CC-00-00-02 PC-1 10.2.0.104 None 10.2.0.104 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"00bda6": "000004",
+"6a4796": "000002",
+"aabbcc00bda6": "aabbcc000004",
+"aabbcc358562": "aabbcc000003",
+"aabbcc6a4796": "aabbcc000002",
+"aabbccc83382": "aabbcc000001",
+"c83382": "000001"
+},
+"_macs": {
+"aa:bb:cc:00:bd:a6": "aa:bb:cc:00:00:04",
+"aa:bb:cc:35:85:62": "aa:bb:cc:00:00:03",
+"aa:bb:cc:6a:47:96": "aa:bb:cc:00:00:02",
+"aa:bb:cc:c8:33:82": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 4,
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.2": 3
+},
+"_pub": {
+"81.2.3.171": 2,
+"93.184.216.185": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.171",
+"93.184.216.185"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None None None 10.0.0.131 f0:18:98:00:00:01 10.0.0.131 10.1.0.137  Lightbulb-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"ef55ea": "000001",
+"f01898ef55ea": "f01898000001"
+},
+"_macs": {
+"f0:18:98:ef:55:ea": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.1": 3,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.21  10.0.0.21 10.1.0.218 AA-BB-CC-00-00-01 PC-1 10.2.0.84  10.2.0.84 10.0.0.154 None nas 10.0.0.228 f0:18:98:00:00:02  None f0:18:98:00:00:03 Lightbulb-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"44dee9": "000005",
+"4c75aa": "000004",
+"647ced": "000001",
+"aabbcc44dee9": "aabbcc000005",
+"aabbcc4c75aa": "aabbcc000004",
+"aabbcc647ced": "aabbcc000001",
+"c13874": "000002",
+"e5805e": "000003",
+"f01898c13874": "f01898000002",
+"f01898e5805e": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:44:de:e9": "aa:bb:cc:00:00:05",
+"aa:bb:cc:4c:75:aa": "aa:bb:cc:00:00:04",
+"aa:bb:cc:64:7c:ed": "aa:bb:cc:00:00:01",
+"f0:18:98:c1:38:74": "f0:18:98:00:00:02",
+"f0:18:98:e5:80:5e": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.0": 0,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None Lightbulb-1 10.0.0.128  10.0.0.128 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0e6b70": "000001",
+"31f48c": "000002",
+"7a87c5": "000004",
+"7f31e4": "000005",
+"aabbcc0e6b70": "aabbcc000001",
+"aabbcc31f48c": "aabbcc000002",
+"aabbcc7f31e4": "aabbcc000005",
+"f01898455772": "f01898000003",
+"f018987a87c5": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:0e:6b:70": "aa:bb:cc:00:00:01",
+"aa:bb:cc:31:f4:8c": "aa:bb:cc:00:00:02",
+"aa:bb:cc:7f:31:e4": "aa:bb:cc:00:00:05",
+"f0:18:98:45:57:72": "f0:18:98:00:00:03",
+"f0:18:98:7a:87:c5": "f0:18:98:00:00:04"
+},
+"_names": {
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.104  10.0.0.104 None  Hub-1 10.1.0.112 f0:18:98:00:00:01 10.1.0.112 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Hub": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"83cdb8": "000002",
+"f01898083232": "f01898000001",
+"f0189883cdb8": "f01898000002"
+},
+"_macs": {
+"f0:18:98:08:32:32": "f0:18:98:00:00:01",
+"f0:18:98:83:cd:b8": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.184 f0:18:98:00:00:01 None 10.1.0.211  Device-1 None f0:18:98:00:00:02 nas x f0:18:98:00:00:03 Shelly-1 10.2.0.37 AA-BB-CC-00-00-04 PC-1 10.1.0.218 f0:18:98:00:00:05 Shelly-1 x  x Salotto Area-3 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"garage": "Area-4",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"40695a": "000006",
+"71a7ec": "000002",
+"75befb": "000003",
+"a4a29e": "000008",
+"a8022b": "000004",
+"aa7c7a": "000007",
+"aabbcc40695a": "aabbcc000006",
+"aabbcca8022b": "aabbcc000004",
+"aabbccaa7c7a": "aabbcc000007",
+"ca5128": "000001",
+"f0189871a7ec": "f01898000002",
+"f0189875befb": "f01898000003",
+"f01898a4a29e": "f01898000008",
+"f01898ca5128": "f01898000001",
+"f01898fcbd5f": "f01898000005",
+"fcbd5f": "000005"
+},
+"_macs": {
+"aa:bb:cc:40:69:5a": "aa:bb:cc:00:00:06",
+"aa:bb:cc:a8:02:2b": "aa:bb:cc:00:00:04",
+"aa:bb:cc:aa:7c:7a": "aa:bb:cc:00:00:07",
+"f0:18:98:71:a7:ec": "f0:18:98:00:00:02",
+"f0:18:98:75:be:fb": "f0:18:98:00:00:03",
+"f0:18:98:a4:a2:9e": "f0:18:98:00:00:08",
+"f0:18:98:ca:51:28": "f0:18:98:00:00:01",
+"f0:18:98:fc:bd:5f": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.1": 2
+},
+"_pub": {
+"81.2.3.26": 2,
+"93.184.216.117": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.26",
+"93.184.216.117"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 Shelly-1 x None Device-1 x  nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0d2ddc": "000003",
+"2cd95e": "000004",
+"61a388": "000001",
+"aabbcc0d2ddc": "aabbcc000003",
+"aabbccf108ee": "aabbcc000002",
+"f018982cd95e": "f01898000004",
+"f0189861a388": "f01898000001",
+"f108ee": "000002"
+},
+"_macs": {
+"aa:bb:cc:0d:2d:dc": "aa:bb:cc:00:00:03",
+"aa:bb:cc:f1:08:ee": "aa:bb:cc:00:00:02",
+"f0:18:98:2c:d9:5e": "f0:18:98:00:00:04",
+"f0:18:98:61:a3:88": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.52 None 10.0.0.52 x  x 10.1.0.155 AA-BB-CC-00-00-01  10.2.0.155 AA-BB-CC-00-00-02 Hub-1 10.3.0.198  Shelly-1 10.2.0.94  iPhone-1 10.2.0.223 f0:18:98:00:00:03  Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2c9b3d": "000009",
+"55b0e5": "000004",
+"7bf908": "000006",
+"a8da1a": "000002",
+"aabbcc55b0e5": "aabbcc000004",
+"aabbcca8da1a": "aabbcc000002",
+"aabbccb0a9e8": "aabbcc000008",
+"aabbccc577e9": "aabbcc000001",
+"aabbccdc61fa": "aabbcc000007",
+"b0a9e8": "000008",
+"c577e9": "000001",
+"da87ca": "000003",
+"dc61fa": "000007",
+"e31717": "000005",
+"f018982c9b3d": "f01898000009",
+"f018987bf908": "f01898000006",
+"f01898da87ca": "f01898000003",
+"f01898e31717": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:55:b0:e5": "aa:bb:cc:00:00:04",
+"aa:bb:cc:a8:da:1a": "aa:bb:cc:00:00:02",
+"aa:bb:cc:b0:a9:e8": "aa:bb:cc:00:00:08",
+"aa:bb:cc:c5:77:e9": "aa:bb:cc:00:00:01",
+"aa:bb:cc:dc:61:fa": "aa:bb:cc:00:00:07",
+"f0:18:98:2c:9b:3d": "f0:18:98:00:00:09",
+"f0:18:98:7b:f9:08": "f0:18:98:00:00:06",
+"f0:18:98:da:87:ca": "f0:18:98:00:00:03",
+"f0:18:98:e3:17:17": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 4,
+"10.0.1": 2,
+"172.16.1": 3,
+"192.168.0": 5,
+"192.168.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.158 None Shelly-1 None None PC-1 x None  Device-2 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"9c87d3": "000003",
+"aabbcc9c87d3": "aabbcc000003",
+"aabbcccfea8f": "aabbcc000002",
+"aabbccdfb727": "aabbcc000001",
+"cfea8f": "000002",
+"dfb727": "000001",
+"e96c00": "000004",
+"f01898e96c00": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:9c:87:d3": "aa:bb:cc:00:00:03",
+"aa:bb:cc:cf:ea:8f": "aa:bb:cc:00:00:02",
+"aa:bb:cc:df:b7:27": "aa:bb:cc:00:00:01",
+"f0:18:98:e9:6c:00": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 4,
+"192.168.0": 3,
+"192.168.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 Hub-1 x None Lightbulb-1 x AA-BB-CC-00-00-02 nas Device-1 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"garage": "Area-1",
+"sala": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 2,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1534d7": "000001",
+"202c48": "00000a",
+"21f562": "000005",
+"3c4e9f": "000007",
+"55dd9d": "000002",
+"5e0d34": "000008",
+"61c2a2": "000003",
+"830bb4": "000006",
+"aabbcc202c48": "aabbcc00000a",
+"aabbcc3c4e9f": "aabbcc000007",
+"aabbcc55dd9d": "aabbcc000002",
+"aabbcc61c2a2": "aabbcc000003",
+"e29ab3": "000004",
+"f018981534d7": "f01898000001",
+"f0189821f562": "f01898000005",
+"f01898399979": "f01898000009",
+"f018985e0d34": "f01898000008",
+"f01898830bb4": "f01898000006",
+"f01898e29ab3": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:20:2c:48": "aa:bb:cc:00:00:0a",
+"aa:bb:cc:3c:4e:9f": "aa:bb:cc:00:00:07",
+"aa:bb:cc:55:dd:9d": "aa:bb:cc:00:00:02",
+"aa:bb:cc:61:c2:a2": "aa:bb:cc:00:00:03",
+"f0:18:98:15:34:d7": "f0:18:98:00:00:01",
+"f0:18:98:21:f5:62": "f0:18:98:00:00:05",
+"f0:18:98:39:99:79": "f0:18:98:00:00:09",
+"f0:18:98:5e:0d:34": "f0:18:98:00:00:08",
+"f0:18:98:83:0b:b4": "f0:18:98:00:00:06",
+"f0:18:98:e2:9a:b3": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Lightbulb-2"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"31098d": "000002",
+"aabbccfafcea": "aabbcc000001",
+"f0189831098d": "f01898000002",
+"fafcea": "000001"
+},
+"_macs": {
+"aa:bb:cc:fa:fc:ea": "aa:bb:cc:00:00:01",
+"f0:18:98:31:09:8d": "f0:18:98:00:00:02"
+},
+"_names": {
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.232  None None f0:18:98:00:00:01  10.0.0.102 AA-BB-CC-00-00-02 None Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1ace4f": "000001",
+"51b833": "000004",
+"aabbccb2e21a": "aabbcc000003",
+"aabbccbe1a78": "aabbcc000002",
+"b2e21a": "000003",
+"be1a78": "000002",
+"f018981ace4f": "f01898000001",
+"f0189851b833": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:b2:e2:1a": "aa:bb:cc:00:00:03",
+"aa:bb:cc:be:1a:78": "aa:bb:cc:00:00:02",
+"f0:18:98:1a:ce:4f": "f0:18:98:00:00:01",
+"f0:18:98:51:b8:33": "f0:18:98:00:00:04"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1"
+},
+"_nets": {
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.82": 2,
+"93.184.216.5": 3,
+"93.184.216.98": 1
+},
+"_public_known": [
+"81.2.3.82",
+"93.184.216.98"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 Device-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"c7523a": "000001",
+"f01898c7523a": "f01898000001"
+},
+"_macs": {
+"f0:18:98:c7:52:3a": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.231 AA-BB-CC-00-00-01 iPhone-1 10.1.0.147 f0:18:98:00:00:02 Shelly-1 x AA-BB-CC-00-00-03 x 10.2.0.121 AA-BB-CC-00-00-04 PC-1 x None  10.2.0.44  Device-1 10.1.0.82  10.1.0.82 Device-1 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"036d50": "000003",
+"5b5f81": "000004",
+"a81539": "000006",
+"aabbcc036d50": "aabbcc000003",
+"aabbcc5b5f81": "aabbcc000004",
+"aabbccb79adf": "aabbcc000001",
+"aabbccecf4f8": "aabbcc000007",
+"b79adf": "000001",
+"e40518": "000005",
+"ecf4f8": "000007",
+"ee0644": "000002",
+"f01898a81539": "f01898000006",
+"f01898e40518": "f01898000005",
+"f01898ee0644": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:03:6d:50": "aa:bb:cc:00:00:03",
+"aa:bb:cc:5b:5f:81": "aa:bb:cc:00:00:04",
+"aa:bb:cc:b7:9a:df": "aa:bb:cc:00:00:01",
+"aa:bb:cc:ec:f4:f8": "aa:bb:cc:00:00:07",
+"f0:18:98:a8:15:39": "f0:18:98:00:00:06",
+"f0:18:98:e4:05:18": "f0:18:98:00:00:05",
+"f0:18:98:ee:06:44": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.1": 4,
+"172.16.1": 3,
+"192.168.0": 0,
+"192.168.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"11a17c": "000002",
+"7043f1": "000001",
+"aabbcc7043f1": "aabbcc000001",
+"f0189811a17c": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:70:43:f1": "aa:bb:cc:00:00:01",
+"f0:18:98:11:a1:7c": "f0:18:98:00:00:02"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x   None None nas Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1a760c": "000002",
+"55c03c": "000001",
+"aabbcc1a760c": "aabbcc000002",
+"f0189855c03c": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:1a:76:0c": "aa:bb:cc:00:00:02",
+"f0:18:98:55:c0:3c": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.89 None None x AA-BB-CC-00-00-01 Device-1 10.1.0.150  Device-1 10.1.0.98 None 10.1.0.98 10.0.0.104 None Hub-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"195e05": "000003",
+"76cc17": "000002",
+"aabbcc195e05": "aabbcc000003",
+"aabbcc76cc17": "aabbcc000002",
+"aabbccfeb56c": "aabbcc000001",
+"feb56c": "000001"
+},
+"_macs": {
+"aa:bb:cc:19:5e:05": "aa:bb:cc:00:00:03",
+"aa:bb:cc:76:cc:17": "aa:bb:cc:00:00:02",
+"aa:bb:cc:fe:b5:6c": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.56 AA-BB-CC-00-00-01 10.0.0.56 10.1.0.186 None Shelly-1 10.2.0.78 AA-BB-CC-00-00-02 None 10.0.0.192 AA-BB-CC-00-00-03 Device-1 10.3.0.159 f0:18:98:00:00:04 iPhone-1 10.3.0.46  10.3.0.46 None None Device-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"18d39e": "000005",
+"2b633f": "000003",
+"595d2d": "000004",
+"839f98": "000007",
+"8c0d66": "000001",
+"aabbcc2b633f": "aabbcc000003",
+"aabbcc8c0d66": "aabbcc000001",
+"aabbccb4328c": "aabbcc000002",
+"b4328c": "000002",
+"f0189818d39e": "f01898000005",
+"f01898206300": "f01898000006",
+"f01898595d2d": "f01898000004",
+"f01898839f98": "f01898000007"
+},
+"_macs": {
+"aa:bb:cc:2b:63:3f": "aa:bb:cc:00:00:03",
+"aa:bb:cc:8c:0d:66": "aa:bb:cc:00:00:01",
+"aa:bb:cc:b4:32:8c": "aa:bb:cc:00:00:02",
+"f0:18:98:18:d3:9e": "f0:18:98:00:00:05",
+"f0:18:98:20:63:00": "f0:18:98:00:00:06",
+"f0:18:98:59:5d:2d": "f0:18:98:00:00:04",
+"f0:18:98:83:9f:98": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 0,
+"172.16.1": 3,
+"192.168.0": 4,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 iPhone-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"61a51a": "000003",
+"93aaaa": "000005",
+"aabbcc61a51a": "aabbcc000003",
+"aabbcc93aaaa": "aabbcc000005",
+"b740e4": "000002",
+"ec985e": "000004",
+"ed938e": "000001",
+"f01898b740e4": "f01898000002",
+"f01898ec985e": "f01898000004",
+"f01898ed938e": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:61:a5:1a": "aa:bb:cc:00:00:03",
+"aa:bb:cc:93:aa:aa": "aa:bb:cc:00:00:05",
+"f0:18:98:b7:40:e4": "f0:18:98:00:00:02",
+"f0:18:98:ec:98:5e": "f0:18:98:00:00:04",
+"f0:18:98:ed:93:8e": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.208  PC-1 None f0:18:98:00:00:01 None 10.0.0.227 None Shelly-1 10.0.0.19  None 10.1.0.170 f0:18:98:00:00:02 Hub-1 10.2.0.25  nas 10.3.0.169 None Shelly-1 Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"33d4f2": "000001",
+"6b5ad5": "000002",
+"8da2bb": "000003",
+"aabbcc8da2bb": "aabbcc000003",
+"aabbccfd3261": "aabbcc000004",
+"f0189833d4f2": "f01898000001",
+"f018986b5ad5": "f01898000002",
+"fd3261": "000004"
+},
+"_macs": {
+"aa:bb:cc:8d:a2:bb": "aa:bb:cc:00:00:03",
+"aa:bb:cc:fd:32:61": "aa:bb:cc:00:00:04",
+"f0:18:98:33:d4:f2": "f0:18:98:00:00:01",
+"f0:18:98:6b:5a:d5": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 0,
+"192.168.1": 3,
+"192.168.2": 1
+},
+"_pub": {
+"81.2.3.43": 2,
+"93.184.216.2": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.43",
+"93.184.216.2"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 None 10.0.0.217 None PC-1 Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1b09a7": "000002",
+"249f4c": "000001",
+"77c05b": "000003",
+"aabbcc1b09a7": "aabbcc000002",
+"aabbccf5ae18": "aabbcc000005",
+"c66e81": "000004",
+"f01898249f4c": "f01898000001",
+"f0189877c05b": "f01898000003",
+"f01898c66e81": "f01898000004",
+"f5ae18": "000005"
+},
+"_macs": {
+"aa:bb:cc:1b:09:a7": "aa:bb:cc:00:00:02",
+"aa:bb:cc:f5:ae:18": "aa:bb:cc:00:00:05",
+"f0:18:98:24:9f:4c": "f0:18:98:00:00:01",
+"f0:18:98:77:c0:5b": "f0:18:98:00:00:03",
+"f0:18:98:c6:6e:81": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"172.16.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.38 f0:18:98:00:00:01 None 10.1.0.216 AA-BB-CC-00-00-02  None f0:18:98:00:00:03 None 10.2.0.248 f0:18:98:00:00:04 10.2.0.248 x None None Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"8caa41": "000001",
+"aabbcc189957": "aabbcc000005",
+"aabbcce1a02b": "aabbcc000002",
+"b576e6": "000003",
+"c0b688": "000004",
+"e1a02b": "000002",
+"f018988caa41": "f01898000001",
+"f01898b576e6": "f01898000003",
+"f01898c0b688": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:18:99:57": "aa:bb:cc:00:00:05",
+"aa:bb:cc:e1:a0:2b": "aa:bb:cc:00:00:02",
+"f0:18:98:8c:aa:41": "f0:18:98:00:00:01",
+"f0:18:98:b5:76:e6": "f0:18:98:00:00:03",
+"f0:18:98:c0:b6:88": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 3,
+"172.16.1": 2,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.136": 2,
+"93.184.216.2": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.136",
+"93.184.216.2"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.88 f0:18:98:00:00:01 None x AA-BB-CC-00-00-02 iPhone-1 10.1.0.17  Shelly-1 None AA-BB-CC-00-00-03 nas 10.2.0.174 None Device-1 Salotto Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"032f5e": "000001",
+"463e9c": "000003",
+"aabbcc463e9c": "aabbcc000003",
+"aabbccba65e8": "aabbcc000004",
+"aabbccf329a0": "aabbcc000002",
+"ba65e8": "000004",
+"c9f2e5": "000005",
+"f01898032f5e": "f01898000001",
+"f01898c9f2e5": "f01898000005",
+"f329a0": "000002"
+},
+"_macs": {
+"aa:bb:cc:46:3e:9c": "aa:bb:cc:00:00:03",
+"aa:bb:cc:ba:65:e8": "aa:bb:cc:00:00:04",
+"aa:bb:cc:f3:29:a0": "aa:bb:cc:00:00:02",
+"f0:18:98:03:2f:5e": "f0:18:98:00:00:01",
+"f0:18:98:c9:f2:e5": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.156 None Device-1 10.1.0.33 f0:18:98:00:00:01 iPhone-1 10.1.0.24 AA-BB-CC-00-00-02 nas None  Hub-1 x AA-BB-CC-00-00-03 Lightbulb-1 10.0.0.87 f0:18:98:00:00:04 PC-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1d6bec": "000004",
+"71e966": "000006",
+"795b7f": "000001",
+"81f36e": "000005",
+"aabbcc71e966": "aabbcc000006",
+"aabbcc957236": "aabbcc000002",
+"aabbccb80928": "aabbcc000003",
+"b80928": "000003",
+"f018981d6bec": "f01898000004",
+"f01898795b7f": "f01898000001",
+"f0189881f36e": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:71:e9:66": "aa:bb:cc:00:00:06",
+"aa:bb:cc:95:72:36": "aa:bb:cc:00:00:02",
+"aa:bb:cc:b8:09:28": "aa:bb:cc:00:00:03",
+"f0:18:98:1d:6b:ec": "f0:18:98:00:00:04",
+"f0:18:98:79:5b:7f": "f0:18:98:00:00:01",
+"f0:18:98:81:f3:6e": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 Hub-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"932bd4": "000003",
+"aabbccf139d9": "aabbcc000002",
+"b9ce7b": "000001",
+"f01898932bd4": "f01898000003",
+"f01898b9ce7b": "f01898000001",
+"f01898f84023": "f01898000004",
+"f139d9": "000002",
+"f84023": "000004"
+},
+"_macs": {
+"aa:bb:cc:f1:39:d9": "aa:bb:cc:00:00:02",
+"f0:18:98:93:2b:d4": "f0:18:98:00:00:03",
+"f0:18:98:b9:ce:7b": "f0:18:98:00:00:01",
+"f0:18:98:f8:40:23": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0
+},
+"_pub": {
+"81.2.3.231": 2,
+"93.184.216.109": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.231",
+"93.184.216.109"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.227 None Device-1 10.1.0.221 None 10.1.0.221 x f0:18:98:00:00:01 Shelly-1 10.2.0.246  None Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 3,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"46e88f": "000004",
+"5e15b5": "000001",
+"aabbccef6c78": "aabbcc000003",
+"aabbcceffc7d": "aabbcc000002",
+"ef6c78": "000003",
+"effc7d": "000002",
+"f0189846e88f": "f01898000004",
+"f018985e15b5": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:ef:6c:78": "aa:bb:cc:00:00:03",
+"aa:bb:cc:ef:fc:7d": "aa:bb:cc:00:00:02",
+"f0:18:98:46:e8:8f": "f0:18:98:00:00:04",
+"f0:18:98:5e:15:b5": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 4,
+"192.168.0": 0,
+"192.168.1": 2,
+"192.168.2": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"16d4f5": "000001",
+"97b5da": "000002",
+"aabbcc16d4f5": "aabbcc000001",
+"aabbcc97b5da": "aabbcc000002",
+"aabbccec8ba5": "aabbcc000003",
+"ec8ba5": "000003"
+},
+"_macs": {
+"aa:bb:cc:16:d4:f5": "aa:bb:cc:00:00:01",
+"aa:bb:cc:97:b5:da": "aa:bb:cc:00:00:02",
+"aa:bb:cc:ec:8b:a5": "aa:bb:cc:00:00:03"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"192.168.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.197 f0:18:98:00:00:01 Device-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"62ca9d": "000003",
+"6320dd": "000004",
+"aabbcc62ca9d": "aabbcc000003",
+"c8fd3d": "000001",
+"d7c62c": "000002",
+"f018986320dd": "f01898000004",
+"f01898c8fd3d": "f01898000001",
+"f01898d7c62c": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:62:ca:9d": "aa:bb:cc:00:00:03",
+"f0:18:98:63:20:dd": "f0:18:98:00:00:04",
+"f0:18:98:c8:fd:3d": "f0:18:98:00:00:01",
+"f0:18:98:d7:c6:2c": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.80 None Hub-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"7332fc": "000001",
+"f018987332fc": "f01898000001"
+},
+"_macs": {
+"f0:18:98:73:32:fc": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"172.16.1": 2
+},
+"_pub": {
+"81.2.3.49": 2,
+"93.184.216.249": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.49",
+"93.184.216.249"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.57 None 10.0.0.57 10.1.0.187 AA-BB-CC-00-00-01 Lightbulb-1 10.1.0.39 AA-BB-CC-00-00-02 Shelly-1 Salotto Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3f4afd": "000004",
+"57fead": "000003",
+"a48f27": "000006",
+"aabbcc57fead": "aabbcc000003",
+"aabbcc826820": "aabbcc000001",
+"aabbcca48f27": "aabbcc000006",
+"aabbccacb0ae": "aabbcc000002",
+"acb0ae": "000002",
+"ad9167": "000005",
+"f018983f4afd": "f01898000004",
+"f01898ad9167": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:57:fe:ad": "aa:bb:cc:00:00:03",
+"aa:bb:cc:82:68:20": "aa:bb:cc:00:00:01",
+"aa:bb:cc:a4:8f:27": "aa:bb:cc:00:00:06",
+"aa:bb:cc:ac:b0:ae": "aa:bb:cc:00:00:02",
+"f0:18:98:3f:4a:fd": "f0:18:98:00:00:04",
+"f0:18:98:ad:91:67": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Lightbulb-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.184": 2,
+"93.184.216.120": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.184",
+"93.184.216.120"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.102 None Device-1 10.1.0.205 AA-BB-CC-00-00-01 Hub-1 None  Lightbulb-1 10.2.0.219 f0:18:98:00:00:02 PC-1 10.1.0.107 AA-BB-CC-00-00-03 Hub-1 10.1.0.171 AA-BB-CC-00-00-04 PC-1 10.2.0.179 f0:18:98:00:00:05 Hub-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3be012": "000006",
+"6d25a8": "000002",
+"8dbc21": "000007",
+"aabbcc8dbc21": "aabbcc000007",
+"aabbccad134e": "aabbcc000003",
+"aabbcce78595": "aabbcc000004",
+"aabbccfba475": "aabbcc000001",
+"ad134e": "000003",
+"de5a71": "000005",
+"e78595": "000004",
+"f018983be012": "f01898000006",
+"f018986d25a8": "f01898000002",
+"f01898de5a71": "f01898000005",
+"fba475": "000001"
+},
+"_macs": {
+"aa:bb:cc:8d:bc:21": "aa:bb:cc:00:00:07",
+"aa:bb:cc:ad:13:4e": "aa:bb:cc:00:00:03",
+"aa:bb:cc:e7:85:95": "aa:bb:cc:00:00:04",
+"aa:bb:cc:fb:a4:75": "aa:bb:cc:00:00:01",
+"f0:18:98:3b:e0:12": "f0:18:98:00:00:06",
+"f0:18:98:6d:25:a8": "f0:18:98:00:00:02",
+"f0:18:98:de:5a:71": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 3,
+"172.16.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.174 AA-BB-CC-00-00-01 Lightbulb-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"08e644": "000004",
+"08e710": "000001",
+"8ad2e1": "000003",
+"aabbcc08e644": "aabbcc000004",
+"aabbcc08e710": "aabbcc000001",
+"aabbcc789607": "aabbcc000002",
+"f018988ad2e1": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:08:e6:44": "aa:bb:cc:00:00:04",
+"aa:bb:cc:08:e7:10": "aa:bb:cc:00:00:01",
+"aa:bb:cc:78:96:07": "aa:bb:cc:00:00:02",
+"f0:18:98:8a:d2:e1": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Lightbulb-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbccd534b0": "aabbcc000002",
+"aabbcce5e006": "aabbcc000001",
+"d534b0": "000002",
+"e5e006": "000001"
+},
+"_macs": {
+"aa:bb:cc:d5:34:b0": "aa:bb:cc:00:00:02",
+"aa:bb:cc:e5:e0:06": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.124 AA-BB-CC-00-00-01 Device-1 10.0.0.63 AA-BB-CC-00-00-02 Device-1 10.1.0.124 f0:18:98:00:00:03 10.1.0.124 10.2.0.176  nas 10.1.0.77 f0:18:98:00:00:04 Device-1 Device-2 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"garage": "Area-4",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 3,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1a7f50": "000001",
+"8eff71": "000002",
+"a81cfc": "000005",
+"aabbcc1a7f50": "aabbcc000001",
+"aabbcc8eff71": "aabbcc000002",
+"aabbcca81cfc": "aabbcc000005",
+"aabbccecf9d8": "aabbcc000006",
+"ab532d": "000003",
+"c4e5d9": "000008",
+"c55ef3": "000004",
+"ecf9d8": "000006",
+"f01898ab532d": "f01898000003",
+"f01898c4e5d9": "f01898000008",
+"f01898c55ef3": "f01898000004",
+"f01898f6e0f4": "f01898000007",
+"f6e0f4": "000007"
+},
+"_macs": {
+"aa:bb:cc:1a:7f:50": "aa:bb:cc:00:00:01",
+"aa:bb:cc:8e:ff:71": "aa:bb:cc:00:00:02",
+"aa:bb:cc:a8:1c:fc": "aa:bb:cc:00:00:05",
+"aa:bb:cc:ec:f9:d8": "aa:bb:cc:00:00:06",
+"f0:18:98:ab:53:2d": "f0:18:98:00:00:03",
+"f0:18:98:c4:e5:d9": "f0:18:98:00:00:08",
+"f0:18:98:c5:5e:f3": "f0:18:98:00:00:04",
+"f0:18:98:f6:e0:f4": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None Device-1 None None Hub-1 None f0:18:98:00:00:01 None 10.0.0.159  nas Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"878fc4": "000001",
+"aabbcceb59b2": "aabbcc000002",
+"bca079": "000003",
+"eb59b2": "000002",
+"f01898878fc4": "f01898000001",
+"f01898bca079": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:eb:59:b2": "aa:bb:cc:00:00:02",
+"f0:18:98:87:8f:c4": "f0:18:98:00:00:01",
+"f0:18:98:bc:a0:79": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Hub-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0
+},
+"_pub": {
+"81.2.3.114": 2,
+"93.184.216.122": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.114",
+"93.184.216.122"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"151d56": "000001",
+"f01898151d56": "f01898000001"
+},
+"_macs": {
+"f0:18:98:15:1d:56": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"10.0.0": 1,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.217": 2,
+"93.184.216.5": 3,
+"93.184.216.91": 1
+},
+"_public_known": [
+"81.2.3.217",
+"93.184.216.91"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.198 f0:18:98:00:00:01 Shelly-1 None None iPhone-1 x AA-BB-CC-00-00-02 PC-1 None f0:18:98:00:00:03 Device-1 10.0.0.64 f0:18:98:00:00:04 10.0.0.64 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"15c48b": "000003",
+"57d390": "000004",
+"8facb5": "000002",
+"aabbcc8facb5": "aabbcc000002",
+"f0189815c48b": "f01898000003",
+"f0189857d390": "f01898000004",
+"f01898fa3ef9": "f01898000001",
+"fa3ef9": "000001"
+},
+"_macs": {
+"aa:bb:cc:8f:ac:b5": "aa:bb:cc:00:00:02",
+"f0:18:98:15:c4:8b": "f0:18:98:00:00:03",
+"f0:18:98:57:d3:90": "f0:18:98:00:00:04",
+"f0:18:98:fa:3e:f9": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4bdfa3": "000001",
+"5244d8": "000003",
+"a471f3": "000002",
+"aabbcc4bdfa3": "aabbcc000001",
+"f018985244d8": "f01898000003",
+"f01898a471f3": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:4b:df:a3": "aa:bb:cc:00:00:01",
+"f0:18:98:52:44:d8": "f0:18:98:00:00:03",
+"f0:18:98:a4:71:f3": "f0:18:98:00:00:02"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Hub-1 10.0.0.35 f0:18:98:00:00:01 10.0.0.35 Hub-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0609f1": "000001",
+"4c2938": "000002",
+"9d3ef2": "000004",
+"aabbcc9d3ef2": "aabbcc000004",
+"aabbccfc9350": "aabbcc000003",
+"f018980609f1": "f01898000001",
+"f018984c2938": "f01898000002",
+"f01898ffb0f3": "f01898000005",
+"fc9350": "000003",
+"ffb0f3": "000005"
+},
+"_macs": {
+"aa:bb:cc:9d:3e:f2": "aa:bb:cc:00:00:04",
+"aa:bb:cc:fc:93:50": "aa:bb:cc:00:00:03",
+"f0:18:98:06:09:f1": "f0:18:98:00:00:01",
+"f0:18:98:4c:29:38": "f0:18:98:00:00:02",
+"f0:18:98:ff:b0:f3": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-1",
+"salotto": "Hub-1"
+},
+"_nets": {
+"10.0.1": 0,
+"192.168.0": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 None 10.0.0.110 AA-BB-CC-00-00-02 10.0.0.110 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"55e6ee": "000005",
+"71b78c": "000001",
+"7b0a8f": "000002",
+"84a0a9": "000004",
+"aabbcc71b78c": "aabbcc000001",
+"aabbcc7b0a8f": "aabbcc000002",
+"aabbcc84a0a9": "aabbcc000004",
+"aabbccd25ce7": "aabbcc000003",
+"d25ce7": "000003",
+"f0189855e6ee": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:71:b7:8c": "aa:bb:cc:00:00:01",
+"aa:bb:cc:7b:0a:8f": "aa:bb:cc:00:00:02",
+"aa:bb:cc:84:a0:a9": "aa:bb:cc:00:00:04",
+"aa:bb:cc:d2:5c:e7": "aa:bb:cc:00:00:03",
+"f0:18:98:55:e6:ee": "f0:18:98:00:00:05"
+},
+"_names": {
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.3  PC-1 10.0.0.95  None Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {},
+"_macs": {},
+"_names": {
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"81.2.3.76": 2,
+"93.184.216.5": 3,
+"93.184.216.90": 1
+},
+"_public_known": [
+"81.2.3.76",
+"93.184.216.90"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None   None  Shelly-1 None None Device-1 None  Device-2 10.0.0.169 AA-BB-CC-00-00-01 10.0.0.169 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbccedbf7e": "aabbcc000002",
+"aabbccf93ecf": "aabbcc000001",
+"edbf7e": "000002",
+"f93ecf": "000001"
+},
+"_macs": {
+"aa:bb:cc:ed:bf:7e": "aa:bb:cc:00:00:02",
+"aa:bb:cc:f9:3e:cf": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.177 AA-BB-CC-00-00-01 PC-1 10.1.0.17 AA-BB-CC-00-00-02 10.1.0.17 10.2.0.84  10.2.0.84 10.0.0.26 AA-BB-CC-00-00-03 iPhone-1 10.0.0.32 None None None f0:18:98:00:00:04 None x  None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3de4e7": "000001",
+"6491f5": "000005",
+"79e1c6": "000004",
+"81f119": "000003",
+"aabbcc3de4e7": "aabbcc000001",
+"aabbcc81f119": "aabbcc000003",
+"aabbccb35565": "aabbcc000002",
+"b35565": "000002",
+"f018986491f5": "f01898000005",
+"f0189879e1c6": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:3d:e4:e7": "aa:bb:cc:00:00:01",
+"aa:bb:cc:81:f1:19": "aa:bb:cc:00:00:03",
+"aa:bb:cc:b3:55:65": "aa:bb:cc:00:00:02",
+"f0:18:98:64:91:f5": "f0:18:98:00:00:05",
+"f0:18:98:79:e1:c6": "f0:18:98:00:00:04"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1b673e": "000005",
+"2c715b": "000001",
+"3e6bd8": "000002",
+"699e1f": "000003",
+"6ebc18": "000004",
+"aabbcc3e6bd8": "aabbcc000002",
+"aabbcc699e1f": "aabbcc000003",
+"d656f7": "000006",
+"f018981b673e": "f01898000005",
+"f018982c715b": "f01898000001",
+"f018986ebc18": "f01898000004",
+"f01898d656f7": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:3e:6b:d8": "aa:bb:cc:00:00:02",
+"aa:bb:cc:69:9e:1f": "aa:bb:cc:00:00:03",
+"f0:18:98:1b:67:3e": "f0:18:98:00:00:05",
+"f0:18:98:2c:71:5b": "f0:18:98:00:00:01",
+"f0:18:98:6e:bc:18": "f0:18:98:00:00:04",
+"f0:18:98:d6:56:f7": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"shelly1-8caa11": "Device-3",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Hub-1 10.0.0.115 AA-BB-CC-00-00-01 Device-1 10.1.0.146 AA-BB-CC-00-00-02 Lightbulb-1 Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-3",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"09724c": "000003",
+"2a1e6e": "000001",
+"aabbcc09724c": "aabbcc000003",
+"aabbcc2a1e6e": "aabbcc000001",
+"aabbccb3d65a": "aabbcc000002",
+"aabbcce7b1d1": "aabbcc000004",
+"b3d65a": "000002",
+"e7b1d1": "000004"
+},
+"_macs": {
+"aa:bb:cc:09:72:4c": "aa:bb:cc:00:00:03",
+"aa:bb:cc:2a:1e:6e": "aa:bb:cc:00:00:01",
+"aa:bb:cc:b3:d6:5a": "aa:bb:cc:00:00:02",
+"aa:bb:cc:e7:b1:d1": "aa:bb:cc:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Hub-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 Device-2 10.0.0.7  Lightbulb-1 10.0.0.22 f0:18:98:00:00:02 Device-2 None f0:18:98:00:00:03 Lightbulb-1 Device-3 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Lightbulb": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0ae3db": "000007",
+"310f85": "000009",
+"53510a": "000004",
+"77567f": "000008",
+"804df3": "000006",
+"aabbcc53510a": "aabbcc000004",
+"aabbcc725795": "aabbcc000005",
+"aabbcc77567f": "aabbcc000008",
+"aabbcce08142": "aabbcc000001",
+"bbc878": "000002",
+"e08142": "000001",
+"f018980ae3db": "f01898000007",
+"f01898310f85": "f01898000009",
+"f01898435329": "f01898000003",
+"f01898804df3": "f01898000006",
+"f01898bbc878": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:53:51:0a": "aa:bb:cc:00:00:04",
+"aa:bb:cc:72:57:95": "aa:bb:cc:00:00:05",
+"aa:bb:cc:77:56:7f": "aa:bb:cc:00:00:08",
+"aa:bb:cc:e0:81:42": "aa:bb:cc:00:00:01",
+"f0:18:98:0a:e3:db": "f0:18:98:00:00:07",
+"f0:18:98:31:0f:85": "f0:18:98:00:00:09",
+"f0:18:98:43:53:29": "f0:18:98:00:00:03",
+"f0:18:98:80:4d:f3": "f0:18:98:00:00:06",
+"f0:18:98:bb:c8:78": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-3",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0,
+"192.168.1": 2
+},
+"_pub": {
+"81.2.3.54": 2,
+"93.184.216.35": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.54",
+"93.184.216.35"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01  10.0.0.38 None  10.0.0.37  10.0.0.37 x None None x AA-BB-CC-00-00-02 iPhone-1 Device-2 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"29513b": "000003",
+"3d4b50": "000005",
+"883e5b": "000001",
+"93dbd5": "000002",
+"94e86b": "000004",
+"aabbcc29513b": "aabbcc000003",
+"aabbcc3d4b50": "aabbcc000005",
+"aabbcc883e5b": "aabbcc000001",
+"aabbcc93dbd5": "aabbcc000002",
+"f0189894e86b": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:29:51:3b": "aa:bb:cc:00:00:03",
+"aa:bb:cc:3d:4b:50": "aa:bb:cc:00:00:05",
+"aa:bb:cc:88:3e:5b": "aa:bb:cc:00:00:01",
+"aa:bb:cc:93:db:d5": "aa:bb:cc:00:00:02",
+"f0:18:98:94:e8:6b": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"743b34": "000002",
+"aabbcc743b34": "aabbcc000002",
+"f01898fdaebc": "f01898000001",
+"fdaebc": "000001"
+},
+"_macs": {
+"aa:bb:cc:74:3b:34": "aa:bb:cc:00:00:02",
+"f0:18:98:fd:ae:bc": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-2",
+"salotto": "Device-1"
+},
+"_nets": {},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbccc93c31": "aabbcc000001",
+"c93c31": "000001"
+},
+"_macs": {
+"aa:bb:cc:c9:3c:31": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1"
+},
+"_nets": {},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6cff44": "000003",
+"aabbcc6cff44": "aabbcc000003",
+"d98e13": "000002",
+"f01898d98e13": "f01898000002",
+"f01898facf99": "f01898000001",
+"facf99": "000001"
+},
+"_macs": {
+"aa:bb:cc:6c:ff:44": "aa:bb:cc:00:00:03",
+"f0:18:98:d9:8e:13": "f0:18:98:00:00:02",
+"f0:18:98:fa:cf:99": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 1,
+"172.16.1": 3,
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.104": 2,
+"93.184.216.149": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.104",
+"93.184.216.149"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"7e0fcb": "000002",
+"aabbcc7e0fcb": "aabbcc000002",
+"e33f3b": "000001",
+"f01898e33f3b": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:7e:0f:cb": "aa:bb:cc:00:00:02",
+"f0:18:98:e3:3f:3b": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1"
+},
+"_nets": {},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.184 f0:18:98:00:00:01 Lightbulb-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Lightbulb": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1a65ed": "000004",
+"1f2f64": "000003",
+"334fde": "000002",
+"4a3503": "000001",
+"aabbcc1a65ed": "aabbcc000004",
+"f018981f2f64": "f01898000003",
+"f01898334fde": "f01898000002",
+"f018984a3503": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:1a:65:ed": "aa:bb:cc:00:00:04",
+"f0:18:98:1f:2f:64": "f0:18:98:00:00:03",
+"f0:18:98:33:4f:de": "f0:18:98:00:00:02",
+"f0:18:98:4a:35:03": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"81.2.3.139": 2,
+"93.184.216.155": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.139",
+"93.184.216.155"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.225 AA-BB-CC-00-00-01 None None f0:18:98:00:00:02 nas Device-1 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"a0b185": "000004",
+"aabbcce51f5c": "aabbcc000001",
+"af6661": "000003",
+"e12e0d": "000002",
+"e51f5c": "000001",
+"f01898a0b185": "f01898000004",
+"f01898af6661": "f01898000003",
+"f01898e12e0d": "f01898000002",
+"f01898f9a178": "f01898000005",
+"f9a178": "000005"
+},
+"_macs": {
+"aa:bb:cc:e5:1f:5c": "aa:bb:cc:00:00:01",
+"f0:18:98:a0:b1:85": "f0:18:98:00:00:04",
+"f0:18:98:af:66:61": "f0:18:98:00:00:03",
+"f0:18:98:e1:2e:0d": "f0:18:98:00:00:02",
+"f0:18:98:f9:a1:78": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 2,
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.232": 2,
+"93.184.216.235": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.232",
+"93.184.216.235"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.72 None nas 10.1.0.39  10.1.0.39 10.2.0.164  10.2.0.164 10.1.0.186 f0:18:98:00:00:01 nas Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2efa14": "000001",
+"59bb2b": "000003",
+"a10585": "000002",
+"aabbcc59bb2b": "aabbcc000003",
+"aabbcca10585": "aabbcc000002",
+"f018982efa14": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:59:bb:2b": "aa:bb:cc:00:00:03",
+"aa:bb:cc:a1:05:85": "aa:bb:cc:00:00:02",
+"f0:18:98:2e:fa:14": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 3,
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None   x   Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"sala": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"26eae6": "000001",
+"2fa959": "000004",
+"8817f1": "000005",
+"aabbcc26eae6": "aabbcc000001",
+"aabbcc2fa959": "aabbcc000004",
+"aabbccc985a6": "aabbcc000003",
+"b66bc1": "000002",
+"c985a6": "000003",
+"f018988817f1": "f01898000005",
+"f01898b66bc1": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:26:ea:e6": "aa:bb:cc:00:00:01",
+"aa:bb:cc:2f:a9:59": "aa:bb:cc:00:00:04",
+"aa:bb:cc:c9:85:a6": "aa:bb:cc:00:00:03",
+"f0:18:98:88:17:f1": "f0:18:98:00:00:05",
+"f0:18:98:b6:6b:c1": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "iPhone-1",
+"iphone-di-anna": "iPhone-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.15 AA-BB-CC-00-00-01 PC-1 None AA-BB-CC-00-00-02 Lightbulb-1 10.1.0.127  Device-1 10.2.0.174 f0:18:98:00:00:03 nas Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2476a1": "000004",
+"79bf75": "000003",
+"7a5593": "000001",
+"a60887": "000002",
+"aabbcc2476a1": "aabbcc000004",
+"aabbcc7a5593": "aabbcc000001",
+"aabbcca60887": "aabbcc000002",
+"f0189879bf75": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:24:76:a1": "aa:bb:cc:00:00:04",
+"aa:bb:cc:7a:55:93": "aa:bb:cc:00:00:01",
+"aa:bb:cc:a6:08:87": "aa:bb:cc:00:00:02",
+"f0:18:98:79:bf:75": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"172.16.1": 3,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Device-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6ab8f2": "000001",
+"aabbcce04049": "aabbcc000002",
+"e04049": "000002",
+"f018986ab8f2": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:e0:40:49": "aa:bb:cc:00:00:02",
+"f0:18:98:6a:b8:f2": "f0:18:98:00:00:01"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.216  Lightbulb-1 10.1.0.39 None Lightbulb-1 Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"304a53": "000002",
+"3d2a62": "000003",
+"aabbcc3d2a62": "aabbcc000003",
+"e7d571": "000001",
+"f01898304a53": "f01898000002",
+"f01898e7d571": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:3d:2a:62": "aa:bb:cc:00:00:03",
+"f0:18:98:30:4a:53": "f0:18:98:00:00:02",
+"f0:18:98:e7:d5:71": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 2,
+"192.168.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.194 f0:18:98:00:00:01 Lightbulb-1 10.1.0.95 None Lightbulb-1 10.1.0.109 None 10.1.0.109 10.2.0.49 f0:18:98:00:00:02 10.2.0.49 10.1.0.124 None Hub-1 10.2.0.207 f0:18:98:00:00:03 None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Hub": 1,
+"Lightbulb": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6c2b5a": "000003",
+"7b2cfe": "000001",
+"e80596": "000002",
+"f018986c2b5a": "f01898000003",
+"f018987b2cfe": "f01898000001",
+"f01898e80596": "f01898000002"
+},
+"_macs": {
+"f0:18:98:6c:2b:5a": "f0:18:98:00:00:03",
+"f0:18:98:7b:2c:fe": "f0:18:98:00:00:01",
+"f0:18:98:e8:05:96": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1,
+"172.16.1": 3,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None PC-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"5dca49": "000001",
+"aabbcc733646": "aabbcc000002",
+"f018985dca49": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:73:36:46": "aa:bb:cc:00:00:02",
+"f0:18:98:5d:ca:49": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.7 AA-BB-CC-00-00-01 Device-1 10.1.0.136 None nas 10.2.0.55  None Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"01950d": "000003",
+"0ddd9c": "000004",
+"a49304": "000002",
+"aabbcc01950d": "aabbcc000003",
+"aabbcca49304": "aabbcc000002",
+"aabbccefd6f2": "aabbcc000001",
+"efd6f2": "000001",
+"f018980ddd9c": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:01:95:0d": "aa:bb:cc:00:00:03",
+"aa:bb:cc:a4:93:04": "aa:bb:cc:00:00:02",
+"aa:bb:cc:ef:d6:f2": "aa:bb:cc:00:00:01",
+"f0:18:98:0d:dd:9c": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "iPhone-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 2,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.226 AA-BB-CC-00-00-01 10.0.0.226 x  x 10.0.0.189 AA-BB-CC-00-00-02 Lightbulb-1 x AA-BB-CC-00-00-03 Shelly-1 None f0:18:98:00:00:04 None Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0f1178": "000004",
+"3dd536": "000005",
+"68acb9": "000003",
+"99f106": "000002",
+"aabbcc3dd536": "aabbcc000005",
+"aabbcc68acb9": "aabbcc000003",
+"aabbcc99f106": "aabbcc000002",
+"aabbccd02865": "aabbcc000001",
+"d02865": "000001",
+"f018980f1178": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:3d:d5:36": "aa:bb:cc:00:00:05",
+"aa:bb:cc:68:ac:b9": "aa:bb:cc:00:00:03",
+"aa:bb:cc:99:f1:06": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d0:28:65": "aa:bb:cc:00:00:01",
+"f0:18:98:0f:11:78": "f0:18:98:00:00:04"
+},
+"_names": {
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.163 f0:18:98:00:00:01 Lightbulb-1 None None None 10.0.0.183  nas 10.1.0.68 None Hub-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"158a6c": "000004",
+"4ea8ba": "000001",
+"a93f93": "000002",
+"aabbcc158a6c": "aabbcc000004",
+"de1015": "000003",
+"f018984ea8ba": "f01898000001",
+"f01898a93f93": "f01898000002",
+"f01898de1015": "f01898000003",
+"f01898f23388": "f01898000005",
+"f23388": "000005"
+},
+"_macs": {
+"aa:bb:cc:15:8a:6c": "aa:bb:cc:00:00:04",
+"f0:18:98:4e:a8:ba": "f0:18:98:00:00:01",
+"f0:18:98:a9:3f:93": "f0:18:98:00:00:02",
+"f0:18:98:de:10:15": "f0:18:98:00:00:03",
+"f0:18:98:f2:33:88": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"81.2.3.107": 2,
+"93.184.216.5": 3,
+"93.184.216.96": 1
+},
+"_public_known": [
+"81.2.3.107",
+"93.184.216.96"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.26 None nas 10.0.0.228 None PC-1 x f0:18:98:00:00:01 x 10.1.0.63 None 10.1.0.63 10.0.0.239 None  10.0.0.223  nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"99cd83": "000003",
+"aabbcc413100": "aabbcc000002",
+"aabbcce3e8e7": "aabbcc000004",
+"e045c8": "000001",
+"e3e8e7": "000004",
+"f0189899cd83": "f01898000003",
+"f01898e045c8": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:41:31:00": "aa:bb:cc:00:00:02",
+"aa:bb:cc:e3:e8:e7": "aa:bb:cc:00:00:04",
+"f0:18:98:99:cd:83": "f0:18:98:00:00:03",
+"f0:18:98:e0:45:c8": "f0:18:98:00:00:01"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.144 AA-BB-CC-00-00-01 Hub-1 10.1.0.148 None 10.1.0.148 10.0.0.51 AA-BB-CC-00-00-02 Shelly-1 10.2.0.202 None Lightbulb-1 10.3.0.32 f0:18:98:00:00:03 Shelly-1 10.1.0.72  iPhone-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Hub": 1,
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2e7bd3": "000002",
+"879ced": "000001",
+"aabbcc2e7bd3": "aabbcc000002",
+"aabbcc879ced": "aabbcc000001",
+"f01898438005": "f01898000004",
+"f01898f1ce0c": "f01898000003",
+"f01898f983eb": "f01898000005",
+"f1ce0c": "000003",
+"f983eb": "000005"
+},
+"_macs": {
+"aa:bb:cc:2e:7b:d3": "aa:bb:cc:00:00:02",
+"aa:bb:cc:87:9c:ed": "aa:bb:cc:00:00:01",
+"f0:18:98:43:80:05": "f0:18:98:00:00:04",
+"f0:18:98:f1:ce:0c": "f0:18:98:00:00:03",
+"f0:18:98:f9:83:eb": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 0,
+"172.16.1": 2,
+"192.168.1": 1,
+"192.168.2": 4
+},
+"_pub": {
+"81.2.3.192": 2,
+"93.184.216.190": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.192",
+"93.184.216.190"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None  Device-1 10.0.0.171 f0:18:98:00:00:01  Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6dbbe4": "000002",
+"aabbcc6dbbe4": "aabbcc000002",
+"f01898fcc58b": "f01898000001",
+"fcc58b": "000001"
+},
+"_macs": {
+"aa:bb:cc:6d:bb:e4": "aa:bb:cc:00:00:02",
+"f0:18:98:fc:c5:8b": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.152 AA-BB-CC-00-00-01  Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"11bbb2": "000001",
+"1a56de": "000002",
+"aabbcc11bbb2": "aabbcc000001",
+"f018981a56de": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:11:bb:b2": "aa:bb:cc:00:00:01",
+"f0:18:98:1a:56:de": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1"
+},
+"_nets": {
+"192.168.0": 1,
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.237 AA-BB-CC-00-00-01 nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"56d65b": "000003",
+"9a24c8": "000001",
+"aabbcc56d65b": "aabbcc000003",
+"aabbcc9a24c8": "aabbcc000001",
+"bf91f1": "000002",
+"f01898bf91f1": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:56:d6:5b": "aa:bb:cc:00:00:03",
+"aa:bb:cc:9a:24:c8": "aa:bb:cc:00:00:01",
+"f0:18:98:bf:91:f1": "f0:18:98:00:00:02"
+},
+"_names": {
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.239 f0:18:98:00:00:01 10.0.0.239 10.1.0.42 AA-BB-CC-00-00-02 Lightbulb-1 x AA-BB-CC-00-00-03 x 10.2.0.146 None nas x AA-BB-CC-00-00-04  Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"12165b": "000006",
+"1368fe": "000005",
+"3fcf91": "000001",
+"876eda": "000003",
+"aabbcc1368fe": "aabbcc000005",
+"aabbcc876eda": "aabbcc000003",
+"aabbccd7af02": "aabbcc000004",
+"aabbccde29df": "aabbcc000002",
+"c4a8d9": "000007",
+"d7af02": "000004",
+"de29df": "000002",
+"f0189812165b": "f01898000006",
+"f018983fcf91": "f01898000001",
+"f01898c4a8d9": "f01898000007"
+},
+"_macs": {
+"aa:bb:cc:13:68:fe": "aa:bb:cc:00:00:05",
+"aa:bb:cc:87:6e:da": "aa:bb:cc:00:00:03",
+"aa:bb:cc:d7:af:02": "aa:bb:cc:00:00:04",
+"aa:bb:cc:de:29:df": "aa:bb:cc:00:00:02",
+"f0:18:98:12:16:5b": "f0:18:98:00:00:06",
+"f0:18:98:3f:cf:91": "f0:18:98:00:00:01",
+"f0:18:98:c4:a8:d9": "f0:18:98:00:00:07"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.125 AA-BB-CC-00-00-01 10.0.0.125 10.1.0.89 AA-BB-CC-00-00-02 Shelly-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0916b6": "000003",
+"137b47": "000005",
+"25dcc2": "000001",
+"7a1e30": "000002",
+"aabbcc25dcc2": "aabbcc000001",
+"aabbcc7a1e30": "aabbcc000002",
+"aabbcce2f38b": "aabbcc000004",
+"e2f38b": "000004",
+"f018980916b6": "f01898000003",
+"f01898137b47": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:25:dc:c2": "aa:bb:cc:00:00:01",
+"aa:bb:cc:7a:1e:30": "aa:bb:cc:00:00:02",
+"aa:bb:cc:e2:f3:8b": "aa:bb:cc:00:00:04",
+"f0:18:98:09:16:b6": "f0:18:98:00:00:03",
+"f0:18:98:13:7b:47": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 1,
+"172.16.1": 2,
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.134": 2,
+"93.184.216.5": 3,
+"93.184.216.77": 1
+},
+"_public_known": [
+"81.2.3.134",
+"93.184.216.77"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.165 None Hub-1 10.1.0.86 None Shelly-1 10.2.0.141  Hub-1 10.3.0.117 None Lightbulb-1 10.4.0.146 AA-BB-CC-00-00-01 Lightbulb-1 10.5.0.115 None 10.5.0.115 None AA-BB-CC-00-00-02 None Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1e3c6c": "000007",
+"2d0686": "000004",
+"35b211": "000003",
+"59ed74": "000002",
+"5c4608": "000006",
+"65b2d6": "000001",
+"aabbcc2d0686": "aabbcc000004",
+"aabbcc59ed74": "aabbcc000002",
+"aabbcc5c4608": "aabbcc000006",
+"aabbcc65b2d6": "aabbcc000001",
+"aabbccb878b0": "aabbcc000005",
+"b878b0": "000005",
+"f018981e3c6c": "f01898000007",
+"f0189835b211": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:2d:06:86": "aa:bb:cc:00:00:04",
+"aa:bb:cc:59:ed:74": "aa:bb:cc:00:00:02",
+"aa:bb:cc:5c:46:08": "aa:bb:cc:00:00:06",
+"aa:bb:cc:65:b2:d6": "aa:bb:cc:00:00:01",
+"aa:bb:cc:b8:78:b0": "aa:bb:cc:00:00:05",
+"f0:18:98:1e:3c:6c": "f0:18:98:00:00:07",
+"f0:18:98:35:b2:11": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.0": 5,
+"192.168.1": 1,
+"192.168.2": 4
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  nas x AA-BB-CC-00-00-01  10.0.0.95  Shelly-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0277b8": "000003",
+"41f2a0": "000001",
+"aabbcc0277b8": "aabbcc000003",
+"aabbcc41f2a0": "aabbcc000001",
+"aabbccbcd3c5": "aabbcc000002",
+"bcd3c5": "000002"
+},
+"_macs": {
+"aa:bb:cc:02:77:b8": "aa:bb:cc:00:00:03",
+"aa:bb:cc:41:f2:a0": "aa:bb:cc:00:00:01",
+"aa:bb:cc:bc:d3:c5": "aa:bb:cc:00:00:02"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"iphone-di-anna": "iPhone-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Device-1 x None PC-1 10.0.0.220 None 10.0.0.220 10.1.0.199  Device-1 10.2.0.96 None Hub-1 Device-1 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"41501c": "000002",
+"aabbcc41501c": "aabbcc000002",
+"d52f4a": "000001",
+"f01898d52f4a": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:41:50:1c": "aa:bb:cc:00:00:02",
+"f0:18:98:d5:2f:4a": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 3,
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.2": 4
+},
+"_pub": {
+"81.2.3.188": 2,
+"93.184.216.168": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.188",
+"93.184.216.168"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 None 10.0.0.25 AA-BB-CC-00-00-02 None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3425e5": "000005",
+"3a4566": "000002",
+"96777e": "000001",
+"aabbcc3a4566": "aabbcc000002",
+"aabbccd39211": "aabbcc000003",
+"d39211": "000003",
+"f01898136067": "f01898000004",
+"f018983425e5": "f01898000005",
+"f0189896777e": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:3a:45:66": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d3:92:11": "aa:bb:cc:00:00:03",
+"f0:18:98:13:60:67": "f0:18:98:00:00:04",
+"f0:18:98:34:25:e5": "f0:18:98:00:00:05",
+"f0:18:98:96:77:7e": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.139 AA-BB-CC-00-00-01 10.0.0.139 None  Shelly-1 10.1.0.168 AA-BB-CC-00-00-02 None 10.0.0.217 f0:18:98:00:00:03 Shelly-1 10.2.0.48  Hub-1 x f0:18:98:00:00:04 Device-1 Device-3 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2c8b05": "000001",
+"35bddb": "000009",
+"44bf8f": "000004",
+"4bcb96": "000007",
+"71ad05": "00000a",
+"772f59": "000006",
+"7e8303": "000003",
+"a3caf7": "000002",
+"a88fd3": "000005",
+"aabbcc2c8b05": "aabbcc000001",
+"aabbcc71ad05": "aabbcc00000a",
+"aabbcca3caf7": "aabbcc000002",
+"de8e3a": "000008",
+"f0189835bddb": "f01898000009",
+"f0189844bf8f": "f01898000004",
+"f018984bcb96": "f01898000007",
+"f01898772f59": "f01898000006",
+"f018987e8303": "f01898000003",
+"f01898a88fd3": "f01898000005",
+"f01898de8e3a": "f01898000008"
+},
+"_macs": {
+"aa:bb:cc:2c:8b:05": "aa:bb:cc:00:00:01",
+"aa:bb:cc:71:ad:05": "aa:bb:cc:00:00:0a",
+"aa:bb:cc:a3:ca:f7": "aa:bb:cc:00:00:02",
+"f0:18:98:35:bd:db": "f0:18:98:00:00:09",
+"f0:18:98:44:bf:8f": "f0:18:98:00:00:04",
+"f0:18:98:4b:cb:96": "f0:18:98:00:00:07",
+"f0:18:98:77:2f:59": "f0:18:98:00:00:06",
+"f0:18:98:7e:83:03": "f0:18:98:00:00:03",
+"f0:18:98:a8:8f:d3": "f0:18:98:00:00:05",
+"f0:18:98:de:8e:3a": "f0:18:98:00:00:08"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-3",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0,
+"192.168.0": 3,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None   Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"334afc": "000001",
+"aabbcc334afc": "aabbcc000001"
+},
+"_macs": {
+"aa:bb:cc:33:4a:fc": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-1"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.58 f0:18:98:00:00:01 Device-1 10.1.0.62 AA-BB-CC-00-00-02 10.1.0.62 10.1.0.155 None Hub-1 10.2.0.163 f0:18:98:00:00:03 iPhone-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"7993e9": "000004",
+"8ab7c6": "000001",
+"aabbcc526555": "aabbcc000006",
+"aabbcc7993e9": "aabbcc000004",
+"aabbccb9e73e": "aabbcc000005",
+"aabbccf32953": "aabbcc000002",
+"b9e73e": "000005",
+"c3bb6a": "000003",
+"f018988ab7c6": "f01898000001",
+"f01898c3bb6a": "f01898000003",
+"f32953": "000002"
+},
+"_macs": {
+"aa:bb:cc:52:65:55": "aa:bb:cc:00:00:06",
+"aa:bb:cc:79:93:e9": "aa:bb:cc:00:00:04",
+"aa:bb:cc:b9:e7:3e": "aa:bb:cc:00:00:05",
+"aa:bb:cc:f3:29:53": "aa:bb:cc:00:00:02",
+"f0:18:98:8a:b7:c6": "f0:18:98:00:00:01",
+"f0:18:98:c3:bb:6a": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"79b38d": "000003",
+"a23a1d": "000002",
+"aabbcc79b38d": "aabbcc000003",
+"aabbccd60e91": "aabbcc000001",
+"d60e91": "000001",
+"f01898a23a1d": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:79:b3:8d": "aa:bb:cc:00:00:03",
+"aa:bb:cc:d6:0e:91": "aa:bb:cc:00:00:01",
+"f0:18:98:a2:3a:1d": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.97": 2,
+"93.184.216.5": 3,
+"93.184.216.6": 1
+},
+"_public_known": [
+"81.2.3.97",
+"93.184.216.6"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.170  10.0.0.170 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {},
+"_dns": {},
+"_emails": {},
+"_literal": {},
+"_macs": {},
+"_names": {},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1
+},
+"_pub": {
+"81.2.3.242": 2,
+"93.184.216.142": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.242",
+"93.184.216.142"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None None Hub-1 10.0.0.113 None None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {},
+"_macs": {},
+"_names": {
+"hue-bridge": "Hub-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.217 AA-BB-CC-00-00-01 PC-1 10.1.0.23  Shelly-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"5589e5": "000001",
+"612acc": "000003",
+"6b8ed8": "000002",
+"aabbcc5589e5": "aabbcc000001",
+"f01898612acc": "f01898000003",
+"f018986b8ed8": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:55:89:e5": "aa:bb:cc:00:00:01",
+"f0:18:98:61:2a:cc": "f0:18:98:00:00:03",
+"f0:18:98:6b:8e:d8": "f0:18:98:00:00:02"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 2,
+"172.16.1": 1,
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.69 AA-BB-CC-00-00-01 Shelly-1 10.1.0.118 None 10.1.0.118 10.2.0.137  Device-1 x None Device-2 10.3.0.186 None Lightbulb-1 10.3.0.168  10.3.0.168 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3eb59c": "000003",
+"48affb": "000004",
+"607dc0": "000001",
+"aabbcc48affb": "aabbcc000004",
+"aabbcc607dc0": "aabbcc000001",
+"f018983eb59c": "f01898000003",
+"f01898f6f1b2": "f01898000002",
+"f6f1b2": "000002"
+},
+"_macs": {
+"aa:bb:cc:48:af:fb": "aa:bb:cc:00:00:04",
+"aa:bb:cc:60:7d:c0": "aa:bb:cc:00:00:01",
+"f0:18:98:3e:b5:9c": "f0:18:98:00:00:03",
+"f0:18:98:f6:f1:b2": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.0": 4,
+"192.168.1": 3,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.80  PC-1 10.1.0.21  10.1.0.21 None f0:18:98:00:00:01 PC-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"014a15": "000005",
+"1b67c5": "000001",
+"2f1951": "000003",
+"aabbcc014a15": "aabbcc000005",
+"aabbcc073899": "aabbcc000004",
+"f018981b67c5": "f01898000001",
+"f018982f1951": "f01898000003",
+"f01898752931": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:01:4a:15": "aa:bb:cc:00:00:05",
+"aa:bb:cc:07:38:99": "aa:bb:cc:00:00:04",
+"f0:18:98:1b:67:c5": "f0:18:98:00:00:01",
+"f0:18:98:2f:19:51": "f0:18:98:00:00:03",
+"f0:18:98:75:29:31": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.2 None Shelly-1 10.1.0.231 AA-BB-CC-00-00-01 10.1.0.231 10.2.0.216 None Lightbulb-1 None AA-BB-CC-00-00-02 nas 10.1.0.185 f0:18:98:00:00:03 iPhone-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"08269b": "000003",
+"aabbcc365640": "aabbcc000001",
+"aabbccde4cf9": "aabbcc000002",
+"de4cf9": "000002",
+"f0189808269b": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:36:56:40": "aa:bb:cc:00:00:01",
+"aa:bb:cc:de:4c:f9": "aa:bb:cc:00:00:02",
+"f0:18:98:08:26:9b": "f0:18:98:00:00:03"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 2,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.46": 2,
+"93.184.216.5": 3,
+"93.184.216.8": 1
+},
+"_public_known": [
+"81.2.3.46",
+"93.184.216.8"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.199 f0:18:98:00:00:01 Lightbulb-1 10.1.0.42  Lightbulb-1 10.2.0.240 AA-BB-CC-00-00-02 10.2.0.240 10.3.0.117 f0:18:98:00:00:03 10.3.0.117 10.3.0.5 f0:18:98:00:00:04 10.3.0.5 Salotto Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"73a571": "000005",
+"96e8eb": "000006",
+"aabbcc73a571": "aabbcc000005",
+"aabbcc96e8eb": "aabbcc000006",
+"aabbccaccf13": "aabbcc000002",
+"accf13": "000002",
+"dc9cf8": "000003",
+"deb678": "000004",
+"ef0c0e": "000007",
+"f01898dc9cf8": "f01898000003",
+"f01898deb678": "f01898000004",
+"f01898ef0c0e": "f01898000007",
+"f01898fddcd7": "f01898000001",
+"fddcd7": "000001"
+},
+"_macs": {
+"aa:bb:cc:73:a5:71": "aa:bb:cc:00:00:05",
+"aa:bb:cc:96:e8:eb": "aa:bb:cc:00:00:06",
+"aa:bb:cc:ac:cf:13": "aa:bb:cc:00:00:02",
+"f0:18:98:dc:9c:f8": "f0:18:98:00:00:03",
+"f0:18:98:de:b6:78": "f0:18:98:00:00:04",
+"f0:18:98:ef:0c:0e": "f0:18:98:00:00:07",
+"f0:18:98:fd:dc:d7": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 3,
+"172.16.1": 1,
+"192.168.0": 4,
+"192.168.1": 2,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None PC-1 None f0:18:98:00:00:01 None 10.0.0.144  nas 10.1.0.179 AA-BB-CC-00-00-02 10.1.0.179 10.0.0.153 None iPhone-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"9d5181": "000003",
+"aabbccb81584": "aabbcc000002",
+"b81584": "000002",
+"c33555": "000001",
+"f018989d5181": "f01898000003",
+"f01898c33555": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:b8:15:84": "aa:bb:cc:00:00:02",
+"f0:18:98:9d:51:81": "f0:18:98:00:00:03",
+"f0:18:98:c3:35:55": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Device-1 10.0.0.41 f0:18:98:00:00:01 10.0.0.41 10.1.0.106 f0:18:98:00:00:02 Hub-1 None AA-BB-CC-00-00-03 Hub-1 10.2.0.43 f0:18:98:00:00:04 None 10.3.0.88  Hub-1 10.4.0.81 None PC-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"410f58": "000006",
+"67e856": "000005",
+"6d99e7": "000002",
+"804b1e": "000007",
+"88f946": "000003",
+"89e066": "000004",
+"9ebbcb": "000001",
+"aabbcc410f58": "aabbcc000006",
+"aabbcc67e856": "aabbcc000005",
+"aabbcc804b1e": "aabbcc000007",
+"aabbcc88f946": "aabbcc000003",
+"f018986d99e7": "f01898000002",
+"f0189889e066": "f01898000004",
+"f018989ebbcb": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:41:0f:58": "aa:bb:cc:00:00:06",
+"aa:bb:cc:67:e8:56": "aa:bb:cc:00:00:05",
+"aa:bb:cc:80:4b:1e": "aa:bb:cc:00:00:07",
+"aa:bb:cc:88:f9:46": "aa:bb:cc:00:00:03",
+"f0:18:98:6d:99:e7": "f0:18:98:00:00:02",
+"f0:18:98:89:e0:66": "f0:18:98:00:00:04",
+"f0:18:98:9e:bb:cb": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.0": 4,
+"192.168.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.58 f0:18:98:00:00:01 Device-1 x  Device-2 10.1.0.64 None Hub-1 x AA-BB-CC-00-00-02 x 10.0.0.132 AA-BB-CC-00-00-03 Shelly-1 None f0:18:98:00:00:04 None Device-2 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0fbf7b": "000002",
+"51db18": "000003",
+"7bedd4": "000004",
+"97feb3": "000006",
+"aabbcc0fbf7b": "aabbcc000002",
+"aabbcc51db18": "aabbcc000003",
+"aabbccc5fcee": "aabbcc000007",
+"aabbcced7286": "aabbcc000005",
+"ae00a8": "000001",
+"c5fcee": "000007",
+"ed7286": "000005",
+"f018987bedd4": "f01898000004",
+"f0189897feb3": "f01898000006",
+"f01898ae00a8": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:0f:bf:7b": "aa:bb:cc:00:00:02",
+"aa:bb:cc:51:db:18": "aa:bb:cc:00:00:03",
+"aa:bb:cc:c5:fc:ee": "aa:bb:cc:00:00:07",
+"aa:bb:cc:ed:72:86": "aa:bb:cc:00:00:05",
+"f0:18:98:7b:ed:d4": "f0:18:98:00:00:04",
+"f0:18:98:97:fe:b3": "f0:18:98:00:00:06",
+"f0:18:98:ae:00:a8": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1,
+"192.168.0": 3,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.227 f0:18:98:00:00:01 Shelly-1 10.1.0.4 f0:18:98:00:00:02 Hub-1 10.2.0.28 None Device-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6d228e": "000002",
+"70d8d7": "000003",
+"a5814c": "000004",
+"b9f5a0": "000001",
+"f018986d228e": "f01898000002",
+"f0189870d8d7": "f01898000003",
+"f01898a5814c": "f01898000004",
+"f01898b9f5a0": "f01898000001"
+},
+"_macs": {
+"f0:18:98:6d:22:8e": "f0:18:98:00:00:02",
+"f0:18:98:70:d8:d7": "f0:18:98:00:00:03",
+"f0:18:98:a5:81:4c": "f0:18:98:00:00:04",
+"f0:18:98:b9:f5:a0": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 None None f0:18:98:00:00:02 nas 10.0.0.116  Device-1 None f0:18:98:00:00:03 Device-2 10.1.0.221 None 10.1.0.221 x AA-BB-CC-00-00-04 iPhone-1 10.2.0.43 f0:18:98:00:00:05 10.2.0.43 Device-2 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"20f8fb": "000008",
+"51039a": "000002",
+"9a021e": "000003",
+"aabbcc20f8fb": "aabbcc000008",
+"aabbcc994727": "aabbcc000007",
+"aabbcce5eb56": "aabbcc000004",
+"b22e74": "000005",
+"c21a27": "000001",
+"d8ce31": "000006",
+"e5eb56": "000004",
+"f0189851039a": "f01898000002",
+"f018989a021e": "f01898000003",
+"f01898b22e74": "f01898000005",
+"f01898c21a27": "f01898000001",
+"f01898d8ce31": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:20:f8:fb": "aa:bb:cc:00:00:08",
+"aa:bb:cc:99:47:27": "aa:bb:cc:00:00:07",
+"aa:bb:cc:e5:eb:56": "aa:bb:cc:00:00:04",
+"f0:18:98:51:03:9a": "f0:18:98:00:00:02",
+"f0:18:98:9a:02:1e": "f0:18:98:00:00:03",
+"f0:18:98:b2:2e:74": "f0:18:98:00:00:05",
+"f0:18:98:c2:1a:27": "f0:18:98:00:00:01",
+"f0:18:98:d8:ce:31": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.57 None 10.0.0.57 10.1.0.155 f0:18:98:00:00:01 Hub-1 Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1d2e6f": "000001",
+"f01898052276": "f01898000002",
+"f018981d2e6f": "f01898000001"
+},
+"_macs": {
+"f0:18:98:05:22:76": "f0:18:98:00:00:02",
+"f0:18:98:1d:2e:6f": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"192.168.0": 2,
+"192.168.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-3 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"192ff7": "000001",
+"451aff": "000003",
+"813fed": "000004",
+"aabbcc192ff7": "aabbcc000001",
+"aabbcc813fed": "aabbcc000004",
+"aabbccf38fce": "aabbcc000002",
+"f01898451aff": "f01898000003",
+"f38fce": "000002"
+},
+"_macs": {
+"aa:bb:cc:19:2f:f7": "aa:bb:cc:00:00:01",
+"aa:bb:cc:81:3f:ed": "aa:bb:cc:00:00:04",
+"aa:bb:cc:f3:8f:ce": "aa:bb:cc:00:00:02",
+"f0:18:98:45:1a:ff": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-3",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.185  10.0.0.185 x None nas Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4e829e": "000002",
+"7a7d1b": "000003",
+"a4fbec": "000001",
+"aabbcc7a7d1b": "aabbcc000003",
+"f018984e829e": "f01898000002",
+"f01898a4fbec": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:7a:7d:1b": "aa:bb:cc:00:00:03",
+"f0:18:98:4e:82:9e": "f0:18:98:00:00:02",
+"f0:18:98:a4:fb:ec": "f0:18:98:00:00:01"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"81.2.3.94": 2,
+"93.184.216.39": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.94",
+"93.184.216.39"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.168   10.1.0.137 None 10.1.0.137 10.0.0.133  Shelly-1 10.0.0.78  Lightbulb-1 10.1.0.70  Device-1 x f0:18:98:00:00:01 x 10.0.0.131 None 10.0.0.131 Salotto Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1f3915": "000004",
+"5e9db7": "000002",
+"aabbcc1f3915": "aabbcc000004",
+"aabbcc5e9db7": "aabbcc000002",
+"aabbccd41b29": "aabbcc000003",
+"d41b29": "000003",
+"ef419b": "000001",
+"f01898ef419b": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:1f:39:15": "aa:bb:cc:00:00:04",
+"aa:bb:cc:5e:9d:b7": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d4:1b:29": "aa:bb:cc:00:00:03",
+"f0:18:98:ef:41:9b": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Lightbulb-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.64": 2,
+"93.184.216.22": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.64",
+"93.184.216.22"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.156  Device-1 10.1.0.17 f0:18:98:00:00:01 Shelly-1 10.1.0.122  Device-1 10.2.0.96 AA-BB-CC-00-00-02 10.2.0.96 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 4,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0ab77d": "000003",
+"141d7e": "000001",
+"1c615e": "000002",
+"aabbcc1c615e": "aabbcc000002",
+"f018980ab77d": "f01898000003",
+"f01898141d7e": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:1c:61:5e": "aa:bb:cc:00:00:02",
+"f0:18:98:0a:b7:7d": "f0:18:98:00:00:03",
+"f0:18:98:14:1d:7e": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-4"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 Lightbulb-1 10.0.0.238 None iPhone-1 10.0.0.240 f0:18:98:00:00:02 10.0.0.240 10.1.0.3 None iPhone-1 Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"554a94": "000002",
+"87ac46": "000001",
+"8d7a8a": "000004",
+"aabbcc847769": "aabbcc000003",
+"aabbcc87ac46": "aabbcc000001",
+"aabbcce41d82": "aabbcc000006",
+"d58805": "000005",
+"e41d82": "000006",
+"f01898554a94": "f01898000002",
+"f018988d7a8a": "f01898000004",
+"f01898d58805": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:84:77:69": "aa:bb:cc:00:00:03",
+"aa:bb:cc:87:ac:46": "aa:bb:cc:00:00:01",
+"aa:bb:cc:e4:1d:82": "aa:bb:cc:00:00:06",
+"f0:18:98:55:4a:94": "f0:18:98:00:00:02",
+"f0:18:98:8d:7a:8a": "f0:18:98:00:00:04",
+"f0:18:98:d5:88:05": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 4,
+"172.16.1": 0,
+"192.168.0": 3,
+"192.168.2": 1
+},
+"_pub": {
+"81.2.3.247": 2,
+"93.184.216.169": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.247",
+"93.184.216.169"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.245 f0:18:98:00:00:01  10.1.0.181 f0:18:98:00:00:02 Device-1 x  nas None f0:18:98:00:00:03 None 10.2.0.54 f0:18:98:00:00:04 Shelly-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 3,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2f34c0": "000002",
+"33dedb": "000009",
+"75a6e8": "000004",
+"7ad60d": "00000a",
+"7c89f5": "000008",
+"8606e4": "000005",
+"aabbccbec1e7": "aabbcc000006",
+"aabbccd7d409": "aabbcc000007",
+"b3436a": "000001",
+"bec1e7": "000006",
+"d7d409": "000007",
+"f01898238593": "f01898000003",
+"f018982f34c0": "f01898000002",
+"f0189833dedb": "f01898000009",
+"f0189875a6e8": "f01898000004",
+"f018987ad60d": "f0189800000a",
+"f018987c89f5": "f01898000008",
+"f018988606e4": "f01898000005",
+"f01898b3436a": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:be:c1:e7": "aa:bb:cc:00:00:06",
+"aa:bb:cc:d7:d4:09": "aa:bb:cc:00:00:07",
+"f0:18:98:23:85:93": "f0:18:98:00:00:03",
+"f0:18:98:2f:34:c0": "f0:18:98:00:00:02",
+"f0:18:98:33:de:db": "f0:18:98:00:00:09",
+"f0:18:98:75:a6:e8": "f0:18:98:00:00:04",
+"f0:18:98:7a:d6:0d": "f0:18:98:00:00:0a",
+"f0:18:98:7c:89:f5": "f0:18:98:00:00:08",
+"f0:18:98:86:06:e4": "f0:18:98:00:00:05",
+"f0:18:98:b3:43:6a": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.193   x  x None f0:18:98:00:00:01 Shelly-1 Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"590a11": "000001",
+"f01898590a11": "f01898000001"
+},
+"_macs": {
+"f0:18:98:59:0a:11": "f0:18:98:00:00:01"
+},
+"_names": {
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.118   Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2c792b": "000004",
+"7be553": "000003",
+"8bb593": "000005",
+"9d7740": "000001",
+"aabbcc2c792b": "aabbcc000004",
+"aabbcc7be553": "aabbcc000003",
+"aabbcc8bb593": "aabbcc000005",
+"aabbcccd7a4d": "aabbcc000002",
+"cd7a4d": "000002",
+"f018989d7740": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:2c:79:2b": "aa:bb:cc:00:00:04",
+"aa:bb:cc:7b:e5:53": "aa:bb:cc:00:00:03",
+"aa:bb:cc:8b:b5:93": "aa:bb:cc:00:00:05",
+"aa:bb:cc:cd:7a:4d": "aa:bb:cc:00:00:02",
+"f0:18:98:9d:77:40": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.249  10.0.0.249 10.0.0.70 AA-BB-CC-00-00-01 iPhone-1 None None  None f0:18:98:00:00:02 nas Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"17df48": "000001",
+"9b94e9": "000002",
+"aabbcc17df48": "aabbcc000001",
+"aabbccc01ed0": "aabbcc000003",
+"c01ed0": "000003",
+"e3c1d3": "000004",
+"f018989b94e9": "f01898000002",
+"f01898e3c1d3": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:17:df:48": "aa:bb:cc:00:00:01",
+"aa:bb:cc:c0:1e:d0": "aa:bb:cc:00:00:03",
+"f0:18:98:9b:94:e9": "f0:18:98:00:00:02",
+"f0:18:98:e3:c1:d3": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.31": 2,
+"93.184.216.178": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.31",
+"93.184.216.178"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.88 f0:18:98:00:00:01 PC-1 x  nas 10.1.0.1 f0:18:98:00:00:02 iPhone-1 x AA-BB-CC-00-00-03  10.0.0.40  PC-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2359d0": "000005",
+"6ba90a": "000003",
+"83ce47": "000001",
+"8e612d": "000004",
+"9d0711": "000002",
+"aabbcc6ba90a": "aabbcc000003",
+"f018982359d0": "f01898000005",
+"f0189883ce47": "f01898000001",
+"f018988e612d": "f01898000004",
+"f018989d0711": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:6b:a9:0a": "aa:bb:cc:00:00:03",
+"f0:18:98:23:59:d0": "f0:18:98:00:00:05",
+"f0:18:98:83:ce:47": "f0:18:98:00:00:01",
+"f0:18:98:8e:61:2d": "f0:18:98:00:00:04",
+"f0:18:98:9d:07:11": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.212": 2,
+"93.184.216.5": 3,
+"93.184.216.53": 1
+},
+"_public_known": [
+"81.2.3.212",
+"93.184.216.53"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.153 AA-BB-CC-00-00-01 None 10.1.0.110  None 10.2.0.78 None 10.2.0.78 10.3.0.80 f0:18:98:00:00:02 nas 10.1.0.191   Salotto Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"garage": "Area-4",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0c3265": "000004",
+"0d6bd4": "000001",
+"54126a": "000003",
+"aabbcc0d6bd4": "aabbcc000001",
+"aabbcc765552": "aabbcc000005",
+"f018980c3265": "f01898000004",
+"f0189854126a": "f01898000003",
+"f01898f3fdec": "f01898000002",
+"f3fdec": "000002"
+},
+"_macs": {
+"aa:bb:cc:0d:6b:d4": "aa:bb:cc:00:00:01",
+"aa:bb:cc:76:55:52": "aa:bb:cc:00:00:05",
+"f0:18:98:0c:32:65": "f0:18:98:00:00:04",
+"f0:18:98:54:12:6a": "f0:18:98:00:00:03",
+"f0:18:98:f3:fd:ec": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"172.16.1": 4,
+"192.168.0": 1,
+"192.168.1": 3,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.249 AA-BB-CC-00-00-01 None Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"18bfe8": "000003",
+"aabbccd9d934": "aabbcc000001",
+"d9d934": "000001",
+"f0189818bfe8": "f01898000003",
+"f01898476682": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:d9:d9:34": "aa:bb:cc:00:00:01",
+"f0:18:98:18:bf:e8": "f0:18:98:00:00:03",
+"f0:18:98:47:66:82": "f0:18:98:00:00:02"
+},
+"_names": {
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.108": 2,
+"93.184.216.12": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.108",
+"93.184.216.12"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"154e21": "000001",
+"aa76c3": "000002",
+"aabbcc154e21": "aabbcc000001",
+"f01898aa76c3": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:15:4e:21": "aa:bb:cc:00:00:01",
+"f0:18:98:aa:76:c3": "f0:18:98:00:00:02"
+},
+"_names": {
+"luce-cucina": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.53  None 10.1.0.36  Device-1 10.1.0.195 f0:18:98:00:00:01 iPhone-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"41e70f": "000001",
+"f0189841e70f": "f01898000001"
+},
+"_macs": {
+"f0:18:98:41:e7:0f": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 Device-1 x AA-BB-CC-00-00-02 None Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2a2153": "000004",
+"48d065": "000003",
+"6badfb": "000005",
+"aabbcc48d065": "aabbcc000003",
+"aabbccc997da": "aabbcc000002",
+"c997da": "000002",
+"f018982a2153": "f01898000004",
+"f018986badfb": "f01898000005",
+"f01898f8c9d6": "f01898000001",
+"f8c9d6": "000001"
+},
+"_macs": {
+"aa:bb:cc:48:d0:65": "aa:bb:cc:00:00:03",
+"aa:bb:cc:c9:97:da": "aa:bb:cc:00:00:02",
+"f0:18:98:2a:21:53": "f0:18:98:00:00:04",
+"f0:18:98:6b:ad:fb": "f0:18:98:00:00:05",
+"f0:18:98:f8:c9:d6": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.25": 2,
+"93.184.216.30": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.25",
+"93.184.216.30"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.60  Hub-1 10.1.0.159 f0:18:98:00:00:01 PC-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"139f96": "000003",
+"3f1cea": "000001",
+"61261b": "000002",
+"f01898139f96": "f01898000003",
+"f018983f1cea": "f01898000001",
+"f0189861261b": "f01898000002"
+},
+"_macs": {
+"f0:18:98:13:9f:96": "f0:18:98:00:00:03",
+"f0:18:98:3f:1c:ea": "f0:18:98:00:00:01",
+"f0:18:98:61:26:1b": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1,
+"172.16.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 PC-1 None AA-BB-CC-00-00-02 Shelly-1 10.0.0.194  nas x  x Salotto Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3e7f77": "000003",
+"aabbcc612156": "aabbcc000005",
+"aabbccfbc18f": "aabbcc000002",
+"b4f5c3": "000004",
+"f01898080550": "f01898000001",
+"f018983e7f77": "f01898000003",
+"f01898b4f5c3": "f01898000004",
+"fbc18f": "000002"
+},
+"_macs": {
+"aa:bb:cc:61:21:56": "aa:bb:cc:00:00:05",
+"aa:bb:cc:fb:c1:8f": "aa:bb:cc:00:00:02",
+"f0:18:98:08:05:50": "f0:18:98:00:00:01",
+"f0:18:98:3e:7f:77": "f0:18:98:00:00:03",
+"f0:18:98:b4:f5:c3": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.131": 2,
+"93.184.216.141": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.131",
+"93.184.216.141"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.88 AA-BB-CC-00-00-01 10.0.0.88 10.1.0.33 None  10.2.0.208 AA-BB-CC-00-00-02 iPhone-1 10.3.0.132 None Hub-1 x   Salotto Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1d9e41": "000001",
+"27861b": "000003",
+"6e75d9": "000004",
+"8ad903": "000002",
+"aabbcc1d9e41": "aabbcc000001",
+"aabbcc630655": "aabbcc000005",
+"aabbcc8ad903": "aabbcc000002",
+"f0189827861b": "f01898000003",
+"f018986e75d9": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:1d:9e:41": "aa:bb:cc:00:00:01",
+"aa:bb:cc:63:06:55": "aa:bb:cc:00:00:05",
+"aa:bb:cc:8a:d9:03": "aa:bb:cc:00:00:02",
+"f0:18:98:27:86:1b": "f0:18:98:00:00:03",
+"f0:18:98:6e:75:d9": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.1": 4,
+"192.168.2": 3
+},
+"_pub": {
+"81.2.3.11": 2,
+"93.184.216.135": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.11",
+"93.184.216.135"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.41 f0:18:98:00:00:01 Device-1 x f0:18:98:00:00:02 Device-2 10.1.0.159 f0:18:98:00:00:03 Shelly-1 10.2.0.9  None Device-2 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1fac5e": "000004",
+"8e94db": "000003",
+"aabbcc1fac5e": "aabbcc000004",
+"ceae0b": "000001",
+"f01898315088": "f01898000005",
+"f01898823676": "f01898000002",
+"f018988e94db": "f01898000003",
+"f01898ceae0b": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:1f:ac:5e": "aa:bb:cc:00:00:04",
+"f0:18:98:31:50:88": "f0:18:98:00:00:05",
+"f0:18:98:82:36:76": "f0:18:98:00:00:02",
+"f0:18:98:8e:94:db": "f0:18:98:00:00:03",
+"f0:18:98:ce:ae:0b": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 1,
+"192.168.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.117  Shelly-1 10.1.0.208 f0:18:98:00:00:01 10.1.0.208 None f0:18:98:00:00:02 Device-1 x  Device-2 10.0.0.130 None None Device-1 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 4,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"62ebeb": "000003",
+"6401de": "000002",
+"a228ac": "000004",
+"aabbcca228ac": "aabbcc000004",
+"cb9574": "000005",
+"e5807e": "000006",
+"f0189862ebeb": "f01898000003",
+"f018986401de": "f01898000002",
+"f01898cb9574": "f01898000005",
+"f01898e5807e": "f01898000006",
+"f01898fe48aa": "f01898000001",
+"fe48aa": "000001"
+},
+"_macs": {
+"aa:bb:cc:a2:28:ac": "aa:bb:cc:00:00:04",
+"f0:18:98:62:eb:eb": "f0:18:98:00:00:03",
+"f0:18:98:64:01:de": "f0:18:98:00:00:02",
+"f0:18:98:cb:95:74": "f0:18:98:00:00:05",
+"f0:18:98:e5:80:7e": "f0:18:98:00:00:06",
+"f0:18:98:fe:48:aa": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-4",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.0": 0,
+"192.168.2": 2
+},
+"_pub": {
+"81.2.3.229": 2,
+"93.184.216.16": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.229",
+"93.184.216.16"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None None None None AA-BB-CC-00-00-01 nas x AA-BB-CC-00-00-02 Shelly-1 10.0.0.230 AA-BB-CC-00-00-03  x AA-BB-CC-00-00-04 Hub-1 None AA-BB-CC-00-00-05 None None None nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Hub": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"a6dd89": "000006",
+"a7f848": "000003",
+"aabbcca7f848": "aabbcc000003",
+"aabbccb7ecdb": "aabbcc000005",
+"aabbccd79f16": "aabbcc000002",
+"aabbccd7e01e": "aabbcc000004",
+"aabbccfcd1e5": "aabbcc000001",
+"b7ecdb": "000005",
+"d45e2d": "000007",
+"d79f16": "000002",
+"d7e01e": "000004",
+"f01898a6dd89": "f01898000006",
+"f01898d45e2d": "f01898000007",
+"fcd1e5": "000001"
+},
+"_macs": {
+"aa:bb:cc:a7:f8:48": "aa:bb:cc:00:00:03",
+"aa:bb:cc:b7:ec:db": "aa:bb:cc:00:00:05",
+"aa:bb:cc:d7:9f:16": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d7:e0:1e": "aa:bb:cc:00:00:04",
+"aa:bb:cc:fc:d1:e5": "aa:bb:cc:00:00:01",
+"f0:18:98:a6:dd:89": "f0:18:98:00:00:06",
+"f0:18:98:d4:5e:2d": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 1,
+"192.168.1": 0,
+"192.168.2": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.122  Device-1 Device-1 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3e1659": "000001",
+"aabbcc3e1659": "aabbcc000001"
+},
+"_macs": {
+"aa:bb:cc:3e:16:59": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"81.2.3.111": 2,
+"93.184.216.203": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.111",
+"93.184.216.203"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None None Device-1 10.0.0.105 None Lightbulb-1 None f0:18:98:00:00:01 Lightbulb-1 10.1.0.208 AA-BB-CC-00-00-02 10.1.0.208 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1b0803": "000001",
+"27ec97": "000003",
+"3f4f59": "000002",
+"a40046": "000006",
+"aabbcc27ec97": "aabbcc000003",
+"aabbcc3f4f59": "aabbcc000002",
+"aabbcca40046": "aabbcc000006",
+"ac2af3": "000004",
+"ad20df": "000005",
+"f018981b0803": "f01898000001",
+"f01898ac2af3": "f01898000004",
+"f01898ad20df": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:27:ec:97": "aa:bb:cc:00:00:03",
+"aa:bb:cc:3f:4f:59": "aa:bb:cc:00:00:02",
+"aa:bb:cc:a4:00:46": "aa:bb:cc:00:00:06",
+"f0:18:98:1b:08:03": "f0:18:98:00:00:01",
+"f0:18:98:ac:2a:f3": "f0:18:98:00:00:04",
+"f0:18:98:ad:20:df": "f0:18:98:00:00:05"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.38 f0:18:98:00:00:01 Shelly-1 None  None 10.1.0.238 None PC-1 10.2.0.187  10.2.0.187 10.2.0.139 AA-BB-CC-00-00-02 Device-1 None  iPhone-1 10.1.0.175 None None Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"347d11": "000003",
+"75f780": "000001",
+"a7c831": "000004",
+"aabbcc347d11": "aabbcc000003",
+"aabbcca7c831": "aabbcc000004",
+"aabbccaec8df": "aabbcc000002",
+"aabbcced3a54": "aabbcc000006",
+"aec8df": "000002",
+"e9deec": "000005",
+"ed3a54": "000006",
+"f0189875f780": "f01898000001",
+"f01898e9deec": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:34:7d:11": "aa:bb:cc:00:00:03",
+"aa:bb:cc:a7:c8:31": "aa:bb:cc:00:00:04",
+"aa:bb:cc:ae:c8:df": "aa:bb:cc:00:00:02",
+"aa:bb:cc:ed:3a:54": "aa:bb:cc:00:00:06",
+"f0:18:98:75:f7:80": "f0:18:98:00:00:01",
+"f0:18:98:e9:de:ec": "f0:18:98:00:00:05"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 3,
+"192.168.0": 0,
+"192.168.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.65 AA-BB-CC-00-00-01 Lightbulb-1 10.1.0.152 None PC-1 10.1.0.71 f0:18:98:00:00:02 Hub-1 10.1.0.81  Device-1 None AA-BB-CC-00-00-03 None Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0e612a": "000003",
+"2a30c9": "000002",
+"4fa3c7": "000005",
+"6345e6": "000004",
+"669d69": "000001",
+"83eaaf": "000006",
+"aabbcc0e612a": "aabbcc000003",
+"aabbcc4fa3c7": "aabbcc000005",
+"aabbcc669d69": "aabbcc000001",
+"aabbcc83eaaf": "aabbcc000006",
+"f018982a30c9": "f01898000002",
+"f018986345e6": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:0e:61:2a": "aa:bb:cc:00:00:03",
+"aa:bb:cc:4f:a3:c7": "aa:bb:cc:00:00:05",
+"aa:bb:cc:66:9d:69": "aa:bb:cc:00:00:01",
+"aa:bb:cc:83:ea:af": "aa:bb:cc:00:00:06",
+"f0:18:98:2a:30:c9": "f0:18:98:00:00:02",
+"f0:18:98:63:45:e6": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.141": 2,
+"93.184.216.105": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.141",
+"93.184.216.105"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.15 None nas 10.1.0.44 f0:18:98:00:00:01 None 10.1.0.239 None nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"821e58": "000001",
+"f01898821e58": "f01898000001"
+},
+"_macs": {
+"f0:18:98:82:1e:58": "f0:18:98:00:00:01"
+},
+"_names": {
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.1": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 x x f0:18:98:00:00:02 Shelly-1 x None Device-1 10.0.0.140  Device-2 10.1.0.197 None Hub-1 10.2.0.8 None Hub-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4ad801": "000003",
+"91d5e2": "000002",
+"aabbcc4ad801": "aabbcc000003",
+"aabbcccd6d9f": "aabbcc000005",
+"aabbccf3253a": "aabbcc000004",
+"cd6d9f": "000005",
+"f0189891d5e2": "f01898000002",
+"f01898fa818d": "f01898000001",
+"f3253a": "000004",
+"fa818d": "000001"
+},
+"_macs": {
+"aa:bb:cc:4a:d8:01": "aa:bb:cc:00:00:03",
+"aa:bb:cc:cd:6d:9f": "aa:bb:cc:00:00:05",
+"aa:bb:cc:f3:25:3a": "aa:bb:cc:00:00:04",
+"f0:18:98:91:d5:e2": "f0:18:98:00:00:02",
+"f0:18:98:fa:81:8d": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-3",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x  None x None nas 10.0.0.207 AA-BB-CC-00-00-01 10.0.0.207 10.0.0.35   Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"84787a": "000001",
+"877e22": "000004",
+"aabbcc84787a": "aabbcc000001",
+"aabbcc877e22": "aabbcc000004",
+"d58086": "000003",
+"f01898689165": "f01898000002",
+"f01898d58086": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:84:78:7a": "aa:bb:cc:00:00:01",
+"aa:bb:cc:87:7e:22": "aa:bb:cc:00:00:04",
+"f0:18:98:68:91:65": "f0:18:98:00:00:02",
+"f0:18:98:d5:80:86": "f0:18:98:00:00:03"
+},
+"_names": {
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-2 Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3f7de8": "000001",
+"aabbcce056f6": "aabbcc000002",
+"e056f6": "000002",
+"f018983f7de8": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:e0:56:f6": "aa:bb:cc:00:00:02",
+"f0:18:98:3f:7d:e8": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1,
+"192.168.1": 2
+},
+"_pub": {
+"81.2.3.180": 2,
+"93.184.216.127": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.180",
+"93.184.216.127"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None AA-BB-CC-00-00-01 None 10.0.0.98 None Device-1 None f0:18:98:00:00:02 Device-2 10.1.0.219  None 10.1.0.23 AA-BB-CC-00-00-03 iPhone-1 10.1.0.137 f0:18:98:00:00:04 10.1.0.137 10.1.0.183 AA-BB-CC-00-00-05 Hub-1 Device-2 Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"038a45": "000003",
+"052c16": "000004",
+"2a184e": "000006",
+"91cb65": "000005",
+"96cc6a": "000002",
+"aabbcc038a45": "aabbcc000003",
+"aabbcc2a184e": "aabbcc000006",
+"aabbcc91cb65": "aabbcc000005",
+"aabbccad8ffe": "aabbcc000001",
+"aabbccbfac52": "aabbcc000007",
+"aabbccfdc892": "aabbcc000008",
+"ad8ffe": "000001",
+"bfac52": "000007",
+"f01898052c16": "f01898000004",
+"f0189896cc6a": "f01898000002",
+"fdc892": "000008"
+},
+"_macs": {
+"aa:bb:cc:03:8a:45": "aa:bb:cc:00:00:03",
+"aa:bb:cc:2a:18:4e": "aa:bb:cc:00:00:06",
+"aa:bb:cc:91:cb:65": "aa:bb:cc:00:00:05",
+"aa:bb:cc:ad:8f:fe": "aa:bb:cc:00:00:01",
+"aa:bb:cc:bf:ac:52": "aa:bb:cc:00:00:07",
+"aa:bb:cc:fd:c8:92": "aa:bb:cc:00:00:08",
+"f0:18:98:05:2c:16": "f0:18:98:00:00:04",
+"f0:18:98:96:cc:6a": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"81.2.3.90": 2,
+"93.184.216.5": 3,
+"93.184.216.61": 1
+},
+"_public_known": [
+"81.2.3.90",
+"93.184.216.61"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None  Device-1 None None  10.0.0.105 AA-BB-CC-00-00-01  10.1.0.117 AA-BB-CC-00-00-02 Lightbulb-1 x AA-BB-CC-00-00-03 x Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"01c5a3": "000003",
+"43067b": "000007",
+"82544a": "000001",
+"8b36a1": "000006",
+"925af5": "000008",
+"a7182e": "000002",
+"aabbcc01c5a3": "aabbcc000003",
+"aabbcc43067b": "aabbcc000007",
+"aabbcc82544a": "aabbcc000001",
+"aabbcca7182e": "aabbcc000002",
+"aabbccd70870": "aabbcc000004",
+"aabbcceda108": "aabbcc000005",
+"d70870": "000004",
+"eda108": "000005",
+"f018988b36a1": "f01898000006",
+"f01898925af5": "f01898000008"
+},
+"_macs": {
+"aa:bb:cc:01:c5:a3": "aa:bb:cc:00:00:03",
+"aa:bb:cc:43:06:7b": "aa:bb:cc:00:00:07",
+"aa:bb:cc:82:54:4a": "aa:bb:cc:00:00:01",
+"aa:bb:cc:a7:18:2e": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d7:08:70": "aa:bb:cc:00:00:04",
+"aa:bb:cc:ed:a1:08": "aa:bb:cc:00:00:05",
+"f0:18:98:8b:36:a1": "f0:18:98:00:00:06",
+"f0:18:98:92:5a:f5": "f0:18:98:00:00:08"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 4,
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.1": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 Device-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbcce5c605": "aabbcc000002",
+"aabbccfad64b": "aabbcc000003",
+"b70886": "000001",
+"e5c605": "000002",
+"f01898b70886": "f01898000001",
+"fad64b": "000003"
+},
+"_macs": {
+"aa:bb:cc:e5:c6:05": "aa:bb:cc:00:00:02",
+"aa:bb:cc:fa:d6:4b": "aa:bb:cc:00:00:03",
+"f0:18:98:b7:08:86": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  Device-1 10.0.0.2 AA-BB-CC-00-00-01 Device-2 10.1.0.224  Lightbulb-1 10.2.0.26 f0:18:98:00:00:02 iPhone-1 Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0e40c7": "000001",
+"54159e": "000005",
+"6c9366": "000003",
+"90e283": "000004",
+"aabbcc0e40c7": "aabbcc000001",
+"aabbcc54159e": "aabbcc000005",
+"aabbcc90e283": "aabbcc000004",
+"b6e6d6": "000002",
+"ba813e": "000006",
+"f018986c9366": "f01898000003",
+"f01898b6e6d6": "f01898000002",
+"f01898ba813e": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:0e:40:c7": "aa:bb:cc:00:00:01",
+"aa:bb:cc:54:15:9e": "aa:bb:cc:00:00:05",
+"aa:bb:cc:90:e2:83": "aa:bb:cc:00:00:04",
+"f0:18:98:6c:93:66": "f0:18:98:00:00:03",
+"f0:18:98:b6:e6:d6": "f0:18:98:00:00:02",
+"f0:18:98:ba:81:3e": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 1,
+"192.168.0": 0,
+"192.168.1": 3
+},
+"_pub": {
+"81.2.3.186": 2,
+"93.184.216.24": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.186",
+"93.184.216.24"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 nas None AA-BB-CC-00-00-02 None 10.0.0.228 None 10.0.0.228 10.1.0.159  Lightbulb-1 None f0:18:98:00:00:03 None 10.2.0.49 None  10.3.0.4 AA-BB-CC-00-00-04 Device-1 Device-1 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"garage": "Area-1",
+"sala": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2bb327": "000003",
+"35f490": "000002",
+"360db6": "000004",
+"617e5a": "000006",
+"89a476": "000001",
+"aabbcc35f490": "aabbcc000002",
+"aabbcc360db6": "aabbcc000004",
+"aabbcc89a476": "aabbcc000001",
+"f018982bb327": "f01898000003",
+"f01898617e5a": "f01898000006",
+"f01898f529a3": "f01898000005",
+"f529a3": "000005"
+},
+"_macs": {
+"aa:bb:cc:35:f4:90": "aa:bb:cc:00:00:02",
+"aa:bb:cc:36:0d:b6": "aa:bb:cc:00:00:04",
+"aa:bb:cc:89:a4:76": "aa:bb:cc:00:00:01",
+"f0:18:98:2b:b3:27": "f0:18:98:00:00:03",
+"f0:18:98:61:7e:5a": "f0:18:98:00:00:06",
+"f0:18:98:f5:29:a3": "f0:18:98:00:00:05"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0,
+"192.168.1": 3,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"93fa6f": "000001",
+"be4974": "000002",
+"f0189893fa6f": "f01898000001",
+"f01898be4974": "f01898000002"
+},
+"_macs": {
+"f0:18:98:93:fa:6f": "f0:18:98:00:00:01",
+"f0:18:98:be:49:74": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1"
+},
+"_nets": {
+"172.16.1": 2,
+"192.168.0": 1,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.208": 2,
+"93.184.216.123": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.208",
+"93.184.216.123"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.216 None 10.0.0.216 10.0.0.31 AA-BB-CC-00-00-01 Hub-1 10.1.0.153   None AA-BB-CC-00-00-02 Shelly-1 10.2.0.18 AA-BB-CC-00-00-03 Shelly-1 10.3.0.181 None Device-1 Device-2 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"04eebf": "000005",
+"88ebd9": "000001",
+"9dfa29": "000004",
+"a66b74": "000003",
+"aabbcc88ebd9": "aabbcc000001",
+"aabbcc9dfa29": "aabbcc000004",
+"aabbcca66b74": "aabbcc000003",
+"aabbcccf0051": "aabbcc000002",
+"cf0051": "000002",
+"f0189804eebf": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:88:eb:d9": "aa:bb:cc:00:00:01",
+"aa:bb:cc:9d:fa:29": "aa:bb:cc:00:00:04",
+"aa:bb:cc:a6:6b:74": "aa:bb:cc:00:00:03",
+"aa:bb:cc:cf:00:51": "aa:bb:cc:00:00:02",
+"f0:18:98:04:ee:bf": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"172.16.1": 3,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.201   None f0:18:98:00:00:01 Shelly-1 Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6b3284": "000002",
+"aabbcc6b3284": "aabbcc000002",
+"ee7d3e": "000001",
+"f01898ee7d3e": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:6b:32:84": "aa:bb:cc:00:00:02",
+"f0:18:98:ee:7d:3e": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"192.168.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.149  Shelly-1 10.0.0.176  None 10.0.0.158 None  x AA-BB-CC-00-00-01 Device-1 10.0.0.105 None 10.0.0.105 10.1.0.72 AA-BB-CC-00-00-02 Lightbulb-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 3,
+"Lightbulb": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0843ee": "000005",
+"2611c0": "000003",
+"3111db": "000006",
+"5cb771": "000002",
+"7928f9": "000004",
+"8b1dcc": "000007",
+"aabbcc2611c0": "aabbcc000003",
+"aabbcc3111db": "aabbcc000006",
+"aabbcc5cb771": "aabbcc000002",
+"aabbcc7928f9": "aabbcc000004",
+"aabbcc8b1dcc": "aabbcc000007",
+"aabbccb29207": "aabbcc000001",
+"b29207": "000001",
+"f018980843ee": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:26:11:c0": "aa:bb:cc:00:00:03",
+"aa:bb:cc:31:11:db": "aa:bb:cc:00:00:06",
+"aa:bb:cc:5c:b7:71": "aa:bb:cc:00:00:02",
+"aa:bb:cc:79:28:f9": "aa:bb:cc:00:00:04",
+"aa:bb:cc:8b:1d:cc": "aa:bb:cc:00:00:07",
+"aa:bb:cc:b2:92:07": "aa:bb:cc:00:00:01",
+"f0:18:98:08:43:ee": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x  x 10.0.0.163 None Hub-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6030e4": "000002",
+"93f464": "000004",
+"a90c49": "000003",
+"aabbcc6030e4": "aabbcc000002",
+"b46c6b": "000001",
+"f0189893f464": "f01898000004",
+"f01898a90c49": "f01898000003",
+"f01898b46c6b": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:60:30:e4": "aa:bb:cc:00:00:02",
+"f0:18:98:93:f4:64": "f0:18:98:00:00:04",
+"f0:18:98:a9:0c:49": "f0:18:98:00:00:03",
+"f0:18:98:b4:6c:6b": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"81.2.3.212": 2,
+"93.184.216.157": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.212",
+"93.184.216.157"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 Shelly-1 10.0.0.92 None Hub-1 None AA-BB-CC-00-00-02 Shelly-1 10.1.0.2 AA-BB-CC-00-00-03 nas None  Hub-1 10.2.0.23 AA-BB-CC-00-00-04 10.2.0.23 x f0:18:98:00:00:05 Lightbulb-1 Salotto Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2495eb": "000006",
+"4f18e1": "000003",
+"56fd5f": "000008",
+"651faf": "000001",
+"6534bd": "000002",
+"6b12dd": "000007",
+"aabbcc420628": "aabbcc000004",
+"aabbcc4f18e1": "aabbcc000003",
+"aabbcc56fd5f": "aabbcc000008",
+"aabbcc651faf": "aabbcc000001",
+"aabbcc6534bd": "aabbcc000002",
+"aabbcc6b12dd": "aabbcc000007",
+"f018982495eb": "f01898000006",
+"f01898423077": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:42:06:28": "aa:bb:cc:00:00:04",
+"aa:bb:cc:4f:18:e1": "aa:bb:cc:00:00:03",
+"aa:bb:cc:56:fd:5f": "aa:bb:cc:00:00:08",
+"aa:bb:cc:65:1f:af": "aa:bb:cc:00:00:01",
+"aa:bb:cc:65:34:bd": "aa:bb:cc:00:00:02",
+"aa:bb:cc:6b:12:dd": "aa:bb:cc:00:00:07",
+"f0:18:98:24:95:eb": "f0:18:98:00:00:06",
+"f0:18:98:42:30:77": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 0,
+"172.16.1": 4,
+"192.168.0": 1,
+"192.168.1": 3
+},
+"_pub": {
+"81.2.3.78": 2,
+"93.184.216.109": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.78",
+"93.184.216.109"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None  None 10.0.0.100  10.0.0.100 Salotto Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1d46bf": "000003",
+"9ab445": "000004",
+"aabbcc1d46bf": "aabbcc000003",
+"aabbcc9ab445": "aabbcc000004",
+"aabbccb4fb61": "aabbcc000001",
+"aabbcce5b2c1": "aabbcc000002",
+"b4fb61": "000001",
+"e5b2c1": "000002"
+},
+"_macs": {
+"aa:bb:cc:1d:46:bf": "aa:bb:cc:00:00:03",
+"aa:bb:cc:9a:b4:45": "aa:bb:cc:00:00:04",
+"aa:bb:cc:b4:fb:61": "aa:bb:cc:00:00:01",
+"aa:bb:cc:e5:b2:c1": "aa:bb:cc:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"192.168.0": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.64  None 10.1.0.29 AA-BB-CC-00-00-01 Hub-1 10.2.0.117 None None 10.3.0.131  iPhone-1 x f0:18:98:00:00:02 iPhone-1 Device-2 Area-3 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"03a68a": "000004",
+"1cfb76": "000001",
+"aabbcc1cfb76": "aabbcc000001",
+"aabbccd814a0": "aabbcc000003",
+"c4eeb9": "000002",
+"d814a0": "000003",
+"f0189803a68a": "f01898000004",
+"f01898c4eeb9": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:1c:fb:76": "aa:bb:cc:00:00:01",
+"aa:bb:cc:d8:14:a0": "aa:bb:cc:00:00:03",
+"f0:18:98:03:a6:8a": "f0:18:98:00:00:04",
+"f0:18:98:c4:ee:b9": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"salotto": "Device-2",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 3,
+"172.16.1": 4,
+"192.168.0": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"30a38c": "000001",
+"36e3be": "000002",
+"aabbcc36e3be": "aabbcc000002",
+"d0ef4e": "000003",
+"f0189830a38c": "f01898000001",
+"f01898d0ef4e": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:36:e3:be": "aa:bb:cc:00:00:02",
+"f0:18:98:30:a3:8c": "f0:18:98:00:00:01",
+"f0:18:98:d0:ef:4e": "f0:18:98:00:00:03"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.137": 2,
+"93.184.216.5": 1
+},
+"_public_known": [
+"81.2.3.137",
+"93.184.216.5"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 x Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0dccbf": "000004",
+"17006c": "000001",
+"3c31c9": "000002",
+"aabbcc0dccbf": "aabbcc000004",
+"aabbcc3c31c9": "aabbcc000002",
+"aabbccd2c514": "aabbcc000003",
+"d2c514": "000003",
+"f0189817006c": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:0d:cc:bf": "aa:bb:cc:00:00:04",
+"aa:bb:cc:3c:31:c9": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d2:c5:14": "aa:bb:cc:00:00:03",
+"f0:18:98:17:00:6c": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0
+},
+"_pub": {
+"81.2.3.78": 2,
+"93.184.216.5": 3,
+"93.184.216.56": 1
+},
+"_public_known": [
+"81.2.3.78",
+"93.184.216.56"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.243 None iPhone-1 10.1.0.206 None nas 10.2.0.121  iPhone-1 10.2.0.57 None iPhone-1 Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0b69bd": "000002",
+"dc8e5d": "000001",
+"f018980b69bd": "f01898000002",
+"f01898dc8e5d": "f01898000001"
+},
+"_macs": {
+"f0:18:98:0b:69:bd": "f0:18:98:00:00:02",
+"f0:18:98:dc:8e:5d": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 2,
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None Hub-1 10.0.0.127  Device-1 None AA-BB-CC-00-00-01 None 10.1.0.230  iPhone-1 10.2.0.187 None None 10.2.0.116 AA-BB-CC-00-00-02 Lightbulb-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbcc292650": "aabbcc000002",
+"aabbccd1ef7a": "aabbcc000001",
+"d1ef7a": "000001"
+},
+"_macs": {
+"aa:bb:cc:29:26:50": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d1:ef:7a": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 2,
+"172.16.1": 1,
+"192.168.0": 0,
+"192.168.1": 4,
+"192.168.2": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None Device-1 Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"380fa2": "000004",
+"940b0f": "000002",
+"aabbcc380fa2": "aabbcc000004",
+"aabbcc940b0f": "aabbcc000002",
+"aabbccde909c": "aabbcc000003",
+"aabbccfaa6b7": "aabbcc000001",
+"de909c": "000003",
+"faa6b7": "000001"
+},
+"_macs": {
+"aa:bb:cc:38:0f:a2": "aa:bb:cc:00:00:04",
+"aa:bb:cc:94:0b:0f": "aa:bb:cc:00:00:02",
+"aa:bb:cc:de:90:9c": "aa:bb:cc:00:00:03",
+"aa:bb:cc:fa:a6:b7": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"192.168.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  None None None nas Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4e4ab2": "000002",
+"640ef8": "000001",
+"aabbcc4e4ab2": "aabbcc000002",
+"f01898640ef8": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:4e:4a:b2": "aa:bb:cc:00:00:02",
+"f0:18:98:64:0e:f8": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 2,
+"192.168.1": 1
+},
+"_pub": {
+"81.2.3.32": 2,
+"93.184.216.40": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.32",
+"93.184.216.40"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.14 AA-BB-CC-00-00-01 10.0.0.14 10.1.0.41 f0:18:98:00:00:02 iPhone-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"14e974": "000006",
+"4d0551": "000002",
+"6ae409": "000004",
+"7355db": "000003",
+"aabbcc14e974": "aabbcc000006",
+"aabbcc7355db": "aabbcc000003",
+"aabbccb7e56e": "aabbcc000001",
+"b0a012": "000005",
+"b7e56e": "000001",
+"f018984d0551": "f01898000002",
+"f018986ae409": "f01898000004",
+"f01898b0a012": "f01898000005"
+},
+"_macs": {
+"aa:bb:cc:14:e9:74": "aa:bb:cc:00:00:06",
+"aa:bb:cc:73:55:db": "aa:bb:cc:00:00:03",
+"aa:bb:cc:b7:e5:6e": "aa:bb:cc:00:00:01",
+"f0:18:98:4d:05:51": "f0:18:98:00:00:02",
+"f0:18:98:6a:e4:09": "f0:18:98:00:00:04",
+"f0:18:98:b0:a0:12": "f0:18:98:00:00:05"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-3",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 2,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.220 None Hub-1 x None  Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"21633b": "000002",
+"f0189821633b": "f01898000002",
+"f01898580370": "f01898000001"
+},
+"_macs": {
+"f0:18:98:21:63:3b": "f0:18:98:00:00:02",
+"f0:18:98:58:03:70": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None None None None AA-BB-CC-00-00-01 Device-2 10.0.0.62 None Device-1 None  Device-2 10.1.0.149 None  10.2.0.190  10.2.0.190 None f0:18:98:00:00:02 PC-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"11fbd8": "000002",
+"2ece53": "000003",
+"a4e549": "000001",
+"aabbcc2ece53": "aabbcc000003",
+"aabbcca4e549": "aabbcc000001",
+"aabbccf762af": "aabbcc000004",
+"f0189811fbd8": "f01898000002",
+"f762af": "000004"
+},
+"_macs": {
+"aa:bb:cc:2e:ce:53": "aa:bb:cc:00:00:03",
+"aa:bb:cc:a4:e5:49": "aa:bb:cc:00:00:01",
+"aa:bb:cc:f7:62:af": "aa:bb:cc:00:00:04",
+"f0:18:98:11:fb:d8": "f0:18:98:00:00:02"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.148 f0:18:98:00:00:01 Hub-1 10.1.0.25 None 10.1.0.25 x  PC-1 Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Hub": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4a9ab0": "000001",
+"75296d": "000002",
+"f018984a9ab0": "f01898000001",
+"f0189875296d": "f01898000002"
+},
+"_macs": {
+"f0:18:98:4a:9a:b0": "f0:18:98:00:00:01",
+"f0:18:98:75:29:6d": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 iPhone-1 None AA-BB-CC-00-00-02 nas None  None None None Hub-1 None None Shelly-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aa0415": "000001",
+"aabbcccc8444": "aabbcc000002",
+"cc8444": "000002",
+"f01898aa0415": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:cc:84:44": "aa:bb:cc:00:00:02",
+"f0:18:98:aa:04:15": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"80d417": "000003",
+"aabbcc80d417": "aabbcc000003",
+"aabbccbcb32c": "aabbcc000001",
+"b6c015": "000002",
+"bcb32c": "000001",
+"f01898b6c015": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:80:d4:17": "aa:bb:cc:00:00:03",
+"aa:bb:cc:bc:b3:2c": "aa:bb:cc:00:00:01",
+"f0:18:98:b6:c0:15": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"81.2.3.60": 2,
+"93.184.216.121": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.60",
+"93.184.216.121"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.77 None Hub-1 Salotto Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"505e58": "000003",
+"789e56": "000001",
+"aabbcc470371": "aabbcc000004",
+"f01898052743": "f01898000002",
+"f01898505e58": "f01898000003",
+"f01898789e56": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:47:03:71": "aa:bb:cc:00:00:04",
+"f0:18:98:05:27:43": "f0:18:98:00:00:02",
+"f0:18:98:50:5e:58": "f0:18:98:00:00:03",
+"f0:18:98:78:9e:56": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.235  None 10.1.0.19 f0:18:98:00:00:01 10.1.0.19 Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"e02aaf": "000002",
+"f01898302699": "f01898000001",
+"f01898e02aaf": "f01898000002"
+},
+"_macs": {
+"f0:18:98:30:26:99": "f0:18:98:00:00:01",
+"f0:18:98:e0:2a:af": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Device-2",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.131 f0:18:98:00:00:01 nas Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4ec27d": "000005",
+"915d71": "000001",
+"9d1711": "000004",
+"aabbcc4ec27d": "aabbcc000005",
+"aabbcc9d1711": "aabbcc000004",
+"aabbcceb24b3": "aabbcc000003",
+"d6d6ca": "000002",
+"eb24b3": "000003",
+"f01898915d71": "f01898000001",
+"f01898d6d6ca": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:4e:c2:7d": "aa:bb:cc:00:00:05",
+"aa:bb:cc:9d:17:11": "aa:bb:cc:00:00:04",
+"aa:bb:cc:eb:24:b3": "aa:bb:cc:00:00:03",
+"f0:18:98:91:5d:71": "f0:18:98:00:00:01",
+"f0:18:98:d6:d6:ca": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 2,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.177 AA-BB-CC-00-00-01 10.0.0.177 x  Device-1 None AA-BB-CC-00-00-02 Lightbulb-1 x f0:18:98:00:00:03 x 10.1.0.85 None Device-2 None None iPhone-1 x None  Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1bb736": "000001",
+"aabbcc1bb736": "aabbcc000001",
+"aabbcc324157": "aabbcc000005",
+"aabbccd1848c": "aabbcc000002",
+"c811bd": "000003",
+"d1848c": "000002",
+"f01898c811bd": "f01898000003",
+"f01898f9c220": "f01898000004",
+"f9c220": "000004"
+},
+"_macs": {
+"aa:bb:cc:1b:b7:36": "aa:bb:cc:00:00:01",
+"aa:bb:cc:32:41:57": "aa:bb:cc:00:00:05",
+"aa:bb:cc:d1:84:8c": "aa:bb:cc:00:00:02",
+"f0:18:98:c8:11:bd": "f0:18:98:00:00:03",
+"f0:18:98:f9:c2:20": "f0:18:98:00:00:04"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.39 f0:18:98:00:00:01 10.0.0.39 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"90ccbf": "000001",
+"9ef767": "000002",
+"f0189890ccbf": "f01898000001",
+"f018989ef767": "f01898000002"
+},
+"_macs": {
+"f0:18:98:90:cc:bf": "f0:18:98:00:00:01",
+"f0:18:98:9e:f7:67": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.183": 2,
+"93.184.216.5": 3,
+"93.184.216.98": 1
+},
+"_public_known": [
+"81.2.3.183",
+"93.184.216.98"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.13 AA-BB-CC-00-00-01 iPhone-1 None  Hub-1 x AA-BB-CC-00-00-02 Hub-1 Device-2 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2b13a8": "000006",
+"37d716": "000008",
+"42bbf7": "000003",
+"4c7b58": "000004",
+"97692b": "000005",
+"aabbcc97692b": "aabbcc000005",
+"aabbccc346f1": "aabbcc000002",
+"aabbccd61099": "aabbcc000001",
+"c346f1": "000002",
+"d61099": "000001",
+"f018982b13a8": "f01898000006",
+"f0189837d716": "f01898000008",
+"f0189842bbf7": "f01898000003",
+"f018984c7b58": "f01898000004",
+"f01898fa3163": "f01898000007",
+"fa3163": "000007"
+},
+"_macs": {
+"aa:bb:cc:97:69:2b": "aa:bb:cc:00:00:05",
+"aa:bb:cc:c3:46:f1": "aa:bb:cc:00:00:02",
+"aa:bb:cc:d6:10:99": "aa:bb:cc:00:00:01",
+"f0:18:98:2b:13:a8": "f0:18:98:00:00:06",
+"f0:18:98:37:d7:16": "f0:18:98:00:00:08",
+"f0:18:98:42:bb:f7": "f0:18:98:00:00:03",
+"f0:18:98:4c:7b:58": "f0:18:98:00:00:04",
+"f0:18:98:fa:31:63": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.115 AA-BB-CC-00-00-01 Hub-1 None f0:18:98:00:00:02 nas Salotto Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0cb63f": "000002",
+"4de920": "000004",
+"9bc094": "000001",
+"aabbcc4de920": "aabbcc000004",
+"aabbcc9bc094": "aabbcc000001",
+"aabbccc3bea8": "aabbcc000003",
+"c3bea8": "000003",
+"f018980cb63f": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:4d:e9:20": "aa:bb:cc:00:00:04",
+"aa:bb:cc:9b:c0:94": "aa:bb:cc:00:00:01",
+"aa:bb:cc:c3:be:a8": "aa:bb:cc:00:00:03",
+"f0:18:98:0c:b6:3f": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"luce-cucina": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.64": 2,
+"93.184.216.171": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.64",
+"93.184.216.171"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.216 f0:18:98:00:00:01 10.0.0.216 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"8c3f9c": "000001",
+"f018988c3f9c": "f01898000001"
+},
+"_macs": {
+"f0:18:98:8c:3f:9c": "f0:18:98:00:00:01"
+},
+"_names": {},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  iPhone-1 None  None None AA-BB-CC-00-00-01 PC-1 None f0:18:98:00:00:02 Shelly-1 None None Shelly-1 10.0.0.16 None Shelly-1 Device-2 Area-3 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-3",
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0cd43c": "000002",
+"6f851b": "000003",
+"8518a2": "000006",
+"a5cd90": "000001",
+"aabbcca5cd90": "aabbcc000001",
+"aabbccb50b02": "aabbcc000004",
+"aabbccce84e8": "aabbcc000005",
+"b50b02": "000004",
+"ce84e8": "000005",
+"f018980cd43c": "f01898000002",
+"f018986f851b": "f01898000003",
+"f018988518a2": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:a5:cd:90": "aa:bb:cc:00:00:01",
+"aa:bb:cc:b5:0b:02": "aa:bb:cc:00:00:04",
+"aa:bb:cc:ce:84:e8": "aa:bb:cc:00:00:05",
+"f0:18:98:0c:d4:3c": "f0:18:98:00:00:02",
+"f0:18:98:6f:85:1b": "f0:18:98:00:00:03",
+"f0:18:98:85:18:a2": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.12": 2,
+"93.184.216.49": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.12",
+"93.184.216.49"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x f0:18:98:00:00:01 Lightbulb-1 x None None 10.0.0.156  Lightbulb-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Lightbulb": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"41bb36": "000001",
+"f0189841bb36": "f01898000001"
+},
+"_macs": {
+"f0:18:98:41:bb:36": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Lightbulb-1"
+},
+"_nets": {
+"10.0.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"81.2.3.203": 2,
+"93.184.216.5": 3,
+"93.184.216.67": 1
+},
+"_public_known": [
+"81.2.3.203",
+"93.184.216.67"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.6 None nas 10.0.0.21 None Hub-1 x  Device-1 None f0:18:98:00:00:01 Hub-1 None  Hub-1 10.1.0.141  nas Hub-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"77b994": "000002",
+"871aa7": "000003",
+"aabbcc871aa7": "aabbcc000003",
+"e04700": "000001",
+"f0189877b994": "f01898000002",
+"f01898e04700": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:87:1a:a7": "aa:bb:cc:00:00:03",
+"f0:18:98:77:b9:94": "f0:18:98:00:00:02",
+"f0:18:98:e0:47:00": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"mario-s-pc": "PC-1",
+"salotto": "Hub-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1,
+"192.168.1": 2,
+"192.168.2": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.189 f0:18:98:00:00:01 None None f0:18:98:00:00:02 Device-1 10.1.0.34 None 10.1.0.34 Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"9b335a": "000002",
+"d62a40": "000001",
+"f018989b335a": "f01898000002",
+"f01898d62a40": "f01898000001"
+},
+"_macs": {
+"f0:18:98:9b:33:5a": "f0:18:98:00:00:02",
+"f0:18:98:d6:2a:40": "f0:18:98:00:00:01"
+},
+"_names": {
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.228": 2,
+"93.184.216.200": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.228",
+"93.184.216.200"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 3
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"67d9f4": "000002",
+"aabbcc67d9f4": "aabbcc000002",
+"aabbccb78828": "aabbcc000003",
+"aabbccfe9ab3": "aabbcc000001",
+"b78828": "000003",
+"fe9ab3": "000001"
+},
+"_macs": {
+"aa:bb:cc:67:d9:f4": "aa:bb:cc:00:00:02",
+"aa:bb:cc:b7:88:28": "aa:bb:cc:00:00:03",
+"aa:bb:cc:fe:9a:b3": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-3",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.216 None Shelly-1 10.1.0.209  Shelly-1 10.0.0.13 f0:18:98:00:00:01 Device-1 10.2.0.214 AA-BB-CC-00-00-02 10.2.0.214 10.1.0.140 None None Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"636a59": "000002",
+"717b58": "000001",
+"732fd0": "000005",
+"9af0c6": "000004",
+"aabbcc636a59": "aabbcc000002",
+"aabbcc732fd0": "aabbcc000005",
+"e51e4f": "000003",
+"f01898717b58": "f01898000001",
+"f018989af0c6": "f01898000004",
+"f01898e51e4f": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:63:6a:59": "aa:bb:cc:00:00:02",
+"aa:bb:cc:73:2f:d0": "aa:bb:cc:00:00:05",
+"f0:18:98:71:7b:58": "f0:18:98:00:00:01",
+"f0:18:98:9a:f0:c6": "f0:18:98:00:00:04",
+"f0:18:98:e5:1e:4f": "f0:18:98:00:00:03"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 3,
+"172.16.1": 1,
+"192.168.0": 0
+},
+"_pub": {
+"81.2.3.130": 2,
+"93.184.216.156": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.130",
+"93.184.216.156"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None None nas 10.0.0.120 None Shelly-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"92764b": "000001",
+"f0189892764b": "f01898000001"
+},
+"_macs": {
+"f0:18:98:92:76:4b": "f0:18:98:00:00:01"
+},
+"_names": {
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0
+},
+"_pub": {
+"81.2.3.23": 2,
+"93.184.216.5": 3,
+"93.184.216.71": 1
+},
+"_public_known": [
+"81.2.3.23",
+"93.184.216.71"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.197   None  iPhone-1 x  nas 10.1.0.207 None  10.1.0.3 f0:18:98:00:00:01 PC-1 10.2.0.188 f0:18:98:00:00:02  10.0.0.24  Shelly-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"3495cd": "000002",
+"8e3254": "000001",
+"f018983495cd": "f01898000002",
+"f018988e3254": "f01898000001"
+},
+"_macs": {
+"f0:18:98:34:95:cd": "f0:18:98:00:00:02",
+"f0:18:98:8e:32:54": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 1,
+"192.168.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0e0c63": "000002",
+"3a1d55": "000001",
+"aabbcc0e0c63": "aabbcc000002",
+"aabbcce754d4": "aabbcc000003",
+"e754d4": "000003",
+"f018983a1d55": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:0e:0c:63": "aa:bb:cc:00:00:02",
+"aa:bb:cc:e7:54:d4": "aa:bb:cc:00:00:03",
+"f0:18:98:3a:1d:55": "f0:18:98:00:00:01"
+},
+"_names": {
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01 Shelly-1 None AA-BB-CC-00-00-02 None 10.0.0.37 None 10.0.0.37 10.0.0.126  None Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbccc5e22d": "aabbcc000003",
+"aabbccf435c2": "aabbcc000002",
+"c3a375": "000004",
+"c5e22d": "000003",
+"c8a9e2": "000005",
+"cd9d55": "000001",
+"eef806": "000006",
+"f01898c3a375": "f01898000004",
+"f01898c8a9e2": "f01898000005",
+"f01898cd9d55": "f01898000001",
+"f01898eef806": "f01898000006",
+"f435c2": "000002"
+},
+"_macs": {
+"aa:bb:cc:c5:e2:2d": "aa:bb:cc:00:00:03",
+"aa:bb:cc:f4:35:c2": "aa:bb:cc:00:00:02",
+"f0:18:98:c3:a3:75": "f0:18:98:00:00:04",
+"f0:18:98:c8:a9:e2": "f0:18:98:00:00:05",
+"f0:18:98:cd:9d:55": "f0:18:98:00:00:01",
+"f0:18:98:ee:f8:06": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"81.2.3.97": 2,
+"93.184.216.229": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.97",
+"93.184.216.229"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x None PC-1 10.0.0.94  None 10.1.0.59 None Lightbulb-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"505e93": "000001",
+"aabbccc4b637": "aabbcc000002",
+"c4b637": "000002",
+"f01898505e93": "f01898000001",
+"f01898855728": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:c4:b6:37": "aa:bb:cc:00:00:02",
+"f0:18:98:50:5e:93": "f0:18:98:00:00:01",
+"f0:18:98:85:57:28": "f0:18:98:00:00:03"
+},
+"_names": {
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"172.16.1": 2,
+"192.168.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.67 None Hub-1 10.0.0.211 f0:18:98:00:00:01 10.0.0.211 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Hub": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"8c8013": "000001",
+"f018988c8013": "f01898000001"
+},
+"_macs": {
+"f0:18:98:8c:80:13": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0,
+"192.168.0": 2
+},
+"_pub": {
+"81.2.3.50": 2,
+"93.184.216.189": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.50",
+"93.184.216.189"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x  Device-1 10.0.0.195 f0:18:98:00:00:01  Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"09cca8": "000004",
+"14d36c": "000002",
+"541a82": "000003",
+"86f092": "000001",
+"aabbcc14d36c": "aabbcc000002",
+"aabbcc541a82": "aabbcc000003",
+"f0189809cca8": "f01898000004",
+"f0189886f092": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:14:d3:6c": "aa:bb:cc:00:00:02",
+"aa:bb:cc:54:1a:82": "aa:bb:cc:00:00:03",
+"f0:18:98:09:cc:a8": "f0:18:98:00:00:04",
+"f0:18:98:86:f0:92": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"81.2.3.165": 2,
+"93.184.216.44": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.165",
+"93.184.216.44"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.91 None  Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {},
+"_dns": {},
+"_emails": {},
+"_literal": {},
+"_macs": {},
+"_names": {},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x None Lightbulb-1 10.0.0.192 None nas Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1afce4": "000001",
+"aabbcc1afce4": "aabbcc000001",
+"aabbccd88577": "aabbcc000002",
+"d88577": "000002"
+},
+"_macs": {
+"aa:bb:cc:1a:fc:e4": "aa:bb:cc:00:00:01",
+"aa:bb:cc:d8:85:77": "aa:bb:cc:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"luce-cucina": "Lightbulb-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.88 AA-BB-CC-00-00-01 Shelly-1 Device-2 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2fee22": "000002",
+"aabbccef260a": "aabbcc000001",
+"d52661": "000003",
+"ef260a": "000001",
+"f018982fee22": "f01898000002",
+"f01898d52661": "f01898000003"
+},
+"_macs": {
+"aa:bb:cc:ef:26:0a": "aa:bb:cc:00:00:01",
+"f0:18:98:2f:ee:22": "f0:18:98:00:00:02",
+"f0:18:98:d5:26:61": "f0:18:98:00:00:03"
+},
+"_names": {
+"luce-cucina": "Device-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"81.2.3.3": 2,
+"93.184.216.40": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.3",
+"93.184.216.40"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.143 None Shelly-1 10.1.0.133  Device-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"12c062": "000001",
+"f0189812c062": "f01898000001"
+},
+"_macs": {
+"f0:18:98:12:c0:62": "f0:18:98:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"61bd32": "000002",
+"aabbcc61bd32": "aabbcc000002",
+"cac877": "000001",
+"f01898cac877": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:61:bd:32": "aa:bb:cc:00:00:02",
+"f0:18:98:ca:c8:77": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.109 AA-BB-CC-00-00-01 iPhone-1 x  None 10.1.0.166  None 10.2.0.11  Device-1 x  x 10.3.0.210  10.3.0.210 Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-3",
+"sala": "Area-2"
+},
+"_counts": {
+"Device": 4,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"33930a": "000005",
+"91b753": "000004",
+"aabbcc33930a": "aabbcc000005",
+"aabbcc550007": "aabbcc000003",
+"aabbcc91b753": "aabbcc000004",
+"aabbcce1534c": "aabbcc000001",
+"b88fe5": "000002",
+"e1534c": "000001",
+"f01898b88fe5": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:33:93:0a": "aa:bb:cc:00:00:05",
+"aa:bb:cc:55:00:07": "aa:bb:cc:00:00:03",
+"aa:bb:cc:91:b7:53": "aa:bb:cc:00:00:04",
+"aa:bb:cc:e1:53:4c": "aa:bb:cc:00:00:01",
+"f0:18:98:b8:8f:e5": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-3",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-4",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 0,
+"172.16.1": 5,
+"192.168.0": 2,
+"192.168.1": 1,
+"192.168.2": 4
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.141 AA-BB-CC-00-00-01 Device-1 10.1.0.75 None Shelly-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"2a8d90": "000005",
+"51c424": "000002",
+"73d768": "000001",
+"7a6702": "000004",
+"aabbcc51c424": "aabbcc000002",
+"aabbcc73d768": "aabbcc000001",
+"aabbccbd2f99": "aabbcc000003",
+"bd2f99": "000003",
+"f018982a8d90": "f01898000005",
+"f018987a6702": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:51:c4:24": "aa:bb:cc:00:00:02",
+"aa:bb:cc:73:d7:68": "aa:bb:cc:00:00:01",
+"aa:bb:cc:bd:2f:99": "aa:bb:cc:00:00:03",
+"f0:18:98:2a:8d:90": "f0:18:98:00:00:05",
+"f0:18:98:7a:67:02": "f0:18:98:00:00:04"
+},
+"_names": {
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 2,
+"192.168.0": 0,
+"192.168.1": 1,
+"192.168.2": 3
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.139 None None 10.1.0.6  Lightbulb-1 x AA-BB-CC-00-00-01 Shelly-1 10.0.0.98 f0:18:98:00:00:02 10.0.0.98 10.2.0.30  None 10.2.0.45 AA-BB-CC-00-00-03 10.2.0.45 Device-1 Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"garage": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"03dc1b": "000004",
+"2e20a5": "000001",
+"7f56a6": "000006",
+"81870a": "000002",
+"92c96d": "000008",
+"aabbcc03dc1b": "aabbcc000004",
+"aabbcc2e20a5": "aabbcc000001",
+"aabbccfc0bff": "aabbcc000003",
+"aabbccfc6eb4": "aabbcc000005",
+"f018987f56a6": "f01898000006",
+"f0189881870a": "f01898000002",
+"f0189892c96d": "f01898000008",
+"f01898996508": "f01898000007",
+"fc0bff": "000003",
+"fc6eb4": "000005"
+},
+"_macs": {
+"aa:bb:cc:03:dc:1b": "aa:bb:cc:00:00:04",
+"aa:bb:cc:2e:20:a5": "aa:bb:cc:00:00:01",
+"aa:bb:cc:fc:0b:ff": "aa:bb:cc:00:00:03",
+"aa:bb:cc:fc:6e:b4": "aa:bb:cc:00:00:05",
+"f0:18:98:7f:56:a6": "f0:18:98:00:00:06",
+"f0:18:98:81:87:0a": "f0:18:98:00:00:02",
+"f0:18:98:92:c9:6d": "f0:18:98:00:00:08",
+"f0:18:98:99:65:08": "f0:18:98:00:00:07"
+},
+"_names": {
+"hue-bridge": "iPhone-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 2,
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.69 AA-BB-CC-00-00-01 None None None PC-1 10.0.0.114 None  10.1.0.183  10.1.0.183 10.2.0.206 AA-BB-CC-00-00-02 10.2.0.206 10.1.0.67 f0:18:98:00:00:03 PC-1 x None  Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"44ac4a": "000002",
+"5e1aab": "000007",
+"795ff7": "000001",
+"8971f8": "000006",
+"a55bc3": "000005",
+"aabbcc44ac4a": "aabbcc000002",
+"aabbcc5e1aab": "aabbcc000007",
+"aabbcc795ff7": "aabbcc000001",
+"aabbcc8971f8": "aabbcc000006",
+"aabbccae72fe": "aabbcc000008",
+"ae72fe": "000008",
+"bae7cf": "000003",
+"db7b29": "000004",
+"f01898a55bc3": "f01898000005",
+"f01898bae7cf": "f01898000003",
+"f01898db7b29": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:44:ac:4a": "aa:bb:cc:00:00:02",
+"aa:bb:cc:5e:1a:ab": "aa:bb:cc:00:00:07",
+"aa:bb:cc:79:5f:f7": "aa:bb:cc:00:00:01",
+"aa:bb:cc:89:71:f8": "aa:bb:cc:00:00:06",
+"aa:bb:cc:ae:72:fe": "aa:bb:cc:00:00:08",
+"f0:18:98:a5:5b:c3": "f0:18:98:00:00:05",
+"f0:18:98:ba:e7:cf": "f0:18:98:00:00:03",
+"f0:18:98:db:7b:29": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "iPhone-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 3,
+"172.16.1": 0,
+"192.168.0": 2,
+"192.168.2": 1
+},
+"_pub": {
+"81.2.3.136": 2,
+"93.184.216.196": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.136",
+"93.184.216.196"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None f0:18:98:00:00:01  Salotto Area-1 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 2
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"6172b9": "000001",
+"8fd985": "000002",
+"aabbcc8fd985": "aabbcc000002",
+"f018986172b9": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:8f:d9:85": "aa:bb:cc:00:00:02",
+"f0:18:98:61:72:b9": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Device-1"
+},
+"_nets": {
+"172.16.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.20 f0:18:98:00:00:01 10.0.0.20 x f0:18:98:00:00:02 Hub-1 None AA-BB-CC-00-00-03 None 10.0.0.230 AA-BB-CC-00-00-04 nas 10.1.0.180 None Lightbulb-1 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"01f878": "000006",
+"0a173b": "000005",
+"16d873": "00000b",
+"5e89f0": "000004",
+"60ee6c": "000009",
+"6ee254": "000008",
+"aabbcc0a173b": "aabbcc000005",
+"aabbcc16d873": "aabbcc00000b",
+"aabbcc5e89f0": "aabbcc000004",
+"aabbccac03d9": "aabbcc000003",
+"aabbccc164be": "aabbcc000007",
+"ac03d9": "000003",
+"c164be": "000007",
+"da5758": "000002",
+"df2f87": "000001",
+"f0189801f878": "f01898000006",
+"f01898435972": "f0189800000a",
+"f0189860ee6c": "f01898000009",
+"f018986ee254": "f01898000008",
+"f01898da5758": "f01898000002",
+"f01898df2f87": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:0a:17:3b": "aa:bb:cc:00:00:05",
+"aa:bb:cc:16:d8:73": "aa:bb:cc:00:00:0b",
+"aa:bb:cc:5e:89:f0": "aa:bb:cc:00:00:04",
+"aa:bb:cc:ac:03:d9": "aa:bb:cc:00:00:03",
+"aa:bb:cc:c1:64:be": "aa:bb:cc:00:00:07",
+"f0:18:98:01:f8:78": "f0:18:98:00:00:06",
+"f0:18:98:43:59:72": "f0:18:98:00:00:0a",
+"f0:18:98:60:ee:6c": "f0:18:98:00:00:09",
+"f0:18:98:6e:e2:54": "f0:18:98:00:00:08",
+"f0:18:98:da:57:58": "f0:18:98:00:00:02",
+"f0:18:98:df:2f:87": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-3 Area-2 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 3
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"58595c": "000001",
+"6fe8aa": "000002",
+"f0189858595c": "f01898000001",
+"f018986fe8aa": "f01898000002"
+},
+"_macs": {
+"f0:18:98:58:59:5c": "f0:18:98:00:00:01",
+"f0:18:98:6f:e8:aa": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Device-1",
+"salotto": "Device-3"
+},
+"_nets": {
+"10.0.0": 1,
+"192.168.0": 0,
+"192.168.2": 2
+},
+"_pub": {
+"81.2.3.84": 2,
+"93.184.216.5": 3,
+"93.184.216.88": 1
+},
+"_public_known": [
+"81.2.3.84",
+"93.184.216.88"
+],
+"_v6": {}
+}
+},
+{
+"masked": "None   10.0.0.202 f0:18:98:00:00:01 Shelly-1 10.1.0.188 AA-BB-CC-00-00-02 Device-1 10.2.0.56  Device-1 Device-3 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 3,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0aa0aa": "000002",
+"3f069b": "000004",
+"aabbcc0aa0aa": "aabbcc000002",
+"aabbccef6000": "aabbcc000003",
+"bf13bb": "000001",
+"ef6000": "000003",
+"f018983f069b": "f01898000004",
+"f01898bf13bb": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:0a:a0:aa": "aa:bb:cc:00:00:02",
+"aa:bb:cc:ef:60:00": "aa:bb:cc:00:00:03",
+"f0:18:98:3f:06:9b": "f0:18:98:00:00:04",
+"f0:18:98:bf:13:bb": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"salotto": "Device-3",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0,
+"192.168.0": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"57eae9": "000002",
+"68b74a": "000004",
+"aabbcc68b74a": "aabbcc000004",
+"aabbccd8a92c": "aabbcc000003",
+"d8a92c": "000003",
+"f0189857eae9": "f01898000002",
+"f01898f030ac": "f01898000001",
+"f030ac": "000001"
+},
+"_macs": {
+"aa:bb:cc:68:b7:4a": "aa:bb:cc:00:00:04",
+"aa:bb:cc:d8:a9:2c": "aa:bb:cc:00:00:03",
+"f0:18:98:57:ea:e9": "f0:18:98:00:00:02",
+"f0:18:98:f0:30:ac": "f0:18:98:00:00:01"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x  x 10.0.0.122 AA-BB-CC-00-00-01 iPhone-1 None  None 10.0.0.177 AA-BB-CC-00-00-02 10.0.0.177 x f0:18:98:00:00:03 nas 10.1.0.186  nas 10.2.0.37 AA-BB-CC-00-00-04 10.2.0.37 Salotto Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"sala": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"018e79": "000005",
+"11c6be": "000002",
+"20650b": "000003",
+"5de834": "000001",
+"5f3971": "000006",
+"8a584d": "000007",
+"aabbcc11c6be": "aabbcc000002",
+"aabbcc5de834": "aabbcc000001",
+"aabbcc8a584d": "aabbcc000007",
+"aabbccb3e876": "aabbcc000004",
+"b3e876": "000004",
+"f01898018e79": "f01898000005",
+"f0189820650b": "f01898000003",
+"f018985f3971": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:11:c6:be": "aa:bb:cc:00:00:02",
+"aa:bb:cc:5d:e8:34": "aa:bb:cc:00:00:01",
+"aa:bb:cc:8a:58:4d": "aa:bb:cc:00:00:07",
+"aa:bb:cc:b3:e8:76": "aa:bb:cc:00:00:04",
+"f0:18:98:01:8e:79": "f0:18:98:00:00:05",
+"f0:18:98:20:65:0b": "f0:18:98:00:00:03",
+"f0:18:98:5f:39:71": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 3,
+"172.16.1": 0,
+"192.168.0": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.174 f0:18:98:00:00:01 None x  None x  PC-1 10.1.0.229  Device-1 None  iPhone-1 10.0.0.209 None Shelly-1 Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"4678f8": "000003",
+"5b2a65": "000001",
+"aabbcc4678f8": "aabbcc000003",
+"d39aad": "000002",
+"f018985b2a65": "f01898000001",
+"f01898d39aad": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:46:78:f8": "aa:bb:cc:00:00:03",
+"f0:18:98:5b:2a:65": "f0:18:98:00:00:01",
+"f0:18:98:d3:9a:ad": "f0:18:98:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.1": 2,
+"192.168.2": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.87 f0:18:98:00:00:01 nas 10.0.0.248 None Device-1 10.1.0.190 f0:18:98:00:00:02 10.1.0.190 None f0:18:98:00:00:03 nas Device-1 Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"5356c9": "000003",
+"aabbccadc32a": "aabbcc000005",
+"aabbccd811ea": "aabbcc000004",
+"adc32a": "000005",
+"d811ea": "000004",
+"f018985356c9": "f01898000003",
+"f01898601041": "f01898000002",
+"f01898f0aa42": "f01898000001",
+"f0aa42": "000001"
+},
+"_macs": {
+"aa:bb:cc:ad:c3:2a": "aa:bb:cc:00:00:05",
+"aa:bb:cc:d8:11:ea": "aa:bb:cc:00:00:04",
+"f0:18:98:53:56:c9": "f0:18:98:00:00:03",
+"f0:18:98:60:10:41": "f0:18:98:00:00:02",
+"f0:18:98:f0:aa:42": "f0:18:98:00:00:01"
+},
+"_names": {
+"salotto": "Device-1"
+},
+"_nets": {
+"10.0.0": 1,
+"192.168.0": 0
+},
+"_pub": {
+"81.2.3.110": 2,
+"93.184.216.128": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.110",
+"93.184.216.128"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.216 AA-BB-CC-00-00-01 Shelly-1 10.1.0.40 f0:18:98:00:00:02 Device-1 10.2.0.158 AA-BB-CC-00-00-03 Shelly-1 10.2.0.235  Hub-1 x f0:18:98:00:00:04 iPhone-1 10.3.0.178 AA-BB-CC-00-00-05 Shelly-1 Device-1 Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"sala": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"11fe9b": "000002",
+"1dad15": "000005",
+"6fa0a2": "000007",
+"71f79f": "000003",
+"840dcc": "000004",
+"980dc3": "000001",
+"aabbcc1dad15": "aabbcc000005",
+"aabbcc6fa0a2": "aabbcc000007",
+"aabbcc71f79f": "aabbcc000003",
+"aabbcc980dc3": "aabbcc000001",
+"e61688": "000006",
+"f0189811fe9b": "f01898000002",
+"f01898840dcc": "f01898000004",
+"f01898e61688": "f01898000006"
+},
+"_macs": {
+"aa:bb:cc:1d:ad:15": "aa:bb:cc:00:00:05",
+"aa:bb:cc:6f:a0:a2": "aa:bb:cc:00:00:07",
+"aa:bb:cc:71:f7:9f": "aa:bb:cc:00:00:03",
+"aa:bb:cc:98:0d:c3": "aa:bb:cc:00:00:01",
+"f0:18:98:11:fe:9b": "f0:18:98:00:00:02",
+"f0:18:98:84:0d:cc": "f0:18:98:00:00:04",
+"f0:18:98:e6:16:88": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 0,
+"172.16.1": 2,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x AA-BB-CC-00-00-01 Lightbulb-1 10.0.0.29 AA-BB-CC-00-00-02 10.0.0.29 10.1.0.19  Device-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"034b74": "000005",
+"46fd65": "000004",
+"78a98a": "000001",
+"92a9ad": "000002",
+"aabbcc034b74": "aabbcc000005",
+"aabbcc78a98a": "aabbcc000001",
+"aabbcc92a9ad": "aabbcc000002",
+"aabbccb0910f": "aabbcc000003",
+"b0910f": "000003",
+"f0189846fd65": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:03:4b:74": "aa:bb:cc:00:00:05",
+"aa:bb:cc:78:a9:8a": "aa:bb:cc:00:00:01",
+"aa:bb:cc:92:a9:ad": "aa:bb:cc:00:00:02",
+"aa:bb:cc:b0:91:0f": "aa:bb:cc:00:00:03",
+"f0:18:98:46:fd:65": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.1": 1,
+"192.168.2": 0
+},
+"_pub": {
+"81.2.3.242": 2,
+"93.184.216.231": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.242",
+"93.184.216.231"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"aabbccd3e9b8": "aabbcc000001",
+"d3e9b8": "000001"
+},
+"_macs": {
+"aa:bb:cc:d3:e9:b8": "aa:bb:cc:00:00:01"
+},
+"_names": {
+"luce-cucina": "Device-1",
+"mario-s-pc": "PC-1"
+},
+"_nets": {
+"172.16.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "None  None None AA-BB-CC-00-00-01 None None None nas None AA-BB-CC-00-00-02 Lightbulb-1 x  x 10.0.0.34 AA-BB-CC-00-00-03 10.0.0.34 10.1.0.109 None None Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-3",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"8a6ac4": "000004",
+"a96520": "000007",
+"aabbcc8a6ac4": "aabbcc000004",
+"aabbccc8a9bc": "aabbcc000002",
+"aabbccdaaec9": "aabbcc000001",
+"aabbccfa4822": "aabbcc000003",
+"aabbccfcb230": "aabbcc000005",
+"c18ff8": "000006",
+"c8a9bc": "000002",
+"daaec9": "000001",
+"f01898a96520": "f01898000007",
+"f01898c18ff8": "f01898000006",
+"fa4822": "000003",
+"fcb230": "000005"
+},
+"_macs": {
+"aa:bb:cc:8a:6a:c4": "aa:bb:cc:00:00:04",
+"aa:bb:cc:c8:a9:bc": "aa:bb:cc:00:00:02",
+"aa:bb:cc:da:ae:c9": "aa:bb:cc:00:00:01",
+"aa:bb:cc:fa:48:22": "aa:bb:cc:00:00:03",
+"aa:bb:cc:fc:b2:30": "aa:bb:cc:00:00:05",
+"f0:18:98:a9:65:20": "f0:18:98:00:00:07",
+"f0:18:98:c1:8f:f8": "f0:18:98:00:00:06"
+},
+"_names": {
+"hue-bridge": "Shelly-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1"
+},
+"_nets": {
+"10.0.1": 0,
+"172.16.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.219  10.0.0.219 10.1.0.76 AA-BB-CC-00-00-01 iPhone-1 10.1.0.202 f0:18:98:00:00:02 Hub-1 x f0:18:98:00:00:03 PC-1 10.2.0.189 f0:18:98:00:00:04 None x f0:18:98:00:00:05 Hub-1 Device-1 Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1"
+},
+"_counts": {
+"Device": 1,
+"Hub": 1,
+"PC": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1430a1": "000002",
+"1b0a3e": "000006",
+"27a359": "000003",
+"2dd780": "000005",
+"309cec": "000007",
+"7e13f8": "000004",
+"a74c49": "000001",
+"aabbcc1b0a3e": "aabbcc000006",
+"aabbcc309cec": "aabbcc000007",
+"aabbcca74c49": "aabbcc000001",
+"aabbccbe548f": "aabbcc000008",
+"be548f": "000008",
+"f018981430a1": "f01898000002",
+"f0189827a359": "f01898000003",
+"f018982dd780": "f01898000005",
+"f018987e13f8": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:1b:0a:3e": "aa:bb:cc:00:00:06",
+"aa:bb:cc:30:9c:ec": "aa:bb:cc:00:00:07",
+"aa:bb:cc:a7:4c:49": "aa:bb:cc:00:00:01",
+"aa:bb:cc:be:54:8f": "aa:bb:cc:00:00:08",
+"f0:18:98:14:30:a1": "f0:18:98:00:00:02",
+"f0:18:98:27:a3:59": "f0:18:98:00:00:03",
+"f0:18:98:2d:d7:80": "f0:18:98:00:00:05",
+"f0:18:98:7e:13:f8": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-1",
+"xiaomi-14": "Hub-1"
+},
+"_nets": {
+"10.0.0": 1,
+"172.16.1": 2,
+"192.168.0": 3,
+"192.168.1": 0
+},
+"_pub": {
+"81.2.3.111": 2,
+"93.184.216.224": 1,
+"93.184.216.5": 3
+},
+"_public_known": [
+"81.2.3.111",
+"93.184.216.224"
+],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.85  None Salotto Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"PC": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"0779f9": "000003",
+"8f637d": "000002",
+"8f8431": "000001",
+"aabbcc0779f9": "aabbcc000003",
+"aabbcc8f637d": "aabbcc000002",
+"f018988f8431": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:07:79:f9": "aa:bb:cc:00:00:03",
+"aa:bb:cc:8f:63:7d": "aa:bb:cc:00:00:02",
+"f0:18:98:8f:84:31": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "PC-1",
+"luce-cucina": "Device-2",
+"mario-s-pc": "PC-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 0,
+"10.0.1": 1,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.151 f0:18:98:00:00:01 Lightbulb-1 x f0:18:98:00:00:02 Hub-1 x f0:18:98:00:00:03 PC-1 None AA-BB-CC-00-00-04 Device-1 10.1.0.175  10.1.0.175 10.2.0.130  iPhone-1 Device-2 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"garage": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Hub": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1a0c78": "000007",
+"2a882b": "000008",
+"6aafbd": "000004",
+"6ae397": "000006",
+"6be24d": "000002",
+"aabbcc1a0c78": "aabbcc000007",
+"aabbcc2a882b": "aabbcc000008",
+"aabbcc6aafbd": "aabbcc000004",
+"aabbcc6ae397": "aabbcc000006",
+"e33637": "000003",
+"e616b2": "000005",
+"f018986be24d": "f01898000002",
+"f01898e33637": "f01898000003",
+"f01898e616b2": "f01898000005",
+"f01898f83f51": "f01898000001",
+"f83f51": "000001"
+},
+"_macs": {
+"aa:bb:cc:1a:0c:78": "aa:bb:cc:00:00:07",
+"aa:bb:cc:2a:88:2b": "aa:bb:cc:00:00:08",
+"aa:bb:cc:6a:af:bd": "aa:bb:cc:00:00:04",
+"aa:bb:cc:6a:e3:97": "aa:bb:cc:00:00:06",
+"f0:18:98:6b:e2:4d": "f0:18:98:00:00:02",
+"f0:18:98:e3:36:37": "f0:18:98:00:00:03",
+"f0:18:98:e6:16:b2": "f0:18:98:00:00:05",
+"f0:18:98:f8:3f:51": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Hub-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"salotto": "Device-2",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"10.0.0": 3,
+"10.0.1": 2,
+"172.16.1": 0,
+"192.168.1": 1
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "10.0.0.88 None 10.0.0.88 10.1.0.193  nas x AA-BB-CC-00-00-01 iPhone-1 10.2.0.24 AA-BB-CC-00-00-02 10.2.0.24 10.3.0.136 AA-BB-CC-00-00-03 10.3.0.136 Salotto Cucina 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"garage": "Area-3",
+"sala": "Area-1",
+"studio": "Area-2"
+},
+"_counts": {
+"Device": 2,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"252d55": "000003",
+"4214b4": "000001",
+"48f3dd": "000005",
+"4e7f80": "000002",
+"59183f": "000007",
+"9833b5": "000006",
+"a7a67a": "000004",
+"aabbcc252d55": "aabbcc000003",
+"aabbcc4214b4": "aabbcc000001",
+"aabbcc48f3dd": "aabbcc000005",
+"aabbcc4e7f80": "aabbcc000002",
+"aabbcc59183f": "aabbcc000007",
+"f018989833b5": "f01898000006",
+"f01898a7a67a": "f01898000004"
+},
+"_macs": {
+"aa:bb:cc:25:2d:55": "aa:bb:cc:00:00:03",
+"aa:bb:cc:42:14:b4": "aa:bb:cc:00:00:01",
+"aa:bb:cc:48:f3:dd": "aa:bb:cc:00:00:05",
+"aa:bb:cc:4e:7f:80": "aa:bb:cc:00:00:02",
+"aa:bb:cc:59:18:3f": "aa:bb:cc:00:00:07",
+"f0:18:98:98:33:b5": "f0:18:98:00:00:06",
+"f0:18:98:a7:a6:7a": "f0:18:98:00:00:04"
+},
+"_names": {
+"hue-bridge": "Device-1",
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Device-2",
+"shelly1-8caa11": "Device-1",
+"xiaomi-14": "iPhone-1"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 4,
+"192.168.0": 3,
+"192.168.1": 0,
+"192.168.2": 2
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+},
+{
+"masked": "x   10.0.0.76 None Lightbulb-1 10.1.0.90 f0:18:98:00:00:01 Device-1 10.1.0.68 f0:18:98:00:00:02 PC-1 x AA-BB-CC-00-00-03 Device-1 Salotto Cucina 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {},
+"_counts": {
+"Device": 1,
+"Lightbulb": 1,
+"PC": 1,
+"Shelly": 1,
+"iPhone": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"1ffcc4": "000003",
+"2eac30": "000007",
+"3944a6": "000008",
+"93339b": "000004",
+"aabbcc1ffcc4": "aabbcc000003",
+"aabbcc93339b": "aabbcc000004",
+"aabbccbfaa79": "aabbcc000006",
+"aabbccd55d76": "aabbcc000005",
+"bfaa79": "000006",
+"c13810": "000001",
+"d4fadc": "000002",
+"d55d76": "000005",
+"f018982eac30": "f01898000007",
+"f018983944a6": "f01898000008",
+"f01898c13810": "f01898000001",
+"f01898d4fadc": "f01898000002"
+},
+"_macs": {
+"aa:bb:cc:1f:fc:c4": "aa:bb:cc:00:00:03",
+"aa:bb:cc:93:33:9b": "aa:bb:cc:00:00:04",
+"aa:bb:cc:bf:aa:79": "aa:bb:cc:00:00:06",
+"aa:bb:cc:d5:5d:76": "aa:bb:cc:00:00:05",
+"f0:18:98:2e:ac:30": "f0:18:98:00:00:07",
+"f0:18:98:39:44:a6": "f0:18:98:00:00:08",
+"f0:18:98:c1:38:10": "f0:18:98:00:00:01",
+"f0:18:98:d4:fa:dc": "f0:18:98:00:00:02"
+},
+"_names": {
+"iphone-di-anna": "iPhone-1",
+"luce-cucina": "Lightbulb-1",
+"mario-s-pc": "PC-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-1"
+},
+"_nets": {
+"172.16.1": 0,
+"192.168.0": 1
+},
+"_pub": {
+"81.2.3.19": 2,
+"93.184.216.5": 3,
+"93.184.216.79": 1
+},
+"_public_known": [
+"81.2.3.19",
+"93.184.216.79"
+],
+"_v6": {}
+}
+},
+{
+"masked": "x None Device-1 10.0.0.229 AA-BB-CC-00-00-01 Device-1 10.1.0.196  None None  Device-2 Device-1 Area-1 203.0.113.3 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-1",
+"sala": "Area-2"
+},
+"_counts": {
+"Device": 4
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"9455d8": "000001",
+"aabbcc9455d8": "aabbcc000001",
+"aabbccb90e16": "aabbcc000002",
+"b90e16": "000002"
+},
+"_macs": {
+"aa:bb:cc:94:55:d8": "aa:bb:cc:00:00:01",
+"aa:bb:cc:b9:0e:16": "aa:bb:cc:00:00:02"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"luce-cucina": "Device-4",
+"mario-s-pc": "Device-2",
+"salotto": "Device-1",
+"xiaomi-14": "Device-3"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0,
+"172.16.1": 2
+},
+"_pub": {
+"81.2.3.40": 2,
+"93.184.216.5": 3,
+"93.184.216.87": 1
+},
+"_public_known": [
+"81.2.3.40",
+"93.184.216.87"
+],
+"_v6": {}
+}
+},
+{
+"masked": " Device-1 Area-2 203.0.113.1 8.8.8.8",
+"state": {
+"_areas": {
+"cucina": "Area-2",
+"studio": "Area-1"
+},
+"_counts": {
+"Device": 2,
+"Shelly": 1
+},
+"_dns": {},
+"_emails": {},
+"_literal": {
+"02fbdb": "000002",
+"56cfea": "000003",
+"aabbcc02fbdb": "aabbcc000002",
+"da4616": "000001",
+"f0189856cfea": "f01898000003",
+"f01898da4616": "f01898000001"
+},
+"_macs": {
+"aa:bb:cc:02:fb:db": "aa:bb:cc:00:00:02",
+"f0:18:98:56:cf:ea": "f0:18:98:00:00:03",
+"f0:18:98:da:46:16": "f0:18:98:00:00:01"
+},
+"_names": {
+"hue-bridge": "Device-2",
+"salotto": "Device-1",
+"shelly1-8caa11": "Shelly-1",
+"xiaomi-14": "Device-2"
+},
+"_nets": {
+"10.0.0": 1,
+"10.0.1": 0
+},
+"_pub": {
+"93.184.216.5": 1
+},
+"_public_known": [],
+"_v6": {}
+}
+}
+]

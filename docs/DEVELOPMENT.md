@@ -52,6 +52,8 @@ vedetta/app/frontend/ha/   the page /ha, in parts joined by the app (js/ and css
 python tools/run_tests.py     # everything, from the vedetta/ folder
 ```
 
+**New to the code?** Start with [ARCHITECTURE.md](ARCHITECTURE.md): what to read first, how one check of the network flows, where to change what, and an index of every module (generated from the code).
+
 **The backend, in packages** (`vedetta/app/`):
 
 ```text
@@ -67,7 +69,7 @@ routes/       the HTTP routes (only main.py imports them)
 
 `python tests/check_structure.py` keeps it honest: every module imports, no import cycle at the top of a file, no route used outside `main.py`, and the count of imports inside functions (the few mutual dependencies between `scan`, `recognition` and `ha`) cannot grow.
 
-**The page, in parts.** `ha.js` and `ha.css` are not files you edit: the source is in `vedetta/app/frontend/ha/js/` and `css/`, one file per part of the page (`10-core`, `20-export`, `30-deep`, `40-network`, `50-tile`, `60-new-devices`, `70-log`, `80-more-info`, `90-app`; the style has the same names, without `90-app`). The app joins them in the order of their names (`app/assets.py`) and the browser still receives one script and one style, so the script keeps one scope and the style one cascade. A new part is a new file with the right number in its name; nothing else to register. No build step, nothing to install.
+**The page, in parts.** The style (`ha.css`) is not a file you edit: the source is in `vedetta/app/frontend/ha/css/`, one file per part of the page, joined in the order of their names (`app/assets.py`) into the one style that the browser receives. The script is a set of ES modules in `vedetta/app/frontend/ha/js/` (`core`, `export`, `deep`, `network`, `tile`, `new-devices`, `log`, `more-info`, `app`, ...): each one imports what it uses of the others and exports what the others use; the page loads `app.js` and the browser follows the imports. `core.js` is the base of everything and imports nothing; the page starts in `app.js`. The files are served one by one and always checked again (ETag, a 304 when nothing changed). A new part is a new file that another module imports. `tests/check_frontend_bundle.py` checks the graph of imports, `tests/check_js_modules.py` the names used and not imported (the parser of Node, nothing to install) and `tests/check_js_boot.js` starts the whole page in Node. No build step and nothing to install.
 
 **Changing the style safely.** `node tools/css_compare.js` compares the computed style of every element of the page, in 18 states (dialogs, menus, cards, list view...), light and dark, at 1280 and 390 px, between the committed CSS and your working copy; exit 0 means nothing changed. `python tools/asset_fingerprint.py` prints the length and fingerprint of the joined files, to compare with the files an installed app serves. `python tools/replay_exports.py` replays real exports through the recognition rules, old code against new (the exports are not in the repository).
 

@@ -57,4 +57,50 @@ assert info["ports"][0]["label"].startswith("22")
 # 3) a new value always wins over the old one
 info = run({"mdns_name": "New-name", "ports": [{"port": 22, "service": "ssh", "confirmed": True}]})
 assert info["mdns_name"] == "New-name" and info["mdns_model"] == "iPhone15,2"
+# 4) a clue read from a port is not erased by a read that did not happen: the web port is still open, the title was not read this time (the case of Home Assistant on 8123: the title brought the brand and the link)
+BEFORE_WEB = {"http_title": "Home Assistant", "http_server": "x", "ssh_hostkey": "ssh-ed25519 AAAA", "snmp_descr": "linux", "scanned_at": 1.0,
+              "ports": [{"label": "22 · ssh", "confirmed": True, "category": "infra", "web_ui": False}, {"label": "8123 · polipo", "confirmed": False, "category": "web", "web_ui": True}]}
+
+
+def run_web(result):
+    devices_config.update_scan_info(did, dict(BEFORE_WEB))
+
+    async def fake_deep(ip, batch, slow=False):
+        return result
+    pipeline.run_deep = fake_deep
+    asyncio.run(rescan.rescan_device(devices_config.load_devices()[0], None))
+    return devices_config.load_devices()[0]["scan_info"]
+
+
+info = run_web({"ports": [{"port": 22, "service": "ssh", "confirmed": True}, {"port": 8123, "service": "polipo", "confirmed": False}]})
+assert info["http_title"] == "Home Assistant" and info["http_server"] == "x", info              # the web port is still open: the title stays
+assert info["ssh_hostkey"] and info["snmp_descr"], info                                          # and the other ports are still open too
+info = run_web({"ports": [{"port": 22, "service": "ssh", "confirmed": True}]})
+assert "http_title" not in info and "http_server" not in info, info                              # the web port is gone: its title goes
+assert info["ssh_hostkey"], info                                                                # port 22 is still there
+info = run_web({"ports": [{"port": 80, "service": "http", "confirmed": True}]})
+assert "http_title" not in info and "ssh_hostkey" not in info, info                              # another port answers, none of the old ones: nothing is kept
+info = run_web({"ports": [{"port": 8123, "service": "polipo", "confirmed": False}], "http_title": "Home Assistant 2"})
+assert info["http_title"] == "Home Assistant 2", info                                            # a new value always wins
+# 5) the ports kept from the analysis (a card with no `scanned_at` yet) are not erased by a deep search that answers something but finds no port (a TV or a recorder that stalls under the
+#    long scan: the analysis had seen its ports); once a deep search has read ports, an empty result is a real change and the list goes, as before
+ANALYSIS_PORTS = [{"label": "554 · rtsp", "confirmed": True, "category": "media"}, {"label": "80 · http", "confirmed": True, "category": "web", "web_ui": True, "web_scheme": "http"}]
+
+
+def run_ports(before, result):
+    devices_config.update_scan_info(did, dict(before))
+
+    async def fake_deep(ip, batch, slow=False):
+        return result
+    pipeline.run_deep = fake_deep
+    asyncio.run(rescan.rescan_device(devices_config.load_devices()[0], None))
+    return devices_config.load_devices()[0]["scan_info"]
+
+
+info = run_ports({"ports": ANALYSIS_PORTS, "http_title": "x"}, {"mdns_name": "Answered-but-no-ports"})
+assert info["ports"] == ANALYSIS_PORTS and info["mdns_name"] == "Answered-but-no-ports" and info["scanned_at"] > 1.0, info
+info = run_ports({"ports": ANALYSIS_PORTS, "scanned_at": 1.0}, {"mdns_name": "Answered-but-no-ports"})
+assert "ports" not in info, info                                                                   # a deep search had read them: now none is open
+info = run_ports({"ports": ANALYSIS_PORTS}, {"ports": [{"port": 22, "service": "ssh", "confirmed": True}]})
+assert [p["label"][:2] for p in info["ports"]] == ["22"], info                                   # a deep search that finds ports replaces the list
 print("TUTTO OK")

@@ -1,5 +1,6 @@
 {
  "_comment": "Dominio dell'integrazione di Home Assistant -> categoria (group) e tipo (kind, per l'icona). Dichiarato da HA: pesa come un dato dichiarato. platform=true: firmware/piattaforma generica (dice 'apparecchio smart', non cosa fa): vale poco e con tetto, come Shelly/Tasmota.",
+ "generic_titles": ["mqtt", "fritz!box", "fritzbox", "home assistant", "shelly", "tasmota", "esphome", "mobile app"],
  "integrations": {
   "shelly": {
    "group": "iot",
@@ -101,6 +102,10 @@
    "group": "audio",
    "kind": "speaker"
   },
+  "linkplay": {
+   "group": "audio",
+   "kind": "speaker"
+  },
   "denonavr": {
    "group": "audio",
    "kind": "receiver"
@@ -129,21 +134,26 @@
    "kind": "nas"
   },
   "fritz": {
+   "observer": true,
    "group": "router",
    "kind": "router"
   },
   "fritzbox": {
+   "observer": true,
    "group": "router",
    "kind": "router"
   },
   "unifi": {
+   "observer": true,
    "group": "router"
   },
   "tplink_router": {
+   "observer": true,
    "group": "router",
    "kind": "router"
   },
   "mikrotik": {
+   "observer": true,
    "group": "router",
    "kind": "router"
   }

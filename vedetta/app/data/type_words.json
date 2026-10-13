@@ -1,0 +1,33 @@
+{
+ "_comment": "Generic keywords per group of device, matched in the text of a device (name, brand, what the scans collected, port labels). subs: substrings (long words); toks: whole words (the short ones, so they do not fire inside other words). No rule is for a single device: add a word to recognise more. The typical ports of each group are in ha_type_evidence.py (_PORT_TYPE). A word that a type of device_kinds.json already says in the same way is not repeated here: tests/check_type_words_redundancy.py checks it.",
+ "groups": {
+  "iot": {
+   "subs": ["meross", "yeelight", "tradfri", "lightbulb", "dimmer", "relay", "sensor"],
+   "toks": ["esp32", "esp8266", "hue", "kasa", "sensore", "tapo", "wiz"]
+  },
+  "printer": {
+   "subs": ["printer", "officejet", "deskjet", "epson", "brother", "lexmark", "ricoh", "xerox", "kyocera", "pixma"],
+   "toks": ["canon", "jetdirect"]
+  },
+  "media": {
+   "subs": ["bravia", "chromecast", "smarttv", "appletv", "apple tv", "firetv", "fire tv", "android tv", "roku", "webos", "tizen", "hisense", "vizio", "ipcam", "webcam", "cctv", "doorbell", "onvif", "networkvideotransmitter"],
+   "toks": ["rtsp", "televisore"]
+  },
+  "audio": {
+   "subs": ["speaker", "sonos", "homepod", "echo dot", "google home", "nest mini", "nest audio", "denon", "marantz", "harman", "audio", "yamaha"],
+   "toks": ["alexa", "bose", "echo"]
+  },
+  "router": {
+   "subs": ["router", "fritz", "mikrotik", "openwrt", "unifi", "ubiquiti", "netgear", "zyxel", "draytek", "keenetic"],
+   "toks": ["wlan"]
+  },
+  "pc": {
+   "subs": ["windows", "macbook", "laptop", "desktop", "imac", "thinkpad", "surface", "macos", "mac mini", "latitude", "inspiron", "pavilion"],
+   "toks": ["dell", "lenovo", "mac"]
+  },
+  "server": {
+   "subs": ["proxmox", "synology", "qnap", "truenas", "unraid", "docker", "ubuntu", "debian", "openmediavault"],
+   "toks": ["server"]
+  }
+ }
+}

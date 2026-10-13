@@ -25,12 +25,14 @@ DAY = 86400
 # the rule: no history, too young, old enough
 starhint._done = None
 assert not starhint.should_show(None, now), "senza storia non compare"
-assert not starhint.should_show(now - 2 * DAY, now), "troppo giovane: non compare"
-assert starhint.should_show(now - 4 * DAY, now), "con qualche giorno di storia compare (anche una installazione vecchia)"
+assert not starhint.should_show(now - 1 * DAY, now), "troppo giovane (meno di 48 ore): non compare"
+assert not starhint.should_show(now - 47 * 3600, now), "47 ore: non ancora"
+assert starhint.should_show(now - 49 * 3600, now), "48 ore di storia: compare"
+assert starhint.should_show(now - 4 * DAY, now), "con piu' giorni di storia compare (anche una installazione vecchia)"
 assert starhint.should_show(now - 400 * DAY, now), "una installazione vecchia la vede dopo l'aggiornamento"
 
 os.environ["VEDETTA_STAR_MIN_AGE_DAYS"] = "0"
-assert starhint.should_show(now - 5, now) and starhint.should_show(None, now), "la copia di debug non aspetta, nemmeno la storia"
+assert starhint.should_show(now - 5, now) and starhint.should_show(None, now), "con il valore 0 non aspetta, nemmeno la storia (solo per provare)"
 os.environ.pop("VEDETTA_STAR_MIN_AGE_DAYS")
 
 # the option switches it off

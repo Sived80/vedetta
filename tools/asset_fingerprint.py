@@ -24,6 +24,8 @@ def fnv(text: str) -> str:
 def served(name: str) -> str:
     try:
         from app import assets          # the bundler, once the front-end is split
+        if name == "ha/js":
+            return assets.js_source()
         if name in assets.BUNDLES:
             return assets.bundle(name)
     except ImportError:
@@ -32,6 +34,6 @@ def served(name: str) -> str:
 
 
 if __name__ == "__main__":
-    for name in ("ha/ha.js", "ha/ha.css"):
+    for name in ("ha/js", "ha/ha.css"):
         text = served(name)
         print("%-10s length %7d  fnv %s" % (name, len(text.encode("utf-16-le")) // 2, fnv(text)))

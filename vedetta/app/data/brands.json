@@ -588,5 +588,7 @@
   "Fairphone",
   "Murena"
  ],
+ "mobile_name_words": ["iphone", "ipad", "pixel", "galaxy", "xiaomi", "redmi", "oneplus", "huawei", "honor", "oppo", "vivo", "smartphone", "tablet", "telefono", "cellulare", "fairphone"],
+ "_comment_mobile_name_words": "Parole che nel nome di un dispositivo dicono 'telefono o tablet' (il nome, spesso letto da mDNS, e' il segnale piu' diretto: il MAC dei telefoni e' casuale). 'android' non c'e': e' il sistema, non il tipo (gira anche su TV e box). Si aggiunge una parola, senza toccare il codice.",
  "_comment_phone_only_brands": "Marchi che vendono solo telefoni: il marchio da solo dice 'telefono' (Xiaomi, Huawei... vendono anche TV e router: non vanno qui). Si aggiunge una riga, senza toccare il codice."
 }

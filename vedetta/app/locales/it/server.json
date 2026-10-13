@@ -81,6 +81,8 @@
   "alert.port_opened": "{label}: nuova porta aperta {ports}",
   "alert.port_closed": "{label}: porta non più aperta {ports}",
   "error.invalid_name": "Nome non valido",
+  "error.invalid_body": "Richiesta non valida",
+  "error.invalid_port": "Porta non valida",
   "log.title": "Log",
   "log.subtitle": "Ultimi {n} eventi (azzerati a ogni riavvio del servizio)",
   "log.back_title": "Torna alla dashboard",

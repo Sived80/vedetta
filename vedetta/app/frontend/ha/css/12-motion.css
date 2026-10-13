@@ -1,0 +1,149 @@
+/* ------------------------------------------------------------------ motion */
+@layer motion {
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+  @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+  @keyframes tile-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes pop-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+  @keyframes slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  @keyframes dialog-in { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: none; } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulse { 50% { opacity: 0.45; } }
+  @keyframes bump { 30% { transform: scale(1.08); } 100% { transform: none; } }
+  @keyframes indeterminate { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+  @keyframes live-pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success-color) 55%, transparent); }
+    70%, 100% { box-shadow: 0 0 0 7px transparent; }
+  }
+  @keyframes flash-on {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success-color) 60%, transparent); }
+    100% { box-shadow: 0 0 0 14px transparent; }
+  }
+  @keyframes flash-off {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--error-color) 60%, transparent); }
+    100% { box-shadow: 0 0 0 14px transparent; }
+  }
+  @keyframes fresh {
+    0% { background: color-mix(in srgb, var(--primary-color) 22%, transparent); }
+    100% { background: transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+}
+
+/* -------------------------- overrides (later corrections, strongest layer) */
+@layer overrides {
+  /* Dialog header: the right padding matches the right edge of the More info rows (24 px, 16 px on narrow screens). Every dialog
+     uses it; export re-sets it with #exportdlg. */
+  .mi-header { padding-right: 24px; }
+  @media (max-width: 600px) {
+    .mi-header { padding-right: 16px; }
+  }
+
+  /* Menu: position fixed (placed by JS) so the card does not clip it; one column of titled groups with round pills.
+     .menu .pill must stay in the overrides layer: the dialog-layer .pill (port pills) also matches menu pills. */
+  .menu { position: fixed; overflow-y: auto; width: min(300px, calc(100vw - 16px)); min-width: 0; padding: 4px 14px 10px; }
+  .menu-group { padding: 12px 0 2px; }
+  .menu-group + .menu-group { border-top: 1px solid var(--divider-color); margin-top: 10px; }
+  .menu-label { padding: 0 2px 8px; }
+  .menu-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .menu .pill {
+    display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--divider-color);
+    background: transparent; color: var(--primary-text-color); border-radius: 999px; cursor: pointer; font: inherit;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .menu .pill:hover { background: var(--ha-hover); }
+  .menu-pills .pill { width: auto; white-space: nowrap; }
+  .menu .pill.lg { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 0 10px; font-size: 14px; }
+  .menu .pill[aria-pressed="true"] { background: var(--primary-color); border-color: var(--primary-color); color: #fff; cursor: default; }
+  .menu .pill.md { flex: 1 1 0; min-width: 0; min-height: 34px; padding: 0 8px; font-size: 13px; }
+  /* Speed buttons: the name and, under it, how often the check runs. */
+  .menu .pill.speed { flex-direction: column; gap: 1px; min-height: 46px; padding: 5px 8px; line-height: 1.2; }
+  .menu .pill.speed .pill-sub { font-size: 11px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+  .menu .pill.speed[aria-pressed="true"] .pill-sub { opacity: 0.85; }
+  @media (pointer: coarse) {
+    .menu .pill.md { min-height: 40px; }
+  }
+  /* Pause menu pill at full width (it is "lg full": must come after .menu .pill.lg). */
+  .menu .pill.full { flex: 1 1 100%; }
+  .menu-hint { padding: 8px 2px 0; font-size: 12px; color: var(--secondary-text-color); }
+  .menu-version { padding: 10px 2px 2px; font-size: 11px; text-align: right; color: var(--secondary-text-color); opacity: 0.75; user-select: text; }
+
+  /* Menu entries that open a dialog: one line each, one under the other, icon on the right. */
+  .menu-link { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 10px; padding: 12px 2px 4px;
+    border: 0; border-top: 1px solid var(--divider-color); border-radius: 0; background: transparent; color: var(--primary-text-color); font: inherit; cursor: pointer; }
+  .menu-link:hover { color: var(--primary-color); }
+  .menu-link .mdi { width: 18px; height: 18px; color: var(--secondary-text-color); }
+  .menu-link.next { margin-top: 0; border-top: 0; padding-top: 8px; }
+  /* The download arrow fills only 71% of its box (the cog 83%, the crossed eye 92%): a larger box gives it the same apparent size, and the negative margin keeps its centre and the row height. */
+  .menu-link.menu-export .mdi { width: 21px; height: 21px; margin: -1.5px -1.5px -1.5px 0; }
+
+  /* The one-time invitation to star the project: a small star on the menu button (over the page, nothing moves) and the first entry of the menu. */
+  .star-badge { position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    background: var(--card-background-color); box-shadow: 0 0 0 2px var(--card-background-color); color: var(--warning-color); pointer-events: none;
+    animation: star-ping 2.4s ease-out infinite; }
+  .star-badge[hidden] { display: none; }
+  .star-badge .mdi { width: 12px; height: 12px; color: inherit; }
+  @keyframes star-ping { 0% { box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 2px color-mix(in srgb, var(--warning-color) 55%, transparent); }
+    100% { box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 12px transparent; } }
+  .menu-link.star-entry { margin-top: 0; padding: 12px 2px; border-top: 0; border-bottom: 1px solid var(--divider-color); text-decoration: none; }
+  .star-entry .star-text small { display: block; margin-top: 1px; font-size: 12px; color: var(--secondary-text-color); }
+  .menu-link.star-entry .mdi { width: 22px; height: 22px; color: var(--warning-color); }
+  @media (prefers-reduced-motion: reduce) { .star-badge { animation: none; } }
+
+  /* Themed select (the language in the menu, and any selection that comes): the button looks like a field, the list like the menu. */
+  .sel-btn { position: relative; display: flex; align-items: center; width: 100%; height: 44px; padding: 0 40px 0 44px; border: 1px solid var(--divider-color); border-radius: 22px;
+    background: transparent; color: var(--primary-text-color); font: inherit; font-size: 15px; text-align: left; cursor: pointer; }
+  .sel-btn:hover { background: var(--ha-hover); }
+  .sel-btn:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 2px; }
+  .sel-btn[aria-expanded="true"] { border-color: var(--primary-color); }
+  .sel-btn .sel-ic { position: absolute; left: 14px; width: 20px; height: 20px; color: var(--secondary-text-color); }
+  .sel-btn .sel-chev { position: absolute; right: 12px; width: 20px; height: 20px; color: var(--secondary-text-color); transition: transform 0.15s; }
+  .sel-btn[aria-expanded="true"] .sel-chev { transform: rotate(180deg); }
+  .sel-list { position: fixed; z-index: 60; margin: 0; padding: 4px 0; list-style: none; box-sizing: border-box; overflow-y: auto; max-height: 60vh;
+    background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: 12px; transform-origin: top center; animation: pop-in 0.14s ease-out;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12); }
+  .sel-list:focus { outline: none; }
+  .sel-li { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin: 0 4px; padding: 0 12px; border-radius: 8px; color: var(--primary-text-color); cursor: pointer; }
+  .sel-li.act { background: var(--ha-hover); }
+  .sel-li[aria-selected="true"] { color: var(--primary-color); }
+  .sel-li .mdi { width: 20px; height: 20px; visibility: hidden; }
+  .sel-li[aria-selected="true"] .mdi { visibility: visible; }
+
+  /* Visual polish, shared part: focus ring, card titles, search, touch target. */
+  :focus-visible { outline-color: var(--focus-color); }
+  /* Plainer card titles (every .ch-title is in a .card-header, where .card-header .ch-title below wins) */
+  .ch-title { font-size: 20px; line-height: 28px; letter-spacing: 0; }
+  /* Search: filled field without border */
+  .search { border: 0; background: color-mix(in srgb, var(--primary-text-color) 8%, transparent); }
+  .search:focus-within { box-shadow: 0 0 0 2px var(--focus-color); }
+  /* Touch target */
+  .snack-action { min-height: 44px; }
+
+  /* Values read from the Home Assistant frontend source (ha-card.ts, hass-subpage.ts, ha-icon-button.ts, ha-button.ts,
+     typography.globals.ts): .card-header 24 px / 1.2 / weight 400; bar: title 20 px, 48 px buttons, 12 px padding; buttons and
+     chips 14 px. */
+  .card-header { padding: 20px 8px 20px 16px; gap: 8px; }
+  .card-header.slim { padding: 16px 16px 8px; }
+  .card-header .ch-title { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.012em; }
+  .card-header .ch-title.small, .card-header.slim .ch-title { font-size: 20px; line-height: 1.2; font-weight: 500; letter-spacing: 0; }
+  .card-header .ch-sub { font-size: 14px; line-height: 1.6; margin-top: 4px; }
+  .icon-btn.small { width: 48px; height: 48px; }
+  .icon-btn.small .mdi, .icon-btn .mdi { width: 24px; height: 24px; }
+  .ch-ic { width: 48px; height: 48px; }
+
+  /* Fixed debug-mode badge: always visible, in a corner, above everything. */
+  #debug-badge {
+    position: fixed; z-index: 9999; left: 12px; bottom: 12px; padding: 4px 12px; border-radius: 16px;
+    background: var(--warning-color); color: #000; font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); pointer-events: none;
+  }
+
+  /* Every dialog body is the containing block of the evidence pop-up and of the brand logo of the sheet. */
+  .mi { position: relative; }
+
+  /* Shared blink: used by the busy scan button (tiles) and the paused live LED (network). Kept in the overrides layer where it was
+     defined. */
+  @keyframes nd-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+}

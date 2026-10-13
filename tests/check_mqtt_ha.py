@@ -49,7 +49,9 @@ u = settings.mqtt_update({"mqtt_enabled": True, "mqtt_host": "broker.local", "mq
                      "mqtt_user": "u", "mqtt_password": "segreta"})
 check("mqtt_password" not in u and u["mqtt_password_set"] and settings.mqtt_load()["mqtt_password"] == "segreta", "password salvata ma non restituita")
 check("mqtt_password" not in settings.load() and "mqtt_host" not in settings.load(), "load() delle impostazioni semplici invariato")
-for bad in ({"mqtt_port": 0}, {"mqtt_port": "1883"}, {"mqtt_port": True}, {"mqtt_host": "a b"}, {"mqtt_enabled": 1}, {"mqtt_user": 5}):
+# a broker port is never a printing or control port: the service would send MQTT bytes there (rule: never risk commanding a device)
+for bad in ({"mqtt_port": 9100}, {"mqtt_port": 515}, {"mqtt_port": 502}, {"mqtt_port": 4840}, {"mqtt_port": 44818},
+            {"mqtt_port": 0}, {"mqtt_port": "1883"}, {"mqtt_port": True}, {"mqtt_host": "a b"}, {"mqtt_enabled": 1}, {"mqtt_user": 5}):
     try:
         settings.mqtt_update(bad)
         check(False, f"rifiuta {bad}")

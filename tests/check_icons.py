@@ -12,7 +12,7 @@ missing = {}
 sys.path.insert(0, str(static.parents[2]))
 from app import assets  # noqa: E402
 for name in ("ha.js",):
-    src = assets.bundle("ha/" + name)
+    src = assets.js_source()
     for icon in sorted(set(re.findall(r'\bicon\("([a-z0-9-]+)"\)', src))):
         if icon not in known:
             missing.setdefault(name, []).append(icon)

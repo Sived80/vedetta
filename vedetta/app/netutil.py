@@ -1,3 +1,5 @@
+"""Network helpers: the local network of the host (get_local_network: subnet and own address, on the interface chosen in iface) and filter_local_ips, which keeps only the
+addresses that belong to that network."""
 import asyncio
 import ipaddress
 import re

@@ -25,7 +25,7 @@ try:
 except ImportError:  # it may be missing locally: the adapters here are simulated anyway
     sys.modules["httpx"] = types.ModuleType("httpx")
 
-from app.scan import flows, pipeline, scanner
+from app.scan import flows, pipeline, scan_common, scanner
 from app import i18n
 from app.storage import settings
 
@@ -46,12 +46,12 @@ assert settings.flows_load() == d  # missing file = default
 print("ok: default")
 
 # 2) nmap composition: a single invocation, equivalent to the old ones
-assert compose(d["deep"], IP) == ["-T4", "-sV", "--version-light", "--host-timeout", "150s",
+assert compose(d["deep"], IP) == ["-T4", "-sV", "--version-light", *scan_common.version_exclusion(), "--host-timeout", "150s",
                                   "--script", "http-title", "-p-", IP]
 assert compose(d["associative"], IP) == ["-T4", "--host-timeout", "30s", "-p-", IP]
 assert compose(["ports_all"], IP) == ["-T4", "--host-timeout", "150s", "-p-", IP]
 assert compose(["ports_fast", "ports_all"], IP) == ["-T4", "--host-timeout", "150s", "-p-", IP]
-assert compose(["service_os"], IP) == ["-T4", "-sV", "--version-light", "--host-timeout", "150s", IP]
+assert compose(["service_os"], IP) == ["-T4", "-sV", "--version-light", *scan_common.version_exclusion(), "--host-timeout", "150s", IP]
 assert compose(["ports_fast", "http_title"], IP) == ["-T4", "--host-timeout", "30s", "-p-", IP], "http-title solo con service_os"
 assert compose(["service_os", "ports_fast"], IP)[-2:] == ["-p-", IP]
 for none in ([], ["mdns"], ["http_title", "adapter_probe", "netbios_snmp", "ssdp", "reverse_names"]):

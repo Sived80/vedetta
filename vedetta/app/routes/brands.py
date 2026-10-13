@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from ..recognition import brands, oui_update, vendor_lookup
 from .. import i18n
+from .bodies import json_dict
 
 logger = logging.getLogger("dashboard")
 router = APIRouter()
@@ -30,14 +31,7 @@ def _state() -> dict:
 
 
 async def _body(request: Request) -> dict:
-    i18n.use_request(request)
-    try:
-        body = await request.json()
-    except ValueError:
-        body = None
-    if not isinstance(body, dict):
-        raise HTTPException(400, i18n.t("brands.error.invalid_body"))
-    return body
+    return await json_dict(request, "brands.error.invalid_body")
 
 
 @router.get("/api/brands")

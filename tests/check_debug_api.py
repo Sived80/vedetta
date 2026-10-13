@@ -11,7 +11,7 @@ from app.ha import ha_data
 from app import i18n
 from app.scan import probe
 from app.recognition import roles
-from app.routes import ha as routes_ha  # noqa: E402
+from app.routes import export_routes as routes_export, ha as routes_ha  # noqa: E402
 from app.state import state  # noqa: E402
 
 i18n.use("it")
@@ -45,7 +45,7 @@ data_dir = Path(tempfile.mkdtemp())
 (data_dir / "journal.jsonl").write_bytes(b"x" * 10 + b"\n")
 con = sqlite3.connect(data_dir / "vedetta.db"); con.execute("create table t(a)"); con.execute("insert into t values (1)"); con.commit(); con.close()
 export.paths.DATA_DIR = data_dir
-resp = asyncio.run(routes_ha.api_export(plain=True))
+resp = asyncio.run(routes_export.api_export(plain=True))
 assert resp.media_type == "application/zip" and "vedetta-analisi-" in resp.headers["content-disposition"]
 z = zipfile.ZipFile(io.BytesIO(resp.body))
 names = set(z.namelist())

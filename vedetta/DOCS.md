@@ -28,7 +28,7 @@ Everything stays at home: no data is sent outside your network.
 
 - `language`: `auto` (the default) follows the language of Home Assistant, or the browser's; or choose `en`, `it` or `cs` as the default for everyone. Each person can pick their own in the menu (⋮): it is kept on the server for their Home Assistant user, on every device.
 - `log_level`: `debug`, `info`, `warning`, `error`.
-- `star_hint`: `true` by default. Once, after a few days of use, a small star appears on the menu button with a link to the project on GitHub; set `false` to never show it. Nothing is sent anywhere.
+- `star_hint`: `true` by default. Once, after a couple of days of use, a small star appears on the menu button with a link to the project on GitHub; set `false` to never show it. Nothing is sent anywhere.
 - `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).
 - `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant
   MQTT service (Mosquitto app) is used, if present.
@@ -48,7 +48,7 @@ By default Home Assistant sees a single device, **Vedetta**, with the counters (
 average latency) and the "Scan now" button. A network device appears in Home Assistant only if you press
 **Share with HA** on its card: it becomes a sub-device of Vedetta with a tracker, connectivity and latency,
 without merging into the real device that may already exist in Home Assistant. **Remove from HA** takes it
-away. Availability is on `vedetta/status`.
+away. The button is disabled until MQTT is active. Availability is on `vedetta/status`.
 
 ## Brand logos
 
@@ -60,6 +60,10 @@ a logo (and chip makers such as Espressif) show none.
 ## Certainty bars
 
 In a device sheet, the rows Name, Brand and Type have a thin certainty bar with its percentage and an (i): pressing it opens a small pop-up with what decided it and the hypotheses that were rejected (pressing outside closes it). A choice you made by hand is 100% and never changes. For the group, the bar is the lead of the best group over the second one weighted by how much evidence there is (a tie or too little evidence is 0% and the device stays in "Other devices"); for the brand, high when the MAC maker and the name agree or the device declares it; for the name, the weight of the source.
+
+## When Vedetta is not sure
+
+A card that Vedetta cannot name with confidence gets a lens on its icon, a clock while it is new and still settling, and a question mark after a week without an answer, with an invitation to name it or choose its type. The open card says why. This state never changes a type, a brand or a name, and sends nothing to the device.
 
 ## Phones that change address
 

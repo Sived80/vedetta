@@ -1,0 +1,688 @@
+{
+ "all_fail": {
+  "events": [
+   {
+    "total": 3,
+    "type": "total"
+   },
+   {
+    "results": [],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1",
+     "10.0.0.2"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "search_finished"
+   ]
+  ],
+  "status": 200
+ },
+ "cancelled_between": {
+  "events": [
+   {
+    "total": 3,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {
+     "ip": "10.0.0.0",
+     "scan_info": {
+      "ports": []
+     }
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "done": 3,
+    "result": {
+     "ip": "10.0.0.2",
+     "scan_info": {
+      "ports": [
+       80,
+       443
+      ]
+     }
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {
+      "ip": "10.0.0.0",
+      "scan_info": {
+       "ports": []
+      }
+     },
+     {
+      "ip": "10.0.0.2",
+      "scan_info": {
+       "ports": [
+        80,
+        443
+       ]
+      }
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1",
+     "10.0.0.2"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.0",
+     "ports": 0
+    }
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.2",
+     "ports": 2
+    }
+   ]
+  ],
+  "status": 200
+ },
+ "empty_and_none_info": {
+  "events": [
+   {
+    "total": 3,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {},
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "done": 2,
+    "result": {
+     "ip": "10.0.0.1",
+     "scan_info": null
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "done": 3,
+    "result": {
+     "ip": "10.0.0.2",
+     "scan_info": {
+      "ports": [
+       80,
+       443
+      ]
+     }
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {},
+     {
+      "ip": "10.0.0.1",
+      "scan_info": null
+     },
+     {
+      "ip": "10.0.0.2",
+      "scan_info": {
+       "ports": [
+        80,
+        443
+       ]
+      }
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1",
+     "10.0.0.2"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "?",
+     "ports": 0
+    }
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.1",
+     "ports": 0
+    }
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.2",
+     "ports": 2
+    }
+   ]
+  ],
+  "status": 200
+ },
+ "error_between": {
+  "events": [
+   {
+    "total": 3,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {
+     "ip": "10.0.0.0",
+     "scan_info": {
+      "ports": []
+     }
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "done": 3,
+    "result": {
+     "ip": "10.0.0.2",
+     "scan_info": {
+      "ports": [
+       80,
+       443
+      ]
+     }
+    },
+    "total": 3,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {
+      "ip": "10.0.0.0",
+      "scan_info": {
+       "ports": []
+      }
+     },
+     {
+      "ip": "10.0.0.2",
+      "scan_info": {
+       "ports": [
+        80,
+        443
+       ]
+      }
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1",
+     "10.0.0.2"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.0",
+     "ports": 0
+    }
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.2",
+     "ports": 2
+    }
+   ]
+  ],
+  "status": 200
+ },
+ "mixed": {
+  "events": [
+   {
+    "total": 6,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {
+     "ip": "10.0.0.0",
+     "scan_info": {
+      "ports": []
+     }
+    },
+    "total": 6,
+    "type": "progress"
+   },
+   {
+    "done": 4,
+    "result": {},
+    "total": 6,
+    "type": "progress"
+   },
+   {
+    "done": 5,
+    "result": {
+     "ip": "10.0.0.4",
+     "scan_info": {
+      "ports": [
+       80
+      ]
+     }
+    },
+    "total": 6,
+    "type": "progress"
+   },
+   {
+    "done": 6,
+    "result": {
+     "ip": "10.0.0.5",
+     "scan_info": null
+    },
+    "total": 6,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {
+      "ip": "10.0.0.0",
+      "scan_info": {
+       "ports": []
+      }
+     },
+     {},
+     {
+      "ip": "10.0.0.4",
+      "scan_info": {
+       "ports": [
+        80
+       ]
+      }
+     },
+     {
+      "ip": "10.0.0.5",
+      "scan_info": null
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1",
+     "10.0.0.2",
+     "10.0.0.3",
+     "10.0.0.4",
+     "10.0.0.5"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.0",
+     "ports": 0
+    }
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "?",
+     "ports": 0
+    }
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.4",
+     "ports": 1
+    }
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.5",
+     "ports": 0
+    }
+   ]
+  ],
+  "status": 200
+ },
+ "none": {
+  "events": [
+   {
+    "total": 0,
+    "type": "total"
+   },
+   {
+    "results": [],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "search_finished"
+   ]
+  ],
+  "status": 200
+ },
+ "one_ok": {
+  "events": [
+   {
+    "total": 1,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {
+     "ip": "10.0.0.0",
+     "scan_info": {
+      "ports": []
+     }
+    },
+    "total": 1,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {
+      "ip": "10.0.0.0",
+      "scan_info": {
+       "ports": []
+      }
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.0",
+     "ports": 0
+    }
+   ]
+  ],
+  "status": 200
+ },
+ "two_ok": {
+  "events": [
+   {
+    "total": 2,
+    "type": "total"
+   },
+   {
+    "done": 1,
+    "result": {
+     "ip": "10.0.0.0",
+     "scan_info": {
+      "ports": []
+     }
+    },
+    "total": 2,
+    "type": "progress"
+   },
+   {
+    "done": 2,
+    "result": {
+     "ip": "10.0.0.1",
+     "scan_info": {
+      "ports": [
+       80
+      ]
+     }
+    },
+    "total": 2,
+    "type": "progress"
+   },
+   {
+    "results": [
+     {
+      "ip": "10.0.0.0",
+      "scan_info": {
+       "ports": []
+      }
+     },
+     {
+      "ip": "10.0.0.1",
+      "scan_info": {
+       "ports": [
+        80
+       ]
+      }
+     }
+    ],
+    "type": "complete"
+   }
+  ],
+  "log": [
+   [
+    "search_started"
+   ],
+   [
+    "start_associative",
+    [
+     "10.0.0.0",
+     "10.0.0.1"
+    ],
+    {
+     "x": 1
+    }
+   ],
+   [
+    "track"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.0",
+     "ports": 0
+    }
+   ],
+   [
+    "search_finished"
+   ],
+   [
+    "journal.add",
+    [
+     "detail",
+     "journal.analyzed"
+    ],
+    {
+     "icon": "magnify",
+     "ip": "10.0.0.1",
+     "ports": 1
+    }
+   ]
+  ],
+  "status": 200
+ }
+}

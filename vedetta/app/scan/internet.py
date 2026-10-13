@@ -26,17 +26,6 @@ def build_query(qid: int, name: str, qtype: int = 1) -> bytes:
     return struct.pack(">HHHHHH", qid, 0x0100, 1, 0, 0, 0) + qname + struct.pack(">HH", qtype, 1)
 
 
-def _skip_name(data: bytes, pos: int) -> int:
-    while pos < len(data):
-        length = data[pos]
-        if length == 0:
-            return pos + 1
-        if length & 0xC0 == 0xC0:
-            return pos + 2
-        pos += 1 + length
-    return pos
-
-
 def parse_a_answer(data: bytes, qid: int) -> str | None:
     """First A record of the answer, None if missing or invalid."""
     if len(data) < 12 or struct.unpack(">H", data[:2])[0] != qid or not data[2] & 0x80:
@@ -55,6 +44,17 @@ def parse_a_answer(data: bytes, qid: int) -> str | None:
             return ".".join(str(b) for b in data[pos:pos + 4])
         pos += rdlen
     return None
+
+
+def _skip_name(data: bytes, pos: int) -> int:
+    while pos < len(data):
+        length = data[pos]
+        if length == 0:
+            return pos + 1
+        if length & 0xC0 == 0xC0:
+            return pos + 2
+        pos += 1 + length
+    return pos
 
 
 class _Reply(asyncio.DatagramProtocol):

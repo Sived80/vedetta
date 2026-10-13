@@ -4,10 +4,9 @@ Home Assistant's ingress proxy puts the id of the logged-in user in the X-Remote
 sends, and the app only answers the Supervisor: VEDETTA_INGRESS_ONLY). With it the choice lives on the server, per person, and follows
 them to every browser and device. The id is an opaque code that never leaves this file: it is not in the exports. At most MAX_USERS
 people are remembered (the oldest choice goes first), so the file cannot grow without limit."""
+from ..atomic import write_atomic
 import json
-import os
 import re
-import tempfile
 
 from ..paths import DATA_DIR as CONFIG_DIR
 
@@ -47,13 +46,5 @@ def put(user_id: str | None, code: str | None) -> bool:
         data[user_id] = code
     while len(data) > MAX_USERS:
         data.pop(next(iter(data)))
-    PATH.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=PATH.parent, prefix=".userlang-", suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f)
-        os.replace(tmp, PATH)
-    finally:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
+    write_atomic(PATH, lambda f: json.dump(data, f), ".userlang-")
     return True

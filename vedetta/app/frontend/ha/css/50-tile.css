@@ -52,6 +52,17 @@
   .tile-flag { position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     background: var(--primary-color); color: var(--text-primary-color, #fff); box-shadow: 0 0 0 2px var(--card-background-color); }
   .tile-flag .mdi { width: 12px; height: 12px; }
+  /* Signs of the state on the corners of the icon (analysis/badges.py): one per corner, two at most; always a shape beside the colour. */
+  .tile-mark { position: absolute; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: var(--card-background-color); box-shadow: 0 0 0 2px var(--card-background-color); }
+  .tile-mark.tr { right: -5px; top: -5px; }
+  .tile-mark.br { right: -5px; bottom: -5px; }
+  /* The flag of the report keeps the bottom right corner, as it always had: a card that is flagged and settling shows the clock on the bottom left. */
+  .tile.flagged .tile-mark.br { right: auto; left: -5px; }
+  .tile-mark.analysing { background: var(--warning-color); }
+  .tile-mark.settling { background: var(--secondary-text-color); }
+  .tile-mark.unresolved { background: var(--primary-text-color); }
+  .tile-mark .mdi { width: 12px; height: 12px; }
   /* Right padding: room for the open button (34px), and for the wake button too when it is shown (68px). */
   .tile-body { grid-area: body; display: flex; flex-direction: column; min-width: 0; padding-right: 34px; }
   .tile:has(.tile-wake:not([hidden])) .tile-body { padding-right: 68px; }

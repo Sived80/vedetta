@@ -8,20 +8,16 @@ matters, two things are kept in the history database (and so in the anonymised e
 """
 from ..scan import dhcp
 from ..storage.history import history
+from ..ha import ha_data
 
 REFRESH_S = 6 * 3600          # an unchanged MAC is written again at most this often (last_seen)
 _cache: dict[str, tuple] = {}  # mac -> (fields tuple, ts of the last write)
-
-
-def _norm(mac: str | None) -> str | None:
-    return mac.lower() if isinstance(mac, str) and mac else None
 
 
 def _group(device: dict | None) -> str | None:
     if not device:
         return None
     try:
-        from ..ha import ha_data   # late import
         return ha_data.effective_type(device)
     except Exception:
         return None
@@ -29,12 +25,6 @@ def _group(device: dict | None) -> str | None:
 
 def _dhcp(mac: str | None) -> dict:
     return dhcp.seen.get(mac or "") or {}
-
-
-def _fields(result: dict, mac: str) -> dict:
-    d = _dhcp(mac)
-    return {"name": result.get("name"), "brand": result.get("brand"), "grp": _group(result),
-            "mobile_score": result.get("mobile_score"), "dhcp_name": d.get("hostname"), "dhcp_class": d.get("vendor_class")}
 
 
 def observe(device_id: str, previous: dict | None, result: dict, last_mac: str | None, now: float):
@@ -60,3 +50,13 @@ def observe(device_id: str, previous: dict | None, result: dict, last_mac: str |
             history.mac_takeover_add(now, device_id, ip, old, mac, carried, _dhcp(old), _dhcp(mac), known)
         history.mac_memory_set(mac, device_id, ip, fields, now)
     return job
+
+
+def _norm(mac: str | None) -> str | None:
+    return mac.lower() if isinstance(mac, str) and mac else None
+
+
+def _fields(result: dict, mac: str) -> dict:
+    d = _dhcp(mac)
+    return {"name": result.get("name"), "brand": result.get("brand"), "grp": _group(result),
+            "mobile_score": result.get("mobile_score"), "dhcp_name": d.get("hostname"), "dhcp_class": d.get("vendor_class")}

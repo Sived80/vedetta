@@ -12,6 +12,7 @@ import time
 
 
 from ..paths import DATA_DIR as CONFIG_DIR
+import contextlib
 
 logger = logging.getLogger("dashboard")
 
@@ -25,13 +26,6 @@ seen: dict[str, dict] = {}
 servers: dict[str, float] = {}
 
 
-def _load() -> None:
-    try:
-        seen.update(json.loads(STORE_PATH.read_text(encoding="utf-8")))
-    except (OSError, ValueError):
-        pass
-
-
 def _save() -> None:
     try:
         tmp = STORE_PATH.with_suffix(".tmp")
@@ -41,13 +35,31 @@ def _save() -> None:
         pass
 
 
+def _dotted(value: bytes) -> str:
+    return ".".join(str(b) for b in value)
+
+
 def parse(packet: bytes) -> tuple[str, dict] | None:
     """Extracts the MAC and useful options from a client BOOTP/DHCP packet."""
     if len(packet) < 241 or packet[0] != 1 or packet[236:240] != _MAGIC_COOKIE:
         return None
     mac = ":".join(f"{b:02x}" for b in packet[28:34])
-    info: dict = {}
-    msg_type = None
+    msg_type, info, requested = _read_options(packet)
+    if msg_type not in _DHCP_REQUEST_TYPES:
+        return None
+    # The address this client (chaddr, its own MAC even behind a repeater) says it uses: ciaddr when it already has one (renewal), else
+    # the address it asks for in a REQUEST. A DISCOVER's option 50 is only a hint of the last address, so it is not taken as evidence.
+    ciaddr = _dotted(packet[12:16])
+    if ciaddr != "0.0.0.0":
+        info["ip"], info["ip_from"] = ciaddr, "ciaddr"
+    elif requested and msg_type == 3:
+        info["ip"], info["ip_from"] = requested, "requested"
+    return mac, info
+
+
+def _read_options(packet: bytes) -> tuple[int | None, dict, str | None]:
+    """(message type, options kept, address asked for) from the options of a client packet; a broken length ends the reading."""
+    msg_type, requested, info = None, None, {}
     i = 240
     while i < len(packet):
         code = packet[i]
@@ -63,17 +75,44 @@ def parse(packet: bytes) -> tuple[str, dict] | None:
         i += 2 + length
         if code == 53 and value:
             msg_type = value[0]
-        elif code == 12:
-            info["hostname"] = value.decode("utf-8", "ignore").strip("\x00 ")
-        elif code == 55:
-            info["prl"] = ",".join(str(b) for b in value)
-        elif code == 60:
-            info["vendor_class"] = value.decode("utf-8", "ignore").strip("\x00 ")
-        elif code == 54 and len(value) == 4:
-            info["server_id"] = ".".join(str(b) for b in value)
-    if msg_type not in _DHCP_REQUEST_TYPES:
-        return None
-    return mac, info
+        elif code == 50 and len(value) == 4:
+            requested = _dotted(value)
+        else:
+            _store_option(info, code, value)
+    return msg_type, info, requested
+
+
+def _store_option(info: dict, code: int, value: bytes) -> None:
+    """The options kept as they are: host name, parameter request list, vendor class, client identifier, server identifier."""
+    if code == 12:
+        info["hostname"] = _text(value)
+    elif code == 55:
+        info["prl"] = ",".join(str(b) for b in value)
+    elif code == 60:
+        info["vendor_class"] = _text(value)
+    elif code == 61 and value:
+        info["client_id"] = value.hex()        # client identifier (RFC 2132, RFC 4361): type byte + id, kept as hex
+    elif code == 54 and len(value) == 4:
+        info["server_id"] = _dotted(value)
+
+
+def _text(value: bytes) -> str:
+    return value.decode("utf-8", "ignore").strip("\x00 ")
+
+
+def _merge_entry(previous: dict, info: dict) -> dict:
+    """The memory entry after a packet: the old one overwritten by the fields of the packet that are not empty (a request without a name,
+    common in renewals, does not erase the name seen previously), with the time of the packet and, if the packet carried an address, the
+    time of that address (a DISCOVER keeps the old address but does not renew it)."""
+    entry = {**previous, **{k: v for k, v in info.items() if v}, "seen": int(time.time())}
+    if info.get("ip"):
+        entry["ip_ts"] = entry["seen"]
+    return entry
+
+
+def _kept_fields(entry: dict) -> dict:
+    """The fields of an entry that count when deciding whether it changed (not the times)."""
+    return {k: v for k, v in entry.items() if k not in ("seen", "ip_ts")}
 
 
 class _Listener(asyncio.DatagramProtocol):
@@ -86,10 +125,8 @@ class _Listener(asyncio.DatagramProtocol):
         if server:
             servers[server] = time.time()
         previous = seen.get(mac, {})
-        # A request without a name (common in renewals) does not erase the
-        # name seen previously.
-        entry = {**previous, **{k: v for k, v in info.items() if v}, "seen": int(time.time())}
-        changed = {k: v for k, v in entry.items() if k != "seen"} != {k: v for k, v in previous.items() if k != "seen"}
+        entry = _merge_entry(previous, info)
+        changed = _kept_fields(entry) != _kept_fields(previous)
         seen[mac] = entry
         if changed:
             logger.info("DHCP: %s hostname=%s prl=%s classe=%s", mac, entry.get("hostname") or "-",
@@ -114,6 +151,11 @@ async def start() -> asyncio.BaseTransport | None:
     return transport
 
 
+def _load() -> None:
+    with contextlib.suppress(OSError, ValueError):
+        seen.update(json.loads(STORE_PATH.read_text(encoding="utf-8")))
+
+
 # ---- classification ----
 
 def is_private_mac(mac: str | None) -> bool:
@@ -125,8 +167,16 @@ def is_private_mac(mac: str | None) -> bool:
         return False
 
 
+# What a system asks for in option 55 tells which system it is: the first family whose options are ALL asked for (after the Apple rule, which is the most specific).
+_FAMILIES_BY_OPTIONS = (("windows", (249, 252)), ("android", (26, 28, 51, 58)), ("linux", (28, 12)))
+
+
 def _os_family(prl: str | None, vendor_class: str | None) -> str | None:
-    vc = (vendor_class or "").lower()
+    return _family_from_vendor_class((vendor_class or "").lower()) or _family_from_request_list(prl)
+
+
+def _family_from_vendor_class(vc: str) -> str | None:
+    """The vendor class (option 60, lower case) names the system when it is one of the well known ones."""
     # ChromeOS asks for the same options as iOS: its own vendor class tells it apart (it is a laptop, not an iPhone)
     if "chromeos" in vc.replace(" ", ""):
         return "chromeos"
@@ -136,25 +186,34 @@ def _os_family(prl: str | None, vendor_class: str | None) -> str | None:
         return "windows"
     if vc.startswith(("dhcpcd", "udhcp")):
         return "linux"
+    return None
+
+
+def _family_from_request_list(prl: str | None) -> str | None:
+    """The parameter request list (option 55) is a fingerprint of the system."""
     if not prl:
         return None
     opts = [int(x) for x in prl.split(",") if x.isdigit()]
-    if opts[:3] == [1, 121, 3] and 252 in opts:
-        # Same base fingerprint for iOS and macOS: macOS adds 95, 44, 46.
-        return "macos" if 95 in opts or 44 in opts else "ios"
-    if 249 in opts and 252 in opts:
-        return "windows"
-    if 26 in opts and 28 in opts and 51 in opts and 58 in opts:
-        return "android"
-    if 28 in opts and 12 in opts:
-        return "linux"
-    return None
+    apple = _apple_family(opts)
+    if apple:
+        return apple
+    return next((family for family, codes in _FAMILIES_BY_OPTIONS if all(c in opts for c in codes)), None)
+
+
+def _apple_family(opts: list) -> str | None:
+    """iOS and macOS share the base fingerprint (1, 121, 3, ... 252): macOS adds 95, 44, 46."""
+    if opts[:3] != [1, 121, 3] or 252 not in opts:
+        return None
+    return "macos" if 95 in opts or 44 in opts else "ios"
 
 
 def os_family(mac: str | None) -> str | None:
     """Operating system family inferred from the MAC's DHCP fingerprint, if seen."""
     entry = seen.get((mac or "").lower())
     return _os_family(entry.get("prl"), entry.get("vendor_class")) if entry else None
+
+
+_DESKTOP_FAMILIES = ("windows", "macos", "linux", "chromeos")
 
 
 def mobile_score(mac: str | None, name_is_mobile: bool, has_ports: bool | None) -> tuple[int, str | None]:
@@ -165,25 +224,42 @@ def mobile_score(mac: str | None, name_is_mobile: bool, has_ports: bool | None) 
     confirmed, usually by the private MAC; the private MAC and the absence of listening
     ports are weak clues and are not enough on their own."""
     entry = seen.get((mac or "").lower())
-    score, reason = 0, None
-    if name_is_mobile:
-        score, reason = score + 3, "nome"
+    clues = [(3, "nome")] if name_is_mobile else []
     if entry:
-        family = _os_family(entry.get("prl"), entry.get("vendor_class"))
-        # iOS/iPadOS is always a phone or a tablet: the fingerprint is enough. Android also runs
-        # on TVs, set-top boxes and projectors: on its own it is not enough, a second
-        # clue is needed (usually the private MAC, which phones use and TVs do not).
-        if family == "ios":
-            score, reason = score + 3, reason or "impronta DHCP (ios)"
-        elif family == "android":
-            score, reason = score + 2, reason or "impronta DHCP (android)"
-        elif family in ("windows", "macos", "linux", "chromeos"):
-            score -= 2
-        host = (entry.get("hostname") or "").lower()
-        if host.startswith("iphone") or host.startswith("ipad"):
-            score, reason = score + 3, reason or "nome DHCP"
-        elif host.startswith("android-"):
-            score, reason = score + 2, reason or "nome DHCP"
+        clues += _entry_clues(entry)
     if is_private_mac(mac):
-        score, reason = score + 1, reason or "MAC privato"
+        clues.append((1, "MAC privato"))
+    score, reason = 0, None
+    for points, why in clues:
+        score += points
+        reason = reason or why  # the first clue that has a reason is the main one
     return score, reason
+
+
+def _entry_clues(entry: dict) -> list[tuple[int, str | None]]:
+    """The clues of what the memory knows about a MAC: first the fingerprint, then the host name."""
+    clues = (_family_clue(_os_family(entry.get("prl"), entry.get("vendor_class"))), _hostname_clue(entry.get("hostname")))
+    return [c for c in clues if c]
+
+
+def _family_clue(family: str | None) -> tuple[int, str | None] | None:
+    """(points, reason) that the DHCP fingerprint gives to the "mobile" score, None if it gives nothing. iOS/iPadOS is always a phone or a tablet: the
+    fingerprint is enough. Android also runs on TVs, set-top boxes and projectors: on its own it is not enough, a second clue is needed (usually the
+    private MAC, which phones use and TVs do not). A desktop system lowers the score and is not a reason."""
+    if family == "ios":
+        return 3, "impronta DHCP (ios)"
+    if family == "android":
+        return 2, "impronta DHCP (android)"
+    if family in _DESKTOP_FAMILIES:
+        return -2, None
+    return None
+
+
+def _hostname_clue(hostname: str | None) -> tuple[int, str | None] | None:
+    """(points, reason) that the host name sent by the client gives to the "mobile" score, None if it gives nothing."""
+    host = (hostname or "").lower()
+    if host.startswith(("iphone", "ipad")):
+        return 3, "nome DHCP"
+    if host.startswith("android-"):
+        return 2, "nome DHCP"
+    return None

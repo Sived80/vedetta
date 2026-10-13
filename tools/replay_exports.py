@@ -73,6 +73,9 @@ def main() -> int:
             t.extractall(tmp)
         old = load_ha_data(Path(tmp) / "vedetta")
         new = load_ha_data(ROOT / "vedetta")
+        # a revision that already reads the kinds of entities of a Home Assistant device (entity_domains) gets the same card as the new code: only an older
+        # one is given the assumption "no named entity = only a tracker", otherwise a difference of INPUT would show up as a difference of behaviour
+        old_reads_kinds = any("entity_domains" in f.read_text(encoding="utf-8") for f in Path(old.__file__).parent.glob("*.py"))   # the whole package: the code has been split over several files
         total = changed = 0
         for f in files:
             z = rr.load_zip(f, None)
@@ -80,7 +83,7 @@ def main() -> int:
             registry = json.loads(z.read("state/ha_registry.json")) if "state/ha_registry.json" in z.namelist() else {}
             print("== %s: %d devices" % (f.name, len(cards)))
             for c in cards:
-                d0, a = build(c, registry, False)
+                d0, a = build(c, registry, old_reads_kinds)
                 d1, _ = build(c, registry, True)
                 g_old, g_new = old.infer_type(d0, a), new.infer_type(d1, a)
                 total += 1

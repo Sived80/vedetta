@@ -5,6 +5,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import main  # noqa: E402
+from app.routes import device_routes  # noqa: E402
+from app.scan import pipeline  # noqa: E402
+from app.storage import blocklist, devices_config, newdevices  # noqa: E402
 
 calls = {"n": 0}
 
@@ -19,13 +22,13 @@ async def fake_net():
     return ("10.9.9.0/24", "10.9.9.1")
 
 
-main.pipeline.run_initial = fake_run_initial
-main.get_local_network = fake_net
-main.devices_config.load_devices = lambda: []
-main.newdevices.sync_present = lambda macs: None
-main.newdevices.list_new = lambda: []
+pipeline.run_initial = fake_run_initial
+device_routes.get_local_network = fake_net
+devices_config.load_devices = lambda: []
+newdevices.sync_present = lambda macs: None
+newdevices.list_new = lambda: []
 main.state.set_new_devices = lambda x: None
-main.blocklist.matches = lambda **k: False
+blocklist.matches = lambda **k: False
 
 
 async def go():
@@ -34,7 +37,7 @@ async def go():
     assert a.body == b.body and b"10.9.9.9" in a.body
     await main.api_scan_quick()  # after it ends a new one starts
     assert calls["n"] == 2, calls
-    assert main.state._search_running == 0, main.state._search_running
+    assert main.state._activity.search_running == 0, main.state._activity.search_running
 
 
 asyncio.run(go())

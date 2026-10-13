@@ -15,6 +15,9 @@ import re
 import shutil
 import time
 from collections import deque
+import contextlib
+
+from .. import procfs
 
 TIMEOUT = 1.0
 MAX_CONCURRENT = 12   # concurrent ping processes / connections
@@ -144,15 +147,18 @@ def parse_nmap_latency(text: str) -> float | None:
 
 def arp_known(ip: str, table: str = ARP_TABLE) -> bool:
     """True if the host has a complete entry in the ARP table: it answered recently, so it is on the network."""
-    try:
-        with open(table, encoding="ascii", errors="ignore") as f:
-            for line in f.read().splitlines()[1:]:
-                cols = line.split()
-                if len(cols) >= 3 and cols[0] == ip and cols[2] == "0x2":
-                    return True
-    except OSError:
-        pass
-    return False
+    return any(len(cols) >= 3 and cols[0] == ip and cols[2] == "0x2" for cols in procfs.table(table, errors="ignore"))
+
+
+async def measure(ip: str, port: int = 80, timeout: float = TIMEOUT) -> float | None:
+    """Response time in ms (None if it does not respond): ICMP if `ping` exists,
+    otherwise TCP. No second attempt: a powered-off host would cost 2 timeouts."""
+    if _PING:
+        ms = await _icmp_ms(ip, timeout)
+        if ms is None:
+            ms = await _arp_ms(ip)   # ping dropped by a firewall: try the ARP round trip
+        return ms
+    return await _tcp_ms(ip, port, timeout)
 
 
 async def _icmp_ms(ip: str, timeout: float) -> float | None:
@@ -165,10 +171,8 @@ async def _icmp_ms(ip: str, timeout: float) -> float | None:
         out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout + 0.5)
     except Exception:
         if proc is not None and proc.returncode is None:
-            try:
+            with contextlib.suppress(ProcessLookupError):
                 proc.kill()
-            except ProcessLookupError:
-                pass
         return None
     m = _TIME_RE.search(out.decode(errors="ignore"))
     return float(m.group(1)) if m else None
@@ -189,10 +193,8 @@ async def _arp_ms(ip: str, timeout: float = 3.0) -> float | None:
         out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
     except Exception:
         if proc is not None and proc.returncode is None:
-            try:
+            with contextlib.suppress(ProcessLookupError):
                 proc.kill()
-            except ProcessLookupError:
-                pass
         return None
     return parse_nmap_latency(out.decode(errors="ignore"))
 
@@ -207,22 +209,9 @@ async def _tcp_ms(ip: str, port: int, timeout: float) -> float | None:
         return None
     ms = (time.perf_counter() - start) * 1000.0
     writer.close()
-    try:
+    with contextlib.suppress(Exception):
         await writer.wait_closed()
-    except Exception:
-        pass
     return ms
-
-
-async def measure(ip: str, port: int = 80, timeout: float = TIMEOUT) -> float | None:
-    """Response time in ms (None if it does not respond): ICMP if `ping` exists,
-    otherwise TCP. No second attempt: a powered-off host would cost 2 timeouts."""
-    if _PING:
-        ms = await _icmp_ms(ip, timeout)
-        if ms is None:
-            ms = await _arp_ms(ip)   # ping dropped by a firewall: try the ARP round trip
-        return ms
-    return await _tcp_ms(ip, port, timeout)
 
 
 async def measure_many(targets: list[tuple[str, str, int]]) -> dict[str, float | None]:

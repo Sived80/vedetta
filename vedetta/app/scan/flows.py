@@ -93,19 +93,29 @@ def validate_profile(profile: str, ids) -> list[str]:
         raise FlowError("flow.error.unknown_profile", profile=str(profile))
     if not isinstance(ids, list):
         raise FlowError("flow.error.not_a_list", profile=profile)
+    _check_steps_applicable(profile, ids)
+    chosen = set(ids)
+    _check_locked_present(profile, chosen)
+    if not chosen:
+        raise FlowError("flow.error.empty", profile=profile)
+    return [s.id for s in STEPS if s.id in chosen]
+
+
+def _check_steps_applicable(profile: str, ids: list) -> None:
+    """Every id must be a known step that applies to the profile; the first offender is reported."""
     for step_id in ids:
         step = _BY_ID.get(step_id) if isinstance(step_id, str) else None
         if step is None:
             raise FlowError("flow.error.unknown_step", step=str(step_id))
         if profile not in step.flows:
             raise FlowError("flow.error.not_applicable", step=step.id, profile=profile)
-    chosen = set(ids)
+
+
+def _check_locked_present(profile: str, chosen: set) -> None:
+    """Steps that are mandatory in the profile cannot be missing (reported in canonical order)."""
     for step in STEPS:
         if profile in step.locked_in and step.id not in chosen:
             raise FlowError("flow.error.required", step=step.id, profile=profile)
-    if not chosen:
-        raise FlowError("flow.error.empty", profile=profile)
-    return [s.id for s in STEPS if s.id in chosen]
 
 
 def validate_flows(flows) -> dict[str, list[str]]:

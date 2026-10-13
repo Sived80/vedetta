@@ -7,6 +7,7 @@ The name is saved together with its source ("name_source"): "user" = chosen by t
 (never overwritten); the others are automatic sources, and a later scan
 may replace the name only with one from a more reliable source."""
 import re
+from . import brands
 
 # Higher = more reliable. "adapter": name given by the device itself via its
 # open API (Shelly); "mdns": name published by the device (service with a
@@ -47,18 +48,25 @@ def title_name(title: str | None) -> str | None:
     from ..formatters import is_useless_title, should_show_title  # late import: formatters imports i18n
     if is_useless_title(text) or not should_show_title(text):
         return None  # nmap placeholder ("Site doesn't have a title"), login, HTTP errors
+    cand = _title_candidate(text)
+    return None if _is_generic_title(cand) else cand
+
+
+def _title_candidate(text: str) -> str:
+    """The first part of a page title, without the trailing "Main Menu", "Login", ... words."""
     cand = re.split(r"\s+[-|–—:]\s+|\s*\|\s*", text)[0].strip()
-    cand = _TITLE_SUFFIX.sub("", cand).strip()
+    return _TITLE_SUFFIX.sub("", cand).strip()
+
+
+def _is_generic_title(cand: str) -> bool:
+    """A candidate that is not a name: a program's title with its version, empty, too long, a generic word, an error text, a path or a
+    phrase that starts with a generic word ("Login Requested resource...")."""
     if re.search(r"\bv?\d+(\.\d+){1,3}$", cand):
-        return None   # "software 1.47.45": the title of a program, not the appliance's name
+        return True   # "software 1.47.45": the title of a program, not the appliance's name
     if not cand or len(cand) > 40 or cand.lower() in _GENERIC_TITLES or _TITLE_NOISE.search(cand):
-        return None
-    # A path ("/login.html") or a phrase that starts with a generic word
-    # ("Login Requested resource...") is a screen, not a name.
+        return True
     first = re.split(r"[\s_]+", cand.lower())[0]
-    if "/" in cand or first in _GENERIC_TITLES or first in _GENERIC_FIRST:
-        return None
-    return cand
+    return "/" in cand or first in _GENERIC_TITLES or first in _GENERIC_FIRST
 
 
 def cn_host(subject: str | None) -> str | None:
@@ -76,12 +84,37 @@ def cn_host(subject: str | None) -> str | None:
         return None
     return cn
 
+
 _DOMAIN_SUFFIXES = (".local", ".lan", ".home", ".fritz.box", ".localdomain", ".internal", ".home.arpa", ".homenet")
 _ESCAPE_RE = re.compile(r"\\(\d{3}|.)")
 _IP_RE = re.compile(r"^(ip[-_ ]?)?\d{1,3}([.\-_]\d{1,3}){3}$", re.IGNORECASE)
 _MAC_RE = re.compile(r"^([0-9a-f]{2}[:\-]?){5}[0-9a-f]{2}$", re.IGNORECASE)
 _TOKEN_RE = re.compile(r"[^0-9A-Za-z]+")
 _GENERIC = {"localhost", "unknown", "unnamed", "default", "device", "host", "none", "null", "n/a", "-", "*"}
+
+
+_EMBEDDED_IP_RE = re.compile(r"[(\[]?\b\d{1,3}(?:\.\d{1,3}){3}\b[)\]]?")
+
+
+def clean_name(raw: str | None) -> str | None:
+    """Normalized name, or None if it is not a usable name."""
+    if not raw:
+        return None
+    name = " ".join(_unescape(str(raw)).split())
+    # An IP inside the name ("AFTMM@ES(192.168.1.5)") is not part of the name: it is removed.
+    name = _EMBEDDED_IP_RE.sub("", name).strip(" -_@:,")
+    name = _after_at_sign(name)
+    if name is None:
+        return None
+    name = _without_domain_suffix(name)
+    if _is_service_type(name.lower()):
+        return None
+    # The generated code must be looked for before cutting off the domain, otherwise
+    # "amzn.dmgr.05837F86..." would be reduced to an apparently valid "amzn".
+    if any(_looks_generated(t) for t in _TOKEN_RE.split(name) if t):
+        return None
+    name = _host_part(name)
+    return None if (not name or name.lower() in _GENERIC or name.startswith("(") or bool(_IP_RE.match(name) or _MAC_RE.match(name))) else name
 
 
 def _unescape(text: str) -> str:
@@ -102,39 +135,33 @@ def _looks_generated(token: str) -> bool:
     return len(token) >= 12 or (has_digit and has_letter)
 
 
-def clean_name(raw: str | None) -> str | None:
-    """Normalized name, or None if it is not a usable name."""
-    if not raw:
-        return None
-    name = " ".join(_unescape(str(raw)).split())
-    # An IP inside the name ("AFTMM@ES(192.168.1.5)") is not part of the name: it is removed.
-    name = re.sub(r"[(\[]?\b\d{1,3}(?:\.\d{1,3}){3}\b[)\]]?", "", name).strip(" -_@:,")
-    # "<id>@<name>" (AirPlay/Whisperplay service instance): only the part after the at sign counts,
-    # and only if it is long enough to be a name ("ES" is not).
-    if "@" in name:
-        name = name.split("@", 1)[1].strip(" -_@:,")
-        if len(name) < 4:
-            return None
+def _without_domain_suffix(name: str) -> str:
     low = name.lower()
     for suffix in _DOMAIN_SUFFIXES:
         if low.endswith(suffix):
             name, low = name[: -len(suffix)], low[: -len(suffix)]
-    low = name.lower()
-    if low.startswith("_") or "._tcp" in low or "._udp" in low or low.endswith(".arpa"):
-        return None  # a DNS-SD service type, not a name
-    # The generated code must be looked for before cutting off the domain, otherwise
-    # "amzn.dmgr.05837F86..." would be reduced to an apparently valid "amzn".
-    if any(_looks_generated(t) for t in _TOKEN_RE.split(name) if t):
-        return None
-    if " " not in name and "." in name and not _IP_RE.match(name):
-        name = name.split(".", 1)[0]  # fully qualified domain name: only the host counts
-    name = name.strip(" ._-")
-    low = name.lower()
-    if not name or low in _GENERIC or low.startswith("("):
-        return None
-    if _IP_RE.match(name) or _MAC_RE.match(name):
-        return None
     return name
+
+
+def _is_service_type(low: str) -> bool:
+    """A DNS-SD service type ("_airplay._tcp"), not a name."""
+    return low.startswith("_") or "._tcp" in low or "._udp" in low or low.endswith(".arpa")
+
+
+def _host_part(name: str) -> str:
+    """Fully qualified domain name: only the host counts."""
+    if " " not in name and "." in name and not _IP_RE.match(name):
+        name = name.split(".", 1)[0]
+    return name.strip(" ._-")
+
+
+def _after_at_sign(name: str) -> str | None:
+    """"<id>@<name>" (AirPlay/Whisperplay service instance): only the part after the at sign counts,
+    and only if it is long enough to be a name ("ES" is not)."""
+    if "@" not in name:
+        return name
+    name = name.split("@", 1)[1].strip(" -_@:,")
+    return name if len(name) >= 4 else None
 
 
 # A name that says WHAT the device is (a known brand and a model number: "Xiaomi-14", "Galaxy-S23") is worth more than an
@@ -143,13 +170,19 @@ def clean_name(raw: str | None) -> str | None:
 MODEL_BONUS = 20
 
 
+# Recognition by keyword in the name, not by MAC vendor: the
+# vendor lookup is unreliable for phones (randomized MACs, see
+# iPhone-di-Caio) and ambiguous anyway (Apple/Samsung also make laptops, TVs,
+# monitors - not just phones). The device name (often auto-resolved
+# via mDNS: "iPhone-di-Caio", "Xiaomi - MI14 di Sempronio") is the most
+# direct signal actually available. The words are in data/brands.json (mobile_name_words).
+# "android" is not in the list: it is the operating system, not the device type (it also runs on
+# TVs, sticks and boxes). It counts as a weak hint (see _MOBILE_NAME_WEAK).
 def model_like(name: str | None) -> bool:
-    from . import brands
-    from ..scan import probe   # late imports: the brand rules and the phone product lines (iPhone, Galaxy, Pixel, Redmi...)
     if not name or not any(c.isdigit() for c in name):
         return False
     low = name.lower()
-    return bool(brands.known_brand(name)) or any(k in low for k in probe._MOBILE_NAME_KEYWORDS)
+    return bool(brands.known_brand(name)) or any(k in low for k in brands.mobile_name_words())
 
 
 def rank(source: str, name: str | None) -> int:

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0 · Lente
+**Lente** is Italian for *lens*: Vedetta now looks closer — and it is built so that you can trust what it tells you.
+- **It says when it doesn't know.** A device it cannot name with confidence gets a lens on its icon (a clock while it settles, a question mark after a week) instead of a confident wrong guess. The analysis is read-only: it changes nothing and sends nothing to your devices.
+- **Every guess comes with its proof.** Open any card and see the clues that decided it. This release fixes the clues that misled: a router brand called Tenda is no longer a curtain, an inverter is no longer a PC, WiiM players are audio, UniFi and MikroTik clients stop being "routers".
+- **Checked on real networks, not on hunches.** Each fix to the recognition started as a test that failed, and had to pass against more than 400 devices from real home networks shared by users, and thousands of generated cases, before it was allowed in.
+- **Safe by design.** Vedetta checks what a device announces before asking it anything, stays away from printing and industrial ports, and the export hides more of your home. Still no cloud, no account, no telemetry.
+- **A way to leave a device alone.** The engine can now keep away from a fragile device (normal, calm, or none): the switch on the page comes in a later release.
+- **Home Assistant.** The share button waits for MQTT; repeaters and big networks are steadier.
+- **Newly added devices.** They keep the ports the search saw (a slow device, such as a cheap video recorder, no longer starts with none), the Alexa label *expiscor* is never taken for a name, and the invitation to star the project waits two days of use.
+- **A fairer port search.** The test that decides whether a device is slow now runs alone, so searching many devices together no longer makes normal ones look slow and lose their ports.
+- **Rebuilt inside.** Small modules, brand tables as plain data files, a pinned base image: easier to read, fix and extend.
+
+**Thank you** to everyone who shared an export: real networks made this release possible.
+
 ## 0.6.3 · Sordina
 **Sordina** is Italian for *mute*: a quiet fix. Vedetta no longer sends anything to the printing ports of a printer.
 - **Printers**: the web check and the certificate check asked every open port of a device, including the raw printing ports (9100-9107 and 515). A printer prints whatever arrives there, so a few sheets with the text of the request could come out. Those ports are now left alone; everything else is checked as before. Thank you to the person who reported it.

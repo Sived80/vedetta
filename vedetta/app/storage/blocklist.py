@@ -3,9 +3,8 @@ alerts. List in config/ignored.json (a deploy does not delete it).
 
 Devices are ignored by MAC, IP or name. The name is for phones with a private MAC, which
 changes from one network to another while the announced hostname stays the same."""
+from ..atomic import write_atomic
 import json
-import os
-import tempfile
 import threading
 import time
 import uuid
@@ -31,6 +30,15 @@ def _norm(kind: str, value: str) -> str:
     return value
 
 
+def list_items() -> list[dict]:
+    stamp = _stamp()
+    if _cache["stamp"] == stamp and stamp is not None:
+        return _cache["items"]
+    items = [_clean_entry(it) for it in _read_raw_entries() if _is_valid_entry(it)] if stamp is not None else []
+    _cache.update(stamp=stamp, items=items)
+    return items
+
+
 def _stamp():
     try:
         return PATH.stat().st_mtime
@@ -38,35 +46,29 @@ def _stamp():
         return None
 
 
-def list_items() -> list[dict]:
-    stamp = _stamp()
-    if _cache["stamp"] == stamp and stamp is not None:
-        return _cache["items"]
-    items = []
-    if stamp is not None:
-        try:
-            raw = json.loads(PATH.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            raw = []
-        for it in raw if isinstance(raw, list) else []:
-            if isinstance(it, dict) and it.get("kind") in KINDS and isinstance(it.get("value"), str) and it["value"].strip():
-                items.append({"id": str(it.get("id", "")), "kind": it["kind"], "value": it["value"].strip(),
-                              "label": str(it.get("label", ""))[:80], "added": it.get("added")})
-    _cache.update(stamp=stamp, items=items)
-    return items
+def _read_raw_entries() -> list:
+    """The JSON list stored in the file; empty if the file cannot be read, is not valid JSON or is not a list."""
+    try:
+        raw = json.loads(PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return raw if isinstance(raw, list) else []
+
+
+def _is_valid_entry(it) -> bool:
+    """An entry is a dictionary with a known kind and a non-blank text value."""
+    if not isinstance(it, dict) or it.get("kind") not in KINDS:
+        return False
+    return isinstance(it.get("value"), str) and bool(it["value"].strip())
+
+
+def _clean_entry(it: dict) -> dict:
+    return {"id": str(it.get("id", "")), "kind": it["kind"], "value": it["value"].strip(),
+            "label": str(it.get("label", ""))[:80], "added": it.get("added")}
 
 
 def _write(items: list[dict]) -> None:
-    PATH.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=PATH.parent, prefix=".ignored-", suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(items, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, PATH)
-    except BaseException:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
-        raise
+    write_atomic(PATH, lambda f: json.dump(items, f, ensure_ascii=False, indent=2), ".ignored-")
     _cache["stamp"] = None
 
 
@@ -101,16 +103,27 @@ def matches(*, mac: str | None = None, ip: str | None = None, name: str | None =
     items = list_items()
     if not items:
         return False
-    names = {_norm("name", n) for n in (name, (dhcp.seen.get((mac or "").lower()) or {}).get("hostname")) if n}
+    names = _device_names(mac, name)
     mac_n = _norm("mac", mac) if mac else None
-    for it in items:
-        key = _norm(it["kind"], it["value"])
-        if it["kind"] == "mac" and mac_n and key == mac_n:
-            return True
-        if it["kind"] == "ip" and ip and key == ip:
-            return True
-        if it["kind"] == "name" and key in names:
-            return True
+    return any(_entry_matches(it, mac_n, ip, names) for it in items)
+
+
+def _device_names(mac: str | None, name: str | None) -> set[str]:
+    """Normalised names of the device: its own and the hostname announced via DHCP for its MAC."""
+    announced = (dhcp.seen.get((mac or "").lower()) or {}).get("hostname")
+    return {_norm("name", n) for n in (name, announced) if n}
+
+
+def _entry_matches(item: dict, mac_n: str | None, ip: str | None, names: set[str]) -> bool:
+    """True if one entry of the list refers to the device."""
+    kind = item["kind"]
+    key = _norm(kind, item["value"])
+    if kind == "mac":
+        return bool(mac_n) and key == mac_n
+    if kind == "ip":
+        return bool(ip) and key == ip
+    if kind == "name":
+        return key in names
     return False
 
 

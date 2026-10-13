@@ -1,0 +1,17 @@
+{
+ "lines": {
+  "vedetta/app/state.py": 341,
+  "vedetta/app/scan/scanner.py": 123,
+  "vedetta/app/scan/probe.py": 238,
+  "vedetta/app/main.py": 197
+ },
+ "worst": [
+  11,
+  12
+ ],
+ "late_imports": 9,
+ "deep3": 54,
+ "deep4": 3,
+ "deep5": 0,
+ "js_deep": 0
+}

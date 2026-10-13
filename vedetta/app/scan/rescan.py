@@ -1,124 +1,32 @@
+"""Deep search of one device (rescan_device): runs the deep profile, saves the result and its history, compares the open ports with the previous scan and warns about the ones
+that changed, applies a better name, and for a slow device schedules the full port scan in the background (rescan_background.py)."""
 import asyncio
 import time
 
 from ..storage import devices_config
-from . import dhcp, pipeline, scanner
+from . import dhcp, pipeline, scanner, touch_policy
+from .rescan_background import FAST_SET, FULL_PORTS_EVERY_S, merge_ports, port_numbers, schedule_full_ports
+from .scan_common import port_number
 from ..recognition import naming
 from ..applog import logger
 from ..storage.history import history
 from ..state import state
 
 
-def _port_numbers(ports: list[dict] | None) -> set[int]:
-    """Port numbers from a saved list (the labels are "80 · http" or
-    just "18555"). Ephemeral ports (49152+) are excluded: they appear and
-    disappear at random and would generate alerts on every scan."""
-    numbers = set()
-    for p in ports or []:
-        head = str(p.get("label", "")).split(" ")[0]
-        if head.isdigit() and int(head) < scanner.EPHEMERAL_PORT_START:
-            numbers.add(int(head))
-    return numbers
-
-
 def diff_ports(old_ports: list[dict] | None, new_ports: list[dict] | None) -> tuple[list[int], list[int]]:
     """(new ports, vanished ports) between two consecutive scans."""
-    old, new = _port_numbers(old_ports), _port_numbers(new_ports)
+    old, new = port_numbers(old_ports), port_numbers(new_ports)
     return sorted(new - old), sorted(old - new)
-
-
-FULL_PORTS_EVERY_S = 7 * 86400
-_bg_tasks: dict[str, asyncio.Task] = {}
-_BG_NMAP_SEM = asyncio.Semaphore(1)   # only one full background scan at a time
-_FAST_SET = {int(p) for p in scanner.FAST_PORTS.split(",")}
-
-
-def _merge_ports(old: list[dict] | None, new: list[dict] | None) -> list[dict]:
-    """Union by port number (the new entry wins)."""
-    def num(p):
-        head = str(p.get("label", "")).split(" ")[0]
-        return int(head) if head.isdigit() else None
-    merged = {num(p): p for p in old or [] if num(p) is not None}
-    merged.update({num(p): p for p in new or [] if num(p) is not None})
-    return [merged[k] for k in sorted(merged)]
-
-
-def schedule_full_ports(device: dict) -> None:
-    """Scan of all the ports in the BACKGROUND for a slow device: the foreground search
-    has already finished with the targeted ports; this one runs afterwards, at a cautious pace (-T3),
-    one at a time, and when done adds the extra ports. If the service restarts
-    it is lost: the next deep search relaunches it."""
-    ip = device["ip"]
-    if ip in _bg_tasks and not _bg_tasks[ip].done():
-        return
-    _bg_tasks[ip] = asyncio.create_task(_full_ports_background(device["id"], ip))
-
-
-async def _full_ports_background(device_id: str, ip: str) -> None:
-    from ..storage import journal
-    try:
-        xml_text = await scanner._run_nmap(["-T3", "-p-", "--host-timeout", "900s", ip], semaphore=_BG_NMAP_SEM)
-        hosts = scanner._parse_hosts(xml_text)
-        if ip in scanner.timed_out:
-            scanner.timed_out.discard(ip)
-            logger.info("%s: scansione completa in background scaduta, restano le porte mirate", ip)
-            journal.add("detail", "journal.fullports_failed", icon="alert", ip=ip)
-            return
-        found = scanner.format_scan_info({"ports": hosts[0]["ports"]}).get("ports", []) if hosts else []
-        current = next((d for d in devices_config.load_devices() if d["id"] == device_id), None)
-        if not current:
-            return
-        info = dict(current.get("scan_info") or {})
-        before = len(info.get("ports") or [])
-        info["ports"] = _merge_ports(info.get("ports"), found)
-        info["full_ports_at"] = time.time()
-        # Second phase: service and operating system ONLY on the open ports found (few): the
-        # full scan does not read them, and on a slow device -sV over the whole range times out.
-        try:
-            open_nums = [str(n) for n in sorted(_port_numbers(info["ports"]))][:40]
-            if open_nums:
-                xml_text = await scanner._run_nmap(["-T3", "-sV", "--version-light", "-p", ",".join(open_nums),
-                                                     "--host-timeout", "300s", ip], semaphore=_BG_NMAP_SEM)
-                svc_hosts = scanner._parse_hosts(xml_text)
-                if ip in scanner.timed_out:
-                    scanner.timed_out.discard(ip)
-                elif svc_hosts:
-                    svc = scanner.format_scan_info({"ports": svc_hosts[0]["ports"]}).get("ports", [])
-                    info["ports"] = _merge_ports(info["ports"], svc)
-        except asyncio.CancelledError:
-            raise
-        except Exception:
-            logger.exception("%s: riconoscimento dei servizi in background fallito", ip)
-        info["services_at"] = time.time()   # attempted: not repeated on every search, only with the full ports
-        devices_config.update_scan_info(device_id, info)
-        await state.refresh_device(device_id, force=True)
-        added = len(info["ports"]) - before
-        logger.info("%s: scansione completa in background terminata, %d porte (%+d)", ip, len(info["ports"]), added)
-        journal.add("detail", "journal.fullports", icon="magnify", ip=ip, ports=len(info["ports"]), added=max(added, 0))
-    except asyncio.CancelledError:
-        raise
-    except Exception:
-        logger.exception("%s: scansione completa in background fallita", ip)
 
 
 # Clues a device announces by itself (multicast / broadcast). A sleeping phone often stays silent during a scan.
 _ANNOUNCED_CLUES = ("mdns_name", "mdns_model", "mdns_manufacturer", "mdns_services", "upnp_name", "upnp_manufacturer",
                     "upnp_model", "netbios_name", "wsd_types", "igmp_groups")
 # Clues read from an open port: they only make sense while the port answers.
+_WEB_CLUES = ("http_title", "http_server")
 _PORT_CLUES = ("http_title", "http_server", "rtsp_server", "tls_subject", "tls_issuer", "ssh_hostkey", "snmp_descr",
                "onvif_name", "onvif_hardware", "onvif_manufacturer", "api_source", "api_vendor", "api_model",
                "api_name", "api_fw", "battery")
-
-
-def _keep_previous_clues(previous: dict, fields: dict) -> None:
-    """A deep scan replaces the saved data, so what it did not hear this time would be lost and the device could fall
-    back to "Other devices" (an iPhone that was asleep: no Bonjour name or model). Announced clues are kept when the
-    new scan lacks them. If the scan found no open port at all (device asleep, off or filtered) every old clue stays,
-    because nothing in the new result contradicts it."""
-    silent = not fields.get("ports")
-    for key in _ANNOUNCED_CLUES + (_PORT_CLUES if silent else ()):
-        if key not in fields and previous.get(key):
-            fields[key] = previous[key]
 
 
 async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
@@ -126,10 +34,24 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
     result (with date and history), compares the ports with the previous
     scan and updates the page. Used both by the button and by the
     nightly maintenance. batch = pipeline.prepare_batch("deep", ips)."""
+    if not touch_policy.may_touch(device):
+        return {}   # only watching: nothing is sent to it
+    _result, label, info, fields, elapsed = await _run_deep_scan(device, batch)
+    if _result is not None:
+        return _result
+    previous, now = _keep_ports_of_slow_device(fields, info, device)
+    await _save_scan_and_alert_ports(previous, fields, device, now, label)
+    name, source = _pick_name_from_scan(info, device)
+    return await _apply_name_and_refresh(fields, name, label, elapsed, device, source, info, now, previous)
+
+
+async def _run_deep_scan(device, batch):
     ip = device["ip"]
     label = f"{ip} ({device.get('name') or ip})"
     started = time.monotonic()
     slow = bool((device.get("scan_info") or {}).get("slow_scan"))
+    if touch_policy.touch_level(device) == touch_policy.CALM:
+        batch = touch_policy.calm_batch(batch)
     info = await pipeline.run_deep(ip, batch, slow)
     fields = scanner.format_scan_info(info)
     elapsed = time.monotonic() - started
@@ -144,28 +66,37 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
         kept = dict(device.get("scan_info") or {})
         kept["deep_empty_at"] = time.time()
         devices_config.update_scan_info(device["id"], kept)
-        return {}
+        return ({}), None, None, None, None
+    return None, label, info, fields, elapsed
 
+
+def _keep_ports_of_slow_device(fields, info, device):
     previous = device.get("scan_info") or {}
     now = time.time()
     fields["scanned_at"] = now
     if info.get("slow_scan"):
         # Slow device: the foreground scan only covers the targeted ports. The ports
         # outside that list (found by the full background scan) are kept.
-        keep = [p for p in previous.get("ports") or []
-                if str(p.get("label", "")).split(" ")[0].isdigit() and int(str(p["label"]).split(" ")[0]) not in _FAST_SET]
+        keep = [p for p in previous.get("ports") or [] if port_number(p) not in (None, *FAST_SET)]
         if keep:
-            fields["ports"] = _merge_ports(keep, fields.get("ports"))
+            fields["ports"] = merge_ports(keep, fields.get("ports"))
         if previous.get("full_ports_at"):
             fields["full_ports_at"] = previous["full_ports_at"]
         if previous.get("services_at"):
             fields["services_at"] = previous["services_at"]
+    return previous, now
+
+
+async def _save_scan_and_alert_ports(previous, fields, device, now, label):
     _keep_previous_clues(previous, fields)
+    _keep_analysis_ports(previous, fields)
     devices_config.update_scan_info(device["id"], fields)
     await asyncio.to_thread(history.save_scan, device["id"], now, fields)
 
     if previous:
         opened, closed = diff_ports(previous.get("ports"), fields.get("ports"))
+        if not previous.get("scanned_at"):
+            closed = []   # the ports kept from the analysis are a start, not a deep reading: a port that this search did not see is no proof that it closed
         if opened:
             ports = ", ".join(map(str, opened))
             state.emit_alert(f"{label}: nuova porta aperta {ports}", "alert.port_opened", label=label, ports=ports)
@@ -173,6 +104,35 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
             ports = ", ".join(map(str, closed))
             state.emit_alert(f"{label}: porta non piu' aperta {ports}", "alert.port_closed", label=label, ports=ports)
 
+
+def _keep_analysis_ports(previous: dict, fields: dict) -> None:
+    """The ports that only the analysis saw (the card has no `scanned_at` yet) stay when this deep search found none: a device that stalls under the long scan (a TV, a recorder) must not lose them.
+    After a deep search had read ports, an empty result is a real change and the list goes."""
+    if previous.get("ports") and not previous.get("scanned_at") and not fields.get("ports"):
+        fields["ports"] = previous["ports"]
+
+
+def _keep_previous_clues(previous: dict, fields: dict) -> None:
+    """A deep scan replaces the saved data, so what it did not hear this time would be lost and the device could fall
+    back to "Other devices" (an iPhone that was asleep: no Bonjour name or model). Announced clues are kept when the
+    new scan lacks them. A clue read from a port is kept when the port is still open: a read that did not happen (the
+    answer came late, the network was busy) must not erase a title that was read before; if the scan found no open
+    port at all (device asleep, off or filtered) every old clue stays, because nothing in the new result contradicts it.
+    The page of a device whose web port is gone loses its title, and the other port clues go with their ports."""
+    for key in _ANNOUNCED_CLUES + _PORT_CLUES:
+        if key not in fields and previous.get(key) and (key in _ANNOUNCED_CLUES or _port_still_there(key, previous, fields)):
+            fields[key] = previous[key]
+
+
+def _port_still_there(key: str, previous: dict, fields: dict) -> bool:
+    """May a clue read from a port be kept? Yes if the scan found no open port, or if a port that could have given it is still open (for the web clues: a web port)."""
+    if not fields.get("ports"):
+        return True
+    before = [p for p in previous.get("ports") or [] if p.get("web_ui")] if key in _WEB_CLUES else previous.get("ports")
+    return bool(port_numbers(before) & port_numbers(fields["ports"]))
+
+
+def _pick_name_from_scan(info, device):
     extra = info.get("adapter_extra") or {}
     mac = info.get("mac") or extra.get("mac") or state._last_mac.get(device["id"])
     name, source = naming.pick([
@@ -183,6 +143,10 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
         ("dhcp", ((dhcp.seen.get((mac or "").lower())) or {}).get("hostname")),
         ("netbios", info.get("netbios_name")), ("nmap", info.get("hostname")),
     ])
+    return name, source
+
+
+async def _apply_name_and_refresh(fields, name, label, elapsed, device, source, info, now, previous) -> dict:
     if name and naming.is_better(device, source, name):
         if await asyncio.to_thread(devices_config.update_auto_name, device["id"], name, source):
             logger.info("%s nome aggiornato: \"%s\" (%s)", label, name, source)

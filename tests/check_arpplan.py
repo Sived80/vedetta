@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import netutil  # noqa: E402
+from app import arpview, cyclestats, netutil  # noqa: E402
 from app import state as state_mod  # noqa: E402
 from app.scan import arpplan, scanner  # noqa: E402
 from app.storage import devices_config, newdevices  # noqa: E402
@@ -22,7 +22,7 @@ from app.storage.history import History  # noqa: E402
 
 tmp = Path(tempfile.mkdtemp())
 H = History(tmp / "vedetta.db")
-state_mod.history = H
+state_mod.history = arpview.history = H
 newdevices.history = H
 
 
@@ -180,7 +180,7 @@ async def fake_neigh(net=None):
 
 
 H = History(tmp / "state.db")                 # a database of its own: nothing is left over from the checks above
-state_mod.history = H
+state_mod.history = arpview.history = H
 netutil.get_local_network = fake_net
 scanner.arp_scan, scanner.neighbors = fake_arp, fake_neigh
 devices_config.load_devices = lambda: [{"id": "d1", "ip": "10.0.9.4"}]
@@ -189,7 +189,7 @@ st = state_mod.DeviceState()
 arp = run(st._arp_by_ip(0))
 assert asked[-1] == ["10.0.5.0/24", "10.0.0.0/24", "10.0.9.4"], asked[-1]
 assert set(arp) == {"10.0.5.7", "10.0.0.9", "10.0.9.4", "10.0.77.3"}, "chiesti ora + un vicino che il sistema aveva gia' visto"
-assert st._baseline_blocks == ("10.0.0.0/24",), "il blocco al primo giro e' un punto di partenza"
+assert st._new.baseline_blocks == ("10.0.0.0/24",), "il blocco al primo giro e' un punto di partenza"
 assert set(H.scan_blocks()) >= {"10.0.5.0/24", "10.0.0.0/24"}, "i blocchi chiesti sono scritti nel database"
 FOUND["10.0.0.0/24"] = []                      # the device of that block has gone: when the block is asked again it leaves the view
 arp = run(st._arp_by_ip(0))
@@ -198,7 +198,7 @@ for _ in range(300):
     arp = run(st._arp_by_ip(0))
 assert "10.0.0.9" not in arp, "quando il blocco viene richiesto, chi se n'e' andato esce"
 assert all(len(a) <= 1024 for a in asked if a) and all(len(a) <= 4 for a in asked if a), "pochi indirizzi per giro, mai tutta la rete"
-assert st._plan_info["total"] == 256 and st._plan_info["done"] >= 255
+assert st._view.plan_info["total"] == 256 and st._view.plan_info["done"] >= 255
 
 # the plan itself breaks: only the network around this machine is asked, never the whole /16
 asked.clear()
@@ -210,8 +210,8 @@ finally:
     arpplan.plan = real_plan
 assert asked[-1] == ["10.0.5.0/24"], "se il piano si rompe si chiede solo la rete attorno a noi"
 
-assert st._asked <= arpplan.MAX_TARGETS and st._asked >= 256, "gli indirizzi chiesti contano i blocchi per 256"
-assert st._found == len(arp)
+assert st._view.asked <= arpplan.MAX_TARGETS and st._view.asked >= 256, "gli indirizzi chiesti contano i blocchi per 256"
+assert st._view.found == len(arp)
 
 # what the export says about the service: sizes, times and counts, never an address
 import json  # noqa: E402
@@ -219,7 +219,7 @@ import re  # noqa: E402
 st._note_end(time.monotonic() - 1.5)
 d = st.diagnostics()
 assert (d["network"]["prefix"], d["network"]["addresses"], d["network"]["mode"]) == (16, 65536, "blocks") and d["network"]["blocks_total"] >= 1, d["network"]
-assert d["arp"]["addresses_asked"] == st._asked and d["cycles"]["since_start"] == 1 and d["cycles"]["slowest_s"] >= 1.5, d
+assert d["arp"]["addresses_asked"] == st._view.asked and d["cycles"]["since_start"] == 1 and d["cycles"]["slowest_s"] >= 1.5, d
 assert d["devices"] == 0 and d["uptime_s"] >= 0 and d["interval_s"] > 0
 text = json.dumps(d)
 assert not re.search(r"\d+\.\d+\.\d+\.\d+", text) and "10.0." not in text, "nessun indirizzo nel blocco service"
@@ -234,7 +234,7 @@ asked.clear()
 st2 = state_mod.DeviceState()
 run(st2._arp_by_ip(0))
 assert asked == [None], "una /24 si chiede tutta (--localnet), niente blocchi"
-assert st2._plan_info is None and st2._arp_mem == {}
+assert st2._view.plan_info is None and st2._view.mem == {}
 assert st2.diagnostics()["network"] == {"prefix": 24, "addresses": 256, "mode": "whole"}, st2.diagnostics()["network"]
 
 # an ARP that does not finish: the cycle goes on with the last result
@@ -245,7 +245,7 @@ async def late_arp(targets=None, timeout=0, interval_ms=None):
 scanner.arp_scan = fake_arp
 st3 = state_mod.DeviceState()
 run(st3._arp_by_ip(0))
-st3._arp = (st3._arp[0] - 100, {"192.168.1.9": {"ip": "192.168.1.9"}})
+st3._view.cache = (st3._view.cache[0] - 100, {"192.168.1.9": {"ip": "192.168.1.9"}})
 scanner.arp_scan = late_arp
 assert run(st3._arp_by_ip(0)) == {"192.168.1.9": {"ip": "192.168.1.9"}}, "l'ultimo risultato resta"
 
@@ -262,7 +262,7 @@ async def until(cond, timeout=10.0):
 async def loop_test():
     gap = 0.6
     state_mod.MIN_GAP_S = gap
-    state_mod.CHAIN_WARN = 2        # a slow machine starts fewer cycles in the same time: the warning must not depend on how many fit
+    cyclestats.CHAIN_WARN = 2        # a slow machine starts fewer cycles in the same time: the warning must not depend on how many fit
     st = state_mod.DeviceState()
     st._interval = staticmethod(lambda: 3600)
     started = []

@@ -1,7 +1,13 @@
+"""Adapter for first-generation Shelly devices: reads /status and /settings over HTTP and returns what the device reports about itself.
+The caller accepts the answer only if it has the shape of the Shelly API (MAC and uptime), otherwise any web server would be taken for a Shelly."""
 import httpx
+
+from ..scan_common import NO_REQUEST_PORTS
 
 
 async def probe(ip: str, port: int = 80) -> dict:
+    if port in NO_REQUEST_PORTS:
+        return {"online": False}   # never a request to a printing or industrial control port (the card may have been saved with one)
     base = f"http://{ip}:{port}"
     try:
         async with httpx.AsyncClient(timeout=3) as client:

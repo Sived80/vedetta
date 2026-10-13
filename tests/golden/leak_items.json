@@ -1,0 +1,4849 @@
+[
+[
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+],
+[
+"name",
+"Salotto"
+]
+],
+[],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"Salotto"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[],
+[],
+[
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[],
+[],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"Salotto"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"Salotto"
+]
+],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"name",
+"Anna's iPhone"
+],
+[
+"name",
+"Salotto"
+]
+],
+[],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"user:pw"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[],
+[],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"mario"
+]
+],
+[],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"user:pw"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"mario"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[],
+[],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"mario"
+]
+],
+[],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"Salotto"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172.20.3.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[],
+[
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"172.40.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172-31-1-1"
+]
+],
+[
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"password or token",
+"user:pw"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"IPv6 address",
+"fe80::1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"hunter2"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[],
+[
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[],
+[],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"email address",
+"mario@example.com"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"domain name",
+"home.local"
+]
+],
+[],
+[
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"Salotto"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+]
+],
+[],
+[
+[
+"public address",
+"172.40.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+]
+],
+[],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"password or token",
+"abc123"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[
+[
+"password or token",
+"hunter2"
+]
+],
+[],
+[
+[
+"public address",
+"172.32.1.1"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"f0:18:98:aa:bb:cc"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192-168-4-4"
+]
+],
+[
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+]
+],
+[
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"172_16_0_9"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"MAC address",
+"F0-18-98-AA-BB-CC"
+],
+[
+"domain name",
+"home.local"
+],
+[
+"name",
+"Salotto"
+]
+],
+[],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.300.4"
+],
+[
+"password or token",
+"hunter2"
+]
+],
+[],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"IPv6 address",
+"fe80::1"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"home network address",
+"172_16_0_9"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[
+[
+"home network address",
+"192.168.1.20"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+],
+[
+"public address",
+"93.184.216.34"
+],
+[
+"MAC address",
+"f01898aabbcc"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[
+[
+"domain name",
+"home.local"
+]
+],
+[
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"password or token",
+"user:pw"
+]
+],
+[],
+[],
+[
+[
+"home network address",
+"172-31-1-1"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"email address",
+"mario@example.com"
+],
+[
+"name",
+"mario"
+]
+],
+[],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"home network address",
+"192.168.1.20"
+],
+[
+"public address",
+"172.40.3.4"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"password or token",
+"abc123"
+]
+],
+[
+[
+"public address",
+"93.184.216.34"
+]
+],
+[],
+[
+[
+"public address",
+"172.32.1.1"
+],
+[
+"public address",
+"1.2.3.4"
+],
+[
+"domain name",
+"nas.example.org"
+],
+[
+"name",
+"Anna's iPhone"
+]
+],
+[
+[
+"home network address",
+"172.31.1.1"
+]
+],
+[
+[
+"home network address",
+"172.20.3.4"
+],
+[
+"public address",
+"172.32.1.1"
+],
+[
+"domain name",
+"nas.example.org"
+]
+]
+]

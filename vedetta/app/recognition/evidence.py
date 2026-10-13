@@ -18,32 +18,41 @@ def _clamp(value: float, low: int = 0, high: int = 100) -> int:
     return max(low, min(high, int(round(value))))
 
 
+def _rejected_groups(ranked: list, scores: dict, chosen: str, why: str) -> list[dict]:
+    """The other groups, with why each was not chosen ("scored" is told apart into tie / behind by the points of the chosen one)."""
+    top = scores.get(chosen, 0)
+    return [{"value": g, "points": p, "why": why if why != "scored" else ("tie" if p == top and top else "behind")}
+            for g, p in ranked if g != chosen]
+
+
 def group_evidence(debug_type: dict, device: dict) -> dict:
     chosen = debug_type.get("chosen") or "generic"
-    scores = {g: p for g, p in (debug_type.get("scores") or {}).items() if p > 0}
-    manual = bool(debug_type.get("manual"))
-    min_score = debug_type.get("min_score") or 2
+    scores = _positive_scores(debug_type)
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
-    clues = [{"source": e["source"], "points": e["pts"]} for e in (debug_type.get("evidence") or [])
-             if e.get("group") == chosen and e.get("counted")]
-    clues.sort(key=lambda c: -c["points"])
-    out = {"value": chosen, "clues": clues[:4], "reason": None}
+    out = {"value": chosen, "clues": _top_clues(debug_type, chosen), "reason": None}
+    decided = _manual_or_mobile(out, device, ranked, scores, chosen, bool(debug_type.get("manual")))
+    if decided is not None:
+        return decided
+    if not ranked:
+        return {**out, "certainty": 0, "basis": "none", "rejected": []}
+    return _scored_group(out, ranked, scores, chosen, debug_type.get("min_score") or 2)
 
-    def rejected(why: str) -> list[dict]:
-        top = scores.get(chosen, 0)
-        return [{"value": g, "points": p, "why": why if why != "scored" else ("tie" if p == top and top else "behind")}
-                for g, p in ranked if g != chosen]
 
+def _manual_or_mobile(out: dict, device: dict, ranked: list, scores: dict, chosen: str, manual: bool) -> dict | None:
+    """The groups chosen by hand, and the phones and tablets recognised by their signals; None for the rest."""
     if manual:
-        return {**out, "certainty": 100, "basis": "manual", "rejected": rejected("scored")}
+        return {**out, "certainty": 100, "basis": "manual", "rejected": _rejected_groups(ranked, scores, chosen, "scored")}
     if device.get("is_mobile") and chosen == "phone":
         score = device.get("mobile_score")
         if score is None:                      # chosen by hand in the "mobile" switch
-            return {**out, "certainty": 100, "basis": "manual", "rejected": rejected("mobile")}
+            return {**out, "certainty": 100, "basis": "manual", "rejected": _rejected_groups(ranked, scores, chosen, "mobile")}
         return {**out, "certainty": _clamp(100 * score / _MOBILE_FULL_SCORE, 25, 95), "basis": "mobile",
-                "reason": device.get("mobile_reason"), "rejected": rejected("mobile")}
-    if not ranked:
-        return {**out, "certainty": 0, "basis": "none", "rejected": []}
+                "reason": device.get("mobile_reason"), "rejected": _rejected_groups(ranked, scores, chosen, "mobile")}
+    return None
+
+
+def _scored_group(out: dict, ranked: list, scores: dict, chosen: str, min_score: int) -> dict:
+    """The group chosen by the scores: how far it is from the second one, weighted by how much evidence there is."""
     if chosen == "generic":
         top = ranked[0][1]
         basis = "weak" if top < min_score else "tie"
@@ -51,7 +60,20 @@ def group_evidence(debug_type: dict, device: dict) -> dict:
     top = scores.get(chosen, ranked[0][1])
     second = next((p for g, p in ranked if g != chosen), 0)
     lead = (top - second) / top if top else 0
-    return {**out, "certainty": _clamp(100 * lead * min(1.0, top / 10), 5, 99), "basis": "scored", "rejected": rejected("scored")}
+    return {**out, "certainty": _clamp(100 * lead * min(1.0, top / 10), 5, 99), "basis": "scored", "rejected": _rejected_groups(ranked, scores, chosen, "scored")}
+
+
+def _positive_scores(debug_type: dict) -> dict:
+    """The groups that scored something (zero or negative points are left out)."""
+    return {g: p for g, p in (debug_type.get("scores") or {}).items() if p > 0}
+
+
+def _top_clues(debug_type: dict, chosen: str) -> list[dict]:
+    """The (at most four) counted clues of the chosen group, strongest first (equal points keep their order)."""
+    clues = [{"source": e["source"], "points": e["pts"]} for e in (debug_type.get("evidence") or [])
+             if e.get("group") == chosen and e.get("counted")]
+    clues.sort(key=lambda c: -c["points"])
+    return clues[:4]
 
 
 def brand_evidence(debug_brand: dict) -> dict:
@@ -76,19 +98,35 @@ def name_evidence(debug_name: dict, device: dict) -> dict:
     shown, source = debug_name.get("shown"), debug_name.get("source")
     out = {"value": shown, "source": source, "placeholder": bool(debug_name.get("placeholder"))}
     out["rejected"] = [{"source": c["source"], "value": c["raw"], "cleaned": c.get("cleaned")}
-                       for c in (debug_name.get("candidates") or [])
-                       if c.get("raw") and c["raw"] != shown and (c.get("cleaned") or "").lower() != (shown or "").lower()]
+                       for c in (debug_name.get("candidates") or []) if _is_rejected_name(c, shown)]
+    certainty, basis = _name_certainty(debug_name, device, shown, source)
+    return {**out, "certainty": certainty, "basis": basis}
+
+
+def _is_rejected_name(candidate: dict, shown) -> bool:
+    """A name candidate that was not shown: it has a raw value, different from the shown one both as it is and once cleaned."""
+    return bool(candidate.get("raw") and candidate["raw"] != shown
+                and (candidate.get("cleaned") or "").lower() != (shown or "").lower())
+
+
+def _name_certainty(debug_name: dict, device: dict, shown, source) -> tuple[int, str]:
+    """(certainty, basis) of the shown name."""
     if not shown or shown == device.get("ip"):
-        return {**out, "certainty": 0, "basis": "ip"}
+        return 0, "ip"
     if source == "user":
-        return {**out, "certainty": 100, "basis": "manual"}
-    brand = (device.get("brand") or "").strip().lower()
-    if brand and shown.strip().lower() == brand and source in (None, "weak"):
-        return {**out, "certainty": 10, "basis": "brand"}      # no real name: the brand stands in
+        return 100, "manual"
+    if _brand_stands_in(device, shown, source):
+        return 10, "brand"      # no real name: the brand stands in
     if debug_name.get("placeholder"):
-        return {**out, "certainty": 15, "basis": "placeholder"}
+        return 15, "placeholder"
     weight = naming.PRIORITY.get(source or "", 0)
-    return {**out, "certainty": _clamp(weight, 20, 95), "basis": "source" if source else "unknown"}
+    return _clamp(weight, 20, 95), "source" if source else "unknown"
+
+
+def _brand_stands_in(device: dict, shown, source) -> bool:
+    """No real name: the shown name is just the brand, and the source is none or a weak one."""
+    brand = (device.get("brand") or "").strip().lower()
+    return bool(brand) and shown.strip().lower() == brand and source in (None, "weak")
 
 
 def summarize(debug: dict, device: dict) -> dict:

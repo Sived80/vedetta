@@ -34,7 +34,7 @@ async def go():
     s.resume()
     await asyncio.sleep(0.2)
     assert len(polls) == 2 and not s.poll_info()["paused"], "la ripresa controlla subito"
-    s._paused_until = __import__("time").time() + 0.5  # timed pause: restarts by itself
+    s._pause.until = __import__("time").time() + 0.5  # timed pause: restarts by itself
     n = len(polls)
     await asyncio.sleep(1.8)
     assert len(polls) > n and s.paused_remaining() is None, "scaduta la pausa si riparte"

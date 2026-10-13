@@ -47,7 +47,7 @@ class IngressMiddleware:
                 else:
                     await send({"type": "websocket.close", "code": 1008})
                 return
-        headers = {k: v for k, v in scope.get("headers", [])}
+        headers = dict(scope.get("headers", []))
         scope.setdefault("state", {})["base"] = base_from_headers(headers)
         await self.app(scope, receive, send)
 

@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from ..scan import flows
 from .. import i18n
+from .bodies import json_dict
 from ..storage import settings
 from ..applog import logger
 
@@ -46,12 +47,8 @@ async def api_flows_get(request: Request):
 
 @router.post("/api/flows")
 async def api_flows_set(request: Request):
-    i18n.use_request(request)
-    try:
-        body = await request.json()
-    except ValueError:
-        raise HTTPException(400, i18n.t("flow.error.invalid_body"))
-    if not isinstance(body, dict) or not isinstance(body.get("flows"), dict):
+    body = await json_dict(request, "flow.error.invalid_body")
+    if not isinstance(body.get("flows"), dict):
         raise HTTPException(400, i18n.t("flow.error.invalid_body"))
     try:
         settings.flows_update(body["flows"])

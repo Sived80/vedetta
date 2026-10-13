@@ -52,4 +52,23 @@ assert naming.upgrade({**phone, "name": "Xiaomi-14", "name_source": "dhcp"}, can
 assert naming.upgrade({**phone, "name_source": "user"}, cands) is None
 assert naming.upgrade({**phone, "name_source": "ha_user"}, cands) is None
 assert naming.upgrade({**phone, "name_source": None}, cands) is None
+# the words of the phone-like names come from data/brands.json: the shipped list, in its order, and the rule that needs a digit in the name
+from app.recognition import brands  # noqa: E402
+assert brands.mobile_name_words() == ("iphone", "ipad", "pixel", "galaxy", "xiaomi", "redmi", "oneplus", "huawei", "honor", "oppo", "vivo", "smartphone", "tablet",
+                                      "telefono", "cellulare", "fairphone"), brands.mobile_name_words()
+assert naming.model_like("Galaxy S24") and naming.model_like("Redmi Note 12") and naming.model_like("OPPO A57")
+assert not naming.model_like("Galaxy") and not naming.model_like("Sensor 3") and not naming.model_like(None)
+# the user's file adds words (lower case, after the shipped ones) and a change of the file is seen at once, without restarting
+import json  # noqa: E402
+import os  # noqa: E402
+import tempfile  # noqa: E402
+real_user = brands._USER_PATH
+brands._USER_PATH = Path(tempfile.mkdtemp()) / "brands.json"
+assert brands.mobile_name_words()[-1] == "fairphone", "no user file: only the shipped words"
+brands._USER_PATH.write_text(json.dumps({"mobile_name_words": ["Zorblat"]}), encoding="utf-8")
+assert brands.mobile_name_words()[-2:] == ("fairphone", "zorblat") and naming.model_like("Zorblat 9")
+brands._USER_PATH.write_text(json.dumps({"mobile_name_words": ["Quux", "Plugh"]}), encoding="utf-8")
+os.utime(brands._USER_PATH, (1, 99999))      # another modification time, as an edit a moment later would give
+assert brands.mobile_name_words()[-2:] == ("quux", "plugh") and not naming.model_like("Zorblat 9")
+brands._USER_PATH = real_user
 print("TUTTO OK")

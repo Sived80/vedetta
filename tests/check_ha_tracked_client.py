@@ -16,7 +16,8 @@ assert ha_data.infer_type(shelly, None) == "iot", ha_data.type_scores(shelly, No
 
 phone = {"id": "b", "ip": "10.0.0.50", "name": "Client", "extra": {"ha_integration": "unifi"}, "ha_registry": card(["unifi"], ["device_tracker"])}
 assert "router" not in ha_data.type_scores(phone), ha_data.type_scores(phone)
-hub = {"id": "c", "ip": "10.0.0.1", "name": "Gateway", "extra": {}, "ha_registry": card(["unifi"], ["device_tracker", "sensor", "switch"])}
+# the equipment itself holds a product in the registry (a model, a firmware): its clients have sensors and switches too (bandwidth, block) but neither (tests/check_observer_integrations.py)
+hub = {"id": "c", "ip": "10.0.0.1", "name": "Gateway", "extra": {}, "ha_registry": dict(card(["unifi"], ["device_tracker", "sensor", "switch"]), model="UDM", sw_version="3.0")}
 assert ha_data.type_scores(hub).get("router", 0) >= ha_data.W_DECLARED, ha_data.type_scores(hub)
 old = {"id": "d", "ip": "10.0.0.2", "name": "Gateway", "extra": {}, "ha_registry": {"name": "x", "domains": ["unifi"]}}   # registry saved before the key existed
 assert ha_data.type_scores(old).get("router", 0) >= ha_data.W_DECLARED

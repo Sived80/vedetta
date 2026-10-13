@@ -645,7 +645,9 @@
    ],
    "tokens": [],
    "w": 3,
-   "mdns": [],
+   "mdns": [
+    "_scanner._tcp"
+   ],
    "upnp": []
   },
   {

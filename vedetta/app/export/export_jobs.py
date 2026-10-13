@@ -63,11 +63,6 @@ def start(dest: str, first_day: int | None, last_day: int | None) -> Job:
     return job
 
 
-def _fail(job: Job, code: str) -> None:
-    job.error, job.status = code, "error"
-    job.close()
-
-
 def _run(job: Job) -> None:
     try:
         job.prepared = E.prepare(job.dest, job.first_day, job.last_day, progress=job.note)
@@ -80,6 +75,11 @@ def _run(job: Job) -> None:
     except Exception:
         logger.exception("Export failed")                     # the reason goes to the log, the window gets a short code
         _fail(job, "export_failed")
+
+
+def _fail(job: Job, code: str) -> None:
+    job.error, job.status = code, "error"
+    job.close()
 
 
 def _finish(job: Job, choices: dict) -> None:

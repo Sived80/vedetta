@@ -41,7 +41,7 @@ def setup(db_rows: list) -> Path:
     devices_config.DEVICES_PATH = tmp / "devices.yaml"
     (tmp / "devices.yaml").write_text(yaml.safe_dump({"devices": [
         {"id": "d1", "ip": "192.168.77.20", "adapter": "ping", "name": "Giulia's iPad"},
-        {"id": "d2", "ip": "192.168.77.31", "adapter": "ping", "name": "salotto-tv-rossi"}]}), encoding="utf-8")
+        {"id": "d2", "ip": "192.168.77.31", "adapter": "ping", "name": "salotto-tv-rossi"}]}), encoding="utf-8", newline="\r\n")
     devices_config.set_override("d1", "focus", "1")
     devices_config.set_override("d1", "focus_note", "The iPad of Giulia at 192.168.77.20 turns off at 3 am")
     H = History(tmp / "t.db")

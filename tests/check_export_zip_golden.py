@@ -53,7 +53,7 @@ def _scenario(db: str, flagged: bool, files: bool) -> dict:
     devices_config.DEVICES_PATH = tmp / "devices.yaml"
     (tmp / "devices.yaml").write_text(yaml.safe_dump({"devices": [
         {"id": "d1", "ip": "192.168.77.20", "adapter": "ping", "name": "Giulia's iPad"},
-        {"id": "d2", "ip": "192.168.77.31", "adapter": "ping", "name": "salotto-tv-rossi"}]}), encoding="utf-8")
+        {"id": "d2", "ip": "192.168.77.31", "adapter": "ping", "name": "salotto-tv-rossi"}]}), encoding="utf-8", newline="\r\n")
     if flagged:
         devices_config.set_override("d2", "focus", "1")
         devices_config.set_override("d1", "focus", "1")

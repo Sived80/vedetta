@@ -29,6 +29,7 @@ from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.state import state  # noqa: E402
 from app.storage import devices_config, history as history_mod  # noqa: E402
 from app.storage.history import History  # noqa: E402
+from golden_text import lf  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "export_zip.json"
 VOLATILE = ("created", "python", "platform", "service", "time", "version")
@@ -127,11 +128,11 @@ def _scenario(db: str, flagged: bool, files: bool) -> dict:
 
 
 out = {"all": scenario("all", "ok", True, True), "bigdb": scenario("bigdb", "big", False, True), "corrupt": scenario("corrupt", "corrupt", True, True), "empty": scenario("empty", "none", False, False)}
-out = json.loads(json.dumps(out, sort_keys=True, default=str))
+out = lf(json.loads(json.dumps(out, sort_keys=True, default=str)))
 if os.environ.get("ZIP_GOLDEN_UPDATE") or not GOLDEN.exists():
     GOLDEN.write_text(json.dumps(out, sort_keys=True, indent=1), encoding="utf-8")
     print("golden written")
-want = json.loads(GOLDEN.read_text(encoding="utf-8"))
+want = lf(json.loads(GOLDEN.read_text(encoding="utf-8")))
 for sc in want:
     assert sorted(out[sc]["entries"]) == sorted(want[sc]["entries"]), (sc, sorted(out[sc]["entries"]), sorted(want[sc]["entries"]))
     for n in want[sc]["entries"]:

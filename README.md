@@ -14,7 +14,7 @@
 
 </div>
 
-<p align="center"><img src="docs/images/hero.png" alt="Vedetta dashboard in tile and list view, light and dark theme, with the device detail sheet" width="100%"></p>
+<p align="center"><img src="docs/images/hero.png" alt="Vedetta dashboard on a computer in tile view, dark theme, with the phone list view in light theme in front of it" width="100%"></p>
 <p align="center"><sub>Tiles or list · light or dark · one tap to the evidence behind every name</sub></p>
 
 ---
@@ -106,10 +106,12 @@ Vedetta speaks **English, Italian and Czech** (thanks to the community for the C
 | [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
 | [Changelog](vedetta/CHANGELOG.md) | Every version |
 
-## See it in motion
+## Every view
 
-<p align="center"><img src="docs/images/demo.gif" alt="An unknown device on the network becomes a Sony console after a scan, and its card shows the clues that decided it" width="100%"></p>
-<p align="center"><sub>An unknown device, a scan, a name — and the clues behind it</sub></p>
+<p align="center"><img src="docs/images/gallery-light-cards.png" alt="Vedetta dashboard on a computer in tile view, light theme, with the phone list view in dark theme in front of it" width="100%"></p>
+<p align="center"><img src="docs/images/gallery-dark-list.png" alt="Vedetta dashboard on a computer in list view, dark theme, with the phone tile view in light theme in front of it" width="100%"></p>
+<p align="center"><img src="docs/images/gallery-light-list.png" alt="Vedetta dashboard on a computer in list view, light theme, with the phone tile view in dark theme in front of it" width="100%"></p>
+<p align="center"><sub>Tiles or list · light or dark · computer or phone</sub></p>
 
 ## ☕ Support the project
 

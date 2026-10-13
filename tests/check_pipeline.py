@@ -25,7 +25,7 @@ try:
 except ImportError:  # it may be missing locally: the adapters here are simulated anyway
     sys.modules["httpx"] = types.ModuleType("httpx")
 
-from app.scan import flows, pipeline, scan_common, scanner
+from app.scan import flows, pipeline, scan_common, scan_nmap, scanner
 from app import i18n
 from app.storage import settings
 
@@ -163,6 +163,12 @@ async def fake_shelly(ip, port):
     return {"mac": "AA", "uptime_seconds": 5, "name": "shelly1", "extra": {"x": 1}}
 
 
+async def silent_nmap(args, semaphore=None):
+    # primitives called through scan_nmap (fast_ports, no_talk_open_ports, tls_ssh_scan) must never spawn a real nmap: nmap finds nothing
+    return "<nmaprun></nmaprun>"
+
+
+scan_nmap._run_nmap = silent_nmap
 scanner._run_nmap, scanner.protocol_scan, scanner.ssdp_scan = fake_run_nmap, fake_protocol, fake_ssdp
 PILOT = {"slow": False, "elapsed": 0.8, "ports": []}
 

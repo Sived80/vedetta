@@ -65,6 +65,14 @@ def run_one(name: str, cmd: list[str]) -> tuple[str, int, str, float]:
         shutil.rmtree(data, ignore_errors=True)
 
 
+def golden_problem_of_run() -> str | None:
+    """The goldens that this run left changed or created, from git; a git that cannot answer is a problem too (no proof is not a green)."""
+    status = subprocess.run(["git", "status", "--porcelain", "tests/golden"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if status.returncode:
+        return "golden check impossible: " + (status.stderr.strip().splitlines() or ["git failed"])[0][:120]
+    return gate_rules.golden_problem(status.stdout, allowed="--allow-golden-update" in sys.argv)
+
+
 def main() -> int:
     gentle.limit_cpus()      # before any child is started: they all inherit the limit
     gentle.cap_memory()      # and the memory ceiling (a runaway test gets a MemoryError)
@@ -110,6 +118,10 @@ def main() -> int:
         print(f"SALTATI ({len(skipped)}): " + "; ".join(sorted(skipped)[:4]) + (" ..." if len(skipped) > 4 else ""))
         if not os.environ.get("VEDETTA_ALLOW_SKIP"):      # a test that did not run is not a test that passed (set VEDETTA_ALLOW_SKIP=1 on a machine without jsdom or a browser)
             failed.append(f"{len(skipped)} test saltati")
+    changed = golden_problem_of_run()
+    if changed:      # also in the CI: a golden that a run creates or rewrites is a test that proved nothing (the file would be missing from the commit)
+        print(changed)
+        failed.append("golden cambiati")
     print("TUTTO OK" if not failed else "FALLITI: " + ", ".join(sorted(failed)))
     return 1 if failed else 0
 

@@ -18,6 +18,15 @@ assert g.dirty_goldens(porcelain) == ["tests/golden/full_ports.json", "tests/gol
 assert g.dirty_goldens("") == [] and g.dirty_goldens(" M vedetta/app/state.py\n") == []
 assert g.dirty_goldens('R  "tests/golden/a b.json" -> tests/golden/c.json\n') == ["tests/golden/c.json"]
 
+# 2b) the message of that problem, shared by the gate and by the test runner (so the CI sees it too); allowed on purpose it is no problem
+assert g.golden_problem("", allowed=False) is None and g.golden_problem(" M vedetta/app/state.py\n", allowed=False) is None
+assert g.golden_problem(porcelain, allowed=True) is None
+msg = g.golden_problem(porcelain, allowed=False)
+assert msg and "golden changed or created" in msg and "tests/golden/full_ports.json" in msg and "--allow-golden-update" in msg, msg
+assert "..." not in msg, "three goldens are all named: " + msg
+four = g.golden_problem(" M tests/golden/a.json\n M tests/golden/b.json\n M tests/golden/c.json\n?? tests/golden/d.json\n", allowed=False)
+assert "..." in four and "tests/golden/c.json" in four and "tests/golden/d.json" not in four, "only the first three are named: " + four
+
 # 3) the complexity of radon's output (grade C and worse), the five worst, and the comparison with the base
 radon = ("vedetta\\app\\analysis\\status.py\n    F 18:0 assess - C (11)\nvedetta\\app\\recognition\\naming.py\n    F 99:0 clean_name - C (12)\n"
          "vedetta\\app\\x.py\n    F 5:0 big - D (23)\n")

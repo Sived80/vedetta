@@ -21,6 +21,14 @@ def dirty_goldens(porcelain: str) -> list[str]:
     return sorted(found)
 
 
+def golden_problem(porcelain: str, allowed: bool) -> str | None:
+    """The message for goldens that a run changed or created, None when there are none or when it is on purpose (--allow-golden-update, with the proof in the commit message)."""
+    dirty = dirty_goldens(porcelain)
+    if not dirty or allowed:
+        return None
+    return f"golden changed or created: {', '.join(dirty[:3])}{' ...' if len(dirty) > 3 else ''} (use --allow-golden-update when it is on purpose)"
+
+
 def worst_complexity(radon_output: str) -> list[int]:
     """The five highest cognitive complexities (grade C and worse) in the output of `radon cc -s -n C`, lowest first."""
     return sorted(int(m.group(1)) for m in re.finditer(r"\((\d+)\)\s*$", radon_output or "", re.M))[-5:]

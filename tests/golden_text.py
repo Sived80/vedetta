@@ -38,3 +38,11 @@ def first_difference(got, want, path=""):
                 return found
         return ""
     return "" if got == want else "%s: %s != %s" % (path, repr(got)[:160], repr(want)[:160])
+
+
+def neutral_db_errors(results):
+    """The note about a database that cannot be read carries the message of the operating system (Windows: PermissionError, the file is still open; Linux: DatabaseError, not a database): only the fact that the read failed is compared."""
+    for scenario in results.values():
+        manifest = scenario["entries"].get("manifest.json")
+        if isinstance(manifest, dict):
+            manifest["notes"] = [("vedetta.db: <error>" if str(n).startswith("vedetta.db: ") else n) for n in manifest.get("notes", [])]

@@ -82,6 +82,17 @@ Step by step, the local-app option and the first launch: [Installation](docs/INS
 
 ⭐ If Vedetta names your devices right, a star helps others find it. *Watch → Custom → Releases* tells you when a new version comes out.
 
+## ☕ Support the project
+
+Vedetta is free and open source, and it stays that way. If it saved you time, you can help to keep it going:
+
+<p align="center"><a href="https://ko-fi.com/B8D228NOWZ"><img height="36" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Vedetta on Ko-fi"></a></p>
+
+## Gallery
+
+<p align="center"><img src="docs/images/rotation.svg" alt="Vedetta dashboard on a computer with the phone view in front of it, in light and dark theme and in tile and list view, changing one after the other" width="100%"></p>
+<p align="center"><sub>Tiles or list · light or dark · computer or phone</sub></p>
+
 ## Also inside
 
 📱 Sleeping phones remembered · 📊 Presence and latency history · 🔭 Three search levels, you choose the risk · 🏠 Home Assistant and optional MQTT
@@ -105,17 +116,6 @@ Vedetta speaks **English, Italian and Czech** (thanks to the community for the C
 | [Roadmap](docs/ROADMAP.md) | What is done, with date and version, and what is planned |
 | [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
 | [Changelog](vedetta/CHANGELOG.md) | Every version |
-
-## See it in motion
-
-<p align="center"><img src="docs/images/rotation.svg" alt="Vedetta dashboard on a computer with the phone view in front of it, in light and dark theme and in tile and list view, changing one after the other" width="100%"></p>
-<p align="center"><sub>Tiles or list · light or dark · computer or phone</sub></p>
-
-## ☕ Support the project
-
-Vedetta is free and open source, and it stays that way. If it saved you time, you can help to keep it going:
-
-<p align="center"><a href="https://ko-fi.com/B8D228NOWZ"><img height="36" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Vedetta on Ko-fi"></a></p>
 
 ## 📜 License and credits
 

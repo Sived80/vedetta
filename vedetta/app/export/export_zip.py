@@ -252,7 +252,7 @@ def _put_data_files(z: _Zip, data_dir: Path) -> None:
     """Data files: configuration, DHCP memory, journal, log (tail only)."""
     if not data_dir.exists():
         return
-    for f in sorted(data_dir.iterdir()):
+    for f in sorted(data_dir.iterdir(), key=lambda f: f.name.lower()):   # same order on every platform
         if _skip_data_file(f):
             continue
         try:

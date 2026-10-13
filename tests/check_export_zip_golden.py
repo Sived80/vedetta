@@ -74,8 +74,8 @@ def _scenario(db: str, flagged: bool, files: bool) -> dict:
     if files:
         (tmp / "settings.json").write_text(json.dumps({"mqtt_password": "hunter2", "note": "Cucina Rossi 192.168.77.20", "nested": {"api_token": "abc", "x": [1, {"secret": "s"}]}}), encoding="utf-8")
         (tmp / "broken.json").write_text("{not json 192.168.77.20", encoding="utf-8")
-        (tmp / "app.log").write_text("".join(f"line {i} probe 192.168.77.31 (salotto-tv-rossi) mac 3C:22:FB:11:22:33\n" for i in range(60)), encoding="utf-8")
-        (tmp / "events.jsonl").write_text("".join('{"n": %d, "ip": "192.168.77.20", "name": "Giulia\'s iPad"}\n' % i for i in range(40)), encoding="utf-8")
+        (tmp / "app.log").write_text("".join(f"line {i} probe 192.168.77.31 (salotto-tv-rossi) mac 3C:22:FB:11:22:33\n" for i in range(60)), encoding="utf-8", newline="\r\n")
+        (tmp / "events.jsonl").write_text("".join('{"n": %d, "ip": "192.168.77.20", "name": "Giulia\'s iPad"}\n' % i for i in range(40)), encoding="utf-8", newline="\r\n")
         (tmp / "notes.txt").write_text("owner Giulia at 192.168.77.20", encoding="utf-8")
         (tmp / "blob.bin").write_bytes(bytes(range(256)) * 3)
         (tmp / "api_key.json").write_text('{"a": 1}', encoding="utf-8")

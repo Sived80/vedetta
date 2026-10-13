@@ -85,7 +85,7 @@ def _gather_data_files(p, data_dir):
         m["notes"].append(f"service: {exc!r}")
     m["period"] = {"from": p.since, "until": p.until, "all": p.since is None}
     if data_dir.exists():
-        for f in sorted(data_dir.iterdir()):
+        for f in sorted(data_dir.iterdir(), key=lambda f: f.name.lower()):   # same order on every platform (Path ordering is case-sensitive only on POSIX)
             if not _is_skipped_data_file(f):
                 _collect_data_file(p, f)
 

@@ -57,7 +57,7 @@ def setup(db_rows: list) -> Path:
     mdns_listener.by_ip.clear()
     ha_registry._state.update(by_mac={"3c:22:fb:11:22:33": {"name": "salotto-tv-rossi", "area": "Cucina Rossi", "manufacturer": "Samsung"}}, by_ip={}, at=0.0)
     (tmp / "settings.json").write_text(json.dumps({"mqtt_password": "hunter2", "note": "Cucina Rossi 192.168.77.20"}), encoding="utf-8")
-    (tmp / "app.log").write_text("".join(f"line {i} probe 192.168.77.31 (salotto-tv-rossi) mac 3C:22:FB:11:22:33\n" for i in range(20)), encoding="utf-8")
+    (tmp / "app.log").write_text("".join(f"line {i} probe 192.168.77.31 (salotto-tv-rossi) mac 3C:22:FB:11:22:33\n" for i in range(20)), encoding="utf-8", newline="\r\n")
     (tmp / "notes.txt").write_text("owner Giulia at 192.168.77.20 mail giulia@example.com", encoding="utf-8")
     con = sqlite3.connect(tmp / "vedetta.db")
     con.execute("CREATE TABLE seen (ip TEXT, mac TEXT, name TEXT, ms REAL)")

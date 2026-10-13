@@ -106,11 +106,9 @@ Vedetta speaks **English, Italian and Czech** (thanks to the community for the C
 | [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
 | [Changelog](vedetta/CHANGELOG.md) | Every version |
 
-## Every view
+## See it in motion
 
-<p align="center"><img src="docs/images/gallery-light-cards.png" alt="Vedetta dashboard on a computer in tile view, light theme, with the phone list view in dark theme in front of it" width="100%"></p>
-<p align="center"><img src="docs/images/gallery-dark-list.png" alt="Vedetta dashboard on a computer in list view, dark theme, with the phone tile view in light theme in front of it" width="100%"></p>
-<p align="center"><img src="docs/images/gallery-light-list.png" alt="Vedetta dashboard on a computer in list view, light theme, with the phone tile view in dark theme in front of it" width="100%"></p>
+<p align="center"><img src="docs/images/rotation.svg" alt="Vedetta dashboard on a computer with the phone view in front of it, in light and dark theme and in tile and list view, changing one after the other" width="100%"></p>
 <p align="center"><sub>Tiles or list · light or dark · computer or phone</sub></p>
 
 ## ☕ Support the project

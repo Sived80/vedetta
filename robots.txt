@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sived80.github.io/vedetta/sitemap.xml

@@ -246,7 +246,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-graph.js` | 137 | History chart: a single segmented band (online / offline / no data) |
 | `js/more-info.js` | 95 | "More info" dialog |
 | `js/network.js` | 60 | pause |
-| `js/new-devices.js` | 310 | new devices |
+| `js/new-devices.js` | 309 | new devices |
 | `js/tile.js` | 308 | tile |
 | `css/10-base.css` | 150 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 184 | components |
@@ -254,8 +254,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 33 | Deep search: the menu of #deep-menu, its tiles and the badge on the split button. |
 | `css/40-network.css` | 316 | Network card: live pill, gauge, scan state, badges, brands, progress bar, search, split scan button, pause menu, and the network |
-| `css/50-tile.css` | 190 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
-| `css/60-new-devices.css` | 80 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
+| `css/50-tile.css` | 193 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
+| `css/60-new-devices.css` | 79 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
-| `css/80-more-info.css` | 250 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/80-more-info.css` | 253 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 

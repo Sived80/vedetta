@@ -105,6 +105,8 @@ function onNewDevices(ev) {
   }
   S.newDevices = { count: count, devices: ev.devices || [], init: true };
   renderNew();
+  // A device that has just appeared: its card is open (renderNew) and is brought on screen.
+  if (before.init && count > before.count && !newEl.hidden && newEl.scrollIntoView) newEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
   S.dirty.net = true;
   schedule();
 }

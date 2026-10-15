@@ -174,10 +174,10 @@ export function miActions(d) {
       "<span>" + esc(t(d.ha_share ? "js.ha.share.remove" : "js.ha.share.add")) + "</span></button>";
   }
   const flagTip = esc(t(d && d.focus ? "js.ha.focus.edit" : "js.ha.focus.add"));
-  // The flag of the report lives here, not on the icon of the tile: steady orange and with the word «Segnalato» while it is on (never colour alone).
+  // The flag of the report lives here, not on the icon of the tile: always the plain icon button, never a word and never orange (aria-pressed tells the state).
   const flagOn = !!(d && d.focus);
   const flag = '<button type="button" class="icon-btn small mi-flag rp' + (flagOn ? " on" : "") + '" data-act="focus" title="' + flagTip + '" aria-label="' + flagTip + '" aria-pressed="' + flagOn + '">' +
-    icon("flag") + (flagOn ? '<span class="mi-flag-txt">' + esc(t("js.ha.focus.short")) + "</span>" : "") + "</button>";
+    icon("flag") + "</button>";
   el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
 }
 

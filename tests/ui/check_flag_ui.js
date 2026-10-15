@@ -1,5 +1,4 @@
-// The flag of the report: on the icon of the tile, as it always was (a small flag, hidden until the device is flagged), and in the open card the button with the flag is orange and carries the word while the device is flagged (never colour
-// alone), steady (no flashing), and it goes back to plain when the flag is removed. Needs jsdom (see check_evidence_ui.js).
+// The flag of the report: on the icon of the tile, as it always was (a small flag, hidden until the device is flagged), and in the open card the button with the flag is blue/azzurro (primary theme color), plain icon only without words, steady (no flashing), and it goes back to plain when the flag is removed. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_flag_ui.js [it|en]
 const fs = require("fs");
 const os = require("os");
@@ -74,7 +73,7 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   await wait(400);
   check(posts.length === 1 && posts[0].focus === true, "il server riceve la segnalazione");
   check(flagBtn().classList.contains("on") && flagBtn().getAttribute("aria-pressed") === "true", "segnalata: il tasto e' acceso");
-  check(flagBtn().querySelector(".mi-flag-txt") && flagBtn().querySelector(".mi-flag-txt").textContent === WORD, "e porta la parola '" + WORD + "' (non solo il colore)");
+  check(!flagBtn().querySelector(".mi-flag-txt") && flagBtn().textContent.trim() === "" && !!flagBtn().querySelector("svg"), "segnalata: il tasto resta solo icona, senza parola (mai '" + WORD + "')");
   check(!iconFlag("d2").hidden && q('.tile[data-id="d2"]').classList.contains("flagged") && !!iconFlag("d2").title, "segnalata: la bandierina sull'icona si vede, com'era, con il suo titolo");
 
   q('.tile[data-id="d2"]').click();
@@ -95,11 +94,11 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   check(iconFlag("d2").hidden && !q('.tile[data-id="d2"]').classList.contains("flagged"), "tolta: la bandierina sull'icona sparisce");
   check(!flagBtn().classList.contains("flash") && !q("#more .flash"), "nessun lampo: ne' quando si segnala ne' quando si toglie");
 
-  // --- the style: orange (the warning colour), not the blue of the page,
+  // --- the style: blue/azzurro (theme primary), not orange, no word
   const cssDir = path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "css");   // the page links its styles: they are read from the files
   const css = fs.readdirSync(cssDir).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(cssDir, f), "utf8")).join("\n");
   const on = /\.mi-flag\.on\s*\{([^}]*)\}/.exec(css);
-  check(!!on && /--warning-color/.test(on[1]) && !/--primary-color/.test(on[1]), "il tasto acceso usa il colore di attenzione (arancione), non il blu della pagina");
+  check(!!on && /--primary-color/.test(on[1]) && !/--warning-color/.test(on[1]), "il tasto acceso usa il blu/azzurro della pagina (--primary-color), non l'arancione");
   check(/\.tile\.flagged\s+\.tile-mark\.br\s*\{[^}]*left:/.test(css), "segnalata e in assestamento insieme: l'orologio passa in basso a sinistra, la bandierina resta dov'era");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors.join("; ") : ""));
   win.close();

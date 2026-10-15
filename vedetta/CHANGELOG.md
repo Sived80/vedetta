@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1 · Calibro
+**Calibro** is Italian for *caliper*: precision in dimensions, alignment and diagnostic inspection.
+- **Found devices card alignment & dimensions**: Perfectly aligned top action buttons (*Add all*, *Cancel*) with row action buttons (*Add*, *Ignore*) with zero-pixel offset across desktop and mobile screens; widened buttons to prevent text wrapping across all languages.
+- **Enriched Diagnostic Bundle**: New state/analysis.json providing clear, privacy-safe diagnostic inspection of device analysis states and confidence scores without leaking personal or device names; atomic MQTT connection status in manifest.json.
+- **Privacy & Security hardening**: User notes sanitized against invisible Unicode characters (zero-width spaces, bidi overrides) and proper names; injection resistance for problem reporting.
+- **Home Assistant MQTT IP Diagnostic Sensor**: Dedicated IP address diagnostic sensor added to shared devices in Home Assistant via extensible MQTT component discovery.
+- **UI refinements**: Device report flag icon styled in primary theme blue; animated analysis indicator dots.
+
 ## 0.7.0 · Lente
 **Lente** is Italian for *lens*: Vedetta now looks closer — and it is built so that you can trust what it tells you.
 - **It says when it doesn't know.** A device it cannot name with confidence gets a lens on its icon (a clock while it settles, a question mark after a week) instead of a confident wrong guess. The analysis is read-only: it changes nothing and sends nothing to your devices.

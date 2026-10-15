@@ -82,8 +82,8 @@ export function renderNew() {
   else { title = S.found.length ? t("js.ha.new.found", { n: list.length }) : t("js.ha.new.title", { n: list.length }); sub = t("js.ha.new.hint"); }
   // The bar of the card: always two cells, "Add all" and "Cancel" (or "Close" when everything has ended), under the title.
   const free = S.found.filter(function (h) { return !(ad && ad.ips[h.ip]); }).length;
-  let all = '<button type="button" class="btn text rp" data-add-all="1">' + esc(t("js.ha.new.add_all")) + "</button>", bar;
-  if (active && ad.batch) bar = '<button type="button" class="btn text rp" disabled>' + esc(t("js.ha.new.add_all")) + '</button><button type="button" class="btn text rp" data-add-cancel-all="1">' + esc(t("js.ha.cancel")) + "</button>";
+  let all = '<button type="button" class="btn tonal rp" data-add-all="1">' + esc(t("js.ha.new.add_all")) + "</button>", bar;
+  if (active && ad.batch) bar = '<button type="button" class="btn tonal rp" disabled>' + esc(t("js.ha.new.add_all")) + '</button><button type="button" class="btn text rp" data-add-cancel-all="1">' + esc(t("js.ha.cancel")) + "</button>";
   else if (active) bar = (free > 1 ? all : none) + none;                                    // added by hand: no "Cancel" on top
   else if (fin) bar = (free > 1 ? all : none) + '<button type="button" class="btn tonal rp" data-add-close="1">' + esc(t("js.ha.new.close")) + "</button>";
   else bar = (free > 1 ? all : none) + '<button type="button" class="btn text rp" data-ignore-all="1">' + esc(t("js.ha.cancel")) + "</button>";

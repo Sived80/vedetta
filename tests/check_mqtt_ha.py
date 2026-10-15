@@ -82,12 +82,15 @@ check(t1["config"] == "homeassistant/device/vedetta_d1/config", "topic config di
 check("connections" not in cfg1["dev"] and cfg1["dev"]["via_device"] == "vedetta_hub"
       and cfg1["dev"]["manufacturer"] == "Shelly" and cfg1["dev"]["model"] == "switch",
       "device: sotto-dispositivo di Vedetta, mai agganciato al dispositivo vero per MAC")
-check(set(cfg1["cmps"]) == {"tracker", "connectivity", "latency"}, "d1: tracker, connettivita', latenza")
+check(set(cfg1["cmps"]) == {"tracker", "connectivity", "ip", "latency"}, "d1: tracker, connettivita', ip, latenza")
 check(cfg1["cmps"]["tracker"]["source_type"] == "router" and cfg1["cmps"]["tracker"]["p"] == "device_tracker", "tracker router")
+check(cfg1["cmps"]["ip"]["p"] == "sensor" and cfg1["cmps"]["ip"]["state_topic"] == t1["attrs"]
+      and cfg1["cmps"]["ip"]["value_template"] == "{{ value_json.ip }}"
+      and cfg1["cmps"]["ip"]["entity_category"] == "diagnostic", "sensore ip su attrs")
 uids = [c["unique_id"] for c in cfg1["cmps"].values()]
-check(len(set(uids)) == 3 and all(u.startswith("vedetta_d1_") for u in uids), "unique_id stabili e distinti")
+check(len(set(uids)) == 4 and all(u.startswith("vedetta_d1_") for u in uids), "unique_id stabili e distinti")
 cfg2 = json.loads(want[mqtt_ha.device_topics("d2")["config"]])
-check(set(cfg2["cmps"]) == {"tracker", "connectivity"} and "connections" not in cfg2["dev"], "d2: niente latenza ne' mac se ignoti")
+check(set(cfg2["cmps"]) == {"tracker", "connectivity", "ip"} and "connections" not in cfg2["dev"], "d2: ip presente, niente latenza ne' mac se ignoti")
 check(want[t1["state"]] == "home" and want[mqtt_ha.device_topics("d2")["state"]] == "not_home", "home / not_home")
 check(json.loads(want[mqtt_ha.device_topics("d2")["attrs"]])["last_seen"] is not None, "offline: ultimo visto")
 # sharing: only what the user chose is published; the counters still count everything

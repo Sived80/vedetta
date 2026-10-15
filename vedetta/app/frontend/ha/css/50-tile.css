@@ -165,8 +165,11 @@
     html[data-view="list"] .tile-ip { grid-column: 2; grid-row: 2; }
     html[data-view="list"] .tile-state { grid-column: 3; grid-row: 1 / span 2; text-align: right; }
     html[data-view="list"] .tile-sub, html[data-view="list"] .hbar { display: none; }
-    html[data-view="list"] .tile-wake { grid-column: 4; grid-row: 2; }
-    html[data-view="list"] .tile-open { grid-column: 4; grid-row: 1; }
+    /* Every row the same height; the open button spans both lines and is centred. With a wake button the two stack, as before. */
+    html[data-view="list"] .tile { min-height: 64px; align-content: center; }
+    html[data-view="list"] .tile-open { grid-column: 4; grid-row: 1 / span 2; align-self: center; }
+    html[data-view="list"] .tile:has(.tile-wake:not([hidden])) .tile-open { grid-row: 1; align-self: end; }
+    html[data-view="list"] .tile-wake { grid-column: 4; grid-row: 2; align-self: start; }
   }
 
   /* Brand logos. Cards: a big faint logo on the right, cut by the edge and fading to the left. List and compact rows: the logo

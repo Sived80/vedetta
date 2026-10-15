@@ -90,8 +90,8 @@ export function renderNew() {
   const pct = total ? Math.max(4, Math.min(100, (saved + 0.9 * analysed + 0.3 * run) / total * 100)) : 0;
   newEl.innerHTML =
     '<div class="card-header"><span class="ch-ic ' + (fin ? "ok" : "warn") + '">' + icon(fin ? "check-circle" : "plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +
-    esc(title) + '</div><div class="ch-sub">' + esc(sub) + "</div></div></div>" +
-    '<div class="nd-bar-actions">' + bar + "</div>" +
+    esc(title) + '</div><div class="ch-sub">' + esc(sub) + "</div></div>" +
+    '<div class="nd-bar-actions">' + bar + "</div></div>" +
     '<div class="nd-list">' + rows + "</div>" +
     '<div class="nd-prog' + (fin ? " ok" : "") + (ad ? "" : " idle") + '" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
   // Opening: the card grows from nothing to its height and what is under it (the log) slides down with it.
@@ -307,4 +307,3 @@ newEl.addEventListener("click", function (e) {
     snack(t("js.ha.toast.error"), { kind: "error" });
   });
 });
-

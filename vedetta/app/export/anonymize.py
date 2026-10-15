@@ -140,25 +140,6 @@ class Anonymizer(Registry, AuditMixin):
             return "***"
         return value if key in _KEEP else self.text(value)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def _compile_for(self, table: dict) -> re.Pattern:
         if getattr(self, "_leak_re", None) is None or self._leak_re[0] != len(table):
             self._leak_re = (len(table), re.compile("|".join(_pattern(k.replace("-", " ")) for k in sorted(table, key=len, reverse=True)), re.IGNORECASE | re.UNICODE))

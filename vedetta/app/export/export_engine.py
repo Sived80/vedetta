@@ -79,7 +79,12 @@ def finish(p: Prepared, choices: dict | None = None, default: str = "rm") -> byt
             raw = Path(content).read_bytes() if kind == "db" else content.encode("utf-8")
             z.writestr(name, raw)
             m["files"][name] = len(raw)
-        z.writestr("manifest.json", json.dumps(m, ensure_ascii=False, indent=1))
+        out_m = m
+        if p.dest == "dev" and p.anon is not None:
+            out_m = p.anon.data(m)
+            if p.anon.leaks_data(out_m):
+                out_m, _, _ = p.anon.repair_data(out_m)
+        z.writestr("manifest.json", json.dumps(out_m, ensure_ascii=False, indent=1))
     if p.dest == "dev" and p.anon is not None:
         legacy._save_mapping(p.anon)
     return buf.getvalue()

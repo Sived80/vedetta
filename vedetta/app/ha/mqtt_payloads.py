@@ -61,9 +61,39 @@ def device_topics(device_id: str) -> dict[str, str]:
             "state": base + "/state", "attrs": base + "/attrs", "latency": base + "/latency"}
 
 
+def _device_components(uid: str, topics: dict[str, str], dev: dict, with_latency: bool) -> dict[str, dict]:
+    """Entities published under the device in Home Assistant (tracker, connectivity, IP sensor, latency).
+    Extensible: future diagnostic or state entities (e.g. MAC, vendor, RSSI, open ports)
+    can be plugged here as additional entries reading from topics['attrs'] or dedicated topics."""
+    cmps = {
+        "tracker": {
+            "p": "device_tracker", "unique_id": uid + "_tracker", "name": None,
+            "state_topic": topics["state"], "json_attributes_topic": topics["attrs"],
+            "source_type": "router", "payload_home": "home", "payload_not_home": "not_home",
+        },
+        "connectivity": {
+            "p": "binary_sensor", "unique_id": uid + "_connectivity", "name": "Connectivity",
+            "device_class": "connectivity", "state_topic": topics["state"],
+            "payload_on": "home", "payload_off": "not_home",
+        },
+        "ip": {
+            "p": "sensor", "unique_id": uid + "_ip", "name": "IP Address",
+            "state_topic": topics["attrs"], "value_template": "{{ value_json.ip }}",
+            "entity_category": "diagnostic", "icon": "mdi:ip-network",
+        },
+    }
+    if with_latency:
+        cmps["latency"] = {
+            "p": "sensor", "unique_id": uid + "_latency", "name": "Latency",
+            "unit_of_measurement": "ms", "device_class": "duration", "state_class": "measurement",
+            "entity_category": "diagnostic", "state_topic": topics["latency"],
+        }
+    return cmps
+
+
 def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
     """Discovery payload of a network device: device_tracker,
-    connectivity binary_sensor and (if the latency is known) latency sensor."""
+    connectivity binary_sensor, IP sensor and (if the latency is known) latency sensor."""
     sid = slug(dev["id"])
     uid = "vedetta_" + sid
     topics = device_topics(dev["id"])
@@ -79,24 +109,7 @@ def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
         device["manufacturer"] = brand
     if kind:
         device["model"] = kind
-    cmps = {
-        "tracker": {
-            "p": "device_tracker", "unique_id": uid + "_tracker", "name": None,
-            "state_topic": topics["state"], "json_attributes_topic": topics["attrs"],
-            "source_type": "router", "payload_home": "home", "payload_not_home": "not_home",
-        },
-        "connectivity": {
-            "p": "binary_sensor", "unique_id": uid + "_connectivity", "name": "Connectivity",
-            "device_class": "connectivity", "state_topic": topics["state"],
-            "payload_on": "home", "payload_off": "not_home",
-        },
-    }
-    if with_latency:
-        cmps["latency"] = {
-            "p": "sensor", "unique_id": uid + "_latency", "name": "Latency",
-            "unit_of_measurement": "ms", "device_class": "duration", "state_class": "measurement",
-            "entity_category": "diagnostic", "state_topic": topics["latency"],
-        }
+    cmps = _device_components(uid, topics, dev, with_latency)
     return {"dev": device, "o": _origin(), "cmps": cmps, "availability_topic": STATUS_TOPIC}
 
 
@@ -184,7 +197,8 @@ def _add_device_entries(out: dict[str, str], did: str, dev: dict, kind: str | No
     out[topics["state"]] = "home" if dev.get("online") else "not_home"
     out[topics["attrs"]] = _j(device_attrs(dev, kind))
     if did in latency_seen:
-        out[topics["latency"]] = "None" if dev.get("latency_ms") is None else str(dev["latency_ms"])
+        lat = dev.get("latency_ms")
+        out[topics["latency"]] = str(round(lat)) if lat is not None else "None"
 
 
 def _is_published(did: str, shared: set[str] | None) -> bool:

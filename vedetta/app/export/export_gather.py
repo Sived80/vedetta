@@ -1,7 +1,7 @@
 """export_gather: moved out of export_engine.py (see tools/split_module.py)."""
 from pathlib import Path
 from .export_estimate import _period_db, filter_jsonl, filter_log
-from . import anonymize
+from . import anonymize, export_analysis
 from ..storage import devices_config, journal, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
@@ -11,6 +11,7 @@ import json
 from . import export_zip as legacy
 from .. import maintenance, paths
 import platform
+import re
 import sqlite3
 from ..state import state
 import tempfile
@@ -73,6 +74,11 @@ def _fill_manifest_header(p):
         pending = None
     m["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
     m["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
+    try:
+        st = mqtt_ha.service.status()
+        m["mqtt"] = {"enabled": bool(st.get("enabled")), "connected": bool(st.get("connected"))}
+    except Exception:
+        m["mqtt"] = {"enabled": False, "connected": False}
     return device_debug_, ha_data_, data_dir, m
 
 
@@ -191,6 +197,13 @@ def _focus_days(since: float | None, until: float | None):
     return FOCUS_DEFAULT_DAYS if since is None else max(1, round((until - since) / 86400))
 
 
+def _clean_note(raw: str | None) -> str | None:
+    if not raw:
+        return raw
+    s = re.sub(r"[\u200b-\u200f\u202a-\u202e\ufeff]", "", str(raw)).strip()
+    return s or None
+
+
 def _focus_entries(flagged: list[dict], ha_data_, dbg: dict, evi: dict, h_since: float, history) -> list[dict]:
     """One entry per flagged device that is still in the state: card, evidence, debug and the history since h_since."""
     entries = []
@@ -201,7 +214,7 @@ def _focus_entries(flagged: list[dict], ha_data_, dbg: dict, evi: dict, h_since:
             continue
         card = ha_data_.compact_device(dev, cfg)
         card.pop("focus_note", None)
-        entries.append({"id": did, "name": dev.get("name"), "note": cfg.get("focus_note"), "card": card, "evidence": evi.get(did),
+        entries.append({"id": did, "name": dev.get("name"), "note": _clean_note(cfg.get("focus_note")), "card": card, "evidence": evi.get(did),
                         "debug": (dbg.get(did) or {}).get("debug"), "history": history.device_focus(did, h_since)})
     return entries
 
@@ -212,6 +225,10 @@ def _gather_state_snapshots(p, dbg, evi, ha_data_):
     add("state/devices_debug.json", dump(dbg))
     add("state/evidence.json", dump(evi))
     add("state/devices_compact.json", dump(ha_data_.compact_all(state.sorted_devices())))
+    try:
+        add("state/analysis.json", dump(export_analysis.build_analysis_snapshot()))
+    except Exception:
+        p.manifest["notes"].append("analysis: unavailable")
     add("state/ha_registry.json", dump({"status": ha_registry.status(), "by_mac": ha_registry._state["by_mac"], "by_ip": ha_registry._state["by_ip"]}))
     add("state/mdns_seen.json", dump({"by_mac": mdns_listener.by_mac, "by_ip": mdns_listener.by_ip}))
     add("state/roles.json", dump(roles.snapshot()))

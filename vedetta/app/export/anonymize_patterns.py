@@ -11,7 +11,9 @@ import re
 # fingerprint that looks like a MAC...). IPs and MACs used as KEYS are still replaced.
 _KEEP = {"icon", "type", "type_user", "adapter", "logo", "logo_color", "brand", "brand_source", "brand_confidence", "vendor",
          "vendor_role", "name_source", "family", "category", "kind", "ssh_hostkey", "http_server",
-         "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains"}
+         "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains",
+         "state", "reasons", "badges", "scores", "chosen", "group", "corner", "thresholds",
+         "version", "generated", "since", "age_s", "analysing_for_s"}
 
 
 # Product word found in a name -> label (data/product_words.json). The first rule that matches wins.

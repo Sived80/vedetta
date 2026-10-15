@@ -102,6 +102,7 @@ The functions that were restructured have a reference test that was generated fr
 | `export/anonymize_audit.py` | AuditMixin: methods of Anonymizer that belong together (moved out of anonymize.py by tools/split_class.py). |
 | `export/anonymize_patterns.py` | anonymize_patterns: moved out of anonymize.py (see tools/split_module.py). |
 | `export/anonymize_registry.py` | anonymize_registry: the part of the Anonymizer that knows the real values (addresses, MACs, names, areas) and gives each one its placeholder. |
+| `export/export_analysis.py` | export_analysis: build the enriched analysis state (state/analysis.json) for diagnosis and privacy. |
 | `export/export_db.py` | export_db: how the export walks the text stored in a copy of the history database - every table, every column, every distinct text value - and masks it in place. |
 | `export/export_engine.py` | The export for analysis, in two phases and for two readers. |
 | `export/export_estimate.py` | export_estimate: moved out of export_engine.py (see tools/split_module.py). |

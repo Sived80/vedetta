@@ -3,11 +3,17 @@
    the same elements (.icon-btn, .menu, tokens). */
 
 @layer components {
-  /* Flag button of the More info actions */
+  /* Flag button of the More info actions: plain icon button, no word; blue (primary theme colour) when flagged */
   .mi-flag { margin-right: auto; border: 1px solid var(--divider-color); }
-  /* On: orange (the colour of attention in the page) and with a word, so that it never depends on the colour alone. */
-  .mi-flag.on { width: auto; gap: 6px; padding-inline: 8px 12px; color: var(--warning-text-color, var(--warning-color)); border-color: var(--warning-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
-  .mi-flag-txt { font-size: 13px; font-weight: 500; line-height: 1; white-space: nowrap; }
+  .mi-flag.on {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 16%, transparent);
+  }
+  .mi-flag.on:hover {
+    color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 24%, transparent);
+  }
 
   @media (pointer: coarse) {
     /* Touch target of the segmented buttons on coarse pointers */

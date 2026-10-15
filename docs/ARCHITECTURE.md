@@ -238,7 +238,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 358 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/ignored.js` | 332 | ignored devices |
-| `js/live.js` | 245 | update |
+| `js/live.js` | 247 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 183 | Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 275 | Flag the device for the report: its card, history and this note go in the export for analysis. |
@@ -257,5 +257,5 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/50-tile.css` | 190 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 80 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
-| `css/80-more-info.css` | 244 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/80-more-info.css` | 250 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 

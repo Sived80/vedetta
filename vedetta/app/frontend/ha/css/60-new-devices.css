@@ -7,11 +7,11 @@
 }
 
 @layer components {
-  /* The card: a ring in the icon of each row, a bar of two buttons under the title, nothing moves when a button is pressed (the
-     two cells of buttons, --c1 and --c2, are always there and have the same width in the bar and in the rows; the progress bar
-     has its place). */
+  /* The card: a ring in the icon of each row, a bar of two buttons in line with the title or aligned with row actions,
+     nothing moves when a button is pressed (the two cells of buttons, --c1 and --c2, have identical widths and gap
+     in the bar and in the rows; the progress bar has its place). */
   #card-new {
-    --c1: 124px; --c2: 84px; overflow: clip; container-type: inline-size;
+    --c1: 140px; --c2: 96px; --nd-gap: 6px; overflow: clip; container-type: inline-size;
   }
   #card-new .card-header { min-height: 72px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 16px 16px; }
   #card-new .card-header .ch-text { flex: 1; min-width: 160px; }
@@ -25,21 +25,22 @@
   .nd-text { flex: 1; min-width: 0; }
   .nd-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nd-sub { font-size: 12px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .nd-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+  .nd-actions { display: flex; align-items: center; gap: var(--nd-gap, 6px); margin-left: auto; }
 }
 
 @layer overrides {
   #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); order: -1; margin: 0 4px 0 0; }
-  #card-new .nd-bar-actions { display: grid; grid-template-columns: var(--c1) var(--c2); justify-content: end; gap: 4px; margin-left: auto; flex: none; }
+  #card-new .nd-bar-actions, #card-new .nd-actions {
+    display: grid; grid-template-columns: var(--c1) var(--c2); gap: var(--nd-gap, 6px); align-items: center; justify-content: end; margin-left: auto; flex: none;
+  }
   #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 36px; display: flex; align-items: center; justify-content: center; min-width: 0; }
   #card-new .nd-bar-actions > .btn, #card-new .nd-actions > .btn {
-    width: 100%; height: 36px; min-height: 36px; padding: 0 6px; box-sizing: border-box; white-space: nowrap; font-size: 13px; font-weight: 500;
+    width: 100%; height: 36px; min-height: 36px; padding: 0 8px; box-sizing: border-box; white-space: nowrap; font-size: 13px; font-weight: 500;
   }
   #card-new .nd-bar-actions > .btn:disabled { opacity: 0.7; }
   #card-new .nd-row { flex-wrap: nowrap; min-height: 64px; box-sizing: border-box; }
-  #card-new .nd-actions { display: grid; grid-template-columns: var(--c1) var(--c2); gap: 4px; align-items: center; margin-left: auto; flex: none; }
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
-  #card-new .nd-ico { display: none; }                        /* narrow card: the label goes and the icon takes its place (rule below) */
+  #card-new .nd-ico { display: none; }
   /* the ring */
   #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic, #card-new .nd-row.nd-done .nd-ic { background: transparent; }
   .nd-ring { width: 30px; height: 30px; }
@@ -66,13 +67,12 @@
     .nd-ring .sp, .nd-mini .sp { animation: none; }
   }
   @container (max-width: 480px) {
-    /* narrow card (a phone, or the narrow frame of Home Assistant): the main button stays beside the device; "Ignore" and "In
-       progress" become a small icon; the bar uses the whole width */
-    #card-new .nd-bar-actions { grid-template-columns: 1fr 1fr; width: 100%; }
-    #card-new .nd-actions { grid-template-columns: 92px 40px; }
-    #card-new .nd-lbl { display: none; }
-    #card-new .nd-ico { display: inline-flex; }
+    #card-new { --c1: 110px; --c2: 74px; }
+    #card-new .card-header { padding: 14px 12px; }
+    .nd-list { padding: 4px 6px; }
+    .nd-row { padding: 6px 6px; }
+    #card-new .nd-bar-actions, #card-new .nd-actions { grid-template-columns: var(--c1) var(--c2); }
     #card-new .nd-actions .btn { padding: 0 4px; }
-    #card-new .nd-actions > :nth-child(2) .mdi { width: 20px; height: 20px; }
+    #card-new .nd-bar-actions .btn { padding: 0 4px; }
   }
 }

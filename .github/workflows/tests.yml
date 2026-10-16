@@ -2,8 +2,12 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - release/**
+      - ci/**
   pull_request:
+  workflow_dispatch:
 
 jobs:
   tests:

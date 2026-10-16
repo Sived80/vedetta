@@ -33,10 +33,10 @@ class Anonymizer(Registry, AuditMixin):
     def _note_words(self) -> dict[str, str]:
         """Word -> placeholder, for each single word of a registered name or area (the first one found wins)."""
         words: dict[str, str] = {}
-        for key, label in {**self._names, **self._areas}.items():
-            for w in key.split("-"):
-                if self._is_personal_word(w):
-                    words.setdefault(w, label)
+        items = [(w, label) for key, label in {**self._names, **self._areas}.items() for w in key.split("-")]
+        for w, label in items:
+            if self._is_personal_word(w):
+                words.setdefault(w, label)
         return words
 
     @staticmethod

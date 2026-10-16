@@ -4,10 +4,19 @@
 @layer layout {
   @media (max-width: 520px) {
     .live-text { display: none; }
+    .live { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 50%; }
+  }
+  @container (max-width: 440px) {
+    .live-text { display: none; }
+    .live { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 50%; }
   }
 
   /* Compact mode (?compact=1): no brands, scan button, search or tile; smaller circle. */
-  html[data-compact] .brands, html[data-compact] #btn-scan { display: none; }
+  html[data-compact] .hero-side,
+  html[data-compact] .brands,
+  html[data-compact] #btn-scan,
+  html[data-compact] .card-tools .menu-wrap,
+  html[data-compact] .card-tools .live { display: none; }
   html[data-compact] .gauge { --g: 96px; }
   html[data-compact] .gauge-value { font-size: 28px; line-height: 28px; }
 }
@@ -15,10 +24,10 @@
 @layer components {
   /* Live status pill (a button that opens the pause menu), Home Assistant sizes, and the dot of the compact title. */
   .live {
-    display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; flex: none;
-    border: 1px solid var(--divider-color); border-radius: 18px; background: transparent; color: var(--secondary-text-color); font-size: 14px;
+    display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; flex: none;
+    border: 1px solid var(--divider-color); border-radius: 16px; background: transparent; color: var(--secondary-text-color); font-size: 13px;
   }
-  .live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--disabled-text-color); }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--disabled-text-color); flex: none; }
   .live.ok .live-dot { background: var(--success-color); animation: live-pulse 2.4s ease-out infinite; }
   .live.bad .live-dot { background: var(--error-color); }
   .live.bad { color: var(--error-text-color); }
@@ -42,17 +51,18 @@
   .spin-g { transform-box: view-box; transform-origin: 12px 12px; }
   .icon-btn.spinning .spin-g { animation: spin 0.9s linear infinite; }
 
-  /* Circle: types on the inner ring, the real check cycle on the outer one (data-phase of the card, set by net-gauge.js). */
-  .gauge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+  /* Hero row: circle with button below on the left, search and rotating tile on the right */
+  .hero-row { display: flex; align-items: flex-start; gap: 16px; width: 100%; }
+  .gauge-col { display: flex; flex-direction: column; align-items: center; gap: 14px; flex: 0 0 auto; }
   .gauge { --g: 132px; position: relative; width: var(--g); height: var(--g); flex: none; }
   .gauge > svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .g-track { fill: none; stroke-width: 9; stroke: color-mix(in srgb, var(--secondary-text-color) 22%, transparent); }
-  .g-seg { fill: none; stroke-width: 9; stroke: var(--cc); background: none; cursor: pointer; transition: opacity 0.2s, filter 0.15s; }
+  .g-track { fill: none; stroke-width: 10; stroke-linecap: round; stroke: color-mix(in srgb, var(--secondary-text-color) 20%, transparent); }
+  .g-seg { fill: none; stroke-width: 10; stroke-linecap: round; stroke: var(--cc); background: none; cursor: pointer; transition: opacity 0.2s, filter 0.15s; }
   .g-seg:hover { filter: brightness(1.25); }
   .gauge.has-hl .g-seg:not(.hl) { opacity: 0.22; }
   .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
-  .gauge-value { font-size: 36px; line-height: 36px; font-weight: 400; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-  .gauge-of { max-width: 76px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 16px; color: var(--secondary-text-color); }
+  .gauge-value { font-size: 36px; line-height: 40px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .gauge-of { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); margin-top: 2px; text-align: center; }
   .cycg { transform-box: view-box; transform-origin: 60px 60px; }
   .cyc { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--primary-color); transition: stroke-dasharray 1s linear, stroke 0.3s; }
   #card-network[data-phase="scan"] .cycg { animation: spin 1.1s linear infinite; }
@@ -70,19 +80,39 @@
   .newdot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--new); animation: ping 2.6s ease-out infinite; pointer-events: none; }
   .newdot:hover { filter: brightness(1.1); }
 
-  /* Split button beside the circle: network scan + deep search menu, 36 px, as wide as its content. */
-  .gauge-side { flex: none; display: flex; align-items: center; }
+  /* Split button centered under the circle, distanced like header to circle (14px) */
+  .gauge-side { flex: none; display: flex; justify-content: center; width: 100%; }
   .split { position: relative; display: inline-flex; }
   .split .btn { height: 36px; min-height: 36px; padding: 0 14px; border-radius: 18px; font-size: 13px; gap: 6px; white-space: nowrap; }
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .split .split-more { min-width: 0; padding: 0 8px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
-  /* Search (short) and the rotating tile, same height. */
-  .card-row { display: flex; align-items: stretch; gap: 8px; }
-  .card-row .search { flex: 0 0 38%; }
-  .card-row.solo .search { flex: 1 1 auto; }
+  /* Hero side: search + tile stacked, filling space, vertically centered to the 132px circle, right-aligned */
+  .hero-side {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 132px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero-side .search {
+    flex: 0 0 48px;
+    height: 48px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--field);
+  }
+  .hero-side .nettile {
+    flex: 0 0 48px;
+    height: 48px;
+    width: 100%;
+    box-sizing: border-box;
+  }
   .nettile {
-    flex: 1 1 0; min-width: 0; height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
+    height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
     border: 1px solid transparent; border-radius: 24px; background: var(--field); color: inherit; transition: background-color 0.15s;
   }
   .nettile[hidden] { display: none; }
@@ -149,7 +179,7 @@
   }
   .badge em { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
 
-  /* Brands (bar and legend; the colour slots are shared with the circle). */
+  /* Brands (bar and legend; vivid colours shared with the circle). */
   .brands { margin-top: 4px; }
   .brands-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); margin-bottom: 8px; }
   .brand-bar { display: flex; gap: 2px; height: 8px; margin-bottom: 12px; border-radius: 4px; overflow: hidden; }
@@ -159,34 +189,31 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .b-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .b-n { color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
-  .c1 { --cc: var(--ha-c1); }
-  .c2 { --cc: var(--ha-c2); }
-  .c3 { --cc: var(--ha-c3); }
-  .c4 { --cc: var(--ha-c4); }
-  .c5 { --cc: var(--ha-c5); }
-  .c6 { --cc: #009688; }
-  .c7 { --cc: #795548; }
-  .c8 { --cc: #3f51b5; }
-  .c-other { --cc: var(--disabled-text-color); }
+  .c1 { --cc: #00b0ff; }
+  .c2 { --cc: #ff9800; }
+  .c3 { --cc: #22c55e; }
+  .c4 { --cc: #a855f7; }
+  .c5 { --cc: #ec4899; }
+  .c6 { --cc: #14b8a6; }
+  .c7 { --cc: #eab308; }
+  .c8 { --cc: #6366f1; }
+  .c-other { --cc: #78909c; }
   .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
   .dot { background: var(--cc); }
 
   /* Tools of the header and the card content. */
-  .card-tools { display: flex; align-items: center; gap: 4px; }
+  .card-tools { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
   #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 16px; }
-  html[data-compact] .card-row,
-  html[data-compact] .card-tools .menu-wrap,
-  html[data-compact] .card-tools .live { display: none; }
 
   /* Narrow card / wide card: the content answers to its own width (container), the header and the padding to the window
      (a container on the card itself would pin the fixed menus of the header). */
   @media (max-width: 440px) {
     .net-logo { margin-right: 8px; }
     .ch-title sup { margin-left: 3px; padding: 1px 4px; }
-    .card-tools .icon-btn { width: 36px; height: 40px; }
+    .card-tools .icon-btn { width: 36px; height: 36px; }
   }
   @container (max-width: 400px) {
-    .card-row .search { flex-basis: 34%; }
+    .hero-side { gap: 8px; }
     .nettile { padding: 0 12px 0 14px; gap: 8px; }
     .t-body { gap: 8px; }
     .t-v { gap: 4px; }
@@ -197,8 +224,7 @@
     #card-network .card-content { padding: 0 20px 20px; }
   }
   @container (min-width: 520px) {
-    .gauge-row { gap: 28px; }
-    .card-row .search { flex-basis: 232px; }
+    .hero-row { gap: 24px; }
     .nettile { padding: 0 18px; }
     .t-v .x { display: inline; }
     .mm u { display: inline; }
@@ -223,11 +249,11 @@
   button.live:hover { background: var(--ha-hover); }
 
   /* Network card title: one line, 24 px beside the 28 px logo (the shared card title rules are above this layer). */
-  #card-network .card-header { padding: 14px 8px 14px 16px; }
-  #card-network .card-header .ch-title { flex: 1; min-width: 0; display: flex; align-items: center; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+  #card-network .card-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  #card-network .card-header .ch-title { flex: 0 0 auto; display: flex; align-items: center; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
   #card-network #net-title { position: relative; top: -1px; white-space: nowrap; }       /* optical centre of the letters = centre of the logo */
-  @media (max-width: 440px) { #card-network .card-header { padding: 10px 4px 10px 12px; } #card-network .card-header .ch-title { font-size: 21px; } }
-  @media (min-width: 600px) { #card-network .card-header { padding-left: 20px; } }
+  @media (max-width: 440px) { #card-network .card-header { padding: 10px 12px; } #card-network .card-header .ch-title { font-size: 20px; } }
+  @media (min-width: 600px) { #card-network .card-header { padding: 16px 20px; } }
 
   /* Search methods dialog (#flows). .fl-row/.fl-text/.fl-sw are also used by the deep search confirm in More info. */
   #flows .mi-sub { white-space: normal; }
@@ -391,7 +417,7 @@
   #ignored .ig-menu .menu-item:focus-visible { outline-offset: -2px; background: var(--ha-hover); }
 
   /* the snackbar lives inside the modal so that "Annulla" stays clickable */
-    .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   @media (max-width: 480px) {
   }

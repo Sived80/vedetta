@@ -236,7 +236,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/debug.js` | 47 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 152 | deep search |
 | `js/export.js` | 253 | export for analysis |
-| `js/filters.js` | 235 | filters |
+| `js/filters.js` | 234 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/ignored.js` | 332 | ignored devices |
 | `js/live.js` | 247 | update |
@@ -258,7 +258,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/12-motion.css` | 156 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 404 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 430 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 193 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 78 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |

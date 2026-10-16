@@ -67,17 +67,16 @@ export function buildNetwork() {
   [NET_PARTS.live, NET_PARTS.wrap, NET_PARTS.search].forEach(function (n) { if (n) stash.appendChild(n); });
   netEl.innerHTML = headerHTML() +
     '<div class="card-content">' +
-      '<div class="gauge-row"><div class="gauge" id="gauge" role="group">' + gaugeHTML() + '</div><div class="gauge-side">' + scanButtonsHTML() + "</div></div>" +
-      '<div class="card-row" id="card-search">' + tileHTMLShell() + "</div>" +
-      '<div class="badges" id="badges">' + badgesHTML() + "</div>" +
-      '<div class="brands" id="brands"></div>' +
-    "</div>";
+    '<div class="hero-row"><div class="gauge-col"><div class="gauge" id="gauge" role="group">' + gaugeHTML() + '</div><div class="gauge-side">' + scanButtonsHTML() + '</div></div>' +
+    '<div class="hero-side" id="hero-side">' + tileHTMLShell() + '</div></div>' +
+    '<div class="badges" id="badges">' + badgesHTML() + '</div>' +
+    '<div class="brands" id="brands"></div></div>';
   // Search, real-time status and settings live inside this card: the already created
   // nodes (with their handlers) are moved here from the hidden container.
   const tools = $("card-tools");
   tools.insertBefore(NET_PARTS.live, tools.firstChild);
   tools.appendChild(NET_PARTS.wrap);
-  $("card-search").insertBefore(NET_PARTS.search, $("card-search").firstChild);
+  $("hero-side").insertBefore(NET_PARTS.search, $("hero-side").firstChild);
   const holder = $("toolbar");
   if (holder) holder.remove();
   $("btn-refresh").addEventListener("click", doRefresh);

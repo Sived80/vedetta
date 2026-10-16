@@ -5,13 +5,13 @@ import { S, animateNumber, pauseLeft } from "./core-ui.js";
 // Inner ring: the devices by type. Outer ring: the real check cycle (S.poll / S.activity), told by the card's data-phase:
 // idle (accent arc filling up to the next check), scan (short arc that turns), deep (full ring that blinks),
 // pause (amber arc that empties while the pause runs), stop (full red ring until the service is resumed).
-var R_TYPES = 48, SW_TYPES = 9, TYPE_GAP = 2, R_CYCLE = 58;
+var R_TYPES = 48, SW_TYPES = 10, TYPE_GAP = 3, R_CYCLE = 58;
 var TYPES_C = 2 * Math.PI * R_TYPES, CYCLE_C = 2 * Math.PI * R_CYCLE;
 var SCAN_ARC = 0.22;
 var hovered = null;                 // type under the pointer: the centre shows its count
 
 export function gaugeHTML() {
-  return '<svg viewBox="0 0 120 120" role="img"><circle class="g-track" cx="60" cy="60" r="' + R_TYPES + '"></circle><g id="g-types"></g>' +
+  return '<svg viewBox="0 0 120 120" role="img"><circle class="g-track" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round"></circle><g id="g-types"></g>' +
     '<g class="cycg"><circle class="cyc" id="cyc" cx="60" cy="60" r="' + R_CYCLE + '" stroke-dasharray="0 ' + CYCLE_C.toFixed(2) + '" transform="rotate(-90 60 60)"></circle></g></svg>' +
     '<div class="gauge-center"><span class="gauge-value" id="g-val">0</span><span class="gauge-of" id="g-of"></span></div>' +
     '<button type="button" class="newdot" id="newdot" hidden></button>';
@@ -30,7 +30,7 @@ function paintTypes(c) {
   let off = 0, html = "";
   keys.forEach(function (k) {
     const arc = TYPES_C * c.types[k] / c.total, len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
-    html += '<circle class="g-seg c' + (TYPE_ORDER.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
+    html += '<circle class="g-seg c' + (TYPE_ORDER.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
       '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(typePlural(k) + ": " + c.types[k]) + "</title></circle>";
     off += arc;
   });

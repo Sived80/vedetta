@@ -11,7 +11,7 @@ export function spark(values, w, h) {
   const line = pts.map(function (p) { return fix(p[0]) + "," + fix(p[1]); }).join(" ");
   const last = pts[pts.length - 1], iMin = values.indexOf(lo), iMax = values.indexOf(hi);
   function dot(p, cls, r) { return '<circle class="' + cls + '" cx="' + fix(p[0]) + '" cy="' + fix(p[1]) + '" r="' + r + '"></circle>'; }
-  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' +
+  return '<svg class="sp-svg" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" aria-hidden="true">' +
     '<polygon class="sp-area" points="' + fix(pts[0][0]) + "," + h + " " + line + " " + fix(last[0]) + "," + h + '"></polygon>' +
     '<polyline class="sp-line" points="' + line + '"></polyline>' +
     dot(pts[iMin], "sp-min", 2.4) + dot(pts[iMax], "sp-max", 2.4) + dot(last, "sp-last", 2.8) + "</svg>";
@@ -21,9 +21,9 @@ export function spark(values, w, h) {
 export function bars(values, w, h) {
   if (!values.length) return "";
   const lo = Math.min.apply(null, values), span = Math.max.apply(null, values) - lo, gap = 2, bw = (w - (values.length - 1) * gap) / values.length;
-  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' + values.map(function (v, i) {
-    const bh = span ? 5 + (v - lo) / span * (h - 5) : h * 0.6;       // all equal: flat bars
-    return '<rect class="cb' + (i === values.length - 1 ? " now" : "") + '" x="' + fix(i * (bw + gap)) + '" y="' + fix(h - bh) + '" width="' + fix(bw) + '" height="' + fix(bh) + '" rx="1.5"></rect>';
+  return '<svg class="sp-svg" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' + values.map(function (v, i) {
+    const bh = span ? 5 + (v - lo) / span * (h - 5) : h * 0.6;
+    return '<rect class="cb' + (i === values.length - 1 ? " now" : "") + '" x="' + fix(i * (bw + gap)) + '" y="' + fix(h - bh) + '" width="' + fix(bw) + '" height="' + fix(bh) + '" rx="2"></rect>';
   }).join("") + "</svg>";
 }
 

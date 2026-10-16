@@ -249,7 +249,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/net-charts.js` | 38 | Small inline SVG charts of the rotating tile of the Network card. Colours come from the CSS classes (40-network.css). |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 142 | rotating tile of the Network card |
+| `js/net-rotator.js` | 160 | rotating tile of the Network card |
 | `js/network.js` | 60 | pause |
 | `js/new-devices.js` | 309 | new devices |
 | `js/tile.js` | 308 | tile |
@@ -258,7 +258,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/12-motion.css` | 156 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 408 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 442 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 193 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 78 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |

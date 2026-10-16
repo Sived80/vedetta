@@ -33,20 +33,27 @@ export function sampleCycle() {
   return taken;
 }
 
-function tileHTML(label, value, extra, graph) {
-  return '<div class="t-txt"><span class="t-l">' + label + '</span><span class="t-v">' + value + (extra || "") + '</span></div><div class="t-g">' + graph + "</div>";
+function cardHTML(color, iconName, label, valueHTML, subHTML, footHTML) {
+  return '<div class="t-card" style="--c:' + color + '">' +
+    '<div class="t-head"><span class="t-ic">' + icon(iconName) + '</span><span class="t-l">' + label + '</span></div>' +
+    '<div class="t-mid"><div class="t-v">' + valueHTML + '</div>' + (subHTML ? '<div class="t-sub">' + subHTML + '</div>' : '') + '</div>' +
+    '<div class="t-foot">' + (footHTML || '') + '</div>' +
+  '</div>';
 }
 function stateDot(ok) { return '<span class="sd ' + (ok ? "ok" : "err") + '"></span>'; }
 
 function latencyTile(gw) {
   if (!gw || !gw.online || !latency.length) return null;
   const last = latency[latency.length - 1], lo = Math.min.apply(null, latency), hi = Math.max.apply(null, latency), many = latency.length > 1;
-  function chip(cls, key, v) { return '<span class="mm ' + cls + '"><u>' + esc(t("js.ha.tile." + key)) + "</u>" + ms(v) + "</span>"; }
+  function chip(cls, key, v) { return '<span class="mm ' + cls + '"><u>' + esc(t("js.ha.tile." + key)) + "</u>" + ms(v) + " ms</span>"; }
+  const sub = many ? chip("min", "min", lo) + chip("max", "max", hi) : "";
+  const foot = many ? spark(latency, 100, 32) : "";
   return {
     id: "latency",
     tip: t("js.ha.tile.latency_tip", { n: latency.length, min: ms(lo), max: ms(hi) }),
-    html: tileHTML(esc(t("js.ha.tile.latency")), '<span class="t-n">' + ms(last) + " ms</span>", many ? chip("min", "min", lo) + chip("max", "max", hi) : "",
-      many ? '<span class="sp-n">' + spark(latency, 32, 24) + '</span><span class="sp-w">' + spark(latency, 72, 24) + "</span>" : "")
+    html: cardHTML("var(--primary-color)", "wifi-arrow-up-down", esc(t("js.ha.tile.latency")),
+      '<span class="t-n">' + ms(last) + '</span> <span class="unit">ms</span>',
+      sub, foot)
   };
 }
 
@@ -55,24 +62,32 @@ function gatewayTile(gw) {
   if (!m) return null;
   const used = S.list.filter(function (d) { return d.ip && d.ip.indexOf(m[1] + ".") === 0; }).length, free = Math.max(0, SUBNET_HOSTS - used);
   const subnet = m[1] + ".0/24";
+  const pct = Math.max(0, Math.min(100, used / SUBNET_HOSTS * 100)).toFixed(1);
+  const foot = '<div class="bar-leg"><span><b>' + used + '</b> ' + esc(t("js.ha.tile.used")) + '</span><span>' + esc(t("js.ha.tile.free", { n: free })) + '</span></div>' +
+    '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
   return {
     id: "gateway",
     tip: t(gw.online ? "js.ha.tile.gateway_tip" : "js.ha.tile.gateway_tip_off", { subnet: subnet, used: used, free: free }),
-    html: tileHTML(stateDot(gw.online) + esc(t("js.ha.tile.gateway")), '<span class="t-n">' + esc(gw.ip) + "</span>", "",
-      '<span class="gw-ic">' + icon("router-wireless") + '</span><div class="gw-bar"><span class="gw-t"><b>' + used + "</b> " + esc(t("js.ha.tile.used")) +
-      '<span class="gw-f"> · ' + esc(t("js.ha.tile.free", { n: free })) + '</span></span><div class="pbar"><i style="width:' + Math.max(0, Math.min(100, used / SUBNET_HOSTS * 100)).toFixed(1) + '%"></i></div></div>')
+    html: cardHTML("#14b8a6", "router-wireless", esc(t("js.ha.tile.gateway")),
+      stateDot(gw.online) + '<span class="t-n mono">' + esc(gw.ip) + '</span>',
+      '<span class="gw-sub">' + esc(subnet) + '</span>',
+      foot)
   };
 }
 
-// Recognised = the cards that are not under analysis (S.analysis keeps only the unidentified ones).
 function lensTile() {
   const total = S.list.length;
   if (!total) return null;
   const waiting = S.list.filter(function (d) { return S.analysis[d.id]; }).length, ok = total - waiting, pct = Math.round(ok / total * 100);
+  const foot = '<div class="pbar"><i style="width:' + pct + '%; background: var(--c);"></i>' + (waiting > 0 ? '<i class="amber" style="width:' + (100 - pct) + '%;"></i>' : '') + '</div>' +
+    '<div class="bar-leg"><span><b>' + ok + '</b> ' + esc(t("js.ha.tile.recognised")) + '</span>' + (waiting > 0 ? '<span class="c-wait">' + waiting + '</span>' : '<span>100%</span>') + '</div>';
   return {
     id: "lens",
     tip: t("js.ha.tile.lens_tip", { ok: ok, total: total, pct: pct, wait: waiting }),
-    html: tileHTML(esc(t("js.ha.tile.lens")), '<span class="t-n">' + ok + " / " + total + '</span><span class="xs">' + pct + '%</span><span class="x">' + esc(t("js.ha.tile.recognised")) + "</span>", "", donut(ok, total))
+    html: cardHTML("#a855f7", "magnify", esc(t("js.ha.tile.lens")),
+      '<span class="t-n">' + ok + ' / ' + total + '</span><span class="badge-pct">' + pct + '%</span>',
+      waiting > 0 ? '<span class="c-wait">' + waiting + '</span>' : '<span class="c-ok">' + esc(t("js.ha.tile.recognised")) + '</span>',
+      foot)
   };
 }
 
@@ -80,11 +95,14 @@ function mqttTile() {
   if (!S.mqtt || !S.mqtt.active) return null;
   const on = !!S.mqtt.connected, last = cycles[cycles.length - 1];
   const value = last === undefined ? esc(t(on ? "js.ha.tile.connected" : "js.ha.tile.disconnected")) : esc(t("js.ha.tile.cycle", { s: last.toFixed(1) }));
+  const sub = last === undefined ? "" : '<span class="x">' + esc(t(on ? "js.ha.tile.connected" : "js.ha.tile.disconnected")) + '</span>';
+  const foot = cycles.length ? bars(cycles, 100, 26) : "";
   return {
     id: "mqtt",
-    tip: t(on ? "js.ha.tile.mqtt_tip" : "js.ha.tile.mqtt_tip_off", { s: last === undefined ? "–" : last.toFixed(1) }),
-    html: tileHTML(stateDot(on) + esc(t("js.ha.tile.mqtt")), '<span class="t-n">' + value + "</span>", last === undefined ? "" : '<span class="x">' + esc(t(on ? "js.ha.tile.connected" : "js.ha.tile.disconnected")) + "</span>",
-      bars(cycles, 40, 22))
+    tip: t(on ? "js.ha.tile.mqtt_tip" : "js.ha.tile.mqtt_tip_off", { s: last === undefined ? "?" : last.toFixed(1) }),
+    html: cardHTML("#ff9800", "home-assistant", esc(t("js.ha.tile.mqtt")),
+      stateDot(on) + '<span class="t-n">' + value + '</span>',
+      sub, foot)
   };
 }
 

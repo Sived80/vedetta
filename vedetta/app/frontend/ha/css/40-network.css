@@ -86,49 +86,83 @@
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .split .split-more { min-width: 0; padding: 0 7px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
-  /* Tile rotativo a destra del cerchio: 3 volte piu' alto (~178px), contenuti redistribuiti verticalmente */
+  /* Tile rotativo a destra del cerchio: 3 volte piu' alto (~178px), card verticale in puro stile HA */
   .tile-col { flex: 1 1 0; min-width: 0; display: flex; }
   .nettile {
     width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
-    justify-content: space-between; padding: 14px 16px; overflow: hidden; text-align: left;
+    justify-content: space-between; padding: 12px 14px; overflow: hidden; text-align: left;
     position: relative; border-radius: 20px; background: var(--field); color: inherit;
-    transition: background-color 0.15s; box-sizing: border-box;
+    transition: background-color 0.15s, border-color 0.15s; box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
   .nettile[hidden] { display: none; }
-  .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color)); }
-  .t-dots { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
+  .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 12%, var(--card-background-color)); }
+  .t-dots { position: absolute; top: 12px; right: 14px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
   .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: all 0.2s; }
   .t-dots i.on { background: var(--primary-color); width: 10px; border-radius: 2px; }
-  .t-body { flex: 1 1 0; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; transition: opacity 0.16s ease, transform 0.16s ease; }
-  .t-body.out { opacity: 0; transform: translateY(-5px); }
-  .t-body.pre { opacity: 0; transform: translateY(6px); transition: none; }
-  .t-txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; }
-  .t-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; line-height: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); font-weight: 600; padding-right: 48px; }
-  .t-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 20px; line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .t-n { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .t-v .xs { font-size: 14px; color: var(--primary-color); font-weight: 600; }
-  .t-v .x { display: block; width: 100%; font-size: 12px; font-weight: 400; color: var(--secondary-text-color); margin-top: 2px; }
-  .t-g { flex: none; display: flex; align-items: center; justify-content: flex-end; width: 100%; margin-top: auto; }
-  .pbar { height: 4px; display: flex; gap: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--primary-text-color) 10%, transparent); }
-  .pbar i { display: block; height: 100%; border-radius: 2px; }
+
+  .t-body { flex: 1 1 0; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: space-between; transition: opacity 0.16s ease, transform 0.16s ease; }
+  .t-body.out { opacity: 0; transform: translateY(-4px); }
+  .t-body.pre { opacity: 0; transform: translateY(5px); transition: none; }
+
+  .t-card { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+  .t-head { display: flex; align-items: center; gap: 8px; padding-right: 44px; min-width: 0; }
+  .t-ic {
+    width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; flex: none;
+    background: color-mix(in srgb, var(--c, var(--primary-color)) 16%, transparent);
+    color: var(--c, var(--primary-color));
+  }
+  .t-ic .mdi { width: 15px; height: 15px; }
+  .t-l {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 10.5px; line-height: 14px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--secondary-text-color); font-weight: 600;
+  }
+
+  .t-mid { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; margin: 4px 0; }
+  .t-v {
+    display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+    font-size: 20px; line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+  .t-v .unit { font-size: 13px; font-weight: 400; color: var(--secondary-text-color); }
+  .t-v .badge-pct {
+    font-size: 11.5px; font-weight: 600; padding: 1px 6px; border-radius: 10px;
+    background: color-mix(in srgb, var(--c, var(--primary-color)) 18%, transparent);
+    color: var(--c, var(--primary-color));
+  }
+  .t-sub {
+    font-size: 11.5px; line-height: 15px; color: var(--secondary-text-color);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .c-ok { color: var(--success-color); }
+  .c-wait { color: var(--warning-color); font-weight: 500; }
+
+  .t-foot { flex: none; width: 100%; display: flex; flex-direction: column; gap: 4px; }
+  .sp-svg { width: 100%; height: 32px; display: block; overflow: visible; }
+  
+  .pbar { height: 5px; width: 100%; border-radius: 3px; background: color-mix(in srgb, var(--primary-text-color) 10%, transparent); overflow: hidden; display: flex; }
+  .pbar i { height: 100%; border-radius: 3px; background: var(--primary-color); }
+  .pbar i.amber { background: var(--warning-color); }
+  .bar-leg { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; line-height: 14px; color: var(--secondary-text-color); }
+  .bar-leg b { font-weight: 600; color: var(--primary-text-color); }
+
   .sd { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; }
   .sd.ok { background: var(--success-color); }
   .sd.err { background: var(--error-color); }
-  .sp-n { display: block; }
-  .sp-w { display: none; }
 
-  /* Latency: min / max as small chips; the chart marks the same two points with the same colours. */
+  /* Latency chips */
   .mm {
-    --c: var(--success-color); flex: none; display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 5px; border-radius: 8px;\
+    --c: var(--success-color); flex: none; display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 5px; border-radius: 8px;
     font-size: 10.5px; line-height: 16px; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent);
   }
   .mm.max { --c: var(--warning-color); }
-  .mm u { display: none; text-decoration: none; font-weight: 500; opacity: 0.85; }
+  .mm u { display: none; }
   .mm::before { content: ""; width: 0; height: 0; border-left: 3px solid transparent; border-right: 3px solid transparent; }
-  .mm.min::before { border-top: 4.5px solid currentColor; }
-  .mm.max::before { border-bottom: 4.5px solid currentColor; }
+  .mm.min::before { border-top: 4px solid currentColor; }
+  .mm.max::before { border-bottom: 4px solid currentColor; }
   .sp-area { fill: color-mix(in srgb, var(--primary-color) 16%, transparent); }
-  .sp-line { fill: none; stroke: var(--primary-color); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .sp-line { fill: none; stroke: var(--primary-color); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
   .sp-min { fill: var(--success-color); }
   .sp-max { fill: var(--warning-color); }
   .sp-last { fill: var(--primary-color); stroke: var(--field); stroke-width: 1.2; }

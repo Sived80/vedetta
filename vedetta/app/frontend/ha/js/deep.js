@@ -1,7 +1,8 @@
-import { $, REDUCED, api, dlg, esc, icon, t } from "./core.js";
+import { $, REDUCED, api, dlg, esc, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { closePopups } from "./core-menu.js";
 import { fetchHist } from "./log.js";
+import { movingIcon, radarIcon } from "./net-icons.js";
 
 // ------------------------------------------------- deep search
 // Advanced search: system, open services, web page. Slow. From the menu (all devices, or the ones never analysed) it starts
@@ -58,7 +59,7 @@ export function updateDeepBadge() {
   const tile = deepMenuEl.querySelector('[data-deep="pending"]');
   if (tile) {
     tile.disabled = n === 0;
-    tile.querySelector("span:not(.dm-slot)").textContent = t(n ? "js.ha.deep.tile_pending_sub" : "js.ha.deep.tile_pending_done");
+    tile.querySelector(".dm-s").textContent = t(n ? "js.ha.deep.tile_pending_sub" : "js.ha.deep.tile_pending_done");
   }
 }
 function moveDeepBadge(toSlot) {
@@ -94,6 +95,11 @@ deepBadge.addEventListener("click", function (e) {
   e.stopPropagation();
   toggleDeepMenu(true);
 });
+// One row of the menu: coloured icon, title, one line of explanation and, on the right, what the row holds (the badge lands there).
+function deepItem(mode, color, iconHTML, title, sub, enabled, tail) {
+  return '<button type="button" class="dm-item rp" role="menuitem" data-deep="' + mode + '" style="--c:' + color + '"' + (enabled ? "" : " disabled") + ">" +
+    '<span class="dm-ic">' + iconHTML + '</span><span class="dm-tx"><span class="dm-t">' + esc(title) + '</span><span class="dm-s">' + esc(sub) + "</span></span>" + tail + "</button>";
+}
 export function toggleDeepMenu(open) {
   if (open === undefined) open = deepMenuEl.hidden;
   if (open === !deepMenuEl.hidden) return;         // already so: the badge must not move twice
@@ -102,10 +108,10 @@ export function toggleDeepMenu(open) {
     closePopups("deep");
     if (deepMenuEl.contains(deepBadge)) deepSplit().appendChild(deepBadge);      // never lost with the old tiles
     var pending = deepPending().length;
-    deepMenuEl.innerHTML = '<div class="dm-tiles">' +
-      '<button type="button" class="dm-tile rp" role="menuitem" data-deep="all">' + icon("magnify") + "<b>" + esc(t("js.ha.deep.tile_all")) + "</b><span>" + esc(t("js.ha.deep.tile_all_sub")) + "</span></button>" +
-      '<button type="button" class="dm-tile rp" role="menuitem" data-deep="pending"' + (pending ? "" : " disabled") + ">" + icon("clock-outline") + "<b>" + esc(t("js.ha.deep.tile_pending")) + "</b><span>" +
-      esc(t(pending ? "js.ha.deep.tile_pending_sub" : "js.ha.deep.tile_pending_done")) + '</span><span class="dm-slot"></span></button></div>' +
+    deepMenuEl.innerHTML = '<div class="dm-head">' + radarIcon() + esc(t("js.ha.deep.title")) + "</div>" +
+      deepItem("all", "var(--primary-color)", radarIcon(), t("js.ha.deep.tile_all"), t("js.ha.deep.tile_all_sub"), true, "") +
+      deepItem("pending", "var(--warning-color)", movingIcon("magnify", "lens"), t("js.ha.deep.tile_pending"),
+        t(pending ? "js.ha.deep.tile_pending_sub" : "js.ha.deep.tile_pending_done"), pending > 0, '<span class="dm-slot"></span>') +
       '<p class="dm-foot">' + esc(t("js.ha.deep.note", { hour: "03:00" })) + "</p>";
     var btn = $("btn-deepmenu"), r = btn.getBoundingClientRect();
     deepMenuEl.style.top = Math.round(r.bottom + 4) + "px";

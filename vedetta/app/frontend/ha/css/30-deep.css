@@ -1,4 +1,4 @@
-/* Deep search: the menu of #deep-menu, its tiles and the badge on the split button. */
+/* Deep search: the menu of #deep-menu, its rows and the badge on the split button. */
 
 @layer overrides {
   /* The badge: one element that moves between the corner of the split arrow, the slot of the "pending" tile, and a fixed copy
@@ -13,20 +13,37 @@
   .deep-badge[data-at="slot"] { position: relative; }
   .deep-badge[data-at="fly"] { position: fixed; margin: 0; z-index: 2147483000; pointer-events: none; }
 
-  /* The menu: two tiles and a note. It stays in the overrides layer: the base .menu width and padding are set there too. */
-  #deep-menu { width: min(330px, calc(100vw - 16px)); padding: 8px 0 4px; }
-  .dm-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 12px 0; }
-  .dm-tile {
-    position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px; min-height: 88px; text-align: left;
-    border-radius: 14px; border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color);
+  /* The menu, in the Home Assistant style: a header, two rows (icon in a coloured circle, title and a line under it, badge slot on the
+     right) and a note. It stays in the overrides layer: the base .menu width and padding are set there too. */
+  #deep-menu { width: min(288px, calc(100vw - 16px)); padding: 0 6px 6px; }
+  .dm-head {
+    display: flex; align-items: center; gap: 8px; margin: 0 -6px 6px; padding: 11px 16px 10px; border-bottom: 1px solid var(--divider-color);
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary-text-color);
   }
-  .dm-tile:hover:not(:disabled) { background: var(--ha-hover); }
-  .dm-tile:disabled { opacity: 0.5; cursor: default; }
-  .dm-tile .mdi { width: 24px; height: 24px; margin-bottom: 4px; color: var(--secondary-text-color); }
-  .dm-tile b { font-size: 14px; font-weight: 500; }
-  .dm-tile > span:not(.dm-slot) { font-size: 12px; color: var(--secondary-text-color); line-height: 1.3; }
-  .dm-slot { position: absolute; top: 10px; right: 10px; display: inline-flex; min-width: 20px; height: 20px; align-items: center; justify-content: center; }
-  .dm-foot { margin: 8px 16px 8px; padding-top: 8px; border-top: 1px solid var(--divider-color); font-size: 12px; line-height: 1.45; color: var(--secondary-text-color); }
+  .dm-head .mdi { width: 16px; height: 16px; color: var(--primary-color); overflow: visible; }
+  .dm-item {
+    --c: var(--primary-color); display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; min-height: 56px;
+    padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--primary-text-color); text-align: left; cursor: pointer;
+    transition: background-color 0.15s; animation: item-in 0.22s ease-out both;
+  }
+  .dm-item + .dm-item { animation-delay: 0.04s; }
+  .dm-item:hover:not(:disabled), .dm-item:focus-visible { background: color-mix(in srgb, var(--c) 10%, transparent); }
+  .dm-item:disabled { opacity: 0.5; cursor: default; }
+  .dm-ic {
+    width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--c);
+    background: color-mix(in srgb, var(--c) 18%, transparent); transition: transform 0.2s, background-color 0.2s;
+  }
+  .dm-ic .mdi { width: 20px; height: 20px; overflow: visible; }
+  .dm-item:hover:not(:disabled) .dm-ic { transform: scale(1.08); background: color-mix(in srgb, var(--c) 26%, transparent); }
+  .dm-tx { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .dm-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; line-height: 18px; font-weight: 600; }
+  .dm-s { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; line-height: 15px; color: var(--secondary-text-color); }
+  .dm-slot { display: inline-flex; min-width: 20px; height: 20px; align-items: center; justify-content: center; }
+  /* The moving parts of the icons turn around the centre of the 24 px box. */
+  .sweep { transform-box: view-box; transform-origin: 12px 12px; }
+  .dm-item:hover:not(:disabled) .sweep { animation: spin 1.2s linear infinite; }
+  .dm-item:hover:not(:disabled) .lens { animation: lens-bob 0.9s ease-in-out infinite; }
+  .dm-foot { margin: 6px 10px 4px; padding-top: 8px; border-top: 1px solid var(--divider-color); font-size: 12px; line-height: 1.45; color: var(--secondary-text-color); }
   @media (prefers-reduced-motion: reduce) {
     .deep-badge { will-change: auto; }
   }

@@ -1,11 +1,14 @@
-import { $, REDUCED, ago, api, esc, icon, t } from "./core.js";
-import { S, animateNumber, fmtLeft, pauseLeft, renderLive, snack } from "./core-ui.js";
+import { $, REDUCED, api, esc, icon, t } from "./core.js";
+import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
 import { renderNew } from "./new-devices.js";
 import { schedule } from "./live.js";
+import { bindGauge, gaugeHTML, paintCycle, paintGauge, paintNewDot } from "./net-gauge.js";
+import { logoHTML, movingIcon } from "./net-icons.js";
+import { mountTile, paintTile, sampleCycle, tileHTMLShell } from "./net-rotator.js";
 
 // ------------------------------------------------------------ filters
-// Chosen from the badges of the "Network" card (All, Online, Offline, Mobile).
+// Chosen from the badges of the "Network" card (All, Online, Offline, Mobile) and from the segments of its circle (type).
 export function matches(d) {
   const f = S.filter;
   if (f.status === "online" && !d.online) return false;
@@ -34,150 +37,83 @@ function setFilter(kind, value) {
 
 // ---------------------------------------------------------- "Network" card
 export var netEl = $("card-network");
-var GAUGE_C = 2 * Math.PI * 52;
-// Number and ring advance together (same duration and same curve): a CSS
-// transition on the ring does not start on first draw, when the element is born already at its final value.
-function animateGauge(online, total) {
-  const fill = $("g-fill"), val = $("g-val");
-  const to = total ? online / total : 0;
-  function paint(r, n) {
-    fill._cur = r; val._cur = n;
-    fill.setAttribute("stroke-dashoffset", (GAUGE_C * (1 - r)).toFixed(2));
-    val.textContent = String(n);
-  }
-  if (REDUCED) { cancelAnimationFrame(fill._raf || 0); fill._r = to; val._v = online; paint(to, online); return; }
-  // Same values as before: do not touch the animation possibly in progress
-  // (the card is updated several times in a row as soon as it is drawn).
-  if (fill._r === to && val._v === online) return;
-  const from = fill._cur == null ? 0 : fill._cur, fromN = val._cur == null ? 0 : val._cur;
-  fill._r = to;
-  val._v = online;
-  cancelAnimationFrame(fill._raf || 0);
-  const start = performance.now(), dur = 700;
-  (function step(now) {
-    const p = Math.min(1, (now - start) / dur);
-    const e = 1 - Math.pow(1 - p, 3);
-    paint(from + (to - from) * e, Math.round(fromN + (online - fromN) * e));
-    if (p < 1) fill._raf = requestAnimationFrame(step);
-  })(start);
-}
-
-// The app name appears in the title only if HA does not show its bar
-// (wide window or page opened outside HA); with the HA bar it is already written there.
-var haBar = false;
-function renderNetTitle() {
-  const title = $("net-title"), sub = $("net-sub");
-  if (!title || !sub) return;
-  const cnt = t("js.ha.devices_count", { n: S.list.length });
-  title.textContent = haBar ? t("js.ha.network") : "Vedetta";
-  sub.textContent = haBar ? cnt : t("js.ha.network") + " · " + cnt;
-}
-window.addEventListener("message", function (e) {
-  if (e.source !== window.parent || !e.data || e.data.type !== "home-assistant/properties") return;
-  const narrow = !!e.data.narrow;
-  if (narrow !== haBar) { haBar = narrow; renderNetTitle(); }
-});
-if (window.parent !== window) {
-  try { window.parent.postMessage({ type: "home-assistant/subscribe-properties" }, "*"); } catch (err) {}
-}
+var FALLBACK_VERSION = "0.7.1";
+function versionText() { return "v" + String(window.VEDETTA_VERSION || S.version || FALLBACK_VERSION).replace(/^v/i, ""); }
 
 // Search, real-time status and settings: nodes created only once (with their
 // handlers) and moved into the network card. If the card is rebuilt (resync
 // after a service restart or a roles change) they must be put in a safe place first, otherwise they
 // would vanish with the old content and the buttons would stop responding.
 var NET_PARTS = null;
+var BADGES = ["all", "online", "offline", "mobile"];
+function headerHTML() {
+  return '<div class="card-header"><div class="ch-title">' + logoHTML() + '<span id="net-title">Vedetta<sup id="net-ver">' + esc(versionText()) + "</sup></span></div>" +
+    '<div class="card-tools" id="card-tools">' +
+    '<button type="button" class="icon-btn touch rp" id="btn-refresh" title="' + esc(t("js.ha.refresh")) + '" aria-label="' + esc(t("js.ha.refresh")) + '">' +
+    movingIcon("refresh", "spin-g") + "</button></div></div>";
+}
+function scanButtonsHTML() {
+  return '<div class="split"><button type="button" class="btn outlined rp" id="btn-scan">' + icon("magnify") + "<span>" + esc(t("js.ha.scan")) + "</span></button>" +
+    '<button type="button" class="btn outlined rp split-more" id="btn-deepmenu" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(t("js.ha.deep.title")) + '">' + icon("chevron-down") + "</button></div>";
+}
+function badgesHTML() {
+  return BADGES.map(function (k) {
+    return '<button type="button" class="badge rp touch" data-badge="' + k + '">' + esc(t("js.ha.badge." + k)) + " <em>0</em></button>";
+  }).join("");
+}
 export function buildNetwork() {
   if (!NET_PARTS) NET_PARTS = { live: $("live"), wrap: document.querySelector(".menu-wrap"), search: $("search-box") };
   const stash = document.createDocumentFragment();
   [NET_PARTS.live, NET_PARTS.wrap, NET_PARTS.search].forEach(function (n) { if (n) stash.appendChild(n); });
-  netEl.innerHTML =
-    '<div class="card-header"><div class="ch-text">' +
-      '<div class="ch-title"><span class="net-dot" id="net-dot"></span><span id="net-title"></span></div>' +
-      '<div class="ch-sub" id="net-sub"></div></div>' +
-      '<div class="card-tools" id="card-tools">' +
-      '<button type="button" class="icon-btn touch rp" id="btn-refresh" title="' + esc(t("js.ha.refresh")) + '" aria-label="' + esc(t("js.ha.refresh")) + '">' +
-      icon("refresh") + "</button></div></div>" +
-    '<div class="card-search" id="card-search"></div>' +
+  netEl.innerHTML = headerHTML() +
     '<div class="card-content">' +
-      '<div class="gauge-row">' +
-        '<div class="gauge" id="gauge" role="img">' +
-          '<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="g-track" cx="60" cy="60" r="52"></circle>' +
-          '<circle class="g-fill" id="g-fill" cx="60" cy="60" r="52" stroke-dasharray="' + GAUGE_C.toFixed(2) + '" stroke-dashoffset="' + GAUGE_C.toFixed(2) + '" transform="rotate(-90 60 60)"></circle></svg>' +
-          '<div class="gauge-center"><span class="gauge-value" id="g-val">0</span><span class="gauge-of" id="g-of"></span></div>' +
-        "</div>" +
-        '<div class="gauge-side">' +
-          '<div class="scan-state"><span class="scan-ic" id="scan-ic">' + icon("history") + '</span><span class="scan-text" id="scan-text"></span></div>' +
-          '<div class="split"><button type="button" class="btn outlined rp" id="btn-scan">' + icon("magnify") + "<span>" + esc(t("js.ha.scan")) + "</span></button>" +
-          '<button type="button" class="btn outlined rp split-more" id="btn-deepmenu" aria-haspopup="true" aria-expanded="false" aria-label="' + esc(t("js.ha.deep.title")) + '">' + icon("chevron-down") + "</button></div>" +
-        "</div>" +
-      "</div>" +
-      '<div class="badges" id="badges"></div>' +
+      '<div class="gauge-row"><div class="gauge" id="gauge" role="group">' + gaugeHTML() + '</div><div class="gauge-side">' + scanButtonsHTML() + "</div></div>" +
+      '<div class="card-row" id="card-search">' + tileHTMLShell() + "</div>" +
+      '<div class="badges" id="badges">' + badgesHTML() + "</div>" +
       '<div class="brands" id="brands"></div>' +
-    "</div>" +
-    '<div class="progress" id="progress" aria-hidden="true"><div class="bar" id="progress-bar"></div></div>';
+    "</div>";
   // Search, real-time status and settings live inside this card: the already created
   // nodes (with their handlers) are moved here from the hidden container.
   const tools = $("card-tools");
   tools.insertBefore(NET_PARTS.live, tools.firstChild);
   tools.appendChild(NET_PARTS.wrap);
-  $("card-search").appendChild(NET_PARTS.search);
+  $("card-search").insertBefore(NET_PARTS.search, $("card-search").firstChild);
   const holder = $("toolbar");
   if (holder) holder.remove();
   $("btn-refresh").addEventListener("click", doRefresh);
   $("btn-scan").addEventListener("click", doScan);
+  $("newdot").addEventListener("click", showNewDevices);
+  bindGauge($("gauge"), function (type) { setFilter("type", type); });
   $("badges").addEventListener("click", function (e) {
     const b = e.target.closest(".badge");
-    if (!b) return;
-    if (b.dataset.badge === "new") {
-      var card = $("card-new");
-      if (!card.hidden && card.scrollIntoView) card.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
-      return;
-    }
-    setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
+    if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
   });
+  mountTile();
 }
 
-var BADGES = [
-  ["all", "devices", "primary"],
-  ["online", "check-circle", "success"],
-  ["offline", "close-circle", "error"],
-  ["mobile", "cellphone", "primary"],
-  ["new", "plus-circle", "warning"]
-];
-export function updateNetwork() {
-  const c = counts();
-  const gauge = $("gauge");
-  if (!gauge) return;
-  updateDeepBadge();
-  const ratio = c.total ? c.online / c.total : 0;
-  const tone = !c.total ? "none" : ratio >= 0.8 ? "ok" : ratio >= 0.5 ? "warn" : "bad";
-  gauge.className = "gauge " + tone;
-  animateGauge(c.online, c.total);
-  $("g-of").textContent = t("js.ha.gauge.of", { n: c.total });
-  gauge.setAttribute("aria-label", t("js.ha.gauge.aria", { online: c.online, total: c.total }));
-  renderNetTitle();
+// The "+N" dot leads to the card of the new devices.
+function showNewDevices() {
+  const card = $("card-new");
+  if (!card.hidden && card.scrollIntoView) card.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
+}
 
-  const badges = $("badges");
-  if (!badges.firstChild) {
-    badges.innerHTML = BADGES.map(function (b) {
-      return '<button type="button" class="badge rp touch tone-' + b[2] + '" data-badge="' + b[0] + '">' +
-        '<span class="badge-ic">' + icon(b[1]) + '</span><span class="badge-val" data-v="0">0</span>' +
-        '<span class="badge-lb">' + esc(t("js.ha.badge." + b[0])) + "</span></button>";
-    }).join("");
-  }
-  const values = { all: c.total, online: c.online, offline: c.offline, mobile: c.mobile, "new": S.newDevices.count };
-  const nodes = badges.querySelectorAll(".badge");
-  for (var i = 0; i < nodes.length; i++) {
-    var key = nodes[i].dataset.badge, v = values[key];
-    var valEl = nodes[i].querySelector(".badge-val");
-    if (valEl._v !== v) {
-      var first = valEl._v == null;
-      animateNumber(valEl, v);
-      if (!first) { nodes[i].classList.remove("bump"); void nodes[i].offsetWidth; nodes[i].classList.add("bump"); }
-    }
-    nodes[i].setAttribute("aria-pressed", key === "new" ? "false" : String(S.filter.status === key));
-    nodes[i].classList.toggle("dim", key === "new" && v === 0);
-  }
+function paintBadges(c) {
+  const values = { all: c.total, online: c.online, offline: c.offline, mobile: c.mobile };
+  Array.prototype.forEach.call($("badges").children, function (b) {
+    const k = b.dataset.badge;
+    animateNumber(b.querySelector("em"), values[k]);
+    b.classList.toggle("on", S.filter.status === k);
+    b.setAttribute("aria-pressed", String(S.filter.status === k));
+  });
+}
+export function updateNetwork() {
+  if (!$("gauge")) return;
+  const c = counts();
+  updateDeepBadge();
+  paintGauge(c);
+  paintNewDot();
+  paintBadges(c);
+  paintTile(false);
   renderBrands();
 }
 
@@ -226,73 +162,15 @@ function renderBrands() {
   el.innerHTML = '<div class="brands-title">' + esc(t("js.ha.brands.title")) + '</div><div class="brand-bar">' + bar + "</div><ul>" + legend + "</ul>";
 }
 
-// Search status: text and bar (determinate = countdown to the
-// next cycle; indeterminate = something is working).
-// One line when the whole sentence fits, otherwise its two parts one under the other (measured, so the layout does not depend on it).
-function fitStatus(textEl) {
-  const box = textEl.parentElement;
-  if (!box || !box.clientWidth) return;
-  let wanted = textEl.classList.contains("stack");
-  textEl.classList.remove("stack");
-  let parts = textEl.querySelectorAll(".st-part"), sep = textEl.querySelector(".st-sep"), need = 0;
-  if (parts.length > 1) {
-    for (var i = 0; i < parts.length; i++) need += parts[i].getBoundingClientRect().width;
-    need += sep ? sep.getBoundingClientRect().width : 0;
-    var free = box.clientWidth - (textEl.getBoundingClientRect().left - box.getBoundingClientRect().left);
-    wanted = need > free + 0.5;
-  } else wanted = false;
-  textEl.classList.toggle("stack", wanted);
-}
-window.addEventListener("resize", function () { const el = $("scan-text"); if (el) fitStatus(el); });
+// Search state: the circle's ring (see net-gauge.js), the real-time pill and the buttons.
 export function updateScan() {
-  const textEl = $("scan-text");
-  if (!textEl) return;
-  let busy = false, text;
-  const rescanning = S.activity.rescanning.size;
-  syncDeepBusy();
-  if (S.activity.search) { text = t("js.ha.scan.searching"); busy = true; }
-  else if (rescanning) { text = t("js.ha.scan.deep", { n: rescanning }); busy = true; }
-  else if (S.refreshing) { text = t("js.ha.scan.refreshing"); busy = true; }
-  else if (!S.poll.known) { text = t("js.ha.scan.waiting"); busy = true; }
-  else if (S.poll.paused) {
-    var pl = pauseLeft();
-    text = pl === Infinity ? t("js.ha.pause.idle") : t("js.ha.pause.idle_left", { left: fmtLeft(pl) });
-  } else {
-    var remaining = Math.max(0, Math.ceil((S.poll.nextAt - Date.now()) / 1000));
-    if (remaining === 0) { text = t("js.ha.scan.refreshing"); }
-    else text = t("js.ha.scan.idle", { ago: ago((S.poll.nextAt - S.poll.interval) / 1000), s: remaining });
-  }
-  if (textEl.dataset.text !== text) {
-    // The parts of the sentence ("Updated now" . "next check in 24 s") are kept whole: on a narrow screen the second goes under the first
-    // (see the CSS) instead of the line breaking in the middle of a phrase.
-    textEl.innerHTML = text.split(" · ").map(function (p) { return '<span class="st-part">' + esc(p) + "</span>"; }).join('<span class="st-sep"> · </span>');
-    textEl.dataset.text = text; textEl.title = text;
-  }
-  fitStatus(textEl);
-  renderLive();
-  const prog = $("progress"), bar = $("progress-bar");
-  prog.classList.toggle("indet", busy);
-  // Pause: the bar is no longer the countdown to the next check. Timed pause = orange, it fills while the pause
-  // runs and is full when the service resumes; stopped until resumed = solid red. A busy search keeps the moving bar.
-  const pausedNow = S.poll.paused && !busy, pauseRest = pausedNow ? pauseLeft() : null;
-  prog.classList.toggle("pause-timed", pausedNow && pauseRest !== Infinity);
-  prog.classList.toggle("pause-stop", pausedNow && pauseRest === Infinity);
-  if (pausedNow) {
-    var pauseAll = S.poll.pausedTotal || Math.max(pauseRest === Infinity ? 0 : pauseRest, S.poll.pausedSeen || 0);
-    S.poll.pausedSeen = pauseAll;
-    var filled = pauseRest === Infinity || !pauseAll ? 1 : Math.min(1, Math.max(0, 1 - pauseRest / pauseAll));
-    bar.style.transform = "scaleX(" + filled.toFixed(3) + ")";
-  } else if (!busy) {
-    S.poll.pausedSeen = 0;
-    var pct = Math.min(1, Math.max(0, 1 - (S.poll.nextAt - Date.now()) / S.poll.interval));
-    bar.style.transform = "scaleX(" + pct.toFixed(3) + ")";
-  } else {
-    bar.style.transform = "";
-  }
-  $("scan-ic").classList.toggle("busy", busy);
-  const refreshBtn = $("btn-refresh");
-  refreshBtn.classList.toggle("spinning", S.refreshing);
   const scanBtn = $("btn-scan");
+  if (!scanBtn) return;
+  syncDeepBusy();
+  if (sampleCycle()) paintTile(false);
+  paintCycle();
+  renderLive();
+  $("btn-refresh").classList.toggle("spinning", S.refreshing);
   const scanning = S.activity.search || S.scanBusy;
   scanBtn.disabled = scanning;
   scanBtn.classList.toggle("busy", scanning);
@@ -355,4 +233,3 @@ export function doScan() {
     updateScan();
   });
 }
-

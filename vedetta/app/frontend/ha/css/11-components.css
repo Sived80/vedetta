@@ -36,7 +36,6 @@
   }
   .icon-btn:hover { background: var(--ha-hover); color: var(--primary-text-color); }
   .icon-btn.spinning { color: var(--primary-color); }
-  .icon-btn.spinning .mdi { animation: spin 0.9s linear infinite; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     min-height: 40px; padding: 0 16px; border: 1px solid transparent; border-radius: 20px;

@@ -1,15 +1,15 @@
-/* Network card: live pill, gauge, scan state, badges, brands, progress bar, search, split scan button, pause menu, and the network
-   dialogs (search methods #flows, ignored devices #ignored). */
+/* Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges,
+   brands, live pill, pause menu, and the network dialogs (search methods #flows, ignored devices #ignored). */
 
 @layer layout {
   @media (max-width: 520px) {
     .live-text { display: none; }
   }
 
-  /* Compact mode (?compact=1): no brands and no scan button, smaller gauge. */
+  /* Compact mode (?compact=1): no brands, scan button, search or tile; smaller circle. */
   html[data-compact] .brands, html[data-compact] #btn-scan { display: none; }
-  html[data-compact] .gauge { width: 96px; height: 96px; }
-  html[data-compact] .gauge-value { font-size: 28px; }
+  html[data-compact] .gauge { --g: 96px; }
+  html[data-compact] .gauge-value { font-size: 28px; line-height: 28px; }
 }
 
 @layer components {
@@ -28,118 +28,206 @@
   .live.paused.forever .live-dot { background: var(--error-color); animation: nd-blink 1.2s ease-in-out infinite; }
   .live.paused.timed { color: var(--warning-text-color); }
   .live.paused.forever { color: var(--error-text-color); }
-  .net-dot { display: none; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--disabled-text-color); }
-  html[data-compact] .net-dot { display: inline-block; }
-  .net-dot.ok { background: var(--success-color); }
-  .net-dot.bad { background: var(--error-color); }
+  /* Card tokens: the field colour of the search and the tile, and the "new device" blue. */
+  #card-network { --field: color-mix(in srgb, var(--primary-text-color) 8%, var(--card-background-color)); --new: #4dd0ff; }
 
-  /* Network card: gauge */
-  .gauge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; }
-  .gauge { --gc: var(--primary-color); position: relative; width: 132px; height: 132px; flex: none; }
-  .gauge.ok { --gc: var(--success-color); }
-  .gauge.warn { --gc: var(--warning-color); }
-  .gauge.bad { --gc: var(--error-color); }
-  .gauge.none { --gc: var(--disabled-text-color); }
-  .gauge svg { width: 100%; height: 100%; display: block; }
-  .g-track { fill: none; stroke-width: 10; stroke: color-mix(in srgb, var(--secondary-text-color) 22%, transparent); }
-  .g-fill {
-    fill: none; stroke-width: 10; stroke-linecap: round; stroke: var(--gc);
-    transition: stroke 0.4s;
+  /* Header: the Vedetta logo, the name with the version in superscript, and the tools. */
+  .net-logo { display: block; width: 28px; height: 28px; margin-right: 12px; flex: none; }
+  .ch-title sup {
+    display: inline-block; position: relative; top: -9px; margin-left: 4px; padding: 1px 5px; border-radius: 6px; vertical-align: baseline;
+    font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent);
   }
-  .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .gauge-value { font-size: 36px; line-height: 40px; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .gauge-of { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); }
-  .gauge-side { flex: 1; min-width: 160px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  /* The arc is in a group: it turns around the centre of the circle (12,12), not around the box of the arrow-and-arc figure. */
+  .spin-g { transform-box: view-box; transform-origin: 12px 12px; }
+  .icon-btn.spinning .spin-g { animation: spin 0.9s linear infinite; }
 
-  /* Scan state: the text always takes two lines, so the button below never moves. */
-  .scan-state { display: flex; align-items: flex-start; gap: 8px; min-height: 40px; color: var(--secondary-text-color); font-size: 14px; line-height: 20px; }
-  .scan-text { display: block; min-width: 0; flex: 1; }
-  .scan-text .st-part { display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: top; }
-  .scan-text .st-part:only-child { white-space: normal; }          /* a single message may use two lines */
-  /* Narrow (a phone): the two parts go one under the other, on purpose, and the dot between them is not needed (class set by the script). */
-  .scan-text.stack .st-part { display: block; }
-  .scan-text.stack .st-sep { display: none; }
-  .scan-ic { display: flex; flex: none; }
-  .scan-ic .mdi { width: 20px; height: 20px; }
-  .scan-ic.busy { color: var(--primary-color); animation: pulse 1.2s ease-in-out infinite; }
+  /* Circle: types on the inner ring, the real check cycle on the outer one (data-phase of the card, set by net-gauge.js). */
+  .gauge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .gauge { --g: 132px; position: relative; width: var(--g); height: var(--g); flex: none; }
+  .gauge > svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .g-track { fill: none; stroke-width: 9; stroke: color-mix(in srgb, var(--secondary-text-color) 22%, transparent); }
+  .g-seg { fill: none; stroke-width: 9; stroke: var(--cc); background: none; cursor: pointer; transition: opacity 0.2s, filter 0.15s; }
+  .g-seg:hover { filter: brightness(1.25); }
+  .gauge.has-hl .g-seg:not(.hl) { opacity: 0.22; }
+  .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+  .gauge-value { font-size: 36px; line-height: 36px; font-weight: 400; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .gauge-of { max-width: 76px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 16px; color: var(--secondary-text-color); }
+  .cycg { transform-box: view-box; transform-origin: 60px 60px; }
+  .cyc { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--primary-color); transition: stroke-dasharray 1s linear, stroke 0.3s; }
+  #card-network[data-phase="scan"] .cycg { animation: spin 1.1s linear infinite; }
+  #card-network[data-phase="scan"] .cyc, #card-network[data-phase="deep"] .cyc, #card-network[data-phase="stop"] .cyc { transition: none; }
+  #card-network[data-phase="deep"] .cyc { animation: deep-blink 1.1s ease-in-out infinite; }
+  #card-network[data-phase="pause"] .cyc { stroke: var(--warning-color); }
+  #card-network[data-phase="stop"] .cyc { stroke: var(--error-color); }
 
-  /* Split button under the scan state: network scan + deep search menu. */
-  .split { display: inline-flex; }
-  .gauge-side .split { margin-top: 10px; align-self: flex-start; }
-  .split #btn-scan { align-self: flex-start; border-top-right-radius: 0; border-bottom-right-radius: 0; }
-  .split .split-more { min-width: 0; padding: 0 8px; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
-  .split .split-more .mdi { width: 20px; height: 20px; }
+  /* "+N" new devices: the look of the deep search badge, in blue, with a slow ping. */
+  .newdot {
+    position: absolute; top: 12px; right: 12px; z-index: 2; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center;
+    background: var(--new); color: #06222d; font-size: 11px; font-weight: 700; line-height: 20px; text-align: center; box-shadow: 0 0 0 2px var(--card-background-color);
+  }
+  .newdot[hidden] { display: none; }
+  .newdot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--new); animation: ping 2.6s ease-out infinite; pointer-events: none; }
+  .newdot:hover { filter: brightness(1.1); }
 
-  /* Badges (like the HA badges): no border, icon without circle; value and label with the same size and line, centred with the
-     icon. Hover and pressed are in the overrides layer. */
-  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  /* Split button beside the circle: network scan + deep search menu, 36 px, as wide as its content. */
+  .gauge-side { flex: none; display: flex; align-items: center; }
+  .split { position: relative; display: inline-flex; }
+  .split .btn { height: 36px; min-height: 36px; padding: 0 14px; border-radius: 18px; font-size: 13px; gap: 6px; white-space: nowrap; }
+  .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .split .split-more { min-width: 0; padding: 0 8px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
+  /* Search (short) and the rotating tile, same height. */
+  .card-row { display: flex; align-items: stretch; gap: 8px; }
+  .card-row .search { flex: 0 0 38%; }
+  .card-row.solo .search { flex: 1 1 auto; }
+  .nettile {
+    flex: 1 1 0; min-width: 0; height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
+    border: 1px solid transparent; border-radius: 24px; background: var(--field); color: inherit; transition: background-color 0.15s;
+  }
+  .nettile[hidden] { display: none; }
+  .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color)); }
+  .t-body { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; transition: opacity 0.16s ease, transform 0.16s ease; }
+  .t-body.out { opacity: 0; transform: translateY(-5px); }
+  .t-body.pre { opacity: 0; transform: translateY(6px); transition: none; }
+  .t-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 1px; }
+  .t-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; line-height: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--secondary-text-color); }
+  .t-v { display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 14px; line-height: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .t-n { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .t-v .xs, .t-v .x { flex: none; font-size: 12px; font-weight: 400; color: var(--secondary-text-color); }
+  .t-v .x { display: none; }
+  .t-g { flex: none; display: flex; align-items: center; gap: 8px; }
+  .t-dots { flex: none; display: flex; flex-direction: column; gap: 3px; }
+  .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: background-color 0.2s; }
+  .t-dots i.on { background: var(--primary-color); }
+  .pbar { height: 4px; display: flex; gap: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--primary-text-color) 10%, transparent); }
+  .pbar i { display: block; height: 100%; border-radius: 2px; }
+  .sd { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; }
+  .sd.ok { background: var(--success-color); }
+  .sd.err { background: var(--error-color); }
+  .sp-n { display: block; }
+  .sp-w { display: none; }
+
+  /* Latency: min / max as small chips; the chart marks the same two points with the same colours. */
+  .mm {
+    --c: var(--success-color); flex: none; display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 5px; border-radius: 8px;
+    font-size: 10.5px; line-height: 16px; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent);
+  }
+  .mm.max { --c: var(--warning-color); }
+  .mm u { display: none; text-decoration: none; font-weight: 500; opacity: 0.85; }
+  .mm::before { content: ""; width: 0; height: 0; border-left: 3px solid transparent; border-right: 3px solid transparent; }
+  .mm.min::before { border-top: 4.5px solid currentColor; }
+  .mm.max::before { border-bottom: 4.5px solid currentColor; }
+  .sp-area { fill: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  .sp-line { fill: none; stroke: var(--primary-color); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .sp-min { fill: var(--success-color); }
+  .sp-max { fill: var(--warning-color); }
+  .sp-last { fill: var(--primary-color); stroke: var(--field); stroke-width: 1.2; }
+  .cb { fill: color-mix(in srgb, var(--primary-color) 35%, transparent); }
+  .cb.now { fill: var(--primary-color); }
+
+  /* Lens: recognised (accent) / being analysed (amber). */
+  .donut { width: 24px; height: 24px; flex: none; }
+  .dn-track { stroke: color-mix(in srgb, var(--secondary-text-color) 22%, transparent); }
+  .dn-ok { stroke: var(--primary-color); }
+  .dn-wait { stroke: var(--warning-color); }
+
+  /* Gateway: router and subnet occupancy. */
+  .gw-ic { width: 28px; height: 28px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  .gw-ic .mdi { width: 18px; height: 18px; }
+  .gw-bar { width: 46px; display: flex; flex-direction: column; gap: 3px; }
+  .gw-bar .pbar { width: 100%; }
+  .gw-t { font-size: 10.5px; line-height: 13px; white-space: nowrap; color: var(--secondary-text-color); }
+  .gw-t b { font-weight: 600; color: var(--primary-text-color); }
+  .gw-t .gw-f { display: none; }
+
+  /* The four filters. */
+  .badges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .badge {
-    --tone: var(--primary-color);
-    display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 18px;
-    border: 0; background: color-mix(in srgb, var(--primary-text-color) 6%, transparent); color: var(--primary-text-color);
-    transition: background-color 0.15s, border-color 0.15s, opacity 0.2s;
+    height: 36px; padding: 0 4px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--divider-color); border-radius: 18px;
+    background: transparent; color: var(--primary-text-color); font-size: 13px; font-weight: 500; white-space: nowrap; transition: background-color 0.15s, border-color 0.15s;
   }
-  .badge.tone-success { --tone: var(--success-color); }
-  .badge.tone-error { --tone: var(--error-color); }
-  .badge.tone-warning { --tone: var(--warning-color); }
-  .badge-ic { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: var(--tone); }
-  .badge-ic .mdi { width: 18px; height: 18px; }
-  .badge-val, .badge-lb { display: block; align-items: center; font-size: 13px; line-height: 1; }
-  .badge-val { margin-right: -4px; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .badge-lb { color: var(--secondary-text-color); }
-  .badge.dim { opacity: 0.55; }
-  .badge.bump { animation: bump 0.45s ease-out; }
+  .badge em { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
 
-  /* Brands (bar and legend; colours 1-5 from the tokens, 6-8 fixed) */
-  .brands { margin-top: 20px; }
+  /* Brands (bar and legend; the colour slots are shared with the circle). */
+  .brands { margin-top: 4px; }
   .brands-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); margin-bottom: 8px; }
-  .brand-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; }
-  .brand-bar i { display: block; min-width: 4px; transition: flex-grow 0.5s; }
-  .brands ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px 12px; margin-top: 10px; font-size: 13px; }
+  .brand-bar { display: flex; gap: 2px; height: 8px; margin-bottom: 12px; border-radius: 4px; overflow: hidden; }
+  .brand-bar i { display: block; min-width: 4px; border-radius: 2px; transition: flex-grow 0.5s; }
+  .brands ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px 12px; font-size: 14px; }
   .brands li { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .b-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .b-n { color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
-  .c1 { background: var(--ha-c1); }
-  .c2 { background: var(--ha-c2); }
-  .c3 { background: var(--ha-c3); }
-  .c4 { background: var(--ha-c4); }
-  .c5 { background: var(--ha-c5); }
-  .c6 { background: #009688; }
-  .c7 { background: #795548; }
-  .c8 { background: #3f51b5; }
-  .c-other { background: var(--disabled-text-color); }
+  .c1 { --cc: var(--ha-c1); }
+  .c2 { --cc: var(--ha-c2); }
+  .c3 { --cc: var(--ha-c3); }
+  .c4 { --cc: var(--ha-c4); }
+  .c5 { --cc: var(--ha-c5); }
+  .c6 { --cc: #009688; }
+  .c7 { --cc: #795548; }
+  .c8 { --cc: #3f51b5; }
+  .c-other { --cc: var(--disabled-text-color); }
+  .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
+  .dot { background: var(--cc); }
 
-  /* Progress bar (like ha-linear-progress) under the card. While the service is paused: orange and filling for a timed pause,
-     solid red when stopped until resumed. */
-  .progress { height: 4px; overflow: hidden; background: color-mix(in srgb, var(--primary-color) 18%, transparent); }
-  .progress .bar { width: 100%; height: 100%; background: var(--primary-color); transform-origin: left; transform: scaleX(0); transition: transform 1s linear; }
-  .progress.indet .bar { width: 35%; transform: none; transition: none; animation: indeterminate 1.5s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite; }
-  .progress.pause-timed { background: color-mix(in srgb, var(--warning-color) 22%, transparent); }
-  .progress.pause-timed .bar { background: var(--warning-color); }
-  .progress.pause-stop { background: color-mix(in srgb, var(--error-color) 22%, transparent); }
-  .progress.pause-stop .bar { background: var(--error-color); }
+  /* Tools of the header and the card content. */
+  .card-tools { display: flex; align-items: center; gap: 4px; }
+  #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 16px; }
+  html[data-compact] .card-row,
+  html[data-compact] .card-tools .menu-wrap,
+  html[data-compact] .card-tools .live { display: none; }
+
+  /* Narrow card / wide card: the content answers to its own width (container), the header and the padding to the window
+     (a container on the card itself would pin the fixed menus of the header). */
+  @media (max-width: 440px) {
+    .net-logo { margin-right: 8px; }
+    .ch-title sup { margin-left: 3px; padding: 1px 4px; }
+    .card-tools .icon-btn { width: 36px; height: 40px; }
+  }
+  @container (max-width: 400px) {
+    .card-row .search { flex-basis: 34%; }
+    .nettile { padding: 0 12px 0 14px; gap: 8px; }
+    .t-body { gap: 8px; }
+    .t-v { gap: 4px; }
+    .mm { padding: 0 4px; gap: 2px; }
+    .badge { font-size: 12.5px; gap: 4px; }
+  }
+  @media (min-width: 600px) {
+    #card-network .card-content { padding: 0 20px 20px; }
+  }
+  @container (min-width: 520px) {
+    .gauge-row { gap: 28px; }
+    .card-row .search { flex-basis: 232px; }
+    .nettile { padding: 0 18px; }
+    .t-v .x { display: inline; }
+    .mm u { display: inline; }
+    .mm::before { display: none; }
+    .sp-n { display: none; }
+    .sp-w { display: block; }
+    .gw-bar { width: 112px; }
+    .gw-t .gw-f { display: inline; }
+  }
 
   @media (pointer: coarse) {
     /* Touch target of the badges on coarse pointers */
     .badge { min-height: 44px; }
   }
-
-  /* Search, status and settings inside the network card. The search box is as far (16 px) from the gauge as the gauge is from
-     the buttons under it. */
-  .card-tools { display: flex; align-items: center; gap: 4px; }
-  .card-search { padding: 0 16px 16px; }
-  .card-search .search { width: 100%; }
-  html[data-compact] .card-search,
-  html[data-compact] .card-tools .menu-wrap,
-  html[data-compact] .card-tools .live { display: none; }
 }
 
 @layer overrides {
   /* Hover and pressed. The pressed badge must follow the hover one (same specificity: a pressed badge keeps its colour on hover). */
-  .badge:hover { background: color-mix(in srgb, var(--primary-text-color) 12%, transparent); }
-  .badge[aria-pressed="true"] { background: color-mix(in srgb, var(--tone) 16%, transparent); }
+  .badge:hover { background: var(--ha-hover); }
+  .badge.on, .badge[aria-pressed="true"] { background: color-mix(in srgb, var(--primary-color) 16%, transparent); border-color: var(--primary-color); color: var(--primary-color); }
+  .badge.on em { color: var(--primary-color); }
   button.live:hover { background: var(--ha-hover); }
+
+  /* Network card title: one line, 24 px beside the 28 px logo (the shared card title rules are above this layer). */
+  #card-network .card-header { padding: 14px 8px 14px 16px; }
+  #card-network .card-header .ch-title { flex: 1; min-width: 0; display: flex; align-items: center; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+  #card-network #net-title { position: relative; top: -1px; white-space: nowrap; }       /* optical centre of the letters = centre of the logo */
+  @media (max-width: 440px) { #card-network .card-header { padding: 10px 4px 10px 12px; } #card-network .card-header .ch-title { font-size: 21px; } }
+  @media (min-width: 600px) { #card-network .card-header { padding-left: 20px; } }
 
   /* Search methods dialog (#flows). .fl-row/.fl-text/.fl-sw are also used by the deep search confirm in More info. */
   #flows .mi-sub { white-space: normal; }
@@ -313,4 +401,4 @@
 }
 
 /* Network card title: no text selection or tap highlight (long press). Unlayered, as it was. */
-#card-network .card-header .ch-text { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+#card-network .card-header .ch-title { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }

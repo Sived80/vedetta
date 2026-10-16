@@ -106,12 +106,12 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   await setDevice(0, {});
   check(badge().parentElement === freshSplit && !badge().hidden, "ricostruita la scheda Rete, il badge torna sulla nuova freccia");
 
-  // --- the menu: two tiles, one note, and the number only in the badge
+  // --- the menu: two rows, one note, and the number only in the badge
   arrow().click();
   await wait(30);
   const menu = q("#deep-menu");
-  check(!menu.hidden && qa("#deep-menu .dm-tile").length === 2, "il menu ha due tessere");
-  check(!/\d/.test(qa("#deep-menu .dm-tile").map((t) => t.textContent).join(" ")), "il numero non è riscritto nelle tessere (lo porta il badge)");
+  check(!menu.hidden && qa("#deep-menu .dm-item").length === 2, "il menu ha due voci");
+  check(!/\d/.test(qa("#deep-menu .dm-item").map((t) => t.textContent).join(" ")), "il numero non è riscritto nelle voci (lo porta il badge)");
   const note = q("#deep-menu .dm-foot").textContent;
   check(note.includes("03:00") && (note.match(/03:00/g) || []).length === 1, "la spiegazione con l'ora c'è una volta sola");
   check(!menu.textContent.includes(IT ? "Ricerca approfondita…" : "Deep search…"), "niente più titoli ripetuti");
@@ -119,7 +119,7 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   check(flights.length === 1 && flights[0].el === badge(), "una sola animazione, sul badge stesso (non su una copia)");
   check(qa("#deep-badge").length === 1, "durante il volo c'è ancora un solo badge");
   flights[0].finish();
-  check(badge().parentElement.classList.contains("dm-slot") && badge().dataset.at === "slot" && !badge().style.left, "atterra nella tessera 'da analizzare' e torna ai suoi stili");
+  check(badge().parentElement.classList.contains("dm-slot") && badge().dataset.at === "slot" && !badge().style.left, "atterra nella voce 'da analizzare' e torna ai suoi stili");
   check(qa("#deep-badge").length === 1, "un solo badge anche dentro il menu");
 
   // --- closing: it goes back to the arrow, also when the user is quick

@@ -231,12 +231,12 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 |---|---|---|
 | `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
 | `js/core-menu.js` | 271 | guided typing |
-| `js/core-ui.js` | 202 | state |
+| `js/core-ui.js` | 198 | state |
 | `js/core.js` | 204 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 47 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
-| `js/deep.js` | 146 | deep search |
+| `js/deep.js` | 152 | deep search |
 | `js/export.js` | 253 | export for analysis |
-| `js/filters.js` | 358 | filters |
+| `js/filters.js` | 235 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/ignored.js` | 332 | ignored devices |
 | `js/live.js` | 247 | update |
@@ -246,15 +246,19 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-evidence.js` | 133 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 137 | History chart: a single segmented band (online / offline / no data) |
 | `js/more-info.js` | 95 | "More info" dialog |
+| `js/net-charts.js` | 38 | Small inline SVG charts of the rotating tile of the Network card. Colours come from the CSS classes (40-network.css). |
+| `js/net-gauge.js` | 106 | "living cycle" circle |
+| `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
+| `js/net-rotator.js` | 142 | rotating tile of the Network card |
 | `js/network.js` | 60 | pause |
 | `js/new-devices.js` | 309 | new devices |
 | `js/tile.js` | 308 | tile |
 | `css/10-base.css` | 150 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
-| `css/11-components.css` | 184 | components |
-| `css/12-motion.css` | 149 | motion |
+| `css/11-components.css` | 183 | components |
+| `css/12-motion.css` | 156 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
-| `css/30-deep.css` | 33 | Deep search: the menu of #deep-menu, its tiles and the badge on the split button. |
-| `css/40-network.css` | 316 | Network card: live pill, gauge, scan state, badges, brands, progress bar, search, split scan button, pause menu, and the network |
+| `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
+| `css/40-network.css` | 404 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 193 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 78 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |

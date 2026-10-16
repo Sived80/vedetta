@@ -183,12 +183,8 @@ export function renderLive() {
 }
 export function setConn(ok) {
   S.link = ok;
-  const live = $("live");
-  const dot = document.getElementById("net-dot");
   renderLive();
-  if (dot) dot.className = "net-dot" + (ok === true ? " ok" : ok === false ? " bad" : "");
   if (ok === true) {
-
     bannerEl.hidden = true;
     S.conn.everOk = true;
   } else if (ok === false) {

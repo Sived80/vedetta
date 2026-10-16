@@ -100,7 +100,7 @@ const FREEZE_CSS = "@layer __cmp_freeze { *, *::before, *::after, ::backdrop { a
 const click = (sel) => ({ click: sel });
 const waitFor = (expr) => ({ wait: expr });
 const DEEP_MENU_OPEN = "(function () { var m = document.getElementById('deep-menu'), b = document.getElementById('deep-badge'); if (!m || m.hidden) return false;" +
-  " var r = m.getBoundingClientRect(); return m.querySelectorAll('.dm-tile').length === 2 && !!b && b.dataset.at === 'slot' && !!m.querySelector('.dm-slot #deep-badge')" +
+  " var r = m.getBoundingClientRect(); return m.querySelectorAll('.dm-item').length === 2 && !!b && b.dataset.at === 'slot' && !!m.querySelector('.dm-slot #deep-badge')" +
   " && document.getElementById('btn-deepmenu').getAttribute('aria-expanded') === 'true' && r.width > 0 && r.left >= 0 && r.right <= innerWidth; })()";
 const STATES = [
   { name: "dashboard", steps: [], check: "document.querySelectorAll('.tile').length >= 3 && !!document.querySelector('#card-network #btn-scan')" },

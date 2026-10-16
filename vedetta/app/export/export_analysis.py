@@ -44,21 +44,50 @@ def _val_badges(badges_list: list | tuple | None) -> list[str]:
     return out
 
 
+def _val_score_pair(key, val) -> list:
+    grp = _val_enum(key, ALLOWED_GROUPS) or "other"
+    pts = int(val) if isinstance(val, (int, float)) else 0
+    return [grp, pts]
+
+
+def _dict_scores(scores: dict) -> list[list]:
+    pairs = [(_val_score_pair(k, v), v if isinstance(v, (int, float)) else 0, str(k)) for k, v in scores.items()]
+    pairs.sort(key=lambda it: (-it[1], it[2]))
+    return [p[0] for p in pairs]
+
+
+def _list_scores(scores: list | tuple) -> list[list]:
+    return [_val_score_pair(item[0], item[1]) for item in scores if isinstance(item, (list, tuple)) and len(item) == 2]
+
+
 def _val_scores(scores: dict | list | None) -> list[list]:
     """Scores as a list of [group, points] pairs, descending by points: avoids enum keys in dicts."""
-    out: list[list] = []
     if isinstance(scores, dict):
-        for k, v in sorted(scores.items(), key=lambda it: (-it[1] if isinstance(it[1], (int, float)) else 0, str(it[0]))):
-            grp = _val_enum(k, ALLOWED_GROUPS) or "other"
-            pts = int(v) if isinstance(v, (int, float)) else 0
-            out.append([grp, pts])
-    elif isinstance(scores, (list, tuple)):
-        for item in scores:
-            if isinstance(item, (list, tuple)) and len(item) == 2:
-                grp = _val_enum(item[0], ALLOWED_GROUPS) or "other"
-                pts = int(item[1]) if isinstance(item[1], (int, float)) else 0
-                out.append([grp, pts])
-    return out
+        return _dict_scores(scores)
+    if isinstance(scores, (list, tuple)):
+        return _list_scores(scores)
+    return []
+
+
+def _build_card_snapshot(card_id: str, inp: dict, res, since_val: float | None, now: float) -> dict | None:
+    if res is None:
+        return None
+    state_val = _val_enum(res.state, ALLOWED_STATES) or "other"
+    flags = analysis_view._flags(res)
+    badges = _val_badges([b.id for b in bg_rules.choose(flags)])
+    analysing_for_s = round(now - since_val, 1) if since_val is not None and state_val == st.ANALYSING else None
+    age_s = round(inp["age_s"], 1) if isinstance(inp.get("age_s"), (int, float)) and inp["age_s"] < analysis_view.OLD_S else None
+    return {
+        "id": card_id,
+        "state": state_val,
+        "reasons": _val_reasons(res.reasons),
+        "badges": badges,
+        "scores": _val_scores(inp.get("scores")),
+        "chosen": _val_enum(inp.get("chosen"), ALLOWED_GROUPS),
+        "since": round(since_val, 1) if since_val is not None else None,
+        "analysing_for_s": analysing_for_s,
+        "age_s": age_s,
+    }
 
 
 def build_analysis_snapshot(now: float | None = None) -> dict:
@@ -78,32 +107,9 @@ def build_analysis_snapshot(now: float | None = None) -> dict:
         clocks = dict(analysis_view._since)
 
         for card_id, inp in sorted(inputs.items(), key=lambda it: it[0]):
-            res = results.get(card_id)
-            if res is None:
-                continue
-
-            state_val = _val_enum(res.state, ALLOWED_STATES) or "other"
-            reasons_val = _val_reasons(res.reasons)
-            flags = analysis_view._flags(res)
-            chosen_badges = bg_rules.choose(flags)
-            badges_val = _val_badges([b.id for b in chosen_badges])
-            scores_val = _val_scores(inp.get("scores"))
-            chosen_val = _val_enum(inp.get("chosen"), ALLOWED_GROUPS)
-            since_val = clocks.get(card_id)
-            analysing_for_s = round(now - since_val, 1) if since_val is not None and state_val == st.ANALYSING else None
-            age_s = round(inp["age_s"], 1) if isinstance(inp.get("age_s"), (int, float)) and inp["age_s"] < analysis_view.OLD_S else None
-
-            cards.append({
-                "id": card_id,
-                "state": state_val,
-                "reasons": reasons_val,
-                "badges": badges_val,
-                "scores": scores_val,
-                "chosen": chosen_val,
-                "since": round(since_val, 1) if since_val is not None else None,
-                "analysing_for_s": analysing_for_s,
-                "age_s": age_s,
-            })
+            snap = _build_card_snapshot(card_id, inp, results.get(card_id), clocks.get(card_id), now)
+            if snap is not None:
+                cards.append(snap)
     except Exception:
         # Never leak exception details or raw traces
         return {

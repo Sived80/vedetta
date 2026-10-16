@@ -59,13 +59,23 @@ def prepare(dest: str, first_day: int | None = None, last_day: int | None = None
         raise
 
 
+def _prepare_manifest(m: dict, p: Prepared) -> dict:
+    if p.dest != "dev" or p.anon is None:
+        return m
+    out_m = p.anon.data(m)
+    if p.anon.leaks_data(out_m):
+        out_m, _, _ = p.anon.repair_data(out_m)
+    return out_m
+
+
 def finish(p: Prepared, choices: dict | None = None, default: str = "rm") -> bytes:
     """Phase 2: applies what the person chose for each pending value ("rm" = remove it, "keep" = leave it as it is) and writes
     the zip. A value with no choice gets `default`."""
     choices = choices or {}
     removed = kept = 0
     for item in p.pending:
-        if str(choices.get(item["id"], choices.get(str(item["id"]), default))) == "keep":
+        val = str(choices.get(item["id"], choices.get(str(item["id"]), default)))
+        if val == "keep":
             kept += 1
         else:
             _remove(p, item)
@@ -79,11 +89,7 @@ def finish(p: Prepared, choices: dict | None = None, default: str = "rm") -> byt
             raw = Path(content).read_bytes() if kind == "db" else content.encode("utf-8")
             z.writestr(name, raw)
             m["files"][name] = len(raw)
-        out_m = m
-        if p.dest == "dev" and p.anon is not None:
-            out_m = p.anon.data(m)
-            if p.anon.leaks_data(out_m):
-                out_m, _, _ = p.anon.repair_data(out_m)
+        out_m = _prepare_manifest(m, p)
         z.writestr("manifest.json", json.dumps(out_m, ensure_ascii=False, indent=1))
     if p.dest == "dev" and p.anon is not None:
         legacy._save_mapping(p.anon)

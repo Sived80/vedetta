@@ -2,15 +2,6 @@
    brands, live pill, pause menu, and the network dialogs (search methods #flows, ignored devices #ignored). */
 
 @layer layout {
-  @media (max-width: 520px) {
-    .live-text { display: none; }
-    .live { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 50%; }
-  }
-  @container (max-width: 440px) {
-    .live-text { display: none; }
-    .live { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 50%; }
-  }
-
   /* Compact mode (?compact=1): no brands, scan button, search or tile; smaller circle. Il menu non viene mai nascosto. */
   html[data-compact] .search-row,
   html[data-compact] .tile-col,
@@ -22,10 +13,11 @@
 }
 
 @layer components {
-  /* Live status pill (a button that opens the pause menu), Home Assistant sizes, and the dot of the compact title. */
+  /* Tip di stato: rimuovere la scritta "in tempo reale" e lasciare solo il tip (LED pulsante tondo da 28px). */
+  .live-text { display: none !important; }
   .live {
-    display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; flex: none;
-    border: 1px solid var(--divider-color); border-radius: 16px; background: transparent; color: var(--secondary-text-color); font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-width: 28px; padding: 0; flex: none;
+    border: 1px solid var(--divider-color); border-radius: 50%; background: transparent; color: var(--secondary-text-color);
   }
   .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--disabled-text-color); flex: none; }
   .live.ok .live-dot { background: var(--success-color); animation: live-pulse 2.4s ease-out infinite; }
@@ -58,9 +50,9 @@
     background: var(--field); box-sizing: border-box;
   }
 
-  /* 2. Hero row: cerchio a sinistra con tasto sotto, tile rotante a destra */
-  .hero-row { display: flex; align-items: center; gap: 16px; width: 100%; }
-  .gauge-col { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 0 0 132px; }
+  /* 2. Hero row: cerchio a sinistra con tasto sotto, tile rotante a destra (3x alta ~178px) */
+  .hero-row { display: flex; align-items: stretch; gap: 14px; width: 100%; }
+  .gauge-col { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 132px; min-height: 178px; }
   .gauge { --g: 132px; position: relative; width: var(--g); height: var(--g); flex: none; }
   .gauge > svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .g-track { fill: none; stroke-width: 10; stroke-linecap: round; stroke: color-mix(in srgb, var(--secondary-text-color) 20%, transparent); }
@@ -88,34 +80,35 @@
   .newdot:hover { filter: brightness(1.1); }
 
   /* 3. Split button centered under the circle: compatto, 34px */
-  .gauge-side { flex: none; display: flex; justify-content: center; width: 100%; }
+  .gauge-side { flex: none; display: flex; justify-content: center; width: 100%; margin-top: auto; }
   .split { position: relative; display: inline-flex; }
   .split .btn { height: 34px; min-height: 34px; padding: 0 10px; border-radius: 17px; font-size: 12.5px; gap: 5px; white-space: nowrap; }
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .split .split-more { min-width: 0; padding: 0 7px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
-  /* Tile rotativo a destra del cerchio: spazioso e centrato */
-  .tile-col { flex: 1 1 0; min-width: 0; display: flex; align-items: center; }
+  /* Tile rotativo a destra del cerchio: 3 volte piu' alto (~178px), contenuti redistribuiti verticalmente */
+  .tile-col { flex: 1 1 0; min-width: 0; display: flex; }
   .nettile {
-    width: 100%; min-height: 54px; height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
-    border: 1px solid transparent; border-radius: 20px; background: var(--field); color: inherit; transition: background-color 0.15s;
-    box-sizing: border-box;
+    width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
+    justify-content: space-between; padding: 14px 16px; overflow: hidden; text-align: left;
+    position: relative; border-radius: 20px; background: var(--field); color: inherit;
+    transition: background-color 0.15s; box-sizing: border-box;
   }
   .nettile[hidden] { display: none; }
   .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color)); }
-  .t-body { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; transition: opacity 0.16s ease, transform 0.16s ease; }
+  .t-dots { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
+  .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: all 0.2s; }
+  .t-dots i.on { background: var(--primary-color); width: 10px; border-radius: 2px; }
+  .t-body { flex: 1 1 0; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; transition: opacity 0.16s ease, transform 0.16s ease; }
   .t-body.out { opacity: 0; transform: translateY(-5px); }
   .t-body.pre { opacity: 0; transform: translateY(6px); transition: none; }
-  .t-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 1px; }
-  .t-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; line-height: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--secondary-text-color); }
-  .t-v { display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 14px; line-height: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .t-txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; }
+  .t-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; line-height: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); font-weight: 600; padding-right: 48px; }
+  .t-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 20px; line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .t-n { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .t-v .xs, .t-v .x { flex: none; font-size: 12px; font-weight: 400; color: var(--secondary-text-color); }
-  .t-v .x { display: none; }
-  .t-g { flex: none; display: flex; align-items: center; gap: 8px; }
-  .t-dots { flex: none; display: flex; flex-direction: column; gap: 3px; }
-  .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: background-color 0.2s; }
-  .t-dots i.on { background: var(--primary-color); }
+  .t-v .xs { font-size: 14px; color: var(--primary-color); font-weight: 600; }
+  .t-v .x { display: block; width: 100%; font-size: 12px; font-weight: 400; color: var(--secondary-text-color); margin-top: 2px; }
+  .t-g { flex: none; display: flex; align-items: center; justify-content: flex-end; width: 100%; margin-top: auto; }
   .pbar { height: 4px; display: flex; gap: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--primary-text-color) 10%, transparent); }
   .pbar i { display: block; height: 100%; border-radius: 2px; }
   .sd { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; }
@@ -166,7 +159,7 @@
   .badge em { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
 
   /* Brands (bar and legend; vivid colours shared with the circle). */
-  .brands { margin-top: 4px; }
+  .brands { margin-top: 0; }
   .brands-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); margin-bottom: 8px; }
   .brand-bar { display: flex; gap: 2px; height: 8px; margin-bottom: 12px; border-radius: 4px; overflow: hidden; }
   .brand-bar i { display: block; min-width: 4px; border-radius: 2px; transition: flex-grow 0.5s; }
@@ -191,7 +184,7 @@
   .card-tools { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
   .card-tools .icon-btn { flex: 0 0 36px; width: 36px; height: 36px; }
   .card-tools .menu-wrap { flex: 0 0 auto; display: inline-flex; }
-  #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 14px; }
+  #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 16px; }
 
   /* Narrow card / wide card: the content answers to its own width (container), the header and the padding to the window */
   @media (max-width: 440px) {
@@ -201,9 +194,8 @@
   }
   @container (max-width: 400px) {
     .hero-row { gap: 10px; }
-    .nettile { padding: 0 12px; gap: 8px; }
-    .t-body { gap: 8px; }
-    .t-v { gap: 4px; }
+    .nettile { padding: 12px 14px; }
+    .t-v { font-size: 18px; gap: 4px; }
     .mm { padding: 0 4px; gap: 2px; }
     .badge { font-size: 12px; gap: 4px; }
   }
@@ -212,7 +204,8 @@
   }
   @container (min-width: 520px) {
     .hero-row { gap: 20px; }
-    .nettile { padding: 0 18px; }
+    .nettile { padding: 16px 20px; }
+    .t-v { font-size: 22px; }
     .t-v .x { display: inline; }
     .mm u { display: inline; }
     .mm::before { display: none; }

@@ -114,11 +114,15 @@ export function toggleDeepMenu(open) {
         t(pending ? "js.ha.deep.tile_pending_sub" : "js.ha.deep.tile_pending_done"), pending > 0, '<span class="dm-slot"></span>') +
       '<p class="dm-foot">' + esc(t("js.ha.deep.note", { hour: "03:00" })) + "</p>";
     var btn = $("btn-deepmenu"), r = btn.getBoundingClientRect();
-    deepMenuEl.style.top = Math.round(r.bottom + 4) + "px";
-    deepMenuEl.style.left = Math.max(8, Math.round(r.left)) + "px";
-    deepMenuEl.style.right = "auto";
     deepMenuEl.hidden = false;
     (deepMenuEl.getAnimations ? deepMenuEl.getAnimations() : []).forEach(function (a) { a.finish(); });   // measure the final place, not the opening one
+    var mw = deepMenuEl.offsetWidth || 288;
+    var cx = r.left + r.width / 2;
+    var targetLeft = Math.round(cx - mw / 2);
+    var left = Math.max(8, Math.min(window.innerWidth - mw - 8, targetLeft));
+    deepMenuEl.style.top = Math.round(r.bottom + 6) + "px";
+    deepMenuEl.style.left = left + "px";
+    deepMenuEl.style.right = "auto";
     moveDeepBadge(true);
   } else {
     moveDeepBadge(false);

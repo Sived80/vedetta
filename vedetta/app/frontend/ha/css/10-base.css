@@ -128,6 +128,10 @@
   .view { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; overflow-anchor: none; }   /* a card that opens moves what is under it; the page does not scroll to compensate */
   .col-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
   .col-main { min-width: 0; }
+  @media (min-width: 861px) {
+    .col-side { align-self: stretch; }
+    #card-network { position: sticky; top: 16px; z-index: 10; }
+  }
   @media (max-width: 860px) {
     .view { grid-template-columns: minmax(0, 1fr); }
     /* The side column dissolves: network, new devices, devices, log. */

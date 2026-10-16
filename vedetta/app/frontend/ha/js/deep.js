@@ -55,7 +55,7 @@ export function updateDeepBadge() {
   deepBadge.setAttribute("aria-label", label);
   deepBadge.title = label;
   const btn = $("btn-deepmenu");
-  if (btn) btn.setAttribute("aria-label", t("js.ha.deep.title") + (n ? " \u00b7 " + label : ""));
+  if (btn) btn.setAttribute("aria-label", t("js.ha.deep.title") + (n ? " · " + label : ""));
   const tile = deepMenuEl.querySelector('[data-deep="pending"]');
   if (tile) {
     tile.disabled = n === 0;
@@ -115,8 +115,8 @@ export function toggleDeepMenu(open) {
       '<p class="dm-foot">' + esc(t("js.ha.deep.note", { hour: "03:00" })) + "</p>";
     var btn = $("btn-deepmenu"), r = btn.getBoundingClientRect();
     deepMenuEl.style.top = Math.round(r.bottom + 4) + "px";
-    deepMenuEl.style.left = "auto";
-    deepMenuEl.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + "px";
+    deepMenuEl.style.left = Math.max(8, Math.round(r.left)) + "px";
+    deepMenuEl.style.right = "auto";
     deepMenuEl.hidden = false;
     (deepMenuEl.getAnimations ? deepMenuEl.getAnimations() : []).forEach(function (a) { a.finish(); });   // measure the final place, not the opening one
     moveDeepBadge(true);
@@ -149,4 +149,3 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape" && !deepMenuEl.hidden) toggleDeepMenu(false);
 });
 window.addEventListener("resize", function () { if (!deepMenuEl.hidden) toggleDeepMenu(false); });
-

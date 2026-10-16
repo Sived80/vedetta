@@ -67,8 +67,9 @@ export function buildNetwork() {
   [NET_PARTS.live, NET_PARTS.wrap, NET_PARTS.search].forEach(function (n) { if (n) stash.appendChild(n); });
   netEl.innerHTML = headerHTML() +
     '<div class="card-content">' +
+    '<div class="search-row" id="search-row"></div>' +
     '<div class="hero-row"><div class="gauge-col"><div class="gauge" id="gauge" role="group">' + gaugeHTML() + '</div><div class="gauge-side">' + scanButtonsHTML() + '</div></div>' +
-    '<div class="hero-side" id="hero-side">' + tileHTMLShell() + '</div></div>' +
+    '<div class="tile-col" id="tile-col">' + tileHTMLShell() + '</div></div>' +
     '<div class="badges" id="badges">' + badgesHTML() + '</div>' +
     '<div class="brands" id="brands"></div></div>';
   // Search, real-time status and settings live inside this card: the already created
@@ -76,7 +77,7 @@ export function buildNetwork() {
   const tools = $("card-tools");
   tools.insertBefore(NET_PARTS.live, tools.firstChild);
   tools.appendChild(NET_PARTS.wrap);
-  $("hero-side").insertBefore(NET_PARTS.search, $("hero-side").firstChild);
+  $("search-row").appendChild(NET_PARTS.search);
   const holder = $("toolbar");
   if (holder) holder.remove();
   $("btn-refresh").addEventListener("click", doRefresh);

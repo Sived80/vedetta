@@ -11,11 +11,11 @@
     .live { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 50%; }
   }
 
-  /* Compact mode (?compact=1): no brands, scan button, search or tile; smaller circle. */
-  html[data-compact] .hero-side,
+  /* Compact mode (?compact=1): no brands, scan button, search or tile; smaller circle. Il menu non viene mai nascosto. */
+  html[data-compact] .search-row,
+  html[data-compact] .tile-col,
   html[data-compact] .brands,
   html[data-compact] #btn-scan,
-  html[data-compact] .card-tools .menu-wrap,
   html[data-compact] .card-tools .live { display: none; }
   html[data-compact] .gauge { --g: 96px; }
   html[data-compact] .gauge-value { font-size: 28px; line-height: 28px; }
@@ -51,9 +51,16 @@
   .spin-g { transform-box: view-box; transform-origin: 12px 12px; }
   .icon-btn.spinning .spin-g { animation: spin 0.9s linear infinite; }
 
-  /* Hero row: circle with button below on the left, search and rotating tile on the right */
-  .hero-row { display: flex; align-items: flex-start; gap: 16px; width: 100%; }
-  .gauge-col { display: flex; flex-direction: column; align-items: center; gap: 14px; flex: 0 0 auto; }
+  /* 1. Barra di ricerca sopra al cerchio: a tutta larghezza */
+  .search-row { width: 100%; display: flex; }
+  .search-row .search {
+    width: 100%; height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 16px; border-radius: 22px;
+    background: var(--field); box-sizing: border-box;
+  }
+
+  /* 2. Hero row: cerchio a sinistra con tasto sotto, tile rotante a destra */
+  .hero-row { display: flex; align-items: center; gap: 16px; width: 100%; }
+  .gauge-col { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 0 0 132px; }
   .gauge { --g: 132px; position: relative; width: var(--g); height: var(--g); flex: none; }
   .gauge > svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .g-track { fill: none; stroke-width: 10; stroke-linecap: round; stroke: color-mix(in srgb, var(--secondary-text-color) 20%, transparent); }
@@ -80,40 +87,19 @@
   .newdot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--new); animation: ping 2.6s ease-out infinite; pointer-events: none; }
   .newdot:hover { filter: brightness(1.1); }
 
-  /* Split button centered under the circle, distanced like header to circle (14px) */
+  /* 3. Split button centered under the circle: compatto, 34px */
   .gauge-side { flex: none; display: flex; justify-content: center; width: 100%; }
   .split { position: relative; display: inline-flex; }
-  .split .btn { height: 36px; min-height: 36px; padding: 0 14px; border-radius: 18px; font-size: 13px; gap: 6px; white-space: nowrap; }
+  .split .btn { height: 34px; min-height: 34px; padding: 0 10px; border-radius: 17px; font-size: 12.5px; gap: 5px; white-space: nowrap; }
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
-  .split .split-more { min-width: 0; padding: 0 8px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .split .split-more { min-width: 0; padding: 0 7px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
-  /* Hero side: search + tile stacked, filling space, vertically centered to the 132px circle, right-aligned */
-  .hero-side {
-    flex: 1 1 0;
-    min-width: 0;
-    min-height: 132px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .hero-side .search {
-    flex: 0 0 48px;
-    height: 48px;
-    width: 100%;
-    box-sizing: border-box;
-    background: var(--field);
-  }
-  .hero-side .nettile {
-    flex: 0 0 48px;
-    height: 48px;
-    width: 100%;
-    box-sizing: border-box;
-  }
+  /* Tile rotativo a destra del cerchio: spazioso e centrato */
+  .tile-col { flex: 1 1 0; min-width: 0; display: flex; align-items: center; }
   .nettile {
-    height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
-    border: 1px solid transparent; border-radius: 24px; background: var(--field); color: inherit; transition: background-color 0.15s;
+    width: 100%; min-height: 54px; height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 14px 0 16px; overflow: hidden; text-align: left;
+    border: 1px solid transparent; border-radius: 20px; background: var(--field); color: inherit; transition: background-color 0.15s;
+    box-sizing: border-box;
   }
   .nettile[hidden] { display: none; }
   .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color)); }
@@ -140,7 +126,7 @@
 
   /* Latency: min / max as small chips; the chart marks the same two points with the same colours. */
   .mm {
-    --c: var(--success-color); flex: none; display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 5px; border-radius: 8px;
+    --c: var(--success-color); flex: none; display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 5px; border-radius: 8px;\
     font-size: 10.5px; line-height: 16px; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent);
   }
   .mm.max { --c: var(--warning-color); }
@@ -201,30 +187,31 @@
   .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
   .dot { background: var(--cc); }
 
-  /* Tools of the header and the card content. */
+  /* Tools of the header and the card content: il menu non scompare mai */
   .card-tools { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
-  #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 16px; }
+  .card-tools .icon-btn { flex: 0 0 36px; width: 36px; height: 36px; }
+  .card-tools .menu-wrap { flex: 0 0 auto; display: inline-flex; }
+  #card-network .card-content { container-type: inline-size; display: flex; flex-direction: column; gap: 14px; }
 
-  /* Narrow card / wide card: the content answers to its own width (container), the header and the padding to the window
-     (a container on the card itself would pin the fixed menus of the header). */
+  /* Narrow card / wide card: the content answers to its own width (container), the header and the padding to the window */
   @media (max-width: 440px) {
     .net-logo { margin-right: 8px; }
     .ch-title sup { margin-left: 3px; padding: 1px 4px; }
-    .card-tools .icon-btn { width: 36px; height: 36px; }
+    .card-tools .icon-btn { width: 32px; height: 32px; flex: 0 0 32px; }
   }
   @container (max-width: 400px) {
-    .hero-side { gap: 8px; }
-    .nettile { padding: 0 12px 0 14px; gap: 8px; }
+    .hero-row { gap: 10px; }
+    .nettile { padding: 0 12px; gap: 8px; }
     .t-body { gap: 8px; }
     .t-v { gap: 4px; }
     .mm { padding: 0 4px; gap: 2px; }
-    .badge { font-size: 12.5px; gap: 4px; }
+    .badge { font-size: 12px; gap: 4px; }
   }
   @media (min-width: 600px) {
     #card-network .card-content { padding: 0 20px 20px; }
   }
   @container (min-width: 520px) {
-    .hero-row { gap: 24px; }
+    .hero-row { gap: 20px; }
     .nettile { padding: 0 18px; }
     .t-v .x { display: inline; }
     .mm u { display: inline; }
@@ -248,9 +235,9 @@
   .badge.on em { color: var(--primary-color); }
   button.live:hover { background: var(--ha-hover); }
 
-  /* Network card title: one line, 24 px beside the 28 px logo (the shared card title rules are above this layer). */
-  #card-network .card-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  #card-network .card-header .ch-title { flex: 0 0 auto; display: flex; align-items: center; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+  /* Network card title: one line, 24 px beside the 28 px logo */
+  #card-network .card-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; overflow: visible; }
+  #card-network .card-header .ch-title { flex: 0 1 auto; min-width: 0; display: flex; align-items: center; font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
   #card-network #net-title { position: relative; top: -1px; white-space: nowrap; }       /* optical centre of the letters = centre of the logo */
   @media (max-width: 440px) { #card-network .card-header { padding: 10px 12px; } #card-network .card-header .ch-title { font-size: 20px; } }
   @media (min-width: 600px) { #card-network .card-header { padding: 16px 20px; } }
@@ -326,12 +313,10 @@
   }
 
   /* Ignored devices dialog (#ignored): fixed size, a list that scrolls inside, rows of 60 px with the three dots, the + above them. */
-  /* ---- the dialog: one fixed size, whatever the rows (full screen on a phone: the app's own query, restated because this layer wins) */
   .more-info#ignored { width: min(580px, calc(100vw - 32px)); height: min(560px, 82vh); max-height: none; }
   @media (max-width: 600px) {
     .more-info#ignored { width: 100vw; max-width: 100vw; height: 100%; max-height: 100%; }
   }
-  /* the columns line up: the X above the row icons, the + above the three dots (the right edge follows the width of the scroll bar) */
   #ignored .mi-header { min-height: 64px; padding: 8px calc(var(--ig-sb, 0px) + 8px) 4px 8px; flex: none; }
   #ignored .mi-sub { font-size: 14px; }
   #ignored .ig-add-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 14%, transparent); }

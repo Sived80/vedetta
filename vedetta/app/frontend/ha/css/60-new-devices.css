@@ -36,7 +36,9 @@
   /* the same size as the rest of the card text: these beat the 24px of the card title (#card-network .card-header .ch-title) */
   #card-network #card-new .card-header .ch-title { font-size: var(--ha-font-size-m, 14px); line-height: 20px; font-weight: var(--ha-font-weight-medium, 500); }
   #card-network #card-new .card-header .ch-sub { font-size: var(--ha-font-size-s, 12px); line-height: 16px; margin-top: 2px; color: var(--secondary-text-color); }
-  #card-new .ch-ic { width: 32px; height: 32px; }
+  /* the icon of the title has the size of the icon of the rows (36 px, 20 px glyph) */
+  #card-network #card-new .ch-ic { width: 36px; height: 36px; margin: 0; }
+  #card-network #card-new .ch-ic .mdi { width: 20px; height: 20px; }
   #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); }
   #card-new .nd-bar-actions, #card-new .nd-actions {
     display: grid; grid-template-columns: var(--c1) var(--c2); gap: var(--nd-gap, 6px); align-items: center; justify-content: end; margin-left: auto; flex: none;

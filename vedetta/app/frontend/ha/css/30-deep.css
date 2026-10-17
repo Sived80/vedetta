@@ -9,8 +9,8 @@
     font-size: 12px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap;
     color: #1c1c1c; background: var(--warning-color); box-shadow: 0 0 0 2px var(--card-background-color); will-change: transform;
   }
-  /* On the corner of the arrow, 4 px outside: the tile column is 10 px away and the badge must not touch it (it was at -9 px: 1 px from the tile). */
-  .deep-badge[data-at="corner"] { position: absolute; top: -8px; right: -4px; z-index: 2; cursor: pointer; }
+  /* On the corner of the arrow, 4 px outside and almost all above it: the tile column is 10 px away, and the badge (it grows to the left up to "99+", 33 px) must not touch it nor cover the arrow. */
+  .deep-badge[data-at="corner"] { position: absolute; top: -14px; right: -4px; z-index: 2; cursor: pointer; }
   .deep-badge[data-at="slot"] { position: relative; }
   .deep-badge[data-at="fly"] { position: fixed; margin: 0; z-index: 2147483000; pointer-events: none; }
 

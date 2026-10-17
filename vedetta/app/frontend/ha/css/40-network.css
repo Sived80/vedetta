@@ -51,8 +51,8 @@
   }
 
   /* 2. Hero row: cerchio a sinistra con tasto sotto, tile rotante a destra (3x alta ~178px) */
-  .hero-row { display: flex; align-items: stretch; gap: 14px; width: 100%; }
-  .gauge-col { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 132px; min-height: 178px; }
+  .hero-row { display: flex; align-items: stretch; gap: 10px; width: 100%; }
+  .gauge-col { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 126px; min-height: 178px; }
   .gauge { --g: 132px; position: relative; width: var(--g); height: var(--g); flex: none; }
   .gauge > svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .g-track { fill: none; stroke-width: 10; stroke-linecap: round; stroke: color-mix(in srgb, var(--secondary-text-color) 20%, transparent); }
@@ -90,14 +90,14 @@
   .tile-col { flex: 1 1 0; min-width: 0; display: flex; }
   .nettile {
     width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
-    justify-content: space-between; padding: 12px 14px; overflow: hidden; text-align: left;
+    justify-content: space-between; padding: 12px 10px 10px; overflow: hidden; text-align: left;
     position: relative; border-radius: 20px; background: var(--field); color: inherit;
     transition: background-color 0.15s, border-color 0.15s; box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.04);
   }
   .nettile[hidden] { display: none; }
   .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 12%, var(--card-background-color)); }
-  .t-dots { position: absolute; top: 12px; right: 14px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
+  .t-dots { position: absolute; top: 12px; right: 10px; display: flex; flex-direction: row; gap: 3px; z-index: 2; }
   .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: all 0.2s; }
   .t-dots i.on { background: var(--primary-color); width: 10px; border-radius: 2px; }
 
@@ -106,7 +106,7 @@
   .t-body.pre { opacity: 0; transform: translateY(5px); transition: none; }
 
   .t-card { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
-  .t-head { display: flex; align-items: center; gap: 8px; padding-right: 44px; min-width: 0; }
+  .t-head { display: flex; align-items: center; gap: 6px; padding-right: 32px; min-width: 0; }
   .t-ic {
     width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; flex: none;
     background: color-mix(in srgb, var(--c, var(--primary-color)) 16%, transparent);
@@ -114,8 +114,8 @@
   }
   .t-ic .mdi { width: 15px; height: 15px; }
   .t-l {
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-size: 10.5px; line-height: 14px; letter-spacing: 0.06em; text-transform: uppercase;
+    overflow: visible; text-overflow: clip; white-space: nowrap;
+    font-size: 10.5px; line-height: 14px; letter-spacing: 0.03em; text-transform: uppercase;
     color: var(--secondary-text-color); font-weight: 600;
   }
 
@@ -146,6 +146,29 @@
   .pbar i.amber { background: var(--warning-color); }
   .bar-leg { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; line-height: 14px; color: var(--secondary-text-color); }
   .bar-leg b { font-weight: 600; color: var(--primary-text-color); }
+
+  /* KPI boxes of the tile middle (latency, MQTT). --sc tints the value (and, with .tinted, the box). */
+  .stat-grid-2 { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+  .stat-box { --sc: var(--primary-text-color); display: flex; flex-direction: row; justify-content: space-between; align-items: center; min-width: 0; padding: 5px 8px; border-radius: 7px; background: color-mix(in srgb, var(--primary-text-color) 4%, transparent); }
+  .stat-box.tinted { background: color-mix(in srgb, var(--sc) 12%, transparent); }
+  .stat-box.tinted .stat-box-lbl { color: var(--sc); }
+  .stat-box-lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--secondary-text-color); }
+  .stat-box-val { color: var(--sc); font-size: 12.5px; line-height: 16px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat-box-val .unit { font-size: 10px; font-weight: 400; color: var(--secondary-text-color); margin-left: 2px; }
+
+  /* Recognised devices: three bars of the same size, evenly spaced (--bc is the colour of the row). */
+  .t-bars { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; gap: 8px; }
+  .bar-row { --bc: var(--primary-color); display: flex; flex-direction: column; gap: 3px; }
+  .bar-row .bar-leg { font-size: 11px; }
+  .bar-row .bar-leg b { color: var(--bc); }
+  .bar-row .pbar i { background: var(--bc); }
+
+  /* Gateway: monospace address, then the subnet, then the state of the network. */
+  .t-n.mono { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+  .t-n.gw-off { color: var(--error-color); }
+  .gw-net { display: flex; flex-direction: column; gap: 1px; }
+  .gw-sub { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--c); }
+  .gw-state { font-size: 11px; line-height: 14px; color: var(--secondary-text-color); }
 
   .sd { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; }
   .sd.ok { background: var(--success-color); }
@@ -192,12 +215,22 @@
   }
   .badge em { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
 
-  /* Brands (bar and legend; vivid colours shared with the circle). */
-  .brands { margin-top: 0; }
+  /* Brands (bar and legend; vivid colours shared with the circle). The bar is always visible; the legend opens on hover (mouse) or on tap (.expanded). */
+  .brands { margin-top: 0; cursor: pointer; }
   .brands-title { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); margin-bottom: 8px; }
-  .brand-bar { display: flex; gap: 2px; height: 8px; margin-bottom: 12px; border-radius: 4px; overflow: hidden; }
+  .brand-bar { display: flex; gap: 2px; height: 8px; margin-bottom: 0; border-radius: 4px; overflow: hidden; transition: height 0.15s ease, filter 0.15s ease; }
   .brand-bar i { display: block; min-width: 4px; border-radius: 2px; transition: flex-grow 0.5s; }
-  .brands ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px 12px; font-size: 14px; }
+  .brands-list {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 4px 12px; margin: 0; padding: 0; list-style: none; font-size: 14px;
+    max-height: 0; opacity: 0; overflow: hidden; pointer-events: none;
+    transition: max-height 0.26s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin-top 0.2s ease;
+  }
+  .brands.expanded .brand-bar { height: 10px; filter: brightness(1.08); }
+  .brands.expanded .brands-list { max-height: 220px; opacity: 1; margin-top: 12px; pointer-events: auto; }
+  @media (hover: hover) {
+    .brands:hover .brand-bar { height: 10px; filter: brightness(1.08); }
+    .brands:hover .brands-list { max-height: 220px; opacity: 1; margin-top: 12px; pointer-events: auto; }
+  }
   .brands li { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .b-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -235,18 +268,6 @@
   }
   @media (min-width: 600px) {
     #card-network .card-content { padding: 0 20px 20px; }
-  }
-  @container (min-width: 520px) {
-    .hero-row { gap: 20px; }
-    .nettile { padding: 16px 20px; }
-    .t-v { font-size: 22px; }
-    .t-v .x { display: inline; }
-    .mm u { display: inline; }
-    .mm::before { display: none; }
-    .sp-n { display: none; }
-    .sp-w { display: block; }
-    .gw-bar { width: 112px; }
-    .gw-t .gw-f { display: inline; }
   }
 
   @media (pointer: coarse) {

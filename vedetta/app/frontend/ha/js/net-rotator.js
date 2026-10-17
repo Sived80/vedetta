@@ -1,9 +1,9 @@
 import { $, REDUCED, esc, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
-import { bars, donut, spark } from "./net-charts.js";
+import { deepOneBusy } from "./deep.js";
 
 // ------------------------------------------------------------ rotating tile of the Network card
-// One 48 px tile that shows, in turn, a datum of the network: LAN latency, gateway, recognised devices, Home Assistant link.
+// One tile that shows, in turn, a datum of the network: LAN latency, gateway, recognised devices, Home Assistant link.
 // A tile with no data to show is left out. It turns by itself, stops under the pointer, and a click goes to the next one.
 var ROTATE_MS = 4200, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HOSTS = 254;
 var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
@@ -33,27 +33,35 @@ export function sampleCycle() {
   return taken;
 }
 
-function cardHTML(color, iconName, label, valueHTML, subHTML, footHTML) {
+function cardHTML(color, iconName, label, midHTML, footHTML) {
   return '<div class="t-card" style="--c:' + color + '">' +
     '<div class="t-head"><span class="t-ic">' + icon(iconName) + '</span><span class="t-l">' + label + '</span></div>' +
-    '<div class="t-mid"><div class="t-v">' + valueHTML + '</div>' + (subHTML ? '<div class="t-sub">' + subHTML + '</div>' : '') + '</div>' +
+    '<div class="t-mid">' + midHTML + '</div>' +
     '<div class="t-foot">' + (footHTML || '') + '</div>' +
   '</div>';
 }
-function stateDot(ok) { return '<span class="sd ' + (ok ? "ok" : "err") + '"></span>'; }
+// KPI box of the middle of a tile: small label above, value below (value is already escaped).
+function statBox(label, value, color, boxCls) {
+  return '<div class="stat-box' + (boxCls ? " " + boxCls : "") + '"' + (color ? ' style="--sc:' + color + '"' : "") + '><span class="stat-box-lbl">' + esc(label) + "</span>" +
+    '<span class="stat-box-val">' + value + "</span></div>";
+}
 
 function latencyTile(gw) {
   if (!gw || !gw.online || !latency.length) return null;
-  const last = latency[latency.length - 1], lo = Math.min.apply(null, latency), hi = Math.max.apply(null, latency), many = latency.length > 1;
-  function chip(cls, key, v) { return '<span class="mm ' + cls + '"><u>' + esc(t("js.ha.tile." + key)) + "</u>" + ms(v) + " ms</span>"; }
-  const sub = many ? chip("min", "min", lo) + chip("max", "max", hi) : "";
-  const foot = many ? spark(latency, 100, 32) : "";
+  const last = latency[latency.length - 1], lo = Math.min.apply(null, latency), hi = Math.max.apply(null, latency);
+  const avg = latency.reduce(function (a, v) { return a + v; }, 0) / latency.length;
+  const pct = hi > lo ? Math.max(4, (last - lo) / (hi - lo) * 100) : 100;
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.min")) + " <b>" + ms(lo) + ' ms</b></span><span>' + esc(t("js.ha.tile.max")) + " <b>" + ms(hi) + ' ms</b></span></div>' +
+    '<div class="pbar"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
   return {
     id: "latency",
     tip: t("js.ha.tile.latency_tip", { n: latency.length, min: ms(lo), max: ms(hi) }),
     html: cardHTML("var(--primary-color)", "wifi-arrow-up-down", esc(t("js.ha.tile.latency")),
-      '<span class="t-n">' + ms(last) + '</span> <span class="unit">ms</span>',
-      sub, foot)
+      '<div class="stat-grid-2">' +
+        statBox(t("js.ha.tile.current"), ms(last) + ' <span class="unit">ms</span>', "var(--primary-color)") +
+        statBox(t("js.ha.tile.avg_lan"), ms(avg) + ' <span class="unit">ms</span>') +
+      "</div>",
+      foot)
   };
 }
 
@@ -69,40 +77,57 @@ function gatewayTile(gw) {
     id: "gateway",
     tip: t(gw.online ? "js.ha.tile.gateway_tip" : "js.ha.tile.gateway_tip_off", { subnet: subnet, used: used, free: free }),
     html: cardHTML("#14b8a6", "router-wireless", esc(t("js.ha.tile.gateway")),
-      stateDot(gw.online) + '<span class="t-n mono">' + esc(gw.ip) + '</span>',
-      '<span class="gw-sub">' + esc(subnet) + '</span>',
+      '<div class="t-v"><span class="t-n mono' + (gw.online ? "" : " gw-off") + '">' + esc(gw.ip) + '</span></div>' +
+      '<div class="gw-net"><span class="gw-sub">' + esc(subnet) + '</span>' + (gw.online ? '<span class="gw-state">' + esc(t("js.ha.tile.net_active")) + '</span>' : "") + '</div>',
       foot)
   };
 }
 
+// One labelled bar of the "recognised devices" tile: count and label above, share shown by the bar.
+function lensRow(n, total, labelKey, color) {
+  const pct = total ? n / total * 100 : 0;
+  return '<div class="bar-row" style="--bc:' + color + '"><div class="bar-leg"><span><b>' + n + '</b> ' + esc(t(labelKey)) + '</span></div>' +
+    '<div class="pbar"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
+}
+
 function lensTile() {
-  const total = S.list.length;
+  const devices = Array.from(S.devices.values());
+  const total = devices.length;
   if (!total) return null;
-  const waiting = S.list.filter(function (d) { return S.analysis[d.id]; }).length, ok = total - waiting, pct = Math.round(ok / total * 100);
-  const foot = '<div class="pbar"><i style="width:' + pct + '%; background: var(--c);"></i>' + (waiting > 0 ? '<i class="amber" style="width:' + (100 - pct) + '%;"></i>' : '') + '</div>' +
-    '<div class="bar-leg"><span><b>' + ok + '</b> ' + esc(t("js.ha.tile.recognised")) + '</span>' + (waiting > 0 ? '<span class="c-wait">' + waiting + '</span>' : '<span>100%</span>') + '</div>';
+  // A card missing from S.analysis is identified; "analysing" is the state under analysis, everything else not yet identified waits.
+  let analysing = 0, waiting = 0;
+  devices.forEach(function (d) {
+    const info = S.analysis[d.id];
+    if (!info) return;
+    if (info.state === "analysing") analysing++; else waiting++;
+  });
+  // Devices whose deep search is running right now.
+  const deepCount = devices.filter(function (d) { return deepOneBusy(d.id); }).length;
+  const ok = total - analysing - waiting, pct = Math.round(ok / total * 100);
   return {
     id: "lens",
-    tip: t("js.ha.tile.lens_tip", { ok: ok, total: total, pct: pct, wait: waiting }),
+    tip: t("js.ha.tile.lens_tip", { ok: ok, total: total, pct: pct, wait: analysing + waiting }),
     html: cardHTML("#a855f7", "magnify", esc(t("js.ha.tile.lens")),
-      '<span class="t-n">' + ok + ' / ' + total + '</span><span class="badge-pct">' + pct + '%</span>',
-      waiting > 0 ? '<span class="c-wait">' + waiting + '</span>' : '<span class="c-ok">' + esc(t("js.ha.tile.recognised")) + '</span>',
-      foot)
+      '<div class="t-bars">' +
+        lensRow(ok, total, "js.ha.tile.identified", "#a855f7") +
+        lensRow(analysing, total, "js.ha.tile.analyzing", "var(--primary-color)") +
+        lensRow(deepCount, total, "js.ha.deep.title", "var(--warning-color)") +
+      "</div>",
+      "")
   };
 }
 
 function mqttTile() {
-  if (!S.mqtt || !S.mqtt.active) return null;
-  const on = !!S.mqtt.connected, last = cycles[cycles.length - 1];
-  const value = last === undefined ? esc(t(on ? "js.ha.tile.connected" : "js.ha.tile.disconnected")) : esc(t("js.ha.tile.cycle", { s: last.toFixed(1) }));
-  const sub = last === undefined ? "" : '<span class="x">' + esc(t(on ? "js.ha.tile.connected" : "js.ha.tile.disconnected")) + '</span>';
-  const foot = cycles.length ? bars(cycles, 100, 26) : "";
+  const on = !!(S.mqtt && S.mqtt.active && S.mqtt.connected), last = cycles[cycles.length - 1], hosts = S.list.length;
+  const broker = statBox(t("js.ha.tile.broker_mqtt"), esc(t(on ? "js.ha.tile.online" : "js.ha.tile.offline")), on ? "var(--success-color)" : "var(--error-color)", "tinted");
+  const cycle = statBox(t("js.ha.tile.last_cycle"), last === undefined ? "–" : last.toFixed(1) + ' <span class="unit">s</span>');
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.mqtt_exposed")) + '</span><b>' + hosts + '</b></div>' +
+    '<div class="pbar"><i style="width:100%"></i></div>';
   return {
     id: "mqtt",
     tip: t(on ? "js.ha.tile.mqtt_tip" : "js.ha.tile.mqtt_tip_off", { s: last === undefined ? "?" : last.toFixed(1) }),
     html: cardHTML("#ff9800", "home-assistant", esc(t("js.ha.tile.mqtt")),
-      stateDot(on) + '<span class="t-n">' + value + '</span>',
-      sub, foot)
+      '<div class="stat-grid-2">' + broker + cycle + "</div>", foot)
   };
 }
 

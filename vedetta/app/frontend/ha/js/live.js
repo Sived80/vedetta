@@ -45,7 +45,7 @@ function onDevice(ev) {
   const d = prepare(ev.device), prev = S.devices.get(d.id);
   S.devices.set(d.id, d);
   if (S.refreshing) S.changedSince++;
-  const structural = !prev || prev.type !== d.type || prev.icon !== d.icon || prev.name !== d.name || prev.ip !== d.ip || prev.is_mobile !== d.is_mobile;
+  const structural = !prev || prev.type !== d.type || prev.icon !== d.icon || prev.name !== d.name || prev.ip !== d.ip || prev.is_mobile !== d.is_mobile || prev.scanned_at !== d.scanned_at || prev.deep_empty_at !== d.deep_empty_at;
   // New device or category, icon, name, IP changed: the internal list (from which the
   // groups are made) is rebuilt, otherwise the card stays in the old group.
   if (structural) rebuildList();

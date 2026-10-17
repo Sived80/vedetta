@@ -1,6 +1,7 @@
 import { $, REDUCED, api, dlg, esc, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { closePopups } from "./core-menu.js";
+import { schedule } from "./live.js";
 import { fetchHist } from "./log.js";
 import { movingIcon, radarIcon } from "./net-icons.js";
 
@@ -28,11 +29,13 @@ export function runDeep(ids) {
   const fresh = ids.filter(function (id) { return !deepOneBusy(id); });
   if (!fresh.length) { if (ids.length) snack(t("js.ha.deep.already"), { kind: "warning" }); return; }      // never in silence
   fresh.forEach(function (id) { deepFlying.add(id); });
+  S.dirty.net = true;      // the Lens tile counts the searches in flight: redraw it now
+  schedule();
   syncDeepBusy();
   api("/api/devices/rescan", { method: "POST", json: { ids: fresh } }).then(function () {
     snack(t("js.ha.deep.done"), { kind: "success" });
     fetchHist();
-  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); }).then(function () { fresh.forEach(function (id) { deepFlying.delete(id); }); syncDeepBusy(); });
+  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); }).then(function () { fresh.forEach(function (id) { deepFlying.delete(id); }); S.dirty.net = true; schedule(); syncDeepBusy(); });
 }
 export var deepMenuEl = $("deep-menu");
 // The badge: how many devices were never analysed in depth. It is ONE element that changes place: on the corner of the arrow

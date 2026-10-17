@@ -89,6 +89,8 @@ export function buildNetwork() {
     if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
   });
   mountTile();
+  // Brands: the list opens on hover (CSS) and, on touch screens, with a tap on the block (.expanded).
+  $("brands").addEventListener("click", function () { this.classList.toggle("expanded"); });
 }
 
 // The "+N" dot leads to the card of the new devices.
@@ -159,7 +161,7 @@ function renderBrands() {
     bar += '<i class="' + cls + '" style="flex-grow:' + r.n + '" title="' + esc(tip) + '"></i>';
     legend += '<li title="' + esc(tip) + '"><span class="dot ' + cls + '"></span><span class="b-name">' + esc(label) + '</span><span class="b-n">' + r.n + "</span></li>";
   });
-  el.innerHTML = '<div class="brands-title">' + esc(t("js.ha.brands.title")) + '</div><div class="brand-bar">' + bar + "</div><ul>" + legend + "</ul>";
+  el.innerHTML = '<div class="brands-title">' + esc(t("js.ha.brands.title")) + '</div><div class="brand-bar">' + bar + "</div><ul class=\"brands-list\">" + legend + "</ul>";
 }
 
 // Search state: the circle's ring (see net-gauge.js), the real-time pill and the buttons.

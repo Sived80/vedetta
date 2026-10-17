@@ -126,20 +126,26 @@
 @layer layout {
   .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
   .view { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; overflow-anchor: none; }   /* a card that opens moves what is under it; the page does not scroll to compensate */
-  .col-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .col-side { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
   .col-main { min-width: 0; }
-  @media (min-width: 861px) {
-    .col-side { align-self: stretch; }
-    #card-network { position: sticky; top: 16px; z-index: 10; }
-  }
-  @media (max-width: 860px) {
-    .view { grid-template-columns: minmax(0, 1fr); }
-    /* The side column dissolves: network, new devices, devices, log. */
-    .col-side { display: contents; }
-    #card-network { order: 1; }
-    #card-new { order: 2; }
-    .col-main { order: 3; }
-    #card-log { order: 4; }
+  #card-network { position: sticky; top: 16px; z-index: 10; }
+  .col-side { align-self: stretch; }
+  /* Narrow layout: network, new devices, devices, log. Inside Home Assistant the JS follows the host (html.is-narrow, set when the
+     top bar of Home Assistant appears, and data-narrow-host says the host decides). The media query only serves the page before the
+     host answers, outside Home Assistant and without JS. */
+  html.is-narrow .view { grid-template-columns: minmax(0, 1fr); }
+  html.is-narrow .col-side { display: contents; align-self: auto; }
+  html.is-narrow #card-network { order: 1; position: static; }
+  html.is-narrow #card-new { order: 2; }
+  html.is-narrow .col-main { order: 3; }
+  html.is-narrow #card-log { order: 4; }
+  @media (max-width: 870px) {
+    html:not([data-narrow-host]) .view { grid-template-columns: minmax(0, 1fr); }
+    html:not([data-narrow-host]) .col-side { display: contents; align-self: auto; }
+    html:not([data-narrow-host]) #card-network { order: 1; position: static; }
+    html:not([data-narrow-host]) #card-new { order: 2; }
+    html:not([data-narrow-host]) .col-main { order: 3; }
+    html:not([data-narrow-host]) #card-log { order: 4; }
   }
   @media (max-width: 520px) {
     .ha-root { padding: 8px; }

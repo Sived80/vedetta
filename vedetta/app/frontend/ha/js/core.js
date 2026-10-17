@@ -17,6 +17,27 @@ export let REDUCED = false;
   const on = function (e) { REDUCED = !!e.matches; };
   if (mq.addEventListener) mq.addEventListener("change", on); else if (mq.addListener) mq.addListener(on);
 })();
+// Narrow layout: Home Assistant shows its top bar (narrow) at 870px of the browser window, but the page lives in an iframe next to a
+// docked sidebar, so its own width says nothing about it. Inside ingress the host tells: html.is-narrow follows it (data-narrow-host
+// switches the CSS media query off). Outside Home Assistant the media query is the source.
+(function () {
+  const NARROW_QUERY = "(max-width: 870px)";
+  const setNarrow = function (on) { ROOT.classList.toggle("is-narrow", !!on); };
+  if (window.matchMedia) {
+    const mq = window.matchMedia(NARROW_QUERY);
+    const sync = function () { if (!ROOT.hasAttribute("data-narrow-host")) setNarrow(mq.matches); };
+    sync();
+    if (mq.addEventListener) mq.addEventListener("change", sync); else if (mq.addListener) mq.addListener(sync);
+  }
+  if (window.parent === window) return;
+  window.addEventListener("message", function (e) {
+    const d = e.data;
+    if (e.source !== window.parent || !d || d.type !== "home-assistant/properties" || typeof d.narrow !== "boolean") return;
+    ROOT.setAttribute("data-narrow-host", "");
+    setNarrow(d.narrow);
+  });
+  try { window.parent.postMessage({ type: "home-assistant/subscribe-properties" }, "*"); } catch (err) { /* ignore */ }
+})();
 export const TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "generic"];
 export const POLL_WATCHDOG_MS = 90000;
 

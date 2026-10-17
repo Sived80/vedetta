@@ -260,7 +260,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/11-components.css` | 183 | components |
 | `css/12-motion.css` | 173 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
-| `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
+| `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 492 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |

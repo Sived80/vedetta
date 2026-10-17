@@ -5,6 +5,7 @@ import { DEBUG } from "./debug.js";
 import { batteryTitle, chipText, doScan, matches } from "./filters.js";
 import { openMore } from "./more-info.js";
 import { openExternal, wakeDevice } from "./more-edit.js";
+import { bindFold, paintFold } from "./group-fold.js";
 import { load, schedule } from "./live.js";
 
 // ----------------------------------------------------------------- tile
@@ -199,11 +200,12 @@ export function layout() {
       var sec = document.createElement("section");
       sec.className = "group";
       sec.dataset.type = type;
-      sec.innerHTML = '<div class="heading"><span class="hd-ic">' + icon(typeIcon(type)) + '</span><h2 class="hd-title"></h2>' +
-        '<span class="hd-count"></span><span class="hd-sub"></span></div><div class="tiles"></div>';
+      sec.innerHTML = '<div class="heading" role="button" tabindex="0" aria-expanded="true"><span class="hd-ic">' + icon(typeIcon(type)) + '</span><h2 class="hd-title"></h2>' +
+        '<span class="hd-count"></span><span class="hd-sub"></span><span class="hd-chev">' + icon("chevron-down") + '</span></div><div class="tiles"></div>';
       g = S.groups[type] = { el: sec, grid: sec.querySelector(".tiles"), title: sec.querySelector(".hd-title"),
         count: sec.querySelector(".hd-count"), sub: sec.querySelector(".hd-sub") };
       g.title.textContent = typePlural(type);
+      paintFold(g, type);
     }
     if (!items.length) return;
     const online = items.filter(function (d) { return d.online; }).length;
@@ -249,6 +251,7 @@ function layoutCompact(visible) {
   reconcile(groupsEl, [card]);
 }
 
+bindFold(groupsEl);
 groupsEl.addEventListener("click", function (e) {
   const opn = e.target.closest(".tile-open");
   if (opn) {

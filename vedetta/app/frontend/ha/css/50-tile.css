@@ -15,6 +15,19 @@
     background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent);
   }
   .hd-sub { margin-left: auto; font-size: 12px; }
+  /* Folding: the heading is the button (a chevron at the end, nothing else added); a closed group keeps just its heading. */
+  .heading { cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; border-radius: 8px; }
+  .heading:hover { background: var(--ha-hover); }
+  .heading:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+  .hd-chev { display: flex; flex: none; color: var(--secondary-text-color); transition: transform 0.15s; }
+  .hd-chev .mdi { width: 20px; height: 20px; }
+  .hd-sub:empty { display: none; }
+  .hd-count + .hd-chev { margin-left: auto; }
+  .hd-sub + .hd-chev { margin-left: 0; }
+  .group.is-closed .hd-chev { transform: rotate(-90deg); }
+  .group.is-closed .heading { padding-bottom: 0; }
+  .group.is-closed { margin-bottom: 8px; }
+  .tiles[hidden] { display: none; }
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 
   /* Tile card */

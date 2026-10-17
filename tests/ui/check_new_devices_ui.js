@@ -162,6 +162,10 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(60);
   check(!q("#card-new").hidden && rows().length === 2, "due dispositivi visti in rete dall'app: la scheda compare");
   check(!!q("#card-new [data-add-all]"), "con due dispositivi visti dall'app c'e' «Aggiungi tutti»");
+  const btnBefore = q("#card-new [data-add-all]");
+  emitNew([A, B]);
+  await wait(30);
+  check(q("#card-new [data-add-all]") === btnBefore, "lo stesso elenco di nuovo (evento di rete): i tasti non vengono ricreati, un clic in corso non si perde");
   await click("#card-new [data-ignore-all]");
   check(q("#card-new").hidden, "«Annulla» chiude la scheda");
   emitNew([A, B]);

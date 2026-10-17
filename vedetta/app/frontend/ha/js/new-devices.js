@@ -57,7 +57,7 @@ function sym(name, label, attrs, cls) {
 export function renderNew() {
   if (COMPACT) { newEl.hidden = true; return; }
   const list = newRows();
-  if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; return; }
+  if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; newEl._markup = ""; return; }
   const opening = newEl.hidden;      // the card appears now: it opens (below), instead of the page jumping to it
   newEl.hidden = false;
   const ad = S.adding;  // during the add: {ips, done (analysed), saved, mode ("single" | "batch"), meta, fresh, jobs, list, batch}
@@ -98,12 +98,17 @@ export function renderNew() {
   else if (fin) bar = (free > 1 ? all : none) + sym("check", t("js.ha.new.close"), ' data-add-close="1"', "ok");
   else bar = (free > 1 ? all : none) + cancelBtn;
   const pct = total ? Math.max(4, Math.min(100, (saved + 0.9 * analysed + 0.3 * run) / total * 100)) : 0;
-  newEl.innerHTML =
+  const markup =
     '<div class="card-header"><span class="ch-ic ' + (fin ? "ok" : "warn") + '">' + icon(fin ? "check-circle" : "plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +
     esc(title) + '</div><div class="ch-sub">' + esc(sub) + "</div></div>" +
     '<div class="nd-bar-actions">' + bar + "</div></div>" +
     '<div class="nd-list">' + rows + "</div>" +
     '<div class="nd-prog' + (fin ? " ok" : "") + (ad ? "" : " idle") + '" aria-hidden="true"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
+  // The same markup again (the events of the network repeat the list): nothing is touched, or a button pressed at that moment
+  // would be replaced between the press and the release and the click would be lost.
+  if (markup === newEl._markup) return;
+  newEl._markup = markup;
+  newEl.innerHTML = markup;
   // Opening: the card grows from nothing to its height and what is under it (the log) slides down with it.
   if (opening && !REDUCED && newEl.animate) {
     var full = newEl.getBoundingClientRect().height;

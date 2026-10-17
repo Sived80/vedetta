@@ -61,6 +61,10 @@
   .g-track { fill: none; stroke-width: 10; stroke-linecap: round; stroke: color-mix(in srgb, var(--secondary-text-color) 20%, transparent); }
   .g-seg { fill: none; stroke-width: 10; stroke-linecap: round; stroke: var(--cc); background: none; cursor: pointer; transition: opacity 0.2s, filter 0.15s; }
   .g-seg:hover { filter: brightness(1.25); }
+  /* On a phone the browser draws a translucent box around what is tapped (for an arc of the circle, the box of the arc): the buttons already turn it off
+     (.rp); the arcs, the circle, the "+N" and the brands bar are not buttons. A tap there is also no text selection and no double-tap zoom. */
+  .gauge, .g-seg, .newdot, .brands { -webkit-tap-highlight-color: transparent; }
+  .gauge, .brands { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
   .gauge.has-hl .g-seg:not(.hl) { opacity: 0.22; }
   .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
   .gauge-value { font-size: 36px; line-height: 40px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }

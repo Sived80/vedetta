@@ -96,7 +96,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(rows().every((r) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(r.querySelector(".nd-sub").textContent)), "il MAC e' scritto per intero in ogni riga");
   check(rows().every((_, i) => rowState(i) === "nd-idle" && cells(i).length === 2 && /Aggiungi|Add/.test(cells(i)[0])), "a riposo ogni riga ha due caselle: Aggiungi e Ignora");
   check(bar().length === 2 && /tutti|all/i.test(bar()[0]) && !!q("#card-new [data-ignore-all]"), "la barra ha «Aggiungi tutti» e «Annulla»");
-  check(!!q("#card-new .nd-prog.idle"), "la barra di avanzamento c'e' gia', invisibile");
+  check(!q("#card-new .nd-prog"), "sotto l'elenco non c'e' nessuna barra di stato");
 
   // --- 2. add one, cancel it
   await click("#card-new [data-add-ip='192.168.178.201']");
@@ -132,7 +132,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(adds.length === 1 && adds[0].body.devices.length === 1 && adds[0].body.devices[0].ip === "192.168.178.201", "solo quello gia' analizzato viene aggiunto");
   check(rowState(0) === "nd-done" && !!rows()[0].querySelector(".nd-ring .tick") && cells(0).every((c) => c === ""), "e la sua riga diventa verde con la spunta, senza scritte");
   check(/Chiudi|Close/.test(bar()[1]) && /^1 /.test(title()) && /aggiunt|added/.test(title()), "in alto «Annulla» e' diventato «Chiudi» e il titolo dice «1 dispositivo aggiunto»");
-  check(!!q("#card-new .nd-prog.ok"), "la barra di avanzamento e' piena e verde");
+  check(!q("#card-new .nd-prog"), "e non c'e' nemmeno a fine aggiunta");
 
   // --- 5. Close closes the card (the devices added are in the list; a new scan finds the others again)
   await click("#card-new [data-add-close]");

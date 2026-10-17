@@ -81,11 +81,6 @@
   .nd-mini .sp { stroke: var(--primary-color); stroke-linecap: round; stroke-dasharray: 50 100; transform-origin: 50% 50%; animation: nd-spin 0.9s linear infinite; }
   @keyframes nd-spin { to { transform: rotate(360deg); } }
   @keyframes nd-draw { to { stroke-dashoffset: 0; } }
-  /* progress of the whole job: always there, invisible while nothing is being added */
-  .nd-prog { height: 4px; background: color-mix(in srgb, var(--primary-color) 18%, transparent); overflow: hidden; }
-  .nd-prog i { display: block; height: 100%; background: var(--primary-color); transition: width 0.3s linear; }
-  .nd-prog.ok i { background: var(--success-color); }
-  .nd-prog.idle { visibility: hidden; }
   @media (prefers-reduced-motion: reduce) {
     .nd-ring .sp, .nd-mini .sp { animation: none; }
   }

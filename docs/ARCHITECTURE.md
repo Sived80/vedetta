@@ -262,7 +262,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 489 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 196 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
-| `css/60-new-devices.css` | 90 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
+| `css/60-new-devices.css` | 92 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 253 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |

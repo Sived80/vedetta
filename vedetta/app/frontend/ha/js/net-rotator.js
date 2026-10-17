@@ -76,7 +76,7 @@ function gatewayTile(gw) {
   return {
     id: "gateway",
     tip: t(gw.online ? "js.ha.tile.gateway_tip" : "js.ha.tile.gateway_tip_off", { subnet: subnet, used: used, free: free }),
-    html: cardHTML("#14b8a6", "router-wireless", esc(t("js.ha.tile.gateway")),
+    html: cardHTML("var(--teal-color, #009688)", "router-wireless", esc(t("js.ha.tile.gateway")),
       '<div class="t-v"><span class="t-n mono' + (gw.online ? "" : " gw-off") + '">' + esc(gw.ip) + '</span></div>' +
       '<div class="gw-net"><span class="gw-sub">' + esc(subnet) + '</span>' + (gw.online ? '<span class="gw-state">' + esc(t("js.ha.tile.net_active")) + '</span>' : "") + '</div>',
       foot)
@@ -107,9 +107,9 @@ function lensTile() {
   return {
     id: "lens",
     tip: t("js.ha.tile.lens_tip", { ok: ok, total: total, pct: pct, wait: analysing + waiting }),
-    html: cardHTML("#a855f7", "magnify", esc(t("js.ha.tile.lens")),
+    html: cardHTML("var(--purple-color, #926bc7)", "magnify", esc(t("js.ha.tile.lens")),
       '<div class="t-bars">' +
-        lensRow(ok, total, "js.ha.tile.identified", "#a855f7") +
+        lensRow(ok, total, "js.ha.tile.identified", "var(--purple-color, #926bc7)") +
         lensRow(analysing, total, "js.ha.tile.analyzing", "var(--primary-color)") +
         lensRow(deepCount, total, "js.ha.deep.title", "var(--warning-color)") +
       "</div>",
@@ -126,7 +126,7 @@ function mqttTile() {
   return {
     id: "mqtt",
     tip: t(on ? "js.ha.tile.mqtt_tip" : "js.ha.tile.mqtt_tip_off", { s: last === undefined ? "?" : last.toFixed(1) }),
-    html: cardHTML("#ff9800", "home-assistant", esc(t("js.ha.tile.mqtt")),
+    html: cardHTML("var(--orange-color, #ff9800)", "home-assistant", esc(t("js.ha.tile.mqtt")),
       '<div class="stat-grid-2">' + broker + cycle + "</div>", foot)
   };
 }

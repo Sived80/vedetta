@@ -237,7 +237,7 @@
   "js.ha.pause.opt_15": "15 min",
   "js.ha.pause.opt_60": "1 h",
   "js.ha.pause.opt_480": "8 h",
-  "js.ha.pause.opt_0": "Until I resume",
+  "js.ha.pause.opt_0": "Stop",
   "js.ha.pause.hint": "Automatic checks and alerts stop. Manual refresh and search keep working.",
   "js.ha.deep.title": "Deep search",
   "js.ha.deep.start": "Start",

@@ -250,8 +250,9 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
 | `js/net-rotator.js` | 185 | rotating tile of the Network card |
-| `js/network.js` | 60 | pause |
+| `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 309 | new devices |
+| `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
 | `js/tile.js` | 308 | tile |
 | `js/update.js` | 34 | update available |
 | `css/10-base.css` | 168 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
@@ -259,7 +260,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/12-motion.css` | 173 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 481 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 489 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 196 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 78 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |

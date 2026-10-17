@@ -2,6 +2,7 @@ import { $, api, esc, t } from "./core.js";
 import { S, fmtLeft, pauseLeft, snack } from "./core-ui.js";
 import { closePopups, menuGroup, pill } from "./core-menu.js";
 import { onPoll } from "./live.js";
+import { pausePlacement } from "./pause-place.js";
 
 // ------------------------------------------------------------- pause
 export var pauseEl = $("pause-menu"), liveEl = $("live");
@@ -24,15 +25,13 @@ export function togglePause(open) {
   if (open) {
     closePopups("pause");
     buildPause();
-    var r = liveEl.getBoundingClientRect();
+    var r = liveEl.getBoundingClientRect(), place = pausePlacement(r, $("card-network").getBoundingClientRect(), window.innerWidth);
     pauseEl.style.top = Math.round(r.bottom + 4) + "px";
     pauseEl.style.right = "auto";
     pauseEl.style.maxHeight = Math.max(160, window.innerHeight - r.bottom - 16) + "px";
-    pauseEl.hidden = false;                                  // visible to measure its width: the centre of the menu is the centre of the button
-    var w = pauseEl.offsetWidth || 300, centre = r.left + r.width / 2;
-    var left = Math.max(8, Math.min(Math.round(centre - w / 2), window.innerWidth - w - 8));
-    pauseEl.style.left = left + "px";
-    pauseEl.style.transformOrigin = Math.round(centre - left) + "px top";
+    pauseEl.style.width = place.width + "px";                // centred on the button and inside the card (see pause-place.js)
+    pauseEl.style.left = place.left + "px";
+    pauseEl.style.transformOrigin = place.originX + "px top";
   }
   pauseEl.hidden = !open;
   liveEl.setAttribute("aria-expanded", String(open));

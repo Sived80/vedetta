@@ -295,6 +295,14 @@
   html.is-narrow #card-network { position: static; }
   @media (max-width: 870px) { html:not([data-narrow-host]) #card-network { position: static; } }
 
+  /* The pause menu: narrow (its width is set by the script, see pause-place.js) and all centred: the title, the row of choices and the line under them. */
+  #pause-menu { text-align: center; }
+  #pause-menu .menu-label { padding: 0 2px 10px; letter-spacing: 0.04em; }
+  #pause-menu .menu-pills { justify-content: center; }
+  #pause-menu .pill { min-height: 34px; font-size: 13px; }                                  /* the four choices are the same size (the full-width one was 40 px against 34) */
+  @media (pointer: coarse) { #pause-menu .pill { min-height: 40px; } }
+  #pause-menu .menu-hint { padding-top: 10px; text-align: center; }
+
   /* Hover and pressed. The pressed badge must follow the hover one (same specificity: a pressed badge keeps its colour on hover). */
   .badge:hover { background: var(--ha-hover); }
   .badge.on, .badge[aria-pressed="true"] { background: color-mix(in srgb, var(--primary-color) 16%, transparent); border-color: var(--primary-color); color: var(--primary-color); }

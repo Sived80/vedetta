@@ -237,7 +237,7 @@
   "js.ha.pause.opt_15": "15 min",
   "js.ha.pause.opt_60": "1 h",
   "js.ha.pause.opt_480": "8 h",
-  "js.ha.pause.opt_0": "Dokud neobnovím",
+  "js.ha.pause.opt_0": "Zastavit",
   "js.ha.pause.hint": "Automatické kontroly a upozornění se zastaví. Ruční obnovení a vyhledávání zůstávají funkční.",
   "js.ha.deep.title": "Hloubkové vyhledávání", 
   "js.ha.deep.start": "Spustit",

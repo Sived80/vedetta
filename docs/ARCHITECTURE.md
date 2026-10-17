@@ -230,7 +230,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | part | lines | what it is for |
 |---|---|---|
 | `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 271 | guided typing |
+| `js/core-menu.js` | 273 | guided typing |
 | `js/core-ui.js` | 198 | state |
 | `js/core.js` | 225 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 47 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
@@ -254,7 +254,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/tile.js` | 308 | tile |
 | `css/10-base.css` | 167 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 183 | components |
-| `css/12-motion.css` | 156 | motion |
+| `css/12-motion.css` | 161 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 467 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |

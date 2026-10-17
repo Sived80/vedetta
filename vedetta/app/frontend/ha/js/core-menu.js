@@ -59,6 +59,7 @@ function everyLabel(secs) { return secs < 60 ? secs + " s" : Math.round(secs / 6
 // The one-time invitation to star the project: a small star on the menu button, and, the first time the menu is opened, its first
 // entry (a link to GitHub). The server remembers that it was shown, so it never comes back (storage/starhint.py).
 var STAR_URL = "https://github.com/Sived80/vedetta/tree/main#readme";       // an address nobody else links to: the visits to it in the repository statistics are the clicks from here (the app sends nothing)
+var REPO_URL = "https://github.com/Sived80/vedetta";       // the plain address of the project: the link at the foot of the menu (the star entry above has its own, to count its clicks)
 var starBadge = document.createElement("span");
 starBadge.className = "star-badge";
 starBadge.hidden = true;
@@ -168,7 +169,8 @@ function buildMenu() {
   html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1">' + esc(t("js.ha.menu.ignored")) + icon("eye-off") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
-  if (S.version) html += '<div class="menu-version">Vedetta ' + esc(S.version) + "</div>";    // which version is running (the bar above the page is Home Assistant's)
+  // The foot of the menu: the repository (the running version is in the title of the Network card).
+  html += '<a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) + '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>";
   menuEl.innerHTML = html;
 }
 function toggleMenu(open) {

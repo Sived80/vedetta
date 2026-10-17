@@ -213,6 +213,7 @@
   "js.ha.menu.speed_hint": "Zařízení je označeno jako offline po přibližně {t}.",
   "js.ha.log.flap": "změna stavu {n}x · nyní {state}",
   "js.ha.menu.flows": "Metody vyhledávání",
+  "js.ha.menu.repo": "Repozitář Vedetta na GitHubu",
   "js.ha.menu.star": "Dejte hvězdičku",
   "js.ha.menu.star_sub": "Pokud vám Vedetta pomohla",  
   "js.ha.pause.title": "Pozastavit monitorování",

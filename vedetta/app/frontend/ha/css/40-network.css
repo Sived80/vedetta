@@ -288,6 +288,13 @@
 }
 
 @layer overrides {
+  /* Position of the card. It follows the page in the side column of the wide layout (sticky) and is in the flow when the cards are stacked (the host
+     says narrow: html.is-narrow, or the media query before it answers). It must be here: .ha-card (components) sets position: relative and wins over the
+     layout layer; with relative and top: 16px the card was moved 16 px down, which took away the space under it and added it above. */
+  #card-network { position: sticky; top: 16px; z-index: 10; }
+  html.is-narrow #card-network { position: static; }
+  @media (max-width: 870px) { html:not([data-narrow-host]) #card-network { position: static; } }
+
   /* Hover and pressed. The pressed badge must follow the hover one (same specificity: a pressed badge keeps its colour on hover). */
   .badge:hover { background: var(--ha-hover); }
   .badge.on, .badge[aria-pressed="true"] { background: color-mix(in srgb, var(--primary-color) 16%, transparent); border-color: var(--primary-color); color: var(--primary-color); }

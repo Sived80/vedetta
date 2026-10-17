@@ -291,7 +291,10 @@
   /* Position of the card. It follows the page in the side column of the wide layout (sticky) and is in the flow when the cards are stacked (the host
      says narrow: html.is-narrow, or the media query before it answers). It must be here: .ha-card (components) sets position: relative and wins over the
      layout layer; with relative and top: 16px the card was moved 16 px down, which took away the space under it and added it above. */
-  #card-network { position: sticky; top: 16px; z-index: 10; }
+  /* What follows the page is the side column, so the network card and the log under it stay together while the page scrolls (wide layout;
+     when the cards are stacked .col-side is display: contents and nothing sticks). A column taller than the window scrolls inside itself. */
+  .col-side { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; scrollbar-width: thin; }
+  #card-network { position: relative; z-index: 10; }
   html.is-narrow #card-network { position: static; }
   @media (max-width: 870px) { html:not([data-narrow-host]) #card-network { position: static; } }
 

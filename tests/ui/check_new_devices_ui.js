@@ -209,6 +209,20 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await click("#card-new [data-ignore-all]");
   check(q("#card-new").hidden, "secondo «Annulla»: chiude anche quella");
 
+  // --- 8. the eye on a device that the search found AND the app had seen: one press removes it (it did not: it came back as "seen by the app")
+  const F = seen("AA:AA:AA:00:00:31", "192.168.178.231"), G = seen("AA:AA:AA:00:00:32", "192.168.178.232");
+  HOSTS.length = 0;
+  HOSTS.push({ ip: F.ip, mac: F.mac, hostname: "n231" });
+  await click("#btn-scan");
+  await wait(60);
+  emitNew([F, G]);
+  await wait(60);
+  check(rows().length === 2, "un dispositivo trovato dalla ricerca e visto dall'app compare una volta sola");
+  await click("#card-new [data-ign-ip='" + F.ip + "']");
+  await wait(60);
+  check(!rows().some((r) => r.dataset.ip === F.ip) && rows().length === 1, "«Ignora» con una sola pressione: il dispositivo sparisce e non torna come «visto dall'app»");
+  check(!q("#card-new button:disabled"), "nessun tasto resta spento dopo «Ignora»");
+
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");
   console.log(failed ? "FALLITO: " + failed : "TUTTO OK");

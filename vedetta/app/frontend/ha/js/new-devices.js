@@ -54,6 +54,11 @@ function ndRing(state, fresh) {
 function sym(name, label, attrs, cls) {
   return '<button type="button" class="btn text rp nd-sym' + (cls ? " nd-" + cls : "") + '"' + (attrs || "") + ' title="' + esc(label) + '" aria-label="' + esc(label) + '">' + icon(name) + "</button>";
 }
+// Draws the panel again even if the markup is the same: a button turned off by hand (while a request runs) must come back.
+function redrawNew() {
+  newEl._markup = "";
+  renderNew();
+}
 export function renderNew() {
   if (COMPACT) { newEl.hidden = true; return; }
   const list = newRows();
@@ -287,10 +292,12 @@ newEl.addEventListener("click", function (e) {
     api("/api/ignored/hosts", { method: "POST", json: { hosts: [{ ip: ign.dataset.ignIp, mac: ign.dataset.ignMac || null, hostname: ign.dataset.ignHost || null }] } })
       .then(function () {
         S.found = S.found.filter(function (h) { return h.ip !== ign.dataset.ignIp; });
-        renderNew();
-
+        // The app may have seen the same device by itself: it must not come back as a "seen" row (the second press of the eye).
+        S.dismissedNew[String(ign.dataset.ignMac || ign.dataset.ignIp).toUpperCase()] = true;
+        redrawNew();
       }).catch(function () {
         ign.disabled = false;
+        redrawNew();
         snack(t("js.ha.toast.error"), { kind: "error" });
       });
     return;
@@ -314,12 +321,13 @@ newEl.addEventListener("click", function (e) {
   b.disabled = true;
   api("/api/new-devices/ignore", { method: "POST", json: mac === "*" ? {} : { macs: [mac] } }).then(function (list) {
     if (Array.isArray(list)) S.newDevices = { count: list.length, devices: list, init: true };
-    renderNew();
+    S.dismissedNew[String(mac).toUpperCase()] = true;
+    redrawNew();
     S.dirty.net = true;
     schedule();
-
   }).catch(function () {
     b.disabled = false;
+    redrawNew();
     snack(t("js.ha.toast.error"), { kind: "error" });
   });
 });

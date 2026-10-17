@@ -7,6 +7,8 @@ set -euo pipefail
 HOST="${VEDETTA_HA_HOST:?set VEDETTA_HA_HOST}"
 KEY="${VEDETTA_HA_KEY:-$HOME/.ssh/id_ed25519}"
 SLUG=vedetta_debug
+# Title of the panel in the Home Assistant bar (VEDETTA_DEBUG_TITLE="" tries an empty one).
+PANEL_TITLE="${VEDETTA_DEBUG_TITLE-Vedetta debug}"
 cd "$(dirname "$0")/.."
 # the tests first (in parallel, a few minutes); SKIP_TESTS=1 when they have just passed on this very code
 if [ "${SKIP_TESTS:-0}" != "1" ]; then python tools/run_tests.py; fi
@@ -22,7 +24,7 @@ sed -i \
   -e 's/\[PORT:8765\]/[PORT:8766]/' \
   -e 's/^ingress_port: 8765$/ingress_port: 8766/' \
   -e 's/^panel_icon: .*/panel_icon: mdi:bug/' \
-  -e 's/^panel_title: .*/panel_title: Vedetta debug/' \
+  -e "s/^panel_title: .*/panel_title: \"$PANEL_TITLE\"/" \
   -e '/^services:$/,/^  - mqtt:want$/d' \
   "$STAGE/$SLUG/config.yaml"
 # The debug copy shows the one-time star invitation by the same rule as the real app (after a couple of days of use, once).

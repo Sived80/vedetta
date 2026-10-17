@@ -6,15 +6,16 @@
   /* Narrow layout (the cards are stacked, 16 px apart): the last group is 24 px from the log card under it (8 + the gap), not 40. */
   html.is-narrow .col-main .group:last-child { margin-bottom: 8px; }
   @media (max-width: 870px) { html:not([data-narrow-host]) .col-main .group:last-child { margin-bottom: 8px; } }
-  .heading { display: flex; align-items: center; gap: 8px; padding: 0 4px 10px; color: var(--secondary-text-color); }
+  .heading { display: flex; align-items: center; gap: 8px; padding: 4px; margin: -4px -4px 6px; color: var(--secondary-text-color); min-width: 0; }      /* the hover background is symmetric around the text; the 4 px of padding are taken back by the margin */
   .hd-ic { display: flex; }
   .hd-ic .mdi { width: 20px; height: 20px; }
-  .hd-title { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary-text-color); }
+  .hd-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary-text-color); }
   .hd-count {
+    flex: none;
     font-size: 12px; font-weight: 500; line-height: 18px; padding: 0 8px; border-radius: 9px;
     background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent);
   }
-  .hd-sub { margin-left: auto; font-size: 12px; }
+  .hd-sub { flex: none; white-space: nowrap; margin-left: auto; font-size: 12px; }
   /* Folding: the heading is the button (a chevron at the end, nothing else added); a closed group keeps just its heading. */
   .heading { cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; border-radius: 8px; }
   .heading:hover { background: var(--ha-hover); }
@@ -22,10 +23,10 @@
   .hd-chev { display: flex; flex: none; color: var(--secondary-text-color); transition: transform 0.15s; }
   .hd-chev .mdi { width: 20px; height: 20px; }
   .hd-sub:empty { display: none; }
-  .hd-count + .hd-chev { margin-left: auto; }
-  .hd-sub + .hd-chev { margin-left: 0; }
+  .hd-chev { margin-left: auto; }
+  .hd-sub:not(:empty) + .hd-chev { margin-left: 0; }
   .group.is-closed .hd-chev { transform: rotate(-90deg); }
-  .group.is-closed .heading { padding-bottom: 0; }
+  .group.is-closed .heading { margin-bottom: 0; }
   .group.is-closed { margin-bottom: 8px; }
   .tiles[hidden] { display: none; }
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }

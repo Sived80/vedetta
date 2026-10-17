@@ -88,6 +88,10 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(120);
   // --- 1. the list
   check(rows().length === 3 && !q("#card-new").hidden, "la scheda mostra i tre dispositivi trovati");
+  const panel = q("#card-new"), net = q("#card-network .card-content");
+  check(panel.parentElement === net && panel.previousElementSibling.id === "badges" && panel.nextElementSibling.id === "brands", "l'elenco sta nella scheda Network, tra i tasti e i marchi");
+  check(!q(".ha-card#card-new"), "non e' piu' una scheda separata");
+  check(rows().every((r) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(r.querySelector(".nd-sub").textContent)), "il MAC e' scritto per intero in ogni riga");
   check(rows().every((_, i) => rowState(i) === "nd-idle" && cells(i).length === 2 && /Aggiungi|Add/.test(cells(i)[0])), "a riposo ogni riga ha due caselle: Aggiungi e Ignora");
   check(bar().length === 2 && /tutti|all/i.test(bar()[0]) && !!q("#card-new [data-ignore-all]"), "la barra ha «Aggiungi tutti» e «Annulla»");
   check(!!q("#card-new .nd-prog.idle"), "la barra di avanzamento c'e' gia', invisibile");

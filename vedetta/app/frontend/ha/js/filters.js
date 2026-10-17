@@ -1,7 +1,7 @@
 import { $, REDUCED, api, esc, icon, t } from "./core.js";
 import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
-import { renderNew } from "./new-devices.js";
+import { newEl, renderNew } from "./new-devices.js";
 import { schedule } from "./live.js";
 import { bindGauge, gaugeHTML, paintCycle, paintGauge, paintNewDot } from "./net-gauge.js";
 import { logoHTML, movingIcon } from "./net-icons.js";
@@ -72,6 +72,8 @@ export function buildNetwork() {
     '<div class="tile-col" id="tile-col">' + tileHTMLShell() + '</div></div>' +
     '<div class="badges" id="badges">' + badgesHTML() + '</div>' +
     '<div class="brands" id="brands"></div></div>';
+  // The devices to add open between the badges and the brands (the panel survives the rebuild of the card).
+  netEl.querySelector(".card-content").insertBefore(newEl, $("brands"));
   // Search, real-time status and settings live inside this card: the already created
   // nodes (with their handlers) are moved here from the hidden container.
   const tools = $("card-tools");
@@ -95,7 +97,7 @@ export function buildNetwork() {
 
 // The "+N" dot leads to the card of the new devices.
 function showNewDevices() {
-  const card = $("card-new");
+  const card = newEl;
   if (!card.hidden && card.scrollIntoView) card.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
 }
 

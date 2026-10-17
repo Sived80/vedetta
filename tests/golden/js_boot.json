@@ -1,11 +1,11 @@
 {
- "listeners": 68,
+ "listeners": 71,
  "timers": 3,
  "intervals": 6,
  "requests": [
   "/api/ha/devices",
   "/api/ha/summary"
  ],
- "created": 2,
+ "created": 4,
  "errors": []
 }

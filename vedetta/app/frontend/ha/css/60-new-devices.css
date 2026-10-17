@@ -1,4 +1,4 @@
-/* Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog
+/* Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog
    (network): the plain .nd-* rules below style that dialog, #card-new restyles them in the overrides layer. */
 
 @layer layout {
@@ -11,7 +11,7 @@
      nothing moves when a button is pressed (the two cells of buttons, --c1 and --c2, have identical widths and gap
      in the bar and in the rows; the progress bar has its place). */
   #card-new {
-    --c1: 140px; --c2: 96px; --nd-gap: 6px; overflow: clip; container-type: inline-size;
+    --c1: 112px; --c2: 84px; --nd-gap: 6px; overflow: clip;
   }
 
   /* Device rows: Add and Ignore together, wrapping on narrow screens. */
@@ -27,18 +27,29 @@
 }
 
 @layer overrides {
-  #card-new .card-header { min-height: 72px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 16px 16px; }
-  #card-new .card-header .ch-text { flex: 1; min-width: 160px; }
-  #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); order: -1; margin: 0 4px 0 0; }
+  /* Panel of the network card: a divided block between the badges and the brands, not a card. Title and bar of buttons in one
+     line (they wrap on narrow widths); the MAC is never cut: the actions go under the text when there is no room. */
+  #card-new { border-top: 1px solid var(--divider-color); border-bottom: 1px solid var(--divider-color); padding: 12px 0 0; }
+  #card-new[hidden] { display: none; }
+  #card-new .card-header { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 0 0 8px; min-height: 0; }
+  #card-new .card-header .ch-text { flex: 1 1 140px; min-width: 0; }
+  #card-new .ch-title { font-size: var(--ha-font-size-m, 14px); font-weight: var(--ha-font-weight-medium, 500); }
+  #card-new .ch-sub { font-size: var(--ha-font-size-s, 12px); color: var(--secondary-text-color); }
+  #card-new .ch-ic { width: 32px; height: 32px; }
+  #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); }
   #card-new .nd-bar-actions, #card-new .nd-actions {
     display: grid; grid-template-columns: var(--c1) var(--c2); gap: var(--nd-gap, 6px); align-items: center; justify-content: end; margin-left: auto; flex: none;
   }
-  #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 36px; display: flex; align-items: center; justify-content: center; min-width: 0; }
+  #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 34px; display: flex; align-items: center; justify-content: center; min-width: 0; }
   #card-new .nd-bar-actions > .btn, #card-new .nd-actions > .btn {
-    width: 100%; height: 36px; min-height: 36px; padding: 0 8px; box-sizing: border-box; white-space: nowrap; font-size: 13px; font-weight: 500;
+    width: 100%; height: 34px; min-height: 34px; padding: 0 8px; box-sizing: border-box; white-space: nowrap;
+    font-size: var(--ha-font-size-s, 12px); font-weight: var(--ha-font-weight-medium, 500); border-radius: var(--ha-border-radius-xl, 16px);
   }
   #card-new .nd-bar-actions > .btn:disabled { opacity: 0.7; }
-  #card-new .nd-row { flex-wrap: nowrap; min-height: 64px; box-sizing: border-box; }
+  #card-new .nd-list { padding: 0; }
+  #card-new .nd-row { flex-wrap: wrap; min-height: 56px; box-sizing: border-box; padding: 6px 0; gap: 4px 12px; }
+  #card-new .nd-text { flex: 1 1 130px; }
+  #card-new .nd-sub { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
   #card-new .nd-ico { display: none; }
   /* the ring */
@@ -66,13 +77,7 @@
   @media (prefers-reduced-motion: reduce) {
     .nd-ring .sp, .nd-mini .sp { animation: none; }
   }
-  @container (max-width: 480px) {
-    #card-new { --c1: 110px; --c2: 74px; }
-    #card-new .card-header { padding: 14px 12px; }
-    .nd-list { padding: 4px 6px; }
-    .nd-row { padding: 6px 6px; }
-    #card-new .nd-bar-actions, #card-new .nd-actions { grid-template-columns: var(--c1) var(--c2); }
-    #card-new .nd-actions .btn { padding: 0 4px; }
-    #card-new .nd-bar-actions .btn { padding: 0 4px; }
+  @media (max-width: 420px) {
+    #card-new { --c1: 100px; --c2: 72px; }
   }
 }

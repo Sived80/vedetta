@@ -1,10 +1,15 @@
-import { $, COMPACT, LANG, REDUCED, api, esc, icon, ipKey, t } from "./core.js";
+import { COMPACT, LANG, REDUCED, api, esc, icon, ipKey, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { ign } from "./ignored.js";
 import { schedule } from "./live.js";
 
 // ---------------------------------------------------- new devices
-export var newEl = $("card-new");
+// The list is not a card of its own: it is a panel of the network card (filters.js puts it between the badges and the brands),
+// so the card grows downwards when there is something to add and the log under it follows.
+export var newEl = document.createElement("div");
+newEl.id = "card-new";
+newEl.className = "nd-panel";
+newEl.hidden = true;
 // Rows of the card: the devices found by the last scan (S.found, with
 // Add) and the never-seen MACs detected on the network (S.newDevices); no duplicates by IP.
 // The rows being added (S.adding) stay in the card until "Close", even when the server no longer lists them as new.

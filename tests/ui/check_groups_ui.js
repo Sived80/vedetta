@@ -26,7 +26,7 @@ const vc = new VirtualConsole();
 vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.stack) || e.message)));
 vc.on("error", (e) => errors.push("console.error: " + e));
 const calls = [];
-const HOSTS = [["192.168.178.201", "B8:27:EB:3A:91:C2"], ["192.168.178.202", "3C:61:05:4F:20:7D"], ["192.168.178.203", "F0:18:98:5A:11:09"]].map(([ip, mac]) => ({ ip, mac, hostname: "h" + ip.split(".")[3] }));
+const HOSTS = [["192.0.2.201", "B8:27:EB:3A:91:C2"], ["192.0.2.202", "3C:61:05:4F:20:7D"], ["192.0.2.203", "F0:18:98:5A:11:09"]].map(([ip, mac]) => ({ ip, mac, hostname: "h" + ip.split(".")[3] }));
 const sources = [];
 const streams = [];                                   // the deep searches started: the test says what each one has found, and when it ends
 function makeStream(ips, signal) {

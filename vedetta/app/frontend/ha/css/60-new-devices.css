@@ -11,7 +11,7 @@
      nothing moves when a button is pressed (the two cells of buttons, --c1 and --c2, have identical widths and gap
      in the bar and in the rows; the progress bar has its place). */
   #card-new {
-    --c1: 34px; --c2: 34px; --nd-gap: 6px; overflow: clip;
+    --c1: 36px; --c2: 36px; --nd-gap: 6px; overflow: clip;
   }
 
   /* Device rows: Add and Ignore together, wrapping on narrow screens. */
@@ -41,9 +41,9 @@
   #card-new .nd-bar-actions, #card-new .nd-actions {
     display: grid; grid-template-columns: var(--c1) var(--c2); gap: var(--nd-gap, 6px); align-items: center; justify-content: end; margin-left: auto; flex: none;
   }
-  #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 34px; display: flex; align-items: center; justify-content: center; min-width: 0; }
+  #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 36px; display: flex; align-items: center; justify-content: center; min-width: 0; }
   #card-new .nd-bar-actions > .btn, #card-new .nd-actions > .btn {
-    width: 34px; height: 34px; min-height: 34px; padding: 0; box-sizing: border-box; white-space: nowrap;
+    width: 36px; height: 36px; min-height: 36px; padding: 0; background: transparent; border: 0; color: var(--secondary-text-color); box-sizing: border-box; white-space: nowrap;
     font-size: var(--ha-font-size-s, 12px); font-weight: var(--ha-font-weight-medium, 500); border-radius: 50%;
   }
   #card-new .nd-bar-actions > .btn:disabled { opacity: 0.7; }
@@ -52,7 +52,16 @@
   #card-new .nd-text { flex: 1 1 130px; }
   #card-new .nd-sub { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
-  #card-new .nd-sym .mdi, #card-new .nd-sym svg { width: 20px; height: 20px; }
+  /* Plain icon buttons as in HA: no background, the 24 px icon centred in 36 px, like the three lines of the menu (same right edge as
+     the menu button: on narrow windows the header padding is 12 and the content 16, hence the 4 px). The action that adds is blue. */
+  #card-new .nd-sym .mdi, #card-new .nd-sym svg { width: 24px; height: 24px; }
+  #card-new .nd-sym:hover { background: var(--ha-hover); color: var(--primary-text-color); }
+  #card-new .nd-sym.nd-ok { color: var(--primary-color); }
+  @media (max-width: 440px) {
+    #card-new { --c1: 32px; --c2: 32px; }
+    #card-new .nd-bar-actions > .btn, #card-new .nd-actions > .btn { width: 32px; height: 32px; min-height: 32px; }
+    #card-new .nd-bar-actions, #card-new .nd-actions { margin-right: -4px; }
+  }
   /* the ring */
   #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic, #card-new .nd-row.nd-done .nd-ic { background: transparent; }
   .nd-ring { width: 30px; height: 30px; }

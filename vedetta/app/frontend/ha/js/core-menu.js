@@ -5,6 +5,7 @@ import { deepMenuEl, toggleDeepMenu } from "./deep.js";
 import { pauseEl, togglePause } from "./network.js";
 import { openIgnored } from "./ignored.js";
 import { openFlows } from "./flows.js";
+import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
 
 // ----------------------------------------------------------------- guided typing
@@ -67,6 +68,21 @@ starBadge.setAttribute("aria-hidden", "true");
 starBadge.innerHTML = icon("star");
 menuBtn.parentNode.appendChild(starBadge);
 export function setStarBadge() { starBadge.hidden = !S.starHint; }
+// The update dot: a red dot on the menu button while Home Assistant has a newer version of Vedetta (S.update, from the summary). Like the star it goes
+// away when the menu is opened; it comes back only for a version newer than the one seen (a convenience of this browser: localStorage).
+var SEEN_KEY = "vedetta-ha-update-seen";
+var updDot = document.createElement("span");
+updDot.className = "upd-dot";
+updDot.hidden = true;
+updDot.setAttribute("aria-hidden", "true");
+menuBtn.parentNode.appendChild(updDot);
+function updateAvailable() { return !!(S.update && S.update.available); }
+function updSeen() { try { return localStorage.getItem(SEEN_KEY); } catch (err) { return null; } }
+export function setUpdateDot() { updDot.hidden = !(updateAvailable() && updSeen() !== S.update.latest); }
+function markUpdateSeen() {
+  try { localStorage.setItem(SEEN_KEY, S.update.latest); } catch (err) { /* ignore */ }
+  setUpdateDot();
+}
 function starEntry() {
   if (!S.starMenu) return "";
   return '<a class="menu-item menu-link star-entry rp" href="' + STAR_URL + '" target="_blank" rel="noopener noreferrer" data-star="1"><span class="star-text">' +
@@ -143,6 +159,15 @@ function langGroup() {
     esc((window.VEDETTA_LANG_AUTO ? t("js.ha.menu.lang_auto") + " · " : "") + langName(LANG)) + "</span>" + icon("chevron-down", "sel-chev") + "</button></div>";
 }
 
+// The foot of the menu: the repository on the left (the running version is in the title of the Network card) and, only while Home Assistant has a newer
+// version, the red arrow on the right, in line with the icons of the rows above. It needs the page to be inside Home Assistant (that is where the Updates page is).
+function menuFoot() {
+  const tip = esc(t("js.ha.menu.update_tip", { latest: S.update ? S.update.latest : "" }));
+  const up = updateAvailable() && inHomeAssistant()
+    ? '<button type="button" class="menu-upd rp" data-update="1" title="' + tip + '" aria-label="' + tip + '">' + icon("upload") + "</button>" : "";
+  return '<div class="menu-foot"><a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) +
+    '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>";
+}
 function buildMenu() {
   let html = starEntry() + langGroup();
   const theme = ROOT.getAttribute("data-theme") || "auto";
@@ -169,8 +194,7 @@ function buildMenu() {
   html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1">' + esc(t("js.ha.menu.ignored")) + icon("eye-off") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
-  // The foot of the menu: the repository (the running version is in the title of the Network card).
-  html += '<a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) + '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>";
+  html += menuFoot();
   menuEl.innerHTML = html;
 }
 function toggleMenu(open) {
@@ -179,6 +203,7 @@ function toggleMenu(open) {
   if (!open && S.starMenu) { S.starMenu = false; S.starHint = false; setStarBadge(); }       // it has been seen: the star goes away
   if (open) {
     closePopups("menu");
+    if (updateAvailable()) markUpdateSeen();       // seen: the dot goes away
     if (S.starHint && !S.starMenu) {
       S.starMenu = true;
       api("/api/ha/star", { method: "POST" }).catch(function () { /* the next summary says again if it was not saved */ });
@@ -214,6 +239,7 @@ menuEl.addEventListener("click", function (e) {
     return;
   }
   if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }
+  if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   const item = e.target.closest(".menu-item");
   if (!item) return;
   if (item.dataset.theme) {

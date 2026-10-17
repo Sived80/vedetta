@@ -1,0 +1,17 @@
+/* Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the left and the
+   buttons at the foot are those of the other windows (.more-info, .mi-header, .mi-actions). */
+
+@layer overrides {
+  #updatedlg { width: min(460px, calc(100vw - 32px)); }
+  #updatedlg .upd-body { display: flex; flex-direction: column; gap: 12px; padding: 8px 24px 16px; }
+  #updatedlg .upd-intro { margin: 0; font-size: var(--ha-font-size-m); line-height: 1.5; }
+  #updatedlg .upd-what { font-size: var(--ha-font-size-s); font-weight: var(--ha-font-weight-medium); letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary-text-color); }
+  #updatedlg .upd-steps { margin: 0; padding: 0; list-style: none; counter-reset: upd; display: flex; flex-direction: column; gap: 10px; }
+  #updatedlg .upd-steps li { counter-increment: upd; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; line-height: 1.5; color: var(--secondary-text-color); }
+  #updatedlg .upd-steps li::before {
+    content: counter(upd); flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+    font-size: var(--ha-font-size-xs); font-weight: var(--ha-font-weight-medium); color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  }
+  #updatedlg .mi-actions { padding: 12px 24px 20px; gap: 8px; }
+}

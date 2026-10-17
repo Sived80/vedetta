@@ -1,6 +1,6 @@
 import { $, COMPACT, LANG, ago, api, dlg, reloadHost, t } from "./core.js";
 import { S, setConn, snack } from "./core-ui.js";
-import { setStarBadge } from "./core-menu.js";
+import { setStarBadge, setUpdateDot } from "./core-menu.js";
 import { buildNetwork, netEl, refreshDone, updateNetwork, updateScan } from "./filters.js";
 import { emptyState, flash, groupsEl, layout, prepare, rebuildList, reconcile, updateTile } from "./tile.js";
 import { newEl, renderNew } from "./new-devices.js";
@@ -201,6 +201,8 @@ export function load(opts) {
     S.mqtt = sum.mqtt || null;
     S.version = sum.version || "";
     if (!S.starMenu) { S.starHint = !!sum.star_hint; setStarBadge(); }
+    S.update = sum.update || null;
+    setUpdateDot();
     S.activity.search = !!(sum.activity && sum.activity.search);
     S.activity.rescanning = new Set((sum.activity && sum.activity.rescanning) || []);
     if (sum.roles) S.roles = sum.roles;

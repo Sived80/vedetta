@@ -15,7 +15,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from .. import applog, i18n
-from ..ha import analysis_view, ha_data
+from ..ha import analysis_view, ha_data, ha_update
 from ..ha.device_debug import device_debug
 from ..storage import journal, starhint
 from ..scan import latency
@@ -109,7 +109,8 @@ async def api_ha_summary(request: Request):
         state.sorted_devices(), state.poll_info(), state.activity_info(), new_devices, state.rev,
     )
     from ..ha.mqtt_ha import version
-    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint()}
+    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
+            "update": ha_update.snapshot()}
 
 
 def _mqtt_info() -> dict:

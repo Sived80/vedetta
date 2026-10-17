@@ -124,6 +124,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/ha_type_evidence.py` | ha_type_evidence: moved out of ha_data.py (see tools/split_module.py). |
 | `ha/ha_type_text.py` | ha_type_text: moved out of ha_type_evidence.py (see tools/split_module.py). |
 | `ha/ha_tz.py` | Time zone (and language) of Home Assistant. |
+| `ha/ha_update.py` | Whether Home Assistant has a newer version of this add-on: the red dot on the menu button and the arrow in the menu. |
 | `ha/identity_shift.py` | Who is behind a card: two different devices answering at the same address. |
 | `ha/mqtt_config.py` | mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py). |
 | `ha/mqtt_ha.py` | Publishes Vedetta's state over MQTT using Home Assistant's "device" discovery (homeassistant/device/<id>/config). |
@@ -230,8 +231,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | part | lines | what it is for |
 |---|---|---|
 | `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 273 | guided typing |
-| `js/core-ui.js` | 198 | state |
+| `js/core-menu.js` | 299 | guided typing |
+| `js/core-ui.js` | 199 | state |
 | `js/core.js` | 225 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 47 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
@@ -239,7 +240,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 237 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/ignored.js` | 332 | ignored devices |
-| `js/live.js` | 247 | update |
+| `js/live.js` | 249 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 183 | Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 275 | Flag the device for the report: its card, history and this note go in the export for analysis. |
@@ -252,14 +253,16 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/network.js` | 60 | pause |
 | `js/new-devices.js` | 309 | new devices |
 | `js/tile.js` | 308 | tile |
+| `js/update.js` | 34 | update available |
 | `css/10-base.css` | 167 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 183 | components |
-| `css/12-motion.css` | 161 | motion |
+| `css/12-motion.css` | 173 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 50 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 467 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 196 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 78 | Devices found card (#card-new). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored dialog |
+| `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 253 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 

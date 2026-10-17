@@ -7,6 +7,7 @@ export var S = {
   devices: new Map(),
   starHint: false,        // the server says the one-time star invitation may appear
   starMenu: false,        // it is in the menu that is open now
+  update: null,           // what the summary says about a newer version of this add-on: {available, installed, latest} (null: not known)
   list: [],               // devices in IP order
   rev: 0,
   loaded: false,

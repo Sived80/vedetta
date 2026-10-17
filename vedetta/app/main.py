@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 from .storage import devices_config, journal
 from .storage.history import history
-from .ha import analysis_view, ha_registry, ha_tz
+from .ha import analysis_view, ha_registry, ha_tz, ha_update
 from .scan import mdns_listener, dhcp, internet, scanner
 from . import i18n, lifecycle, paths
 from .state_support import _process_info
@@ -47,6 +47,7 @@ async def lifespan(_: FastAPI):
     nightly = asyncio.create_task(nightly_loop())
     dhcp_transport = await dhcp.start()
     ha_registry.start()  # Home Assistant registry (read-only; empty outside HA)
+    ha_update.start()  # is there a newer version of this add-on? (asks the Supervisor for its own card; nothing outside HA)
     mdns_listener.start(state, lent_counts=history.mac_ip_counts)  # Bonjour names: memory and continuous listening
     await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,
@@ -58,6 +59,7 @@ async def lifespan(_: FastAPI):
         dhcp_transport.close()
     nightly.cancel()
     await ha_registry.stop()
+    await ha_update.stop()
     await mdns_listener.stop()
     await analysis_view.stop()
     await roles.stop()

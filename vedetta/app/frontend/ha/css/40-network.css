@@ -92,7 +92,7 @@
   .split .btn { height: 34px; min-height: 34px; padding: 0 10px; border-radius: 17px; font-size: 12.5px; gap: 5px; white-space: nowrap; }
   /* Optical centring in height: with line-height 1 the letters (no descenders) sit about 1 px above the middle of the 34 px, while the icon is on it.
      The filters get 2 px of padding on top (1 px lower); here only the text moves, the icon stays. */
-  .split #btn-scan > span { position: relative; top: 1px; }
+  .split #btn-scan > span:not(.wave) { position: relative; top: 1px; }      /* not the ripple (span.wave, position: absolute): made in-flow it widened the button to ~290 px for 0.6 s at every click */
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .split .split-more { min-width: 0; padding: 0 7px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
@@ -418,7 +418,7 @@
   #ignored .ig-menu .menu-item.counting, #ignored .ig-menu .menu-item.danger.counting { color: var(--primary-color); }
   #ignored .ig-menu .menu-item .fill { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--primary-color) 24%, transparent);
     transform: translateX(-100%); animation: ig-fill 5s linear forwards; }
-  #ignored .ig-menu .menu-item.counting > span:not(.fill), #ignored .ig-menu .menu-item.counting > .mdi { position: relative; z-index: 1; }
+  #ignored .ig-menu .menu-item.counting > span:not(.fill):not(.wave), #ignored .ig-menu .menu-item.counting > .mdi { position: relative; z-index: 1; }
   @keyframes ig-fill { to { transform: translateX(0); } }
   #ignored .ig-menu .menu-item[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
   @media (prefers-reduced-motion: reduce) { #ignored .ig-menu .menu-item .fill { animation: none; transform: translateX(-50%); } }
@@ -456,7 +456,7 @@
   #ignored .ig-all.danger { color: var(--error-color); }
   #ignored .ig-all .fill { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: color-mix(in srgb, var(--primary-color) 24%, transparent); transform: translateX(-100%); animation: ig-fill 5s linear forwards; }
   #ignored .ig-all.counting, #ignored .ig-all.danger.counting { color: var(--primary-color); }
-  #ignored .ig-all.counting > span:not(.fill), #ignored .ig-all.counting > .mdi { position: relative; z-index: 1; }
+  #ignored .ig-all.counting > span:not(.fill):not(.wave), #ignored .ig-all.counting > .mdi { position: relative; z-index: 1; }
   #ignored .ig-all[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
   @media (prefers-reduced-motion: reduce) { #ignored .ig-all .fill { animation: none; transform: translateX(-50%); } }
 

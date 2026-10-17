@@ -4,7 +4,7 @@ import { updateTile } from "./tile.js";
 import { miAttrs, miDebug } from "./more-attrs.js";
 
 // Origin and reliability of brand and name: data for analysis, not for the user. Enabled with
-// 3 consecutive taps on the network card title (or ?debug=1); while enabled a fixed
+// 3 consecutive taps on the logo or the name in the title of the network card (or ?debug=1); while enabled a fixed
 // "DEBUG" badge stays always visible. The API returns this data in any case.
 export let DEBUG = /[?&]debug=1/.test(location.search) || (function () { try { return localStorage.getItem("vedetta-debug") === "1"; } catch (e) { return false; } })();
 export function showDebugBadge() {
@@ -27,13 +27,13 @@ function setDebug(on) {
   const od = S.open && S.devices.get(S.open);
   if (od && dlg.open && S.mi.view === "main") { miAttrs(od); miDebug(od); }
 }
-// 3 consecutive taps (within 2 s) on the network card title. Like Android's "build number":
+// 3 consecutive taps (within 2 s) on the logo or the name of the network card (.ch-title: since the header with the logo there is no .ch-text). Like Android's "build number":
 // from the second tap a notice says how many are left, so it is clear the gesture was understood.
 // In the capture phase (no other handler can stop the event) and with touch-action on the title
 // (no double-tap zoom). From the keyboard: Ctrl+Shift+D.
 var tapTimes = [];
 function debugTap(e) {
-  const el = e.target && e.target.closest ? e.target.closest("#card-network .card-header .ch-text") : null;
+  const el = e.target && e.target.closest ? e.target.closest("#card-network .card-header .ch-title") : null;
   if (!el) return;
   const now = Date.now();
   tapTimes = tapTimes.filter(function (x) { return now - x < 2000; });

@@ -22,7 +22,7 @@
 @layer tokens {
   :root {
     color-scheme: light;
-    --primary-color: #03a9f4;
+    --primary-color: #009ac7;              /* the primary blue of Home Assistant (--ha-color-primary-40) */
     --dark-primary-color: #0288d1;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
@@ -38,7 +38,7 @@
     --success-color: #43a047;
     --warning-color: #ffa600;
     --error-color: #db4437;
-    --info-color: #2196f3;
+    --info-color: #039be5;
     --ha-card-border-radius: 12px;
     --ha-card-border-width: 1px;
     --ha-card-box-shadow: none;
@@ -52,6 +52,13 @@
     --ha-c4: #926bc7;
     --ha-c5: #e91e63;
     --ha-font: Roboto, Noto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* The scale of Home Assistant (same names and values as its frontend; the iframe does not receive them from the host, so they are set here once).
+       Font sizes and weights, corner radii, and the named colours (the same in every theme). */
+    --ha-font-size-xs: 10px; --ha-font-size-s: 12px; --ha-font-size-m: 14px; --ha-font-size-l: 16px; --ha-font-size-xl: 20px;
+    --ha-font-weight-normal: 400; --ha-font-weight-medium: 500; --ha-font-weight-bold: 700;
+    --ha-border-radius-sm: 4px; --ha-border-radius-md: 8px; --ha-border-radius-lg: 12px; --ha-border-radius-xl: 16px; --ha-border-radius-pill: 9999px;
+    --light-blue-color: #03a9f4; --orange-color: #ff9800; --green-color: #4caf50; --purple-color: #926bc7;
+    --pink-color: #e91e63; --teal-color: #009688; --amber-color: #ffc107; --indigo-color: #3f51b5;
     /* Focus ring and readable text versions of the status colors (used by many feature files). */
     --focus-color: #0277bd;
     --success-text-color: #2e7d32;

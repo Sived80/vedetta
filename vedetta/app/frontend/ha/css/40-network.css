@@ -31,9 +31,9 @@
   .live.paused.forever { color: var(--error-text-color); }
   /* Card tokens: the field colour of the search and the tile, and the "new device" blue. */
   #card-network { --field: color-mix(in srgb, var(--primary-text-color) 8%, var(--card-background-color)); --new: #4dd0ff; }
-  /* The HA scale: font sizes and weights, corner radii. The fallback is the default value of Home Assistant (older versions have no --ha-* tokens). */
-  #card-network { --fs-xs: var(--ha-font-size-xs, 10px); --fs-s: var(--ha-font-size-s, 12px); --fs-l: var(--ha-font-size-l, 16px); --fs-xl: var(--ha-font-size-xl, 20px);
-    --fw-m: var(--ha-font-weight-medium, 500); --r-sm: var(--ha-border-radius-sm, 4px); --r-md: var(--ha-border-radius-md, 8px); --r-xl: var(--ha-border-radius-xl, 16px); }
+  /* Short names of the HA scale (the tokens are in 10-base.css). */
+  #card-network { --fs-xs: var(--ha-font-size-xs); --fs-s: var(--ha-font-size-s); --fs-l: var(--ha-font-size-l); --fs-xl: var(--ha-font-size-xl);
+    --fw-m: var(--ha-font-weight-medium); --r-sm: var(--ha-border-radius-sm); --r-md: var(--ha-border-radius-md); --r-xl: var(--ha-border-radius-xl); }
 
   /* Header: the Vedetta logo, the name with the version in superscript, and the tools. */
   .net-logo { display: block; width: 28px; height: 28px; margin-right: 12px; flex: none; }
@@ -129,7 +129,7 @@
   }
   .t-v .unit { font-size: var(--fs-s); font-weight: 400; color: var(--secondary-text-color); }
   .t-v .badge-pct {
-    font-size: var(--fs-s); font-weight: var(--fw-m); padding: 1px 6px; border-radius: var(--ha-border-radius-pill, 9999px);
+    font-size: var(--fs-s); font-weight: var(--fw-m); padding: 1px 6px; border-radius: var(--ha-border-radius-pill);
     background: color-mix(in srgb, var(--c, var(--primary-color)) 18%, transparent);
     color: var(--c, var(--primary-color));
   }
@@ -238,14 +238,14 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .b-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .b-n { color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
-  .c1 { --cc: var(--light-blue-color, #03a9f4); }
-  .c2 { --cc: var(--orange-color, #ff9800); }
-  .c3 { --cc: var(--green-color, #4caf50); }
-  .c4 { --cc: var(--purple-color, #926bc7); }
-  .c5 { --cc: var(--pink-color, #e91e63); }
-  .c6 { --cc: var(--teal-color, #009688); }
-  .c7 { --cc: var(--amber-color, #ffc107); }
-  .c8 { --cc: var(--indigo-color, #3f51b5); }
+  .c1 { --cc: var(--light-blue-color); }
+  .c2 { --cc: var(--orange-color); }
+  .c3 { --cc: var(--green-color); }
+  .c4 { --cc: var(--purple-color); }
+  .c5 { --cc: var(--pink-color); }
+  .c6 { --cc: var(--teal-color); }
+  .c7 { --cc: var(--amber-color); }
+  .c8 { --cc: var(--indigo-color); }
   .c-other { --cc: #78909c; }
   .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
   .dot { background: var(--cc); }

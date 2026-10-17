@@ -252,7 +252,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/network.js` | 60 | pause |
 | `js/new-devices.js` | 309 | new devices |
 | `js/tile.js` | 308 | tile |
-| `css/10-base.css` | 160 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
+| `css/10-base.css` | 167 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 183 | components |
 | `css/12-motion.css` | 156 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |

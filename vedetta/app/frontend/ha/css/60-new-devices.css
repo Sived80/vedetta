@@ -11,7 +11,7 @@
      nothing moves when a button is pressed (the two cells of buttons, --c1 and --c2, have identical widths and gap
      in the bar and in the rows; the progress bar has its place). */
   #card-new {
-    --c1: 112px; --c2: 84px; --nd-gap: 6px; overflow: clip;
+    --c1: 34px; --c2: 34px; --nd-gap: 6px; overflow: clip;
   }
 
   /* Device rows: Add and Ignore together, wrapping on narrow screens. */
@@ -42,8 +42,8 @@
   }
   #card-new .nd-bar-actions > *, #card-new .nd-actions > * { min-height: 34px; display: flex; align-items: center; justify-content: center; min-width: 0; }
   #card-new .nd-bar-actions > .btn, #card-new .nd-actions > .btn {
-    width: 100%; height: 34px; min-height: 34px; padding: 0 8px; box-sizing: border-box; white-space: nowrap;
-    font-size: var(--ha-font-size-s, 12px); font-weight: var(--ha-font-weight-medium, 500); border-radius: var(--ha-border-radius-xl, 16px);
+    width: 34px; height: 34px; min-height: 34px; padding: 0; box-sizing: border-box; white-space: nowrap;
+    font-size: var(--ha-font-size-s, 12px); font-weight: var(--ha-font-weight-medium, 500); border-radius: 50%;
   }
   #card-new .nd-bar-actions > .btn:disabled { opacity: 0.7; }
   #card-new .nd-list { padding: 0; }
@@ -51,7 +51,7 @@
   #card-new .nd-text { flex: 1 1 130px; }
   #card-new .nd-sub { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
-  #card-new .nd-ico { display: none; }
+  #card-new .nd-sym .mdi, #card-new .nd-sym svg { width: 20px; height: 20px; }
   /* the ring */
   #card-new .nd-row.nd-run .nd-ic, #card-new .nd-row.nd-save .nd-ic, #card-new .nd-row.nd-done .nd-ic { background: transparent; }
   .nd-ring { width: 30px; height: 30px; }
@@ -76,8 +76,5 @@
   .nd-prog.idle { visibility: hidden; }
   @media (prefers-reduced-motion: reduce) {
     .nd-ring .sp, .nd-mini .sp { animation: none; }
-  }
-  @media (max-width: 420px) {
-    #card-new { --c1: 100px; --c2: 72px; }
   }
 }

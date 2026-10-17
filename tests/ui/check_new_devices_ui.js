@@ -77,8 +77,9 @@ let failed = 0;
 function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
 const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(30); };
 const rows = () => qa("#card-new .nd-row");
-const cells = (i) => Array.from(rows()[i].querySelectorAll(".nd-actions > *")).map((c) => c.textContent.trim());
-const bar = () => Array.from(qa("#card-new .nd-bar-actions > *")).map((c) => c.textContent.trim() + (c.disabled ? "(spento)" : ""));
+const label = (c) => (c.getAttribute("aria-label") || c.textContent).trim();
+const cells = (i) => Array.from(rows()[i].querySelectorAll(".nd-actions > *")).map((c) => label(c));
+const bar = () => Array.from(qa("#card-new .nd-bar-actions > *")).map((c) => label(c) + (c.disabled ? "(spento)" : ""));
 const title = () => q("#card-new .ch-title").textContent.trim();
 const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle|run|save|done)$/.test(c))[0];
 
@@ -90,6 +91,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(rows().length === 3 && !q("#card-new").hidden, "la scheda mostra i tre dispositivi trovati");
   const panel = q("#card-new"), net = q("#card-network .card-content");
   check(panel.parentElement === net && panel.previousElementSibling.id === "badges" && panel.nextElementSibling.id === "brands", "l'elenco sta nella scheda Network, tra i tasti e i marchi");
+  check(qa("#card-new button").every((b) => !b.textContent.trim() && !!b.getAttribute("aria-label") && !!b.querySelector("svg")), "i tasti sono simboli (la scritta resta nel tooltip)");
   check(!q(".ha-card#card-new"), "non e' piu' una scheda separata");
   check(rows().every((r) => /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(r.querySelector(".nd-sub").textContent)), "il MAC e' scritto per intero in ogni riga");
   check(rows().every((_, i) => rowState(i) === "nd-idle" && cells(i).length === 2 && /Aggiungi|Add/.test(cells(i)[0])), "a riposo ogni riga ha due caselle: Aggiungi e Ignora");

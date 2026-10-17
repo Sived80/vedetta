@@ -50,6 +50,10 @@ function ndRing(state, fresh) {
   if (state === "save") return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true">' + c + '<circle class="close" cx="16" cy="16" r="13"/></svg>';
   return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true"><circle class="full' + (fresh ? " fresh" : "") + '" cx="16" cy="16" r="13"/><path class="tick' + (fresh ? " fresh" : "") + '" d="M10 16.5l4 4 8-9"/></svg>';
 }
+// A button of the panel is a symbol: the words stay in the tooltip and for screen readers.
+function sym(name, label, attrs, cls) {
+  return '<button type="button" class="btn ' + (cls || "text") + ' rp nd-sym"' + (attrs || "") + ' title="' + esc(label) + '" aria-label="' + esc(label) + '">' + icon(name) + "</button>";
+}
 export function renderNew() {
   if (COMPACT) { newEl.hidden = true; return; }
   const list = newRows();
@@ -66,16 +70,16 @@ export function renderNew() {
     const label = d.ip || d.mac;  // only IP and MAC: names are found later, by analyzing the device
     let cells;
     if (state === "idle") {
-      var ignoreBtn = d.src === "found"
-        ? '<button type="button" class="btn text rp" data-ign-ip="' + esc(d.ip) + '" data-ign-mac="' + esc(d.mac || "") + '" data-ign-host="' + esc(d.name || "") + '" title="' + esc(t("js.ha.new.ignore")) + '" aria-label="' + esc(t("js.ha.new.ignore")) + '">'
-        : '<button type="button" class="btn text rp" data-ignore-mac="' + esc(d.mac) + '" title="' + esc(t("js.ha.new.ignore")) + '" aria-label="' + esc(t("js.ha.new.ignore")) + '">';
-      ignoreBtn += '<span class="nd-lbl">' + esc(t("js.ha.new.ignore")) + "</span>" + icon("eye-off", "nd-ico") + "</button>";
-      cells = (d.ip ? '<button type="button" class="btn tonal rp" data-add-ip="' + esc(d.ip) + '" data-add-host="' + esc(d.name || "") + '">' + esc(t("js.ha.new.add_one")) + "</button>" : none) + ignoreBtn;
+      const ignAttrs = d.src === "found"
+        ? ' data-ign-ip="' + esc(d.ip) + '" data-ign-mac="' + esc(d.mac || "") + '" data-ign-host="' + esc(d.name || "") + '"'
+        : ' data-ignore-mac="' + esc(d.mac) + '"';
+      const ignoreBtn = sym("eye-off", t("js.ha.new.ignore"), ignAttrs);
+      cells = (d.ip ? sym("plus", t("js.ha.new.add_one"), ' data-add-ip="' + esc(d.ip) + '" data-add-host="' + esc(d.name || "") + '"', "tonal") : none) + ignoreBtn;
     } else if (state === "done") {
       cells = none + none;
     } else {
-      cells = (ad.mode[d.ip] === "single" ? '<button type="button" class="btn text rp" data-add-cancel="' + esc(d.ip) + '">' + esc(t("js.ha.cancel")) + "</button>" : none) +
-        '<span class="nd-status" title="' + esc(t("js.ha.new.working")) + '"><span class="nd-lbl">' + esc(t("js.ha.new.working")) + '</span><svg class="nd-mini nd-ico" viewBox="0 0 32 32" aria-hidden="true"><circle class="tr" cx="16" cy="16" r="13"/><circle class="sp" cx="16" cy="16" r="13"/></svg></span>';
+      cells = (ad.mode[d.ip] === "single" ? sym("close", t("js.ha.cancel"), ' data-add-cancel="' + esc(d.ip) + '"') : none) +
+        '<span class="nd-status" title="' + esc(t("js.ha.new.working")) + '" role="img" aria-label="' + esc(t("js.ha.new.working")) + '"><svg class="nd-mini" viewBox="0 0 32 32" aria-hidden="true"><circle class="tr" cx="16" cy="16" r="13"/><circle class="sp" cx="16" cy="16" r="13"/></svg></span>';
     }
     const fresh = state === "done" && ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900;
     return '<div class="nd-row nd-' + state + '" data-ip="' + esc(d.ip || "") + '"><span class="nd-ic">' + (state === "idle" ? icon("devices") : ndRing(state, fresh)) + '</span><div class="nd-text"><div class="nd-name">' + esc(label) +
@@ -87,11 +91,12 @@ export function renderNew() {
   else { title = S.found.length ? t("js.ha.new.found", { n: list.length }) : t("js.ha.new.title", { n: list.length }); sub = t("js.ha.new.hint"); }
   // The bar of the card: always two cells, "Add all" and "Cancel" (or "Close" when everything has ended), under the title.
   const free = S.found.filter(function (h) { return !(ad && ad.ips[h.ip]); }).length;
-  let all = '<button type="button" class="btn tonal rp" data-add-all="1">' + esc(t("js.ha.new.add_all")) + "</button>", bar;
-  if (active && ad.batch) bar = '<button type="button" class="btn tonal rp" disabled>' + esc(t("js.ha.new.add_all")) + '</button><button type="button" class="btn text rp" data-add-cancel-all="1">' + esc(t("js.ha.cancel")) + "</button>";
+  const all = sym("plus", t("js.ha.new.add_all"), ' data-add-all="1"', "tonal"), cancelBtn = sym("close", t("js.ha.cancel"), ' data-ignore-all="1"');
+  let bar;
+  if (active && ad.batch) bar = sym("plus", t("js.ha.new.add_all"), " disabled", "tonal") + sym("close", t("js.ha.cancel"), ' data-add-cancel-all="1"');
   else if (active) bar = (free > 1 ? all : none) + none;                                    // added by hand: no "Cancel" on top
-  else if (fin) bar = (free > 1 ? all : none) + '<button type="button" class="btn tonal rp" data-add-close="1">' + esc(t("js.ha.new.close")) + "</button>";
-  else bar = (free > 1 ? all : none) + '<button type="button" class="btn text rp" data-ignore-all="1">' + esc(t("js.ha.cancel")) + "</button>";
+  else if (fin) bar = (free > 1 ? all : none) + sym("check", t("js.ha.new.close"), ' data-add-close="1"', "tonal");
+  else bar = (free > 1 ? all : none) + cancelBtn;
   const pct = total ? Math.max(4, Math.min(100, (saved + 0.9 * analysed + 0.3 * run) / total * 100)) : 0;
   newEl.innerHTML =
     '<div class="card-header"><span class="ch-ic ' + (fin ? "ok" : "warn") + '">' + icon(fin ? "check-circle" : "plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +

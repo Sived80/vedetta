@@ -144,14 +144,14 @@
   html.is-narrow .col-side { display: contents; align-self: auto; }
   html.is-narrow #card-network { order: 1; position: static; }
   html.is-narrow #card-new { order: 2; }
-  html.is-narrow .col-main { order: 3; }
+  html.is-narrow .col-main { order: 3; margin-top: 8px; }      /* the gap of the grid (16) + 8: the first heading is 24 px under the card above, as the groups are among themselves */
   html.is-narrow #card-log { order: 4; }
   @media (max-width: 870px) {
     html:not([data-narrow-host]) .view { grid-template-columns: minmax(0, 1fr); }
     html:not([data-narrow-host]) .col-side { display: contents; align-self: auto; }
     html:not([data-narrow-host]) #card-network { order: 1; position: static; }
     html:not([data-narrow-host]) #card-new { order: 2; }
-    html:not([data-narrow-host]) .col-main { order: 3; }
+    html:not([data-narrow-host]) .col-main { order: 3; margin-top: 8px; }
     html:not([data-narrow-host]) #card-log { order: 4; }
   }
   @media (max-width: 520px) {

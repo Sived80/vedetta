@@ -3,6 +3,9 @@
 @layer components {
   /* Groups by type (heading card) */
   .group { margin-bottom: 24px; }
+  /* Narrow layout (the cards are stacked, 16 px apart): the last group is 24 px from the log card under it (8 + the gap), not 40. */
+  html.is-narrow .col-main .group:last-child { margin-bottom: 8px; }
+  @media (max-width: 870px) { html:not([data-narrow-host]) .col-main .group:last-child { margin-bottom: 8px; } }
   .heading { display: flex; align-items: center; gap: 8px; padding: 0 4px 10px; color: var(--secondary-text-color); }
   .hd-ic { display: flex; }
   .hd-ic .mdi { width: 20px; height: 20px; }

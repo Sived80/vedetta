@@ -213,8 +213,9 @@
   /* The four filters. */
   .badges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .badge {
-    height: 36px; padding: 0 4px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--divider-color); border-radius: 18px;
-    background: transparent; color: var(--primary-text-color); font-size: 13px; font-weight: 500; white-space: nowrap; transition: background-color 0.15s, border-color 0.15s;
+    /* The same size as the "Search the network" button (.split .btn): 34 px, 12.5 px, weight 500, pill. */
+    position: relative; height: 34px; padding: 0 4px; display: flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--divider-color); border-radius: 17px;
+    background: transparent; color: var(--primary-text-color); font-size: 12.5px; font-weight: 500; line-height: 1; letter-spacing: 0.0178em; white-space: nowrap; transition: background-color 0.15s, border-color 0.15s;
   }
   .badge em { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
 
@@ -267,15 +268,15 @@
     .nettile { padding: 12px 14px; }
     .t-v { font-size: 18px; gap: 4px; }
     .mm { padding: 0 4px; gap: 2px; }
-    .badge { font-size: 12px; gap: 4px; }
+    .badge { gap: 4px; }
   }
   @media (min-width: 600px) {
     #card-network .card-content { padding: 0 20px 20px; }
   }
 
   @media (pointer: coarse) {
-    /* Touch target of the badges on coarse pointers */
-    .badge { min-height: 44px; }
+    /* Touch target of the badges on coarse pointers: 44 px of tappable height around the 34 px that is seen (nothing grows on the screen) */
+    .badge::after { content: ""; position: absolute; inset: -5px 0; }
   }
 }
 

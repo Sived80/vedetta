@@ -161,6 +161,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   emitNew([A, B]);
   await wait(60);
   check(!q("#card-new").hidden && rows().length === 2, "due dispositivi visti in rete dall'app: la scheda compare");
+  check(!!q("#card-new [data-add-all]"), "con due dispositivi visti dall'app c'e' «Aggiungi tutti»");
   await click("#card-new [data-ignore-all]");
   check(q("#card-new").hidden, "«Annulla» chiude la scheda");
   emitNew([A, B]);
@@ -180,6 +181,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   emitNew([A, B, C]);
   await wait(60);
   check(!q("#card-new").hidden && rows().length === 1, "ricompare solo per un dispositivo mai visto prima");
+  check(!q("#card-new [data-add-all]"), "con un solo dispositivo non c'e' «Aggiungi tutti»");
 
   // --- 8. a device the card itself brought: once saved, the card goes away by itself (after the tick)
   await click("#card-new [data-add-ip='192.168.178.213']");

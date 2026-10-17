@@ -90,7 +90,7 @@ export function renderNew() {
   else if (fin) { title = t("js.ha.new.added_title", { n: saved }); sub = t("js.ha.new.added_sub"); }
   else { title = S.found.length ? t("js.ha.new.found", { n: list.length }) : t("js.ha.new.title", { n: list.length }); sub = t("js.ha.new.hint"); }
   // The bar of the card: always two cells, "Add all" and "Cancel" (or "Close" when everything has ended), under the title.
-  const free = S.found.filter(function (h) { return !(ad && ad.ips[h.ip]); }).length;
+  const free = list.filter(function (d) { return d.ip && !(ad && ad.ips[d.ip]); }).length;      // "Add all" from two devices on, found by a search or seen by the app
   const all = sym("plus", t("js.ha.new.add_all"), ' data-add-all="1"', "tonal"), cancelBtn = sym("close", t("js.ha.cancel"), ' data-ignore-all="1"');
   let bar;
   if (active && ad.batch) bar = sym("plus", t("js.ha.new.add_all"), " disabled", "tonal") + sym("close", t("js.ha.cancel"), ' data-add-cancel-all="1"');
@@ -240,8 +240,9 @@ newEl.addEventListener("click", function (e) {
   const all = e.target.closest("[data-add-all]");
   if (all) {
     var map = {};
-    S.found.forEach(function (h) { map[h.ip] = h.hostname || ""; });
-    addDevices(S.found.map(function (h) { return h.ip; }), map, "batch");  // those already in progress are skipped (and join the batch)
+    const todo = newRows().filter(function (r) { return r.ip; });
+    todo.forEach(function (r) { map[r.ip] = r.name || ""; });
+    addDevices(todo.map(function (r) { return r.ip; }), map, "batch");  // those already in progress are skipped (and join the batch)
     return;
   }
   const rowCancel = e.target.closest("[data-add-cancel]");

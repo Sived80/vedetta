@@ -33,8 +33,9 @@
   #card-new[hidden] { display: none; }
   #card-new .card-header { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 0 0 8px; min-height: 0; }
   #card-new .card-header .ch-text { flex: 1 1 140px; min-width: 0; }
-  #card-new .ch-title { font-size: var(--ha-font-size-m, 14px); font-weight: var(--ha-font-weight-medium, 500); }
-  #card-new .ch-sub { font-size: var(--ha-font-size-s, 12px); color: var(--secondary-text-color); }
+  /* the same size as the rest of the card text: these beat the 24px of the card title (#card-network .card-header .ch-title) */
+  #card-network #card-new .card-header .ch-title { font-size: var(--ha-font-size-m, 14px); line-height: 20px; font-weight: var(--ha-font-weight-medium, 500); }
+  #card-network #card-new .card-header .ch-sub { font-size: var(--ha-font-size-s, 12px); line-height: 16px; margin-top: 2px; color: var(--secondary-text-color); }
   #card-new .ch-ic { width: 32px; height: 32px; }
   #card-new .ch-ic.ok { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 18%, transparent); }
   #card-new .nd-bar-actions, #card-new .nd-actions {

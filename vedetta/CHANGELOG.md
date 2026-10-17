@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0 · Vetrina
+**Vetrina** is Italian for *shop window*: the page you open every day, redrawn so that what matters is the first thing you see.
+- **A new Network card.** The logo and the status light in the header, a round chart of how the devices are doing, a tile that rotates between what Vedetta knows and what it is still working out, a search on the full width and one compact scan button. Fonts, colours and radii follow the Home Assistant scale, in light and dark.
+- **Devices found, right where you look.** They no longer open a card of their own: the list grows inside the Network card, between the filters and the brands, and the log follows it. Plain icon buttons as in Home Assistant, the full MAC address always readable, *Add all* only from two devices on, and *Ignore* takes one press.
+- **Foldable groups.** Each group of devices closes from its heading, all open at first, and Vedetta remembers what you closed in that browser.
+- **Network and Log stay together** while you scroll, on a wide screen.
+- **An update tells you.** A red dot on the menu button and an arrow in the menu appear when a new version is available; a window explains what will happen before it takes you to Home Assistant's own page. The foot of the menu is now the link to the repository.
+- **A calmer pause window**: narrow, centred on its button and always inside the card.
+- **Fixed:** the scan button no longer stretches for an instant at a click; no grey box when tapping the chart or the brands on a phone; the card has its space under it again; the three taps on the logo open the debug mode again; the badge of the advanced search no longer touches the tiles, even at 99+.
+
+**Thank you** to everyone who shared an export: real networks made this release possible.
+
 ## 0.7.1 · Calibro
 **Calibro** is Italian for *caliper*: precision in dimensions, alignment and diagnostic inspection.
 - **Found devices card alignment & dimensions**: Perfectly aligned top action buttons (*Add all*, *Cancel*) with row action buttons (*Add*, *Ignore*) with zero-pixel offset across desktop and mobile screens; widened buttons to prevent text wrapping across all languages.

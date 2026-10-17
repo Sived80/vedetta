@@ -4,12 +4,14 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.7.0 · Lente**, released 13 October 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 0.8.0 · Vetrina**, released 19 October 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **0.8.0 · Vetrina** | 19 Oct | The Network card redrawn in the Home Assistant style · devices found open inside it, with icon buttons and the full MAC address · groups that fold · Network and Log stay in view while you scroll · a red dot when an update is ready |
+| **0.7.1 · Calibro** | 16 Oct | Aligned buttons on the card of the devices found · a diagnostic bundle with the state of the analysis · safer notes and reports · an IP address sensor for shared devices |
 | **0.7.0 · Lente** | 13 Oct | A lens on what it cannot name with confidence (read-only) · fewer wrong guesses (maker names that are also words, service names read as names, UniFi and MikroTik clients) · stricter checks before asking a device anything · the share button waits for MQTT · rebuilt in small modules |
 | **0.6.0 – 0.6.3** | 9–11 Oct | Czech translation and a language per person (Babele) · an export that hides more (Velo) · lighter checks on a normal network (Respiro) · nothing sent to printing ports (Sordina) |
 | **0.5.0 · Telaio** | 8 Oct | *Search methods* as three tabs with panels by risk · *Ignored devices* redone, with *Restore* and *Forget* on a 5-second countdown, and *Restore all* / *Forget all* · guided typing of MAC and IP addresses · a one-time invitation to star the project · a note when two different devices answer at one address · speed buttons with their times and the version in the menu · tidier code, and saves that can no longer arrive out of order |

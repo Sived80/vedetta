@@ -2,16 +2,16 @@
 
 ## 0.8.0 · Vetrina
 **Vetrina** is Italian for *shop window*: the page you open every day, redrawn so that what matters is the first thing you see.
-- **A new Network card.** The logo and the status light in the header, a round chart of how the devices are doing, a tile that rotates between the latency of the gateway (now to a tenth of a millisecond, from the last hour), the gateway, your **Internet connection** (public address, direct or behind a provider NAT, hops), what Vedetta knows and what it is still working out, a search on the full width and one compact scan button. Fonts, colours and radii follow the Home Assistant scale, in light and dark.
-- **Devices found, right where you look.** They no longer open a card of their own: the list grows inside the Network card, between the filters and the brands, and the log follows it. Plain icon buttons as in Home Assistant, the full MAC address always readable, *Add all* only from two devices on, and *Ignore* takes one press.
-- **Foldable groups.** Each group of devices closes from its heading, all open at first, and Vedetta remembers what you closed in that browser.
-- **Network and Log stay together** while you scroll, on a wide screen.
-- **An update tells you.** A red dot on the menu button and an arrow in the menu appear when a new version is available; a window explains what will happen before it takes you to Home Assistant's own page. The foot of the menu is now the link to the repository.
-- **You decide what leaves your network.** Three switches in the Configuration tab, all on by default and changeable before the first start: the public IP check (one DNS query to OpenDNS), the path to the internet (a traceroute, with a target you can change) and the update of the list of manufacturers (a download from the IEEE, every 30 days). A function that is off sends nothing, and the new tile *To the internet* shows which ones are on. The Configuration tab now has readable names and descriptions in Italian, English and Czech.
-- **The MQTT tile tells the truth.** It counts only the devices you share with Home Assistant, and tells connected, offline and not set up apart, following the broker as it changes.
-- **No language option in the Configuration tab any more.** The page follows the language of Home Assistant, or the browser's, and each person picks theirs in the menu; the log level is now the last option. If you had set a language there, Home Assistant may write a one-line warning in the log about an option that no longer exists: nothing else changes.
-- **A calmer pause window**: narrow, centred on its button and always inside the card.
-- **Fixed:** the scan button no longer stretches for an instant at a click; no grey box when tapping the chart or the brands on a phone; the card has its space under it again; the three taps on the logo open the debug mode again; the badge of the advanced search no longer touches the tiles, even at 99+.
+- **A new Network card** in the Home Assistant style: the state of the network at a glance, a tile that rotates between latency, gateway, Internet connection and what Vedetta knows, a full-width search and one scan button. Light and dark.
+- **Devices found, where you look.** The list opens inside the Network card, with plain icon buttons and the full MAC address.
+- **A tidier device card.** Each fact appears once, *Customize card* and *Ignore* sit in a three-dots menu, and the pop-ups behind the (i) are compact.
+- **Foldable groups.** Each group closes from its heading, and Vedetta remembers what you closed.
+- **An update tells you.** A red dot on the menu button shows when a new version is available.
+- **You decide what leaves your network.** Three switches in the Configuration tab, all on by default: the public IP check, the path to the Internet and the update of the manufacturer list. A function that is off sends nothing.
+- **A simpler Configuration tab.** Short names and descriptions in English, Italian and Czech, the log level first, and no language option: the page follows Home Assistant, and each person picks theirs in the menu. If you had set options that are gone, Home Assistant may write a one-line warning in the log: nothing else changes.
+- **An accurate MQTT tile.** It counts only what you share and follows the broker as it changes.
+- **Smaller things:** the menu shows how many devices are ignored, the buttons share one size, the pause window is narrower.
+- **Fixed:** the scan button stretching at a click, a grey box when tapping on a phone, the space under the card, the three taps on the logo for the debug mode, and the badge of the advanced search.
 
 **Thank you** to everyone who shared an export: real networks made this release possible.
 

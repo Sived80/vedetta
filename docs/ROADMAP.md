@@ -10,7 +10,7 @@ What is built, release by release, and what is planned.
 
 | Version | Date | What came with it |
 |---|---|---|
-| **0.8.0 · Vetrina** | 19 Oct | The Network card redrawn in the Home Assistant style · devices found open inside it, with icon buttons and the full MAC address · groups that fold · Network and Log stay in view while you scroll · a red dot when an update is ready |
+| **0.8.0 · Vetrina** | 19 Oct | The Network card redrawn in the Home Assistant style · devices found open inside it · a tidier device card · groups that fold · a red dot when an update is ready · three switches for what reaches the Internet · a simpler Configuration tab |
 | **0.7.1 · Calibro** | 16 Oct | Aligned buttons on the card of the devices found · a diagnostic bundle with the state of the analysis · safer notes and reports · an IP address sensor for shared devices |
 | **0.7.0 · Lente** | 13 Oct | A lens on what it cannot name with confidence (read-only) · fewer wrong guesses (maker names that are also words, service names read as names, UniFi and MikroTik clients) · stricter checks before asking a device anything · the share button waits for MQTT · rebuilt in small modules |
 | **0.6.0 – 0.6.3** | 9–11 Oct | Czech translation and a language per person (Babele) · an export that hides more (Velo) · lighter checks on a normal network (Respiro) · nothing sent to printing ports (Sordina) |

@@ -2,45 +2,42 @@
 
 Vedetta finds the devices on your local network, recognizes them (name, brand, category), follows their presence
 and latency, and shows them on a page in the Home Assistant sidebar (ingress: no port to open).
-Everything stays at home: no data is sent outside your network.
+Nothing about your devices leaves your network. Three optional checks that reach the Internet can be switched off (see Options).
 
 ## How to use it
 
+- **Network card** (top): the state of the network at a glance. A tile rotates between latency, gateway, Internet connection and what Vedetta knows. The search and **Scan network** are here too.
+- **Devices found** open inside the Network card: add them to the board or ignore them.
 - **Search** (magnifier): finds the IP and MAC addresses that are present. You pick the devices to add to the board.
-- **Device card**: IP, MAC, response time and ports are always visible; "More attributes" opens the rest
-  (brand, type, area...). Brand and type can be chosen by hand and are never changed again. The
-  **Share with HA** button shows the device in Home Assistant (see below).
+- **Device card**: IP, MAC and ports are always visible; "More attributes" opens the rest (response time, brand, type, area...). The three-dots menu has **Customize card** (name, brand and type can be chosen by hand and are never changed again) and **Ignore**. **Share with HA** shows the device in Home Assistant (see below).
 - **Deep search** (arrow next to "Scan network"): two tiles, **All** devices or only those **To analyse** (never analysed in depth). The orange badge on the arrow says how many they are, and it disappears when there are none. The search also starts by itself every night at 03:00, in the time zone of Home Assistant, for the devices never analysed or analysed more than 7 days ago.
 - **Search methods** (menu): which methods the three searches use (initial, associative, deep). The dot shows the
   risk: green non-intrusive, orange intrusive, red risky.
-- **Export for analysis** (menu, discreet item): builds a file with the configuration, the history and the reason behind the name, brand and
-  category of every device, for the days you choose (2 to 20, or all). It asks first **who it is for**. **For the developer**, **before the file is created** IPs (the last number is kept), MAC addresses (the manufacturer prefix is kept)
-  and names (`iPhone-1`, `TV-2`...) are masked, the same value always getting the same placeholder; emails become `email-1@masked.invalid`; passwords and tokens are excluded and nothing is
-  sent anywhere. A final check looks for anything still readable: what it finds it replaces; what it cannot replace is listed and you choose to remove it or keep it. **For me** nothing is masked (only credentials are replaced): it is your own data. For every device it also holds the evidence card (`state/evidence.json`) and the numbers behind "phone", never the addresses. The table that tells which placeholder is which device stays on your machine (`/data/export_mapping.local`).
-  - **For the developer**: a `.txt` that only the author of Vedetta can open (it is sealed with the public key in
-    `app/data/report_key.pub`), up to 20 MB. Attach it to a GitHub issue: it is safe even if the issue is public.
-  - **For me**: a `.zip` that is not masked and not encrypted, with no size limit, to read yourself or hand over privately. Never post it in public.
-  - **Flag this device** (the round flag in a device sheet) adds a section to the report with that card, its history and a short note.
+- **Export for analysis** (menu, discreet item): builds a file with the configuration, the history and the reasons behind each name, brand and category, for the days you choose. It asks **who it is for**:
+  - **For the developer**: a `.txt` with addresses and names masked, sealed so that only the author of Vedetta can open it. Up to 20 MB; safe to attach to a GitHub issue.
+  - **For me**: a `.zip` that is not masked and not encrypted, to read yourself. Never post it in public.
+
+  Nothing is sent anywhere. **Flag this device** (the flag in a device sheet) adds that card, its history and a short note to the report. Details: [Privacy and safety](https://github.com/Sived80/vedetta/blob/main/docs/PRIVACY.md).
 - **Debug mode**: 3 consecutive taps on the title of the top card (or Ctrl+Shift+D). An orange DEBUG badge stays
   visible while it is on; the card shows the clues, scores and sources of name and brand.
 
 ## Options
 
-- Language is not an option: the page follows the language of Home Assistant, or the browser's (`en`, `it` or `cs`), and each person can pick theirs in the menu (⋮): it is kept on the server for their Home Assistant user, on every device.
 - `log_level`: `debug`, `info`, `warning`, `error`.
-- `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).
-- The functions that reach the Internet. All three are **on** by default, and the options can be changed after the installation and before the first start (Configuration tab, then Start). When one is off, nothing of it leaves your network, and the page says so in the tile *To the internet*.
-  - `internet_public_ip`: at start and every 6 hours, one DNS query to the OpenDNS resolver (208.67.222.222) asks for your public IP address. It is shown in the *Internet* tile.
-  - `internet_path`: at start and every 6 hours, a traceroute to a public address tells a direct connection from a double NAT or a provider CGNAT. `internet_path_target` is the host name or address it traces (empty = `1.1.1.1`).
-  - `internet_mac_database`: when the list of manufacturers is more than 30 days old, the public IEEE registries (standards-oui.ieee.org) are downloaded. Off: only the list that ships with the app is used.
-- `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant
-  MQTT service (Mosquitto app) is used, if present.
+- `interface`: network interface to scan (empty = automatic).
+- `internet_public_ip`, `internet_path`, `internet_mac_database`: the three functions that reach the Internet. All are **on** by default; one that is off sends nothing, and the tile *To the internet* shows which are on.
+  - Public IP: at start and every 6 hours, one DNS query to a public resolver asks for your public IP address.
+  - Path: a traceroute to a public address (`internet_path_target`, empty = `1.1.1.1`) tells a direct connection from a double NAT.
+  - Manufacturers: when the list is more than 30 days old, it is downloaded from the public IEEE registries.
+- `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant MQTT service (Mosquitto app) is used, if present.
+
+The language is not an option: the page follows Home Assistant (`en`, `it` or `cs`), and each person can pick theirs in the menu (⋮).
 
 ## Permissions and what each one is for
 
 | Permission | What it is for |
 |---|---|
-| Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the three functions of the `internet_*` options below, which can be switched off). |
+| Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the three `internet_*` functions, which can be switched off). |
 | `homeassistant_api` | **Read-only** access to the Home Assistant registries (devices, entities, areas, integrations) to give devices a name, brand, model, area and category. It writes nothing and calls no services. It can be turned off in the search methods ("Home Assistant data" step). |
 | MQTT service (`mqtt:want`) | Publishes to Home Assistant only what you choose to share. |
 | Ingress | The interface only accepts connections from the Supervisor. |

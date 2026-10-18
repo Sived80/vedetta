@@ -209,7 +209,7 @@
      changes. */
   .attr.ev-attr { align-items: flex-start; padding: 8px 0; }
   .attr.ev-attr dt { padding-top: 2px; }
-  .attr.ev-attr dd { align-items: flex-start; }
+  .attr.ev-attr dd { align-items: flex-start; min-height: 48px; }      /* the height of the 48 px edit icon: the row does not change height when the edit icons show or hide */
   .attr.ev-attr .attr-val { flex: 1; min-width: 0; }
   .ev-cell { display: block; width: 100%; }
   .ev-v { display: block; min-height: 24px; line-height: 24px; overflow-wrap: anywhere; }

@@ -20,6 +20,7 @@ const built = spawnSync(process.env.PYTHON || "python", [path.join(__dirname, "b
 if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout + built.stderr); process.exit(1); }
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
+data.devices.devices.forEach((d) => { d.latency_ms = 12; });      // the devices of the test have no response time: one is needed to see its row
 const cssDir = path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "css");   // ha.css as the app serves it: its parts in order
 const css = fs.readdirSync(cssDir).filter((f) => f.endsWith(".css")).sort().map((f) => fs.readFileSync(path.join(cssDir, f), "utf8")).join("");
 const IT = lang === "it";
@@ -71,6 +72,9 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   await wait(800);
   q('.tile[data-id="d1"]').click();
   await wait(500);
+  // the response time is among the "Other attributes", not among the rows always shown
+  const latRows = Array.from(doc.querySelectorAll("#more .attr")).filter((r) => /Tempo di risposta/.test(r.querySelector("dt").textContent));
+  check(latRows.length === 1 && !!latRows[0].closest("#attr-more"), "«Tempo di risposta» sta dentro «Altri attributi», non tra le righe sempre visibili");
 
   // --- the three rows replace the separate card: no duplicate, same list, same width as the attributes
   check(!q("#mi-evidence"), "nessuna scheda 'Prove' separata");

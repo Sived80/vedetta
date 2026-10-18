@@ -48,7 +48,7 @@ export function miDebug(d) {
 export function miAttrs(d) {
   const el = $("mi-attrs");
   if (!el) return;
-  // Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown.
+  // Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown.
   const rows = [], fixedRows = [];
   function row(label, value, extra, fixed, cls) { (fixed ? fixedRows : rows).push({ label: label, html: value, extra: extra || "", cls: cls || "" }); }
   row(t("js.ha.attr.name"), evRowCells("name", t("js.ha.attr.name")), '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
@@ -102,7 +102,7 @@ export function miAttrs(d) {
     row(t("js.ha.attr.signal"), '<span class="sig sig-' + esc(d.signal.color || "none") + '">' + icon(d.signal.kind === "wifi" ? "wifi" : "lan") + "</span> " +
       esc(d.signal.display) + (d.signal.text ? " · " + esc(d.signal.text) : ""));
   }
-  if (d.online && d.latency_ms != null) row(t("js.ha.attr.latency"), '<span class="lat lat-' + esc(d.latency_color || "none") + '">' + esc(d.latency_ms + " ms") + "</span>", "", true);
+  if (d.online && d.latency_ms != null) row(t("js.ha.attr.latency"), '<span class="lat lat-' + esc(d.latency_color || "none") + '">' + esc(d.latency_ms + " ms") + "</span>", "", false);      // in "Other attributes", no longer among the rows always shown
   // (how long it has been up, or when it was seen last, is said once: under the state at the top of the card)
   if (d.scanned_at) row(t("js.ha.attr.scanned"), esc(ago(d.scanned_at)));
   else if (d.deep_empty_at) row(t("js.ha.attr.scanned_empty"), esc(ago(d.deep_empty_at)));

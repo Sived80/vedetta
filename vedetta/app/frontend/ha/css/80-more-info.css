@@ -115,6 +115,9 @@
 }
 
 @layer overrides {
+  /* The flag of the report has the height of the buttons next to it (34 px) and a 20 px icon, instead of the 48 px of the generic small icon button. */
+  #more .mi-actions .mi-flag { width: 34px; height: 34px; }
+  #more .mi-actions .mi-flag .mdi { width: 20px; height: 20px; }
   /* Rename next to the name in the More info dialog. */
   .mi-name-row { display: flex; align-items: center; gap: 2px; min-width: 0; width: 100%; }
   .mi-name-row .mi-title { min-width: 0; flex: 0 1 auto; }

@@ -25,7 +25,7 @@ Nothing about your devices leaves your network. Three optional checks that reach
 
 - `log_level`: `debug`, `info`, `warning`, `error`.
 - `interface`: network interface to scan (empty = automatic).
-- `internet_public_ip`, `internet_path`, `internet_mac_database`: the three functions that reach the Internet. All are **on** by default; one that is off sends nothing, and the tile *To the internet* shows which are on.
+- `internet_public_ip`, `internet_path`, `internet_mac_database`: the three functions that reach the Internet. All are **on** by default; one that is off sends nothing, and the tile *Permissions* shows which are on.
   - Public IP: at start and every 6 hours, one DNS query to a public resolver asks for your public IP address.
   - Path: a traceroute to a public address (`internet_path_target`, empty = `1.1.1.1`) tells a direct connection from a double NAT.
   - Manufacturers: when the list is more than 30 days old, it is downloaded from the public IEEE registries.

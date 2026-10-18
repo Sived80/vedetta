@@ -134,8 +134,8 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(300);
   check(/Offline/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "il broker cade: la tile segue senza ricaricare la pagina");
   // The tile of the functions that reach the internet, and the tile "Internet" when a check is off (add-on options).
-  const ext = seen[labels.find((l) => /Verso Internet|To the internet/.test(l))];
-  check(!!ext && /2 attive su 3|2 of 3 on/.test(ext) && /(Acceso|On)/.test(ext) && /(Spento|Off)/.test(ext) && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Verso Internet»: le tre funzioni, due accese e una spenta, «2 attive su 3»");
+  const ext = seen[labels.find((l) => /Permessi|Permissions/.test(l))];
+  check(!!ext && (ext.match(/Acceso|On(?![a-z])/g) || []).length === 2 && (ext.match(/Spento|Off(?![a-z])/g) || []).length === 1 && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Permessi»: le tre funzioni, due accese e una spenta");
   let reload = 0;
   const reloadWith = async (external) => {
     data.summary.external = external;
@@ -152,8 +152,8 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await reloadWith({ public_ip: { on: false }, path: { on: false, target: "1.1.1.1" }, mac_database: { on: false, updated: null } });
   it = await text("Internet");
   check(/Controlli spenti|Checks off/.test(it) && /Nessun controllo|No checks/.test(it) && !/203\.0\.113\.7/.test(it), "tutti e due i controlli spenti: «Controlli spenti», nessun indirizzo");
-  const none = await text(labels.find((l) => /Verso Internet|To the internet/.test(l)));
-  check(/0 attive su 3|0 of 3 on/.test(none) && !/(Acceso|On)\b/.test(none.replace(/To the internet/, "")), "e la tile delle funzioni dice «0 attive su 3», nessuna riga accesa");
+  const none = await text(labels.find((l) => /Permessi|Permissions/.test(l)));
+  check((none.match(/Spento|Off(?![a-z])/g) || []).length === 3 && !/(Acceso|On)\b/.test(none.replace(/Permissions/, "")), "e la tile delle funzioni mostra le tre righe spente, nessuna accesa");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

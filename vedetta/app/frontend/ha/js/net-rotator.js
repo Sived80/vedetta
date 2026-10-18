@@ -133,24 +133,20 @@ function internetTile() {
   };
 }
 
-// The three functions that reach the internet and whether each is on: one bar-row each, a full green bar when it is on, an empty one when it is off.
+// The three functions that reach the internet and whether each is on: three boxes as in the latency tile, label on the left and On or Off on the right.
 function extRow(on, labelKey) {
-  return '<div class="bar-row" style="--bc:' + (on ? "var(--success-color)" : "var(--secondary-text-color)") + '"><div class="bar-leg"><span>' + esc(t(labelKey)) + "</span><b>" +
-    esc(t(on ? "js.ha.tile.on" : "js.ha.tile.off")) + '</b></div><div class="pbar"><i style="width:' + (on ? 100 : 0) + '%"></i></div></div>';
+  return statBox(t(labelKey), esc(t(on ? "js.ha.tile.on" : "js.ha.tile.off")), on ? "var(--success-color)" : "var(--secondary-text-color)", "tinted");
 }
 function externalTile() {
   const ext = S.external;
   if (!ext) return null;
   const rows = [[ext.public_ip.on, "js.ha.tile.ext_public_ip"], [ext.path.on, "js.ha.tile.ext_path"], [ext.mac_database.on, "js.ha.tile.ext_mac"]];
-  const n = rows.filter(function (r) { return r[0]; }).length, net = S.roles && S.roles.internet;
-  const last = Math.max(ext.mac_database.on && ext.mac_database.updated ? ext.mac_database.updated : 0, net && net.ts && (ext.public_ip.on || ext.path.on) ? net.ts : 0);
-  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.ext_active", { n: n, total: rows.length })) + '</span><span>' + esc(last ? t("js.ha.tile.checked", { ago: ago(last) }) : "–") + '</span></div>' +
-    '<div class="pbar"><i style="width:' + (n / rows.length * 100).toFixed(1) + '%"></i></div>';
+  const n = rows.filter(function (r) { return r[0]; }).length;
   return {
     id: "external",
     tip: t("js.ha.tile.external_tip", { n: n, total: rows.length }),
     html: cardHTML("var(--teal-color)", "toggle-switch", esc(t("js.ha.tile.external")),
-      '<div class="t-bars">' + rows.map(function (r) { return extRow(r[0], r[1]); }).join("") + "</div>", foot)
+      '<div class="stat-grid-2">' + rows.map(function (r) { return extRow(r[0], r[1]); }).join("") + "</div>")
   };
 }
 

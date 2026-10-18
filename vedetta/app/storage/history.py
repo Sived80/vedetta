@@ -11,6 +11,7 @@ from .history_known import KnownMixin
 from .history_macs import MacMemoryMixin
 from .history_scans import ScansMixin
 from .history_maclayer import MacLayerMixin, SCHEMA as _MACLAYER_SCHEMA
+from .history_health import HealthMixin, SCHEMA as _HEALTH_SCHEMA
 DB_PATH = CONFIG_DIR / "vedetta.db"
 
 PRESENCE_RETENTION_DAYS = 90
@@ -101,7 +102,7 @@ CREATE INDEX IF NOT EXISTS idx_mac_takeover_ts ON mac_takeover (ts);
 """
 
 
-class History(MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMixin):
+class History(HealthMixin, MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMixin):
     """SQLite history: online/offline transitions, deep scans and
     a few service values. devices.yaml remains the configuration chosen
     by the user; only what the program observes over time goes here.
@@ -118,7 +119,7 @@ class History(MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMix
         with self._lock:
             self._db.execute("PRAGMA journal_mode=WAL")
             self._db.execute("PRAGMA synchronous=NORMAL")
-            self._db.executescript(_SCHEMA + _MACLAYER_SCHEMA)
+            self._db.executescript(_SCHEMA + _MACLAYER_SCHEMA + _HEALTH_SCHEMA)
             self._maclayer_migrate()
             self._db.commit()
 
@@ -172,6 +173,7 @@ class History(MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMix
             self._db.commit()
             removed = cur.rowcount
         self.prune_maclayer()
+        self.prune_health()
         return removed
 
 

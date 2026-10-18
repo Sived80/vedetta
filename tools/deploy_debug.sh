@@ -29,6 +29,8 @@ sed -i \
   "$STAGE/$SLUG/config.yaml"
 # The debug copy shows the one-time star invitation by the same rule as the real app (after a couple of days of use, once).
 sed -i -e '/^set -e$/a export VEDETTA_ARP_BLOCKS=1' "$STAGE/$SLUG/run.sh"
+# The debug copy judges the network health in shadow (counts in the log and the findings on disk; nothing reaches the page).
+sed -i -e '/^set -e$/a export VEDETTA_HEALTH=shadow' "$STAGE/$SLUG/run.sh"
 tar czf - -C "$STAGE" "$SLUG" | ssh -i "$KEY" "root@$HOST" \
   "rm -rf /local_apps/$SLUG && tar xzf - -C /local_apps && ha store reload && if ha apps info local_$SLUG 2>&1 | grep -q '^version: null'; then ha apps install local_$SLUG; else INFO=\$(ha apps info local_$SLUG 2>&1); if [ \"\$(echo \"\$INFO\" | sed -n 's/^version: //p')\" != \"\$(echo \"\$INFO\" | sed -n 's/^version_latest: //p')\" ]; then ha apps update local_$SLUG; else ha apps rebuild local_$SLUG; fi; fi && ha apps start local_$SLUG"
 echo "Sent: the first build may take a few minutes. Then: Settings > Apps > Vedetta (debug) > Show in sidebar."

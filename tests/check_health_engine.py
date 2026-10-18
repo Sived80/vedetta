@@ -40,8 +40,8 @@ e = engine.Engine([ROW])
 e.judge(CONFLICT, 0)
 e.judge(QUIET, 10)
 e.judge(QUIET, 20)
-e.judge(QUIET, 30)
-assert e.findings() == [], "a tentative that is not seen again goes away"
+dropped = e.judge(QUIET, 30)
+assert e.findings() == [] and [(c.change, c.finding.state) for c in dropped] == [("dropped", "dropped")], "a tentative that is not seen again goes away, and says so"
 e.judge(CONFLICT, 40)
 assert [f.state for f in e.findings()] == ["tentative"] and e.findings()[0].hits == 1, "it counts from the start"
 

@@ -216,6 +216,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/blocklist.py` | Ignored devices: they do not appear in searches nor in new-device alerts. |
 | `storage/devices_config.py` | The list of monitored devices, saved in devices.yaml: load, add, update, set by hand (override), change of address, automatic name, scan info, remove. |
 | `storage/history.py` | The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer. |
+| `storage/history_health.py` | HealthMixin: the findings of the network health (health/) kept on disk, so a restart does not lose the record of what was seen. |
 | `storage/history_known.py` | KnownMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/history_maclayer.py` | MacLayerMixin: the tables of the single MAC layer (moved out of history.py's class by design, see maclayer.py). |
 | `storage/history_macs.py` | MacMemoryMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |

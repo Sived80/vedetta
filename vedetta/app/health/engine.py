@@ -10,7 +10,7 @@ from . import detectors, matrix
 class Finding:
     rule: str
     subject: str
-    state: str                         # tentative | active | closed
+    state: str                         # tentative | active | closed | dropped (a tentative that was not seen again)
     severity: str
     first_seen: float
     last_seen: float
@@ -22,7 +22,7 @@ class Finding:
 
 @dataclass(frozen=True)
 class Change:
-    change: str                        # opened | raised | closed
+    change: str                        # opened | raised | closed | dropped
     finding: Finding
 
 
@@ -71,7 +71,6 @@ class Engine:
         if found.quiet < row["params"]["clear_cycles"]:
             return []
         del self._found[key]
-        if found.state == "tentative":
-            return []
-        found.state = "closed"
-        return [Change("closed", found)]
+        was_tentative = found.state == "tentative"
+        found.state = "dropped" if was_tentative else "closed"
+        return [Change("dropped" if was_tentative else "closed", found)]

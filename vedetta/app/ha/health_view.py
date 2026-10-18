@@ -8,6 +8,7 @@ import time
 from ..applog import logger
 from ..health.engine import Change, Engine
 from ..scan import scanner
+from ..storage.history import history
 
 REFRESH_S = 120
 FIRST_AFTER_S = 600      # as for the analysis: right after a start the scan has not settled yet
@@ -48,30 +49,38 @@ def event() -> dict:
     return {"type": "health", "findings": snapshot()}
 
 
-def judge_once(engine: Engine, signals: dict, now: float) -> list[Change]:
-    """One judgment; the changes of the rules that are shown are returned to the caller, the ones in shadow are only written in the log (counts)."""
+def _write(record, finding) -> None:
+    record(rule=finding.rule, subject=finding.subject, state=finding.state, severity=finding.severity, first_seen=finding.first_seen, last_seen=finding.last_seen,
+           hits=finding.hits, evidence=finding.evidence, shadow=finding.shadow)
+
+
+def judge_once(engine: Engine, signals: dict, now: float, record=None) -> list[Change]:
+    """One judgment; the changes of the rules that are shown are returned to the caller, the ones in shadow are only written in the log (counts). `record` (if given) writes every finding that is open
+    and every one that has just ended, shadow included, so that a restart does not lose the record."""
     changes = engine.judge(signals, now)
     for c in changes:
         if c.finding.shadow:
             logger.info("Health (shadow): rule %s %s (%s)", c.finding.rule, c.change, c.finding.evidence)
+    if record:
+        for finding in {id(f): f for f in [*engine.findings(), *[c.finding for c in changes]]}.values():
+            _write(record, finding)
     return [c for c in changes if not c.finding.shadow]
 
 
-def _tick() -> None:
-    """One judgment of the real signals; the page is told only if something it shows has changed."""
+def _tick() -> bool:
+    """One judgment of the real signals (and the write to disk); True if something the page shows has changed."""
     try:
-        shown = judge_once(_engine, read_signals(), time.time())
+        return bool(judge_once(_engine, read_signals(), time.time(), record=history.record_finding))
     except Exception:
         logger.exception("Judging the network health failed")
-        return
-    if shown and _on_change:
-        _on_change(event())
+        return False
 
 
 async def _loop() -> None:
     await asyncio.sleep(FIRST_AFTER_S)
     while True:
-        _tick()
+        if await asyncio.to_thread(_tick) and _on_change:
+            _on_change(event())
         await asyncio.sleep(REFRESH_S)
 
 

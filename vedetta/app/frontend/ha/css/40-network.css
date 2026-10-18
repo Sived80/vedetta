@@ -298,6 +298,7 @@
   /* What follows the page is the side column, so the network card and the log under it stay together while the page scrolls (wide layout;
      when the cards are stacked .col-side is display: contents and nothing sticks). A column taller than the window scrolls inside itself. */
   .col-side { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; scrollbar-width: thin; }
+  .col-side > * { flex-shrink: 0; }      /* the cards keep their height and the column scrolls: shrunk, the network card was cut short by the log that opened under it */
   #card-network { position: relative; z-index: 10; }
   html.is-narrow #card-network { position: static; }
   @media (max-width: 870px) { html:not([data-narrow-host]) #card-network { position: static; } }

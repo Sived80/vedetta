@@ -72,7 +72,8 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   check(more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "true", "premuto: le icone di modifica si accendono");
   tog().click();
   check(!more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "false", "premuto di nuovo: si spengono");
-  check(more.querySelectorAll("[data-range].btn").length === 2, "24h / 7gg sono due tasti come quelli della barra in basso");
+  check(more.querySelectorAll(".seg [data-range]").length === 2 && !more.querySelector("[data-range].btn"), "24h / 7gg e' un selettore a due segmenti");
+  check(tog().getAttribute("title") === "Personalizza scheda" && tog().getAttribute("aria-label") === "Personalizza scheda", "il tasto si chiama «Personalizza scheda»");
   check(!!flagBtn() && !flagBtn().classList.contains("on") && !flagBtn().querySelector(".mi-flag-txt") && flagBtn().getAttribute("aria-pressed") === "false", "scheda non segnalata: tasto normale, senza parola");
 
   // --- flag it: the form, the save, then the steady orange button with the word

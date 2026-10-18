@@ -11,6 +11,7 @@ MIN = 60.0
 ROWS = {r["id"]: r for r in matrix.load()}
 PERIODIC = ROWS["H05"]["params"]
 TOGETHER = ROWS["H06"]["params"]
+STEP = ROWS["H07"]["params"]
 
 
 def sig(drops, devices=20):
@@ -51,8 +52,38 @@ assert detectors.simultaneous_drop(sig(spread), TOGETHER) == []
 assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 5 * 3600] for i in range(8)}), TOGETHER) == []
 assert detectors.simultaneous_drop({"now": NOW}, TOGETHER) == [] and detectors.simultaneous_drop({"now": NOW, "drops": {"a": [NOW]}, "devices": 0}, TOGETHER) == []
 
+# --- a step of the latency of the gateway: the last 15 minutes against the 6 hours before them (median and spread), with a floor in milliseconds because a wired LAN answers in half a millisecond
+def series(base_ms, last_ms, spread=0.05, minutes_last=15):
+    """One sample a minute: 6 hours at base_ms (a little noise), then the last minutes at last_ms."""
+    out = []
+    for i in range(6 * 60):
+        out.append((NOW - (6 * 60 + minutes_last - 1 - i) * MIN, base_ms + (spread if i % 2 else -spread)))
+    for i in range(minutes_last):
+        out.append((NOW - (minutes_last - 1 - i) * MIN, last_ms + (spread if i % 2 else -spread)))
+    return out
+
+
+def lat(samples):
+    return {"now": NOW, "latency": {"gateway": samples}}
+
+
+found = detectors.step_change(lat(series(0.5, 8.0)), STEP)
+assert len(found) == 1 and found[0].subject == "gateway" and found[0].data == {"from_ms": 0.5, "to_ms": 8.0}, found
+assert detectors.step_change(lat(series(0.5, 0.55)), STEP) == [], "a flat series says nothing"
+assert detectors.step_change(lat(series(0.5, 1.5)), STEP) == [], "three times as much but only one millisecond more: a wired LAN does that, below the floor"
+assert detectors.step_change(lat(series(20.0, 30.0, spread=4.0)), STEP) == [], "a noisy link that rises a little is inside its own spread"
+assert len(detectors.step_change(lat(series(20.0, 90.0, spread=4.0)), STEP)) == 1, "a noisy link that jumps well beyond its spread is a step"
+# one spike is not a step (the median of the last minutes does not move), and too few samples are not enough to say anything
+spike = series(0.5, 0.5)
+spike[-1] = (spike[-1][0], 40.0)
+assert detectors.step_change(lat(spike), STEP) == []
+assert detectors.step_change(lat(series(0.5, 8.0)[-30:]), STEP) == [], "without the six hours before there is no baseline"
+assert detectors.step_change(lat(series(0.5, 8.0, minutes_last=3)), STEP) == [], "three samples are not a window"
+assert detectors.step_change({"now": NOW, "latency": {"gateway": 5}}, STEP) == [] and detectors.step_change({"now": NOW}, STEP) == [] and detectors.step_change({}, STEP) == []
+assert detectors.step_change({"now": NOW, "latency": {"gateway": [(NOW, None)] * 100}}, STEP) == [], "samples without a value are left out"
+
 # --- both rows are in the matrix, in shadow, with a checked source
-for rid in ("H05", "H06"):
+for rid in ("H05", "H06", "H07"):
     assert ROWS[rid]["status"] == "shadow" and ROWS[rid]["family"] in detectors.FAMILIES
 
 print("check_health_detectors OK")

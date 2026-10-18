@@ -38,13 +38,20 @@ assert len(snap) == 1 and snap[0]["rule"] == "H20" and snap[0]["subject"] == "la
 assert "192.168" not in repr(snap) and "aa:bb" not in repr(snap) and "192.168" not in repr(hv.summary(shown))
 
 # --- the drops come from the presence history of the last day
-read = hv.read_signals(NOW, presence=lambda since: [("a", True, since + 10), ("a", False, since + 20), ("b", True, since + 30)])
+read = hv.read_signals(NOW, presence=lambda since: [("a", True, since + 10), ("a", False, since + 20), ("b", True, since + 30)], latency=lambda now: {"gateway": [(NOW - 60, 0.5)]})
 assert read["now"] == NOW and read["drops"] == {"a": [NOW - hv.SIGNAL_WINDOW_S + 20]} and read["devices"] == 2, read
+
+# --- the latency of the gateway: the device is the one that has the address of the default route; no route or no such device, nothing
+got = hv.gateway_latency(NOW, gateway=lambda: "10.0.0.1", devices=lambda: [{"id": "x", "ip": "10.0.0.9"}, {"id": "gw", "ip": "10.0.0.1"}], points=lambda device, a, b: [(a, 0.5), (b, 0.6)] if device == "gw" else [])
+assert got == {"gateway": [(NOW - hv.LATENCY_WINDOW_S, 0.5), (NOW, 0.6)]}, got
+assert hv.gateway_latency(NOW, gateway=lambda: None, devices=lambda: [{"id": "gw", "ip": "10.0.0.1"}], points=lambda *a: [(1, 1)]) == {}, "no default route"
+assert hv.gateway_latency(NOW, gateway=lambda: "10.0.0.1", devices=lambda: [{"id": "x", "ip": "10.0.0.9"}], points=lambda *a: [(1, 1)]) == {}, "the gateway is not a card"
+assert hv.read_signals(NOW, presence=lambda since: [], latency=lambda now: {"gateway": [(1, 2)]})["latency"] == {"gateway": [(1, 2)]}
 
 # --- the signals come from the scan view, copied (the judge cannot change the scan)
 hv.scanner.arp_conflicts.clear()
 hv.scanner.arp_conflicts["10.0.0.5"] = ["m1", "m2"]
-read = hv.read_signals(NOW, presence=lambda since: [])
+read = hv.read_signals(NOW, presence=lambda since: [], latency=lambda now: {})
 read["conflicts"]["10.0.0.5"].append("m3")
 assert hv.scanner.arp_conflicts["10.0.0.5"] == ["m1", "m2"], "the signals are a copy"
 hv.scanner.arp_conflicts.clear()

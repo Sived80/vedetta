@@ -1,8 +1,12 @@
 """Measures on real exports what the network-health rules would see (app/health/): for each export, how many devices drop off the network, how regular the drops of a device are (cyclic restarts) and how many devices drop in the same minutes (a common cause).
 It reads the presence history of each export and prints numbers, not names; the thresholds of the rules are chosen from these numbers. Read-only; exports stay in ~/.vedetta/exports.
     python tools/replay_health.py [export.zip ...]"""
+import json
+import sqlite3
 import statistics
 import sys
+import tempfile
+import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -37,15 +41,33 @@ def busiest_bins(drops: dict[str, list[float]]) -> Counter:
     return Counter({b: len(devs) for b, devs in bins.items()})
 
 
-def judge_hourly(events, drops) -> dict[str, dict]:
+def gateway_latency(path: Path) -> list[tuple]:
+    """(ts, ms) of the gateway in an export, in time order; [] when the export does not say which device is the gateway or has no latency."""
+    with zipfile.ZipFile(path) as z:
+        names = z.namelist()
+        if "data/vedetta.db" not in names or "state/roles.json" not in names:
+            return []
+        by_ip = json.loads(z.read("state/roles.json")).get("by_ip", {})
+        gateway = next((ip for ip, v in by_ip.items() if isinstance(v, dict) and v.get("gateway")), None)
+        cards = json.loads(z.read("state/devices_compact.json"))
+        cards = cards["devices"] if isinstance(cards, dict) else cards
+        card = next((c for c in cards if c.get("ip") == gateway), None) if gateway else None
+        if not card:
+            return []
+        db_path = Path(tempfile.mkdtemp(prefix="replay-")) / "db"
+        db_path.write_bytes(z.read("data/vedetta.db"))
+    return sqlite3.connect(db_path).execute("SELECT ts, ms FROM latency WHERE device_id = ? AND ms IS NOT NULL ORDER BY ts", (card["id"],)).fetchall()
+
+
+def judge_hourly(events, drops, latency=None) -> dict[str, dict]:
     """The rules of the matrix judged at the end of every hour of the export (from the second day on): in how many hours each would have fired, and for how many different subjects."""
     start, end = events[0][3] + 86400, events[-1][3]
-    rows = [r for r in matrix.load() if r["family"] in ("periodic_dropout", "simultaneous_drop")]
+    rows = [r for r in matrix.load() if r["family"] in ("periodic_dropout", "simultaneous_drop", "step_change")]
     fired = {r["id"]: {"hours": 0, "subjects": set()} for r in rows}
     hour = start
     while hour <= end:
         known = {device for device, _mac, _online, ts in events if hour - 86400 <= ts <= hour}
-        seen = {"now": hour, "drops": drops, "devices": len(known)}
+        seen = {"now": hour, "drops": drops, "devices": len(known), "latency": {"gateway": latency or []}}
         for row in rows:
             found = detectors.FAMILIES[row["family"]](seen, row["params"])
             fired[row["id"]]["hours"] += bool(found)
@@ -72,7 +94,7 @@ def report(path: Path) -> None:
     print("   most devices dropping in the same %d s: %s" % (BIN_S, [n for _b, n in bins.most_common(5)]))
     print("   bins with >= 3 devices: %d, >= 5: %d" % (sum(n >= 3 for n in bins.values()), sum(n >= 5 for n in bins.values())))
     if span_d >= 1:
-        for rule, got in judge_hourly(events, drops).items():
+        for rule, got in judge_hourly(events, drops, gateway_latency(path)).items():
             print("   rule %s would have fired in %d hours, for %d different subjects" % (rule, got["hours"], len(got["subjects"])))
 
 

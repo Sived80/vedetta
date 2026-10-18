@@ -126,5 +126,42 @@
         }
       ]
     }
+  },
+  {
+    "id": "H07",
+    "family": "step_change",
+    "params": {
+      "min_cycles": 2,
+      "clear_cycles": 4,
+      "recent_s": 900,
+      "baseline_s": 21600,
+      "min_recent": 5,
+      "min_baseline": 60,
+      "abs_min_ms": 3.0,
+      "ratio": 3.0,
+      "k": 6
+    },
+    "signals": [
+      "LAT"
+    ],
+    "scope": "over_time",
+    "class": "hardware",
+    "severity": "warning",
+    "message_key": "health.h07",
+    "remedy_key": "health.h07.remedy",
+    "detectability": "D1",
+    "status": "shadow",
+    "since": "next",
+    "existence": {
+      "grade": "B",
+      "note": "a step in a series is a standard problem of statistical monitoring; no source found for the gateway latency of a home network",
+      "sources": [
+        {
+          "title": "Continuous Inspection Schemes (Page, Biometrika 41, 1954): the origin of the cumulative sum chart",
+          "link": "https://doi.org/10.1093/biomet/41.1-2.100",
+          "verified": false
+        }
+      ]
+    }
   }
 ]

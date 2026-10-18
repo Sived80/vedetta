@@ -8,7 +8,9 @@ import time
 from ..applog import logger
 from ..health import signals
 from ..health.engine import Change, Engine
+from ..recognition.identity import default_gateway
 from ..scan import scanner
+from ..storage import devices_config
 from ..storage.history import history
 
 REFRESH_S = 120
@@ -24,14 +26,22 @@ def enabled() -> bool:
 
 
 SIGNAL_WINDOW_S = 86400      # the longest window a rule looks back (H05: one day)
+LATENCY_WINDOW_S = 7 * 3600   # H07 looks at the last 15 minutes against the 6 hours before them
 
 
-def read_signals(now: float | None = None, presence=None) -> dict:
-    """What the rules look at: the IP conflicts of the scan, and the drops of each device in the last day (from the presence history; the first sight of a device in the window is not a drop)."""
+def gateway_latency(now: float, gateway=default_gateway, devices=devices_config.load_devices, points=history.latency_points) -> dict:
+    """The latency of the gateway in the window of H07: the gateway is the device that has the address of the default route; without a route or without such a device there is nothing to judge."""
+    ip = gateway()
+    card = next((d for d in devices() if d.get("ip") == ip), None) if ip else None
+    return {"gateway": points(card["id"], now - LATENCY_WINDOW_S, now)} if card else {}
+
+
+def read_signals(now: float | None = None, presence=None, latency=None) -> dict:
+    """What the rules look at: the IP conflicts of the scan, the drops of each device in the last day (from the presence history; the first sight of a device in the window is not a drop) and the latency of the gateway."""
     now = time.time() if now is None else now
     events = (presence or history.presence_since)(now - SIGNAL_WINDOW_S)
     return {"now": now, "conflicts": {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()},
-            "drops": signals.drops_by_device(events), "devices": len({device for device, _online, _ts in events})}
+            "drops": signals.drops_by_device(events), "devices": len({device for device, _online, _ts in events}), "latency": (latency or gateway_latency)(now)}
 
 
 def snapshot(engine: Engine | None = None) -> list[dict]:

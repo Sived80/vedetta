@@ -103,21 +103,54 @@ function gatewayTile(gw) {
 }
 
 // Connection to the internet, in the style of the gateway tile: the public IP, how it is reached (direct, CGNAT, double NAT), the hops to the outside.
+// Each of the two checks can be switched off in the add-on options (S.external): what is off says so instead of a value.
 function internetTile() {
-  const net = S.roles && S.roles.internet;
+  const ext = S.external, net = S.roles && S.roles.internet;
+  const ipOn = !ext || ext.public_ip.on, pathOn = !ext || ext.path.on;
+  if (!ipOn && !pathOn) {
+    return {
+      id: "internet",
+      tip: t("js.ha.tile.internet_tip_off"),
+      html: cardHTML("var(--info-color)", "earth", esc(t("js.ha.tile.internet")),
+        '<div class="t-v"><span class="t-n mono gw-off">' + esc(t("js.ha.tile.off")) + '</span></div>' +
+        '<div class="gw-net"><span class="gw-sub">' + esc(t("js.ha.tile.net_all_off")) + '</span><span class="gw-state gw-off">' + esc(t("js.ha.tile.no_checks")) + '</span></div>',
+        '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: "–" })) + '</span><span>–</span></div><div class="pbar"><i style="width:0%"></i></div>')
+    };
+  }
   if (!net) return null;
-  const up = !!net.public_ip, hops = (net.hops || []).length;
-  const kind = t(net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : "js.ha.tile.net_direct");
-  const pct = Math.max(0, Math.min(100, hops / 5 * 100)).toFixed(1);
-  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: hops })) + '</span><span>' + esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })) + '</span></div>' +
+  const hops = (net.hops || []).length, reachable = ipOn ? !!net.public_ip : hops > 0;
+  const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : "js.ha.tile.net_direct");
+  const pct = pathOn ? Math.max(0, Math.min(100, hops / 5 * 100)).toFixed(1) : "0";
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + '</span><span>' + esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })) + '</span></div>' +
     '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
   return {
     id: "internet",
-    tip: t("js.ha.tile.internet_tip", { kind: kind, hops: hops }),
+    tip: t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }),
     html: cardHTML("var(--info-color)", "earth", esc(t("js.ha.tile.internet")),
-      '<div class="t-v"><span class="t-n mono' + (up ? "" : " gw-off") + '">' + esc(net.public_ip || "–") + '</span></div>' +
-      '<div class="gw-net"><span class="gw-sub">' + esc(kind) + '</span><span class="gw-state' + (up ? "" : " gw-off") + '">' + esc(t(up ? "js.ha.tile.online" : "js.ha.tile.offline")) + '</span></div>',
+      '<div class="t-v"><span class="t-n mono' + (ipOn && net.public_ip ? "" : " gw-off") + '">' + esc(ipOn ? net.public_ip || "–" : t("js.ha.tile.off")) + '</span></div>' +
+      '<div class="gw-net"><span class="gw-sub">' + esc(kind) + '</span><span class="gw-state' + (reachable ? "" : " gw-off") + '">' + esc(t(reachable ? "js.ha.tile.online" : "js.ha.tile.offline")) + '</span></div>',
       foot)
+  };
+}
+
+// The three functions that reach the internet and whether each is on: one bar-row each, a full green bar when it is on, an empty one when it is off.
+function extRow(on, labelKey) {
+  return '<div class="bar-row" style="--bc:' + (on ? "var(--success-color)" : "var(--secondary-text-color)") + '"><div class="bar-leg"><span>' + esc(t(labelKey)) + "</span><b>" +
+    esc(t(on ? "js.ha.tile.on" : "js.ha.tile.off")) + '</b></div><div class="pbar"><i style="width:' + (on ? 100 : 0) + '%"></i></div></div>';
+}
+function externalTile() {
+  const ext = S.external;
+  if (!ext) return null;
+  const rows = [[ext.public_ip.on, "js.ha.tile.ext_public_ip"], [ext.path.on, "js.ha.tile.ext_path"], [ext.mac_database.on, "js.ha.tile.ext_mac"]];
+  const n = rows.filter(function (r) { return r[0]; }).length, net = S.roles && S.roles.internet;
+  const last = Math.max(ext.mac_database.on && ext.mac_database.updated ? ext.mac_database.updated : 0, net && net.ts && (ext.public_ip.on || ext.path.on) ? net.ts : 0);
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.ext_active", { n: n, total: rows.length })) + '</span><span>' + esc(last ? t("js.ha.tile.checked", { ago: ago(last) }) : "–") + '</span></div>' +
+    '<div class="pbar"><i style="width:' + (n / rows.length * 100).toFixed(1) + '%"></i></div>';
+  return {
+    id: "external",
+    tip: t("js.ha.tile.external_tip", { n: n, total: rows.length }),
+    html: cardHTML("var(--teal-color)", "toggle-switch", esc(t("js.ha.tile.external")),
+      '<div class="t-bars">' + rows.map(function (r) { return extRow(r[0], r[1]); }).join("") + "</div>", foot)
   };
 }
 
@@ -176,7 +209,7 @@ function mqttTile() {
 function tiles() {
   const gw = gateway();
   refreshGatewayHistory(gw);
-  return [latencyTile(gw), gatewayTile(gw), internetTile(), lensTile(), mqttTile()].filter(Boolean);
+  return [latencyTile(gw), gatewayTile(gw), internetTile(), externalTile(), lensTile(), mqttTile()].filter(Boolean);
 }
 
 // The new content replaces the old one with a short fade; a refresh of the same tile (new numbers) is written at once.

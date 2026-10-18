@@ -27,6 +27,7 @@ def _state() -> dict:
         "rules": brands.list_rules(),
         "oui": {"blocks": stats["blocks"], "source": stats["source"], "updated": updated, "age_days": age},
         "auto_update": oui_update.auto_update_enabled(),
+        "auto_update_locked": oui_update.auto_update_locked(),      # the add-on option decides: the switch of the app is not used
     }
 
 
@@ -103,6 +104,8 @@ async def api_brands_auto_update(request: Request):
     body = await _body(request)
     if not isinstance(body.get("enabled"), bool):
         raise HTTPException(400, i18n.t("brands.error.invalid_body"))
+    if oui_update.auto_update_locked():
+        raise HTTPException(409, i18n.t("brands.error.locked"))
     try:
         await asyncio.to_thread(brands.update_user, {"auto_update": body["enabled"]})
     except OSError:

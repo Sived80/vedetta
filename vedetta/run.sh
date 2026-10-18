@@ -17,6 +17,14 @@ if bashio::config.has_value 'interface'; then
     export VEDETTA_IFACE="$(bashio::config 'interface')"
 fi
 
+# The functions that reach the internet: all on unless the options say otherwise (app/external.py reads these).
+export VEDETTA_INTERNET_PUBLIC_IP="$(bashio::config 'internet_public_ip')"
+export VEDETTA_INTERNET_PATH="$(bashio::config 'internet_path')"
+export VEDETTA_INTERNET_MAC_DB="$(bashio::config 'internet_mac_database')"
+if bashio::config.has_value 'internet_path_target'; then
+    export VEDETTA_INTERNET_PATH_TARGET="$(bashio::config 'internet_path_target')"
+fi
+
 # MQTT: manual options win over the service ones.
 if bashio::config.has_value 'mqtt_host'; then
     export VEDETTA_MQTT_HOST="$(bashio::config 'mqtt_host')"

@@ -14,10 +14,10 @@ import struct
 import time
 import xml.etree.ElementTree as ET
 
+from .. import external
 from ..applog import logger
 
 OPENDNS = "208.67.222.222"
-TRACE_TARGET = "1.1.1.1"
 _CGNAT = ipaddress.ip_network("100.64.0.0/10")
 
 
@@ -115,14 +115,21 @@ def classify(hops: list[str]) -> dict:
     return {"private_hops": private, "double_nat": len(private) >= 2, "cgnat": cgnat}
 
 
+async def _nothing():
+    return None
+
+
 async def check() -> dict:
+    """Only what the add-on options leave on (external.py): a function that is off sends nothing and its part of the result stays empty."""
     from .scanner import _LIGHT_NMAP_SEMAPHORE, _run_nmap
+    want_ip, want_path = external.public_ip_enabled(), external.path_enabled()
     trace_xml, ip = await asyncio.gather(
-        _run_nmap(["-sn", "-Pn", "--traceroute", "--max-retries", "1", "--host-timeout", "20s", TRACE_TARGET],
-                  semaphore=_LIGHT_NMAP_SEMAPHORE),
-        public_ip(), return_exceptions=True)
+        _run_nmap(["-sn", "-Pn", "--traceroute", "--max-retries", "1", "--host-timeout", "20s", external.path_target()],
+                  semaphore=_LIGHT_NMAP_SEMAPHORE) if want_path else _nothing(),
+        public_ip() if want_ip else _nothing(), return_exceptions=True)
     hops = parse_trace(trace_xml) if isinstance(trace_xml, str) else []
-    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops), "ts": time.time()}
+    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops), "ts": time.time(),
+              "checks": {"public_ip": want_ip, "path": want_path}}
     logger.info("Internet: IP pubblico %s, salti %s, doppio NAT %s, CGNAT %s", result["public_ip"] or "-",
                 " > ".join(result["hops"]) or "-", "si" if result["double_nat"] else "no", "si" if result["cgnat"] else "no")
     return result

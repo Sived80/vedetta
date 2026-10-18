@@ -13,6 +13,7 @@ import re
 import time
 import urllib.request
 
+from .. import external
 from . import brands
 from . import vendor_lookup
 
@@ -147,7 +148,15 @@ def meta() -> dict:
             "blocks": data.get("blocks") if isinstance(data.get("blocks"), int) else None}
 
 
+def auto_update_locked() -> bool:
+    """True when the add-on option decides (then the switch of the app, the setting file, is not used: one source for one fact)."""
+    return external.mac_database_setting() is not None
+
+
 def auto_update_enabled() -> bool:
+    forced = external.mac_database_setting()
+    if forced is not None:
+        return forced
     return brands._read(brands._USER_PATH).get("auto_update") is True
 
 

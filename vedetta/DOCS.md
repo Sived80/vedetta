@@ -30,6 +30,10 @@ Everything stays at home: no data is sent outside your network.
 - `log_level`: `debug`, `info`, `warning`, `error`.
 - `star_hint`: `true` by default. Once, after a couple of days of use, a small star appears on the menu button with a link to the project on GitHub; set `false` to never show it. Nothing is sent anywhere.
 - `interface`: network interface to scan (empty = automatic, e.g. `enp0s18`).
+- The functions that reach the Internet. All three are **on** by default, and the options can be changed after the installation and before the first start (Configuration tab, then Start). When one is off, nothing of it leaves your network, and the page says so in the tile *To the internet*.
+  - `internet_public_ip`: at start and every 6 hours, one DNS query to the OpenDNS resolver (208.67.222.222) asks for your public IP address. It is shown in the *Internet* tile.
+  - `internet_path`: at start and every 6 hours, a traceroute to a public address tells a direct connection from a double NAT or a provider CGNAT. `internet_path_target` is the host name or address it traces (empty = `1.1.1.1`).
+  - `internet_mac_database`: when the list of manufacturers is more than 30 days old, the public IEEE registries (standards-oui.ieee.org) are downloaded. Off: only the list that ships with the app is used.
 - `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant
   MQTT service (Mosquitto app) is used, if present.
 
@@ -37,7 +41,7 @@ Everything stays at home: no data is sent outside your network.
 
 | Permission | What it is for |
 |---|---|
-| Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the periodic update of the MAC prefixes and the public IP check from the network panel). |
+| Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the three functions of the `internet_*` options below, which can be switched off). |
 | `homeassistant_api` | **Read-only** access to the Home Assistant registries (devices, entities, areas, integrations) to give devices a name, brand, model, area and category. It writes nothing and calls no services. It can be turned off in the search methods ("Home Assistant data" step). |
 | MQTT service (`mqtt:want`) | Publishes to Home Assistant only what you choose to share. |
 | Ingress | The interface only accepts connections from the Supervisor. |

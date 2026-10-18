@@ -31,11 +31,18 @@ services:
 options:
   language: auto
   log_level: info
+  internet_public_ip: true
+  internet_path: true
+  internet_mac_database: true
 schema:
   language: list(auto|en|it|cs)
   log_level: list(debug|info|warning|error)
   star_hint: bool?
   interface: str?
+  internet_public_ip: bool
+  internet_path: bool
+  internet_path_target: str?
+  internet_mac_database: bool
   mqtt_host: str?
   mqtt_port: port?
   mqtt_username: str?

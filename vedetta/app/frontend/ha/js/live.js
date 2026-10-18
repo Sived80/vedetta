@@ -201,6 +201,7 @@ export function load(opts) {
         pausedTotal: sum.poll.paused_total_ms || null };
     }
     S.mqtt = sum.mqtt || null;
+    S.external = sum.external || null;      // which of the functions that reach the internet are on (add-on options)
     S.version = sum.version || "";
     if (!S.starMenu) { S.starHint = !!sum.star_hint; setStarBadge(); }
     S.update = sum.update || null;

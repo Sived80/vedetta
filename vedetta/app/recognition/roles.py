@@ -271,8 +271,9 @@ def _record_internet(net):
         logger.warning("Controllo dell'uscita verso internet fallito (%r)", net)
         return
     changed_net = _rt.internet["data"] != net
-    journal.add("detail", "journal.internet_" + ("cgnat" if net.get("cgnat") else "double" if net.get("double_nat") else "direct"),
-                icon="router-wireless")
+    if (net.get("checks") or {}).get("path", True):      # without the path check, "direct" would be a guess: nothing is written
+        journal.add("detail", "journal.internet_" + ("cgnat" if net.get("cgnat") else "double" if net.get("double_nat") else "direct"),
+                    icon="router-wireless")
     _rt.internet.update(data=net, ts=time.time())
     if changed_net and _rt.on_change:
         _rt.on_change(event())

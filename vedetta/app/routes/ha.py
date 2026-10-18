@@ -14,12 +14,12 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 
-from .. import applog, i18n
+from .. import applog, external, i18n
 from ..ha import analysis_view, ha_data, ha_update
 from ..ha.device_debug import device_debug
 from ..storage import journal, starhint
 from ..scan import latency
-from ..recognition import roles
+from ..recognition import oui_update, roles
 from ..storage.history import history
 from ..ingress import template_context
 from ..state import state
@@ -110,7 +110,12 @@ async def api_ha_summary(request: Request):
     )
     from ..ha.mqtt_ha import version
     return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
-            "update": ha_update.snapshot()}
+            "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info)}
+
+
+def _external_info() -> dict:
+    """The three functions that reach the internet and whether each is on (add-on options): the page shows them in a tile."""
+    return {**external.status(), "mac_database": {"on": oui_update.auto_update_enabled(), "updated": oui_update.meta()["updated"]}}
 
 
 def _mqtt_info() -> dict:

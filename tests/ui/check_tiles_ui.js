@@ -20,6 +20,7 @@ if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout +
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const gwDev = data.devices.devices[0];
+data.summary.external = { public_ip: { on: true }, path: { on: true, target: "1.1.1.1" }, mac_database: { on: false, updated: null } };      // the options of the add-on: two of the three functions on
 data.devices.devices[0].ha_share = true; data.devices.devices[1].ha_share = true;      // two of the three devices are shared with Home Assistant
 gwDev.latency_ms = 1;                                  // what the card says: whole milliseconds, "1" for a LAN
 data.summary.roles = Object.assign({}, data.summary.roles, { by_ip: { [gwDev.ip]: { gateway: "arp" } },
@@ -132,6 +133,27 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   link(true, false);
   await wait(300);
   check(/Offline/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "il broker cade: la tile segue senza ricaricare la pagina");
+  // The tile of the functions that reach the internet, and the tile "Internet" when a check is off (add-on options).
+  const ext = seen[labels.find((l) => /Verso Internet|To the internet/.test(l))];
+  check(!!ext && /2 attive su 3|2 of 3 on/.test(ext) && /(Acceso|On)/.test(ext) && /(Spento|Off)/.test(ext) && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Verso Internet»: le tre funzioni, due accese e una spenta, «2 attive su 3»");
+  let reload = 0;
+  const reloadWith = async (external) => {
+    data.summary.external = external;
+    sources[sources.length - 1].emit("roles", { type: "roles", by_ip: { ["192.0.2." + (240 - reload++)]: { dhcp: "arp" } }, via: {}, names: {}, types: {}, dhcp: [], internet: data.summary.roles.internet });
+    await wait(900);
+  };
+  const text = async (label) => { const b = await visit(label); return b ? b.textContent.replace(/\s+/g, " ") : ""; };
+  await reloadWith({ public_ip: { on: false }, path: { on: true, target: "1.1.1.1" }, mac_database: { on: true, updated: 1700000000 } });
+  let it = await text("Internet");
+  check(/(Spento|Off)/.test(it) && !/203\.0\.113\.7/.test(it) && /Connessione diretta|Direct connection/.test(it), "IP pubblico spento: la tile «Internet» dice «Spento» al posto dell'indirizzo, il percorso resta");
+  await reloadWith({ public_ip: { on: true }, path: { on: false, target: "1.1.1.1" }, mac_database: { on: false, updated: null } });
+  it = await text("Internet");
+  check(/203\.0\.113\.7/.test(it) && /Percorso non verificato|Path not checked/.test(it) && /Salti: –|Hops: –/.test(it), "percorso spento: l'IP c'e', il tipo di connessione non si inventa («Percorso non verificato», salti «–»)");
+  await reloadWith({ public_ip: { on: false }, path: { on: false, target: "1.1.1.1" }, mac_database: { on: false, updated: null } });
+  it = await text("Internet");
+  check(/Controlli spenti|Checks off/.test(it) && /Nessun controllo|No checks/.test(it) && !/203\.0\.113\.7/.test(it), "tutti e due i controlli spenti: «Controlli spenti», nessun indirizzo");
+  const none = await text(labels.find((l) => /Verso Internet|To the internet/.test(l)));
+  check(/0 attive su 3|0 of 3 on/.test(none) && !/(Acceso|On)\b/.test(none.replace(/To the internet/, "")), "e la tile delle funzioni dice «0 attive su 3», nessuna riga accesa");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

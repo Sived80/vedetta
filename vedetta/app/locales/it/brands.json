@@ -5,6 +5,7 @@
   "brands.error.invalid_brand": "La marca deve avere da 1 a 60 caratteri",
   "brands.error.rule_not_found": "Regola non trovata",
   "brands.error.save_failed": "Salvataggio della regola non riuscito",
+  "brands.error.locked": "Questa impostazione e' decisa dalla configurazione dell'add-on (internet_mac_database)",
   "brands.error.update_running": "Un aggiornamento e' gia' in corso",
   "brands.error.update_network": "Download non riuscito, controlla la connessione a internet ({detail})",
   "brands.error.update_invalid": "Il file scaricato non e' un elenco di prefissi MAC valido",

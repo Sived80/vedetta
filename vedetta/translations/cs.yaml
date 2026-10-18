@@ -1,0 +1,37 @@
+configuration:
+  language:
+    name: "Jazyk"
+    description: "Výchozí jazyk stránky Vedetta pro všechny: auto sleduje Home Assistant nebo prohlížeč. Každý si může vybrat vlastní v nabídce stránky."
+  log_level:
+    name: "Úroveň protokolu"
+    description: "Jak podrobně Vedetta zapisuje do protokolu aplikace."
+  star_hint:
+    name: "Pozvánka k hvězdičce"
+    description: "Jednou, po několika dnech používání, malá hvězdička na tlačítku nabídky odkáže na projekt na GitHubu. Vypněte, aby se nikdy nezobrazila. Nic se nikam neodesílá."
+  interface:
+    name: "Síťové rozhraní"
+    description: "Síťové rozhraní ke skenování (například eth0). Nechte prázdné pro automatický výběr."
+  internet_public_ip:
+    name: "Zjišťovat veřejnou IP adresu"
+    description: "Při spuštění a každých 6 hodin jeden dotaz DNS na resolver OpenDNS (208.67.222.222) zjistí vaši veřejnou IP adresu. Vypnuto: žádný takový dotaz neopustí vaši síť."
+  internet_path:
+    name: "Zjišťovat cestu do internetu"
+    description: "Při spuštění a každých 6 hodin traceroute na veřejnou adresu (viz cíl níže) rozliší přímé připojení od dvojího NAT nebo CGNAT poskytovatele. Vypnuto: žádný traceroute neopustí vaši síť."
+  internet_path_target:
+    name: "Cíl traceroute"
+    description: "Název hostitele nebo IP adresa pro zjišťování cesty. Nechte prázdné pro 1.1.1.1."
+  internet_mac_database:
+    name: "Aktualizovat databázi výrobců MAC adres"
+    description: "Když je starší než 30 dní, stáhne veřejné registry IEEE (standards-oui.ieee.org), aby poznala výrobce zařízení. Vypnuto: Vedetta použije jen seznam, který obsahuje."
+  mqtt_host:
+    name: "Adresa MQTT brokeru"
+    description: "Název hostitele nebo IP adresa vlastního brokeru. Nechte čtyři pole MQTT prázdná, aby se použila služba MQTT v Home Assistantu."
+  mqtt_port:
+    name: "Port MQTT brokeru"
+    description: "Port vašeho brokeru (obvykle 1883)."
+  mqtt_username:
+    name: "Uživatel MQTT"
+    description: "Uživatelské jméno vašeho brokeru, pokud ho vyžaduje."
+  mqtt_password:
+    name: "Heslo MQTT"
+    description: "Heslo vašeho brokeru, pokud ho vyžaduje."

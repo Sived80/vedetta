@@ -7,6 +7,8 @@
 - **Foldable groups.** Each group of devices closes from its heading, all open at first, and Vedetta remembers what you closed in that browser.
 - **Network and Log stay together** while you scroll, on a wide screen.
 - **An update tells you.** A red dot on the menu button and an arrow in the menu appear when a new version is available; a window explains what will happen before it takes you to Home Assistant's own page. The foot of the menu is now the link to the repository.
+- **You decide what leaves your network.** Three switches in the Configuration tab, all on by default and changeable before the first start: the public IP check (one DNS query to OpenDNS), the path to the internet (a traceroute, with a target you can change) and the update of the list of manufacturers (a download from the IEEE, every 30 days). A function that is off sends nothing, and the new tile *To the internet* shows which ones are on. The Configuration tab now has readable names and descriptions in Italian, English and Czech.
+- **The MQTT tile tells the truth.** It counts only the devices you share with Home Assistant, and tells connected, offline and not set up apart, following the broker as it changes.
 - **A calmer pause window**: narrow, centred on its button and always inside the card.
 - **Fixed:** the scan button no longer stretches for an instant at a click; no grey box when tapping the chart or the brands on a phone; the card has its space under it again; the three taps on the logo open the debug mode again; the badge of the advanced search no longer touches the tiles, even at 99+.
 

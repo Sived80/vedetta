@@ -12,7 +12,7 @@ from .storage import devices_config, journal
 from .storage.history import history
 from .ha import analysis_view, ha_registry, ha_tz, ha_update
 from .scan import mdns_listener, dhcp, internet, scanner
-from . import i18n, lifecycle, paths
+from . import external, i18n, lifecycle, paths
 from .state_support import _process_info
 from .recognition import roles
 from .applog import logger
@@ -50,7 +50,7 @@ async def lifespan(_: FastAPI):
     mdns_listener.start(state, lent_counts=history.mac_ip_counts)  # Bonjour names: memory and continuous listening
     await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,
-                dhcp_discover=scanner.dhcp_discover, internet_check=internet.check)  # who does what: gateway, DHCP, DNS, repeaters
+                dhcp_discover=scanner.dhcp_discover, internet_check=internet.check if external.any_internet_check() else None)  # who does what: gateway, DHCP, DNS, repeaters
     analysis_view.start(on_change=state.emit_event)   # the state of each card: identified, settling or under analysis (read-only)
     logger.info("Servizio avviato")
     yield

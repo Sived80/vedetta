@@ -5,6 +5,7 @@
   "brands.error.invalid_brand": "The brand must be 1 to 60 characters long",
   "brands.error.rule_not_found": "Rule not found",
   "brands.error.save_failed": "Could not save the rule",
+  "brands.error.locked": "This setting is decided by the add-on configuration (internet_mac_database)",
   "brands.error.update_running": "An update is already in progress",
   "brands.error.update_network": "Download failed, check the internet connection ({detail})",
   "brands.error.update_invalid": "The downloaded file is not a valid MAC prefix list",

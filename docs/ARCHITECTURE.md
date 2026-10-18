@@ -15,7 +15,7 @@ This page is written to be read in ten minutes. The index at the end is generate
 
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
-- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `formatters`, `iface`, `netutil`, `paths`, `procfs`, `sse`
+- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `iface`, `netutil`, `paths`, `procfs`, `sse`
 - **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
@@ -66,6 +66,7 @@ The functions that were restructured have a reference test that was generated fr
 | `cyclestats.py` | How the check cycles go: a line in the log only when something is wrong (cycles chained by events, a slow cycle) and one summary an hour. |
 | `datafile.py` | Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures). |
 | `eventbus.py` | Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each. |
+| `external.py` | The functions that reach the internet, and the add-on options that switch them off (config.yaml: internet_*; run.sh turns them into VEDETTA_INTERNET_*). |
 | `formatters.py` | Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded for display, and the quality labels of a Wi-Fi signal and of a LAN link speed. |
 | `frontend_serving.py` | Serving of the front-end of the /ha page: ha.css and the script from their parts, the modules one by one, and the static folder. |
 | `i18n.py` | Internationalization: one folder per language in app/locales/<code>/ with one or more flat JSON files key -> text (server.json for the templates and Python, js.json for the browser). |
@@ -242,7 +243,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
 | `js/ignored.js` | 342 | ignored devices |
-| `js/live.js` | 251 | update |
+| `js/live.js` | 252 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 182 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 311 | Flag the device for the report: its card, history and this note go in the export for analysis. |
@@ -251,7 +252,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-info.js` | 95 | "More info" dialog |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 228 | rotating tile of the Network card |
+| `js/net-rotator.js` | 261 | rotating tile of the Network card |
 | `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 331 | new devices |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |

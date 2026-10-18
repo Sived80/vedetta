@@ -100,16 +100,16 @@
   .tile-col { flex: 1 1 0; min-width: 0; display: flex; }
   .nettile {
     width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
-    justify-content: space-between; padding: 12px 8px 8px; overflow: hidden; text-align: left;
+    --px: 8px;      /* side padding of the tile: the dots end where the graphics end (changed in the narrow media query) */
+    justify-content: space-between; padding: 12px var(--px) 8px; overflow: hidden; text-align: left;
     /* TRIAL (18/10): the rotating tile with no background and no border (the border stays transparent so nothing moves). Back: background var(--field), border-color var(--divider-color). */
     position: relative; border-radius: var(--r-xl); background: transparent; color: inherit;
     transition: background-color 0.15s, border-color 0.15s; box-sizing: border-box;
     border: 1px solid transparent;
   }
   .nettile[hidden] { display: none; }
-  .nettile:hover { background: var(--ha-hover); }
   /* the dots start at the top of the letters of the title (tile padding 12 + 7) and end where the graphics end (8 px): without the tile background nothing else shows where they belong */
-  .t-dots { position: absolute; top: 19px; right: 8px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
+  .t-dots { position: absolute; top: 19px; right: var(--px, 8px); display: flex; flex-direction: row; gap: 4px; z-index: 2; }
   .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: all 0.2s; }
   .t-dots i.on { background: var(--primary-color); width: 10px; border-radius: 2px; }
 
@@ -274,7 +274,7 @@
   }
   @container (max-width: 400px) {
     .hero-row { gap: 10px; }
-    .nettile { padding: 12px 14px; }
+    .nettile { --px: 14px; padding: 12px var(--px); }
     .t-v { font-size: 18px; gap: 4px; }
     .mm { padding: 0 4px; gap: 2px; }
     .badge { gap: 4px; }

@@ -20,6 +20,7 @@ if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout +
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const gwDev = data.devices.devices[0];
+data.devices.devices[0].ha_share = true; data.devices.devices[1].ha_share = true;      // two of the three devices are shared with Home Assistant
 gwDev.latency_ms = 1;                                  // what the card says: whole milliseconds, "1" for a LAN
 data.summary.roles = Object.assign({}, data.summary.roles, { by_ip: { [gwDev.ip]: { gateway: "arp" } },
   internet: { public_ip: "203.0.113.7", hops: ["192.0.2.1", "198.51.100.1", "203.0.113.1"], private_hops: ["192.0.2.1"], double_nat: false, cgnat: false, ts: Date.now() / 1000 - 90 } });
@@ -106,8 +107,8 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   const labels = Object.keys(seen);
   check(labels.length >= 4, "la tile gira tra almeno quattro schede: " + labels.join(", "));
   const internet = seen.Internet;
-  check(!!internet && internet.includes("203.0.113.7") && /Connessione diretta/.test(internet) && /Online/.test(internet) && /Salti: 3/.test(internet) && /controllato/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
-  const lat = seen[labels.find((l) => /Latenza/i.test(l))];
+  check(!!internet && internet.includes("203.0.113.7") && /Connessione diretta|Direct connection/.test(internet) && /Online/.test(internet) && /Salti: 3|Hops: 3/.test(internet) && /controllato|checked/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
+  const lat = seen[labels.find((l) => /Latenza|Latency/i.test(l))];
   check(histCalls >= 1 && !!lat && lat.includes("0.5") && lat.includes("0.4") && lat.includes("0.6") && !lat.includes("1.0"), "tile della latenza: i numeri vengono dalla storia dell'ultima ora (0.4 - 0.6 ms), non piu' sempre «1.0 ms»");
   // The MQTT tile: "exposed" counts the devices shared with Home Assistant, and only while the broker is connected.
   const visit = async (label) => {
@@ -118,15 +119,19 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
     }
     return null;
   };
+  const link = (active, connected) => sources[sources.length - 1].emit("mqtt", { type: "mqtt", active, connected });
+  const mqText = () => q("#rot .t-body").textContent.replace(/\s+/g, " ");
   let mq = await visit("MQTT");
-  check(!!mq && /Esposte MQTT\s*–/.test(mq.textContent.replace(/\s+/g, " ")) && /width:\s*0%/.test(mq.innerHTML), "MQTT spento o scollegato: «Esposte MQTT –» e barra vuota (prima diceva il totale dei dispositivi)");
-  data.summary.mqtt = { active: true, connected: true };
-  data.devices.devices[0].ha_share = true; data.devices.devices[1].ha_share = true;
-  // a change of the roles makes the page read everything again (that is how it learns that the broker is connected)
-  sources[sources.length - 1].emit("roles", { type: "roles", by_ip: { "192.0.2.250": { dhcp: "arp" } }, via: {}, names: {}, types: {}, dhcp: [], internet: data.summary.roles.internet });
-  await wait(900);
-  mq = await visit("MQTT");
-  check(!!mq && /Esposte MQTT\s*2(?!\d)/.test(mq.textContent.replace(/\s+/g, " ")) && /width:\s*66\.7%/.test(mq.innerHTML), "MQTT connesso: «Esposte MQTT 2» (i due condivisi su tre) e barra al 66,7%");
+  check(!!mq && /Non configurato|Not set up/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()) && /width:\s*0%/.test(mq.innerHTML), "MQTT non configurato: «Non configurato» (non un guasto) e «Esposte MQTT –», barra vuota");
+  link(true, false);
+  await wait(300);
+  check(/Offline/.test(mqText()) && !/Non configurato|Not set up/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "configurato ma il broker non risponde, avvisato in tempo reale dal server: «Offline»");
+  link(true, true);
+  await wait(300);
+  check(/Online/.test(mqText()) && /(Esposte|Exposed) MQTT\s*2(?!\d)/.test(mqText()) && /width:\s*66\.7%/.test(q("#rot .t-body").innerHTML), "broker connesso: «Online», «Esposte MQTT 2» (i due condivisi su tre) e barra al 66,7%");
+  link(true, false);
+  await wait(300);
+  check(/Offline/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "il broker cade: la tile segue senza ricaricare la pagina");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

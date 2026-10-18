@@ -64,6 +64,8 @@
   "js.ha.tile.cycle": "cyklus {s} s",
   "js.ha.tile.mqtt_tip": "Spojení MQTT s Home Assistantem je aktivní, poslední kontrola trvala {s} s",
   "js.ha.tile.mqtt_tip_off": "Spojení MQTT s Home Assistantem není aktivní, poslední kontrola trvala {s} s",
+  "js.ha.tile.not_configured": "Nenastaveno",
+  "js.ha.tile.mqtt_tip_none": "MQTT není nastaveno: žádný broker, nic se nesdílí s Home Assistantem",
   "js.ha.tile.next": "kliknutím zobrazíte další údaj",
   "js.ha.tile.current": "Aktuální",
   "js.ha.tile.avg_lan": "Průměr LAN",

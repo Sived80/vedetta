@@ -62,6 +62,7 @@ class FakeRequest:
 
 routes_ha.roles.event = lambda: {"type": "roles", "n": 4}
 routes_ha.analysis_view.event = lambda: {"type": "analysis", "n": 5}
+routes_ha._mqtt_event = lambda: {"type": "mqtt", "active": True, "connected": False}
 routes_ha.ha_data.config_map = lambda: {}
 
 
@@ -84,12 +85,12 @@ async def collect(state, request, put=(), limit=40, rev=7):
 
 
 async def main():
-    # 1) the opening: retry, missed events, poll, activity, new devices, roles, the states of analysis; then the events of the bus; the client goes away at the second quiet period
+    # 1) the opening: retry, missed events, poll, activity, new devices, roles, the states of analysis, the link with the MQTT broker; then the events of the bus; the client goes away at the second quiet period
     state = FakeState(missed=[{"type": "removed", "id": "x"}, {"type": "poll", "n": 0}])
     out = await collect(state, FakeRequest(disconnect_after=2), put=[{"type": "poll", "n": 9}, {"type": "removed", "id": "y"}])
     assert state.asked_rev == 7
     expected = ["retry: 3000\n\n", frame({"type": "removed", "id": "x"}), frame({"type": "poll", "n": 0}), frame({"type": "poll", "n": 1}), frame({"type": "activity", "n": 2}),
-                frame({"type": "new_devices", "count": 3}), frame({"type": "roles", "n": 4}), frame({"type": "analysis", "n": 5}), frame({"type": "poll", "n": 9}), frame({"type": "removed", "id": "y"}), ": ping\n\n"]
+                frame({"type": "new_devices", "count": 3}), frame({"type": "roles", "n": 4}), frame({"type": "analysis", "n": 5}), frame({"type": "mqtt", "active": True, "connected": False}), frame({"type": "poll", "n": 9}), frame({"type": "removed", "id": "y"}), ": ping\n\n"]
     assert out == expected, out
     assert state.released == [state.queue], "the queue is released when the stream ends"
 
@@ -97,7 +98,7 @@ async def main():
     state = FakeState()
     state.alive = False
     out = await collect(state, FakeRequest())
-    assert out[-1] == frame({"type": "analysis", "n": 5}) and ": ping\n\n" not in out and state.released == [state.queue], out
+    assert out[-1] == frame({"type": "mqtt", "active": True, "connected": False}) and ": ping\n\n" not in out and state.released == [state.queue], out
 
     # 3) quiet and nobody leaves: a ping every quiet period
     state = FakeState()

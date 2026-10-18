@@ -133,7 +133,7 @@
 
   .t-mid { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; margin: 4px 0; }
   .t-v {
-    display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+    display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; padding: 0 8px;
     font-size: var(--fs-xl); line-height: 24px; font-weight: var(--fw-m); font-variant-numeric: tabular-nums;
   }
   .t-v .unit { font-size: var(--fs-s); font-weight: 400; color: var(--secondary-text-color); }
@@ -156,7 +156,9 @@
   .pbar { height: 5px; width: 100%; border-radius: var(--r-sm); background: color-mix(in srgb, var(--primary-text-color) 10%, transparent); overflow: hidden; display: flex; }
   .pbar i { height: 100%; border-radius: var(--r-sm); background: var(--primary-color); }
   .pbar i.amber { background: var(--warning-color); }
-  .bar-leg { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-xs); line-height: 14px; color: var(--secondary-text-color); }
+  /* The texts of a tile (the values of the boxes, the IP, the legend of the bar) are all 8 px inside the box edges, as the text of the KPI boxes (.stat-box padding): left and right
+     texts line up from the top to the bottom of the tile; the bars and the boxes keep the full width. */
+  .bar-leg { display: flex; justify-content: space-between; align-items: center; padding: 0 8px; font-size: var(--fs-xs); line-height: 14px; color: var(--secondary-text-color); }
   .bar-leg b { font-weight: var(--fw-m); color: var(--primary-text-color); }
 
   /* KPI boxes of the tile middle (latency, MQTT). --sc tints the value (and, with .tinted, the box). */
@@ -178,7 +180,7 @@
   /* Gateway: monospace address, then the subnet, then the state of the network. */
   .t-n.mono { font-size: var(--fs-l); font-weight: var(--fw-m); letter-spacing: -0.02em; white-space: nowrap; }
   .t-n.gw-off { color: var(--error-color); }
-  .gw-net { display: flex; flex-direction: column; gap: 1px; }
+  .gw-net { display: flex; flex-direction: column; gap: 1px; padding: 0 8px; }
   .gw-sub { font-size: var(--fs-s); line-height: 16px; font-weight: var(--fw-m); color: var(--c); }
   .gw-state { font-size: var(--fs-s); line-height: 16px; color: var(--secondary-text-color); }
 

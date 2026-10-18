@@ -14,6 +14,7 @@ try {
 }
 
 const lang = process.argv[2] || "it";
+const IT = lang === "it";
 const out = fs.mkdtempSync(path.join(os.tmpdir(), "vedetta-ui-"));
 const built = spawnSync(process.env.PYTHON || "python", [path.join(__dirname, "build_page.py"), out, lang], { cwd: path.join(__dirname, "..", "..", "vedetta"), encoding: "utf8" });
 if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout + built.stderr); process.exit(1); }
@@ -68,7 +69,7 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   check(more.querySelectorAll(".mi-ed").length >= 3 && Array.from(more.querySelectorAll(".mi-ed")).every((b) => /^(rename|brand-edit|type-menu)$/.test(b.dataset.act)), "le matite (nome, marca) e la freccia del tipo sono le icone di modifica");
   check(!more.querySelector("[data-copy]").classList.contains("mi-ed") && !more.querySelector(".attr-chev").classList.contains("mi-ed"), "«copia MAC» e «Altri attributi» restano sempre");
   dots().click();
-  check(!!menu() && dots().getAttribute("aria-expanded") === "true" && Array.from(menu().querySelectorAll(".menu-item")).map((b) => b.textContent.trim()).join("|") === "Personalizza scheda|Ignora dispositivo", "i tre puntini aprono il menu: «Personalizza scheda» e «Ignora dispositivo»");
+  check(!!menu() && dots().getAttribute("aria-expanded") === "true" && Array.from(menu().querySelectorAll(".menu-item")).map((b) => b.textContent.trim()).join("|") === (IT ? "Personalizza scheda|Ignora dispositivo" : "Customize card|Ignore device"), "i tre puntini aprono il menu: «Personalizza scheda» e «Ignora dispositivo»");
   check(menu().querySelector('[data-act="edit-toggle"]').getAttribute("aria-checked") === "false", "«Personalizza scheda» parte non spuntata");
   menu().querySelector('[data-act="edit-toggle"]').click();
   check(more.classList.contains("edit-on") && !menu() && dots().getAttribute("aria-expanded") === "false", "scelto «Personalizza scheda»: le icone di modifica si accendono e il menu si chiude");
@@ -83,7 +84,7 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   q('#more [data-act="back"]').click();
   await wait(50);
   check(more.querySelectorAll(".seg [data-range]").length === 2 && !more.querySelector("[data-range].btn"), "24h / 7gg e' un selettore a due segmenti");
-  check(dots().getAttribute("title") === "Altre azioni" && dots().getAttribute("aria-label") === "Altre azioni", "i tre puntini hanno il nome «Altre azioni»");
+  check(dots().getAttribute("title") === (IT ? "Altre azioni" : "More actions") && dots().getAttribute("aria-label") === (IT ? "Altre azioni" : "More actions"), "i tre puntini hanno il nome «Altre azioni»");
   check(!!flagBtn() && !flagBtn().classList.contains("on") && !flagBtn().querySelector(".mi-flag-txt") && flagBtn().getAttribute("aria-pressed") === "false", "scheda non segnalata: tasto normale, senza parola");
 
   // --- flag it: the form, the save, then the steady orange button with the word

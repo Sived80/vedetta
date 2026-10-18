@@ -142,6 +142,7 @@ class MqttService:
         client.on_disconnect = self._on_disconnect
         client.on_message = self._on_message
         self.client = client
+        self._emit_link()
         self.last_error = ""
         try:
             client.connect_async(self.cfg["host"], self.cfg["port"], keepalive=30)
@@ -156,6 +157,7 @@ class MqttService:
         was_connected, self.connected = self.connected, False
         if client is None:
             return
+        self._emit_link()
 
         def close() -> None:
             try:
@@ -176,6 +178,7 @@ class MqttService:
             return
         self.connected = True
         self.last_error = ""
+        self._announce()
         client.publish(STATUS_TOPIC, "online", qos=1, retain=True)
         # besides the command and HA's status, the "retained" messages already published by Vedetta: they are needed to clean up what
         # is no longer shared (e.g. devices published before the sharing choice).
@@ -185,6 +188,7 @@ class MqttService:
 
     def _on_disconnect(self, client, userdata, flags, reason_code, properties=None) -> None:
         self.connected = False
+        self._announce()
         if getattr(reason_code, "is_failure", False):
             self.last_error = str(reason_code)
             logger.warning("MQTT: disconnesso: %s", reason_code)
@@ -271,12 +275,27 @@ class MqttService:
         return queue
 
     # ---- state for the APIs (without password) ----
+    def link(self) -> dict:
+        """The two facts the page needs (configured and running; connected to the broker): nothing else, never an address or a credential."""
+        return {"active": bool(self.client), "connected": self.connected}
+
+    def event(self) -> dict:
+        return {"type": "mqtt", **self.link()}
+
+    def _emit_link(self) -> None:
+        """Tells the open pages (in the asyncio loop) that the link with the broker changed."""
+        if self._state is not None:
+            self._state.emit_event(self.event())
+
+    def _announce(self) -> None:
+        """The same from the network thread of paho."""
+        self._call(self._emit_link)
+
     def status(self) -> dict:
         stored = settings.mqtt_load()
         cfg = self.cfg or resolve_config(stored, os.environ)
         return {
-            "active": bool(self.client),
-            "connected": self.connected,
+            **self.link(),
             "source": cfg["source"] if cfg else None,
             "last_error": self.last_error,
             "enabled": bool(stored.get("mqtt_enabled")),

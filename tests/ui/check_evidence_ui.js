@@ -73,7 +73,7 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   q('.tile[data-id="d1"]').click();
   await wait(500);
   // the response time is among the "Other attributes", not among the rows always shown
-  const latRows = Array.from(doc.querySelectorAll("#more .attr")).filter((r) => /Tempo di risposta/.test(r.querySelector("dt").textContent));
+  const latRows = Array.from(doc.querySelectorAll("#more .attr")).filter((r) => /Tempo di risposta|Response time/.test(r.querySelector("dt").textContent));
   check(latRows.length === 1 && !!latRows[0].closest("#attr-more"), "«Tempo di risposta» sta dentro «Altri attributi», non tra le righe sempre visibili");
 
   // --- the three rows replace the separate card: no duplicate, same list, same width as the attributes

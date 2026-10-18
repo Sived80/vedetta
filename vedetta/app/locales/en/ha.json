@@ -64,6 +64,8 @@
   "js.ha.tile.cycle": "cycle {s} s",
   "js.ha.tile.mqtt_tip": "MQTT link with Home Assistant active, last check took {s} s",
   "js.ha.tile.mqtt_tip_off": "MQTT link with Home Assistant not active, last check took {s} s",
+  "js.ha.tile.not_configured": "Not set up",
+  "js.ha.tile.mqtt_tip_none": "MQTT is not set up: no broker, nothing is shared with Home Assistant",
   "js.ha.tile.next": "click for the next figure",
   "js.ha.tile.current": "Current",
   "js.ha.tile.avg_lan": "LAN average",

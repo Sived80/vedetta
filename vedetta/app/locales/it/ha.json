@@ -64,6 +64,8 @@
   "js.ha.tile.cycle": "ciclo {s} s",
   "js.ha.tile.mqtt_tip": "Collegamento MQTT con Home Assistant attivo, ultimo controllo di {s} s",
   "js.ha.tile.mqtt_tip_off": "Collegamento MQTT con Home Assistant non attivo, ultimo controllo di {s} s",
+  "js.ha.tile.not_configured": "Non configurato",
+  "js.ha.tile.mqtt_tip_none": "MQTT non configurato: nessun broker, nulla viene condiviso con Home Assistant",
   "js.ha.tile.next": "clic per il dato successivo",
   "js.ha.tile.current": "Attuale",
   "js.ha.tile.avg_lan": "Media LAN",

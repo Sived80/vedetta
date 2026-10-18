@@ -145,6 +145,8 @@ export function connect() {
   on("alert", onAlert);
   on("new_devices", onNewDevices);
   on("analysis", onAnalysis);
+  // The link with the MQTT broker (configured? connected?): the Home Assistant tile follows it as it changes, without waiting for a full reload.
+  on("mqtt", function (ev) { S.mqtt = { active: !!ev.active, connected: !!ev.connected }; S.dirty.net = true; schedule(); });
   on("roles", function (ev) {
     // UPnP roles, names and types decide category, icon and name: if they change the groups are redone.
     function sig(r) { return JSON.stringify([r.by_ip || {}, r.names || {}, r.types || {}]); }

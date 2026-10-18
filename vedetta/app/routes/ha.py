@@ -115,8 +115,13 @@ async def api_ha_summary(request: Request):
 
 def _mqtt_info() -> dict:
     from ..ha.mqtt_ha import service
-    st = service.status()
-    return {"active": st["active"], "connected": st["connected"]}
+    return service.link()
+
+
+def _mqtt_event() -> dict:
+    """The link with the broker, as the picture of the moment a client gets when it connects (then the changes come as events of the bus)."""
+    from ..ha.mqtt_ha import service
+    return service.event()
 
 
 async def _star_hint() -> bool:
@@ -268,6 +273,7 @@ async def _opening(rev: int, frame):
     yield frame(await state.new_devices_event())
     yield frame(roles.event())
     yield frame(analysis_view.event())
+    yield frame(_mqtt_event())
 
 
 async def _live(queue, request, frame):

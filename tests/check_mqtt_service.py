@@ -50,6 +50,10 @@ class FakeState:
     def __init__(self):
         self.devices, self.triggered, self.q, self.subscribed = {"d1": {"id": "d1"}}, [], None, None
         self._new = types.SimpleNamespace(macs=frozenset({"a", "b"}))
+        self.events = []        # what the service tells the open pages (the link with the broker)
+
+    def emit_event(self, event):
+        self.events.append(event)
 
     def subscribe(self):
         self.q = asyncio.Queue()
@@ -82,6 +86,8 @@ async def scenario():
     assert c.names() == ["username_pw_set", "will_set", "reconnect_delay_set", "connect_async", "loop_start"], c.names()
     assert ("username_pw_set", ("u", "p"), {}) in c.calls
     assert c.calls[1][1][:2] == (mqtt_ha.STATUS_TOPIC, "offline"), "the last will tells HA that Vedetta is gone"
+    LINK = {"type": "mqtt", "active": True, "connected": False}
+    assert state.events == [LINK], ("started: the open pages learn that the link is configured and not yet connected", state.events)
 
     svc._on_connect(c, None, None, types.SimpleNamespace(is_failure=True))        # refused
     assert not svc.connected and svc.last_error
@@ -96,6 +102,7 @@ async def scenario():
     svc._on_connect(c, None, None, types.SimpleNamespace(is_failure=False))        # connected: online, subscriptions, full resync
     await asyncio.sleep(0.01)
     assert svc.connected and svc.last_error == ""
+    assert state.events[-1] == {"type": "mqtt", "active": True, "connected": True}, "connected: the pages are told (from the network thread, through the loop)"
     sub = [x for x in c.calls if x[0] == "subscribe"][0][1][0]
     assert (mqtt_ha.SCAN_TOPIC, 0) in sub and (mqtt_ha.HA_STATUS_TOPIC, 0) in sub
     assert publishes()[0][1][:2] == (mqtt_ha.STATUS_TOPIC, "online")
@@ -136,7 +143,10 @@ async def scenario():
     assert "somewhere/else" not in svc.sync._sent
 
     svc._on_disconnect(c, None, None, types.SimpleNamespace(is_failure=True))
+    await asyncio.sleep(0.01)
     assert not svc.connected and svc.last_error
+    assert state.events[-1] == LINK, "dropped: the pages are told, the link stays configured"
+    assert all(set(e) == {"type", "active", "connected"} for e in state.events), "the event carries nothing else: never an address or a credential"
     st = svc.status()
     assert st["active"] and st["host"] == "broker" and st["password_set"] and st["enabled"] and "p" not in [str(v) for v in st.values()]
 
@@ -156,6 +166,7 @@ async def scenario():
     assert state.subscribed is False
 
     await svc.stop()
+    assert state.events[-1] == {"type": "mqtt", "active": False, "connected": False}, "stopped: not configured any more"
     assert svc.client is None and "loop_stop" in c.names() and "disconnect" in c.names()
     assert any(x[0] == "publish" and x[1][:2] == (mqtt_ha.STATUS_TOPIC, "offline") for x in c.calls), "a clean stop says offline"
 

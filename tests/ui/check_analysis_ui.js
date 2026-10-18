@@ -96,6 +96,7 @@ const close = () => doc.dispatchEvent(new dom.window.KeyboardEvent("keydown", { 
   const labels = hero().querySelectorAll(".hero-st > span");
   check(labels.length === 2 && Array.from(labels).map((s) => s.textContent).sort().join() === [TEXT.offline, TEXT.online].sort().join(), "le due parole (online e offline) stanno nello stesso posto una sull'altra: la larghezza non cambia");
   check(hero().querySelector(".hero-state") === heroAn().parentElement, "la scritta sta nella riga dello stato, in un elemento suo");
+  check(!!heroAn().querySelector(".an-dot") && !!heroAn().querySelector(".an-txt") && heroAn().querySelector(".an-txt").textContent === heroAn().textContent.trim(), "e' una piccola etichetta: un puntino e il testo breve (niente puntini di testo)");
   const cssDir = path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "css");
   const css = fs.readdirSync(cssDir).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(cssDir, f), "utf8")).join("\n");
   check(/\.hero-st\s*\{[^}]*display:\s*grid/.test(css) && /\.hero-st\s*>\s*span\s*\{[^}]*grid-area:\s*1\s*\/\s*1/.test(css) && /\.hs-hide\s*\{[^}]*visibility:\s*hidden/.test(css), "lo stile le sovrappone (griglia) e nasconde quella non vera con visibility: la riga non si muove");

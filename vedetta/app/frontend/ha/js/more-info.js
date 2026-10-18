@@ -67,8 +67,8 @@ export function miHero(d) {
   // online and offline are written one on the other (a grid cell, the false one hidden): the cell is as wide as the wider, so the words of the analysis beside it do not move when the card changes state.
   const an = S.analysis[d.id], anText = analysisText(an);
   el.innerHTML = '<span class="hero-ic">' + icon(devIcon(d)) + '</span><div><div class="hero-state"><span class="hero-st"><span class="' + (d.online ? "" : "hs-hide") + '">' + esc(t("js.ha.state.online")) +
-    '</span><span class="' + (d.online ? "hs-hide" : "") + '">' + esc(t("js.ha.state.offline")) + '</span></span><span class="hero-an" data-s="' + esc((an && an.state) || "") + '"' + (anText ? "" : " hidden") + ">" + esc(anText) +
-    '</span></div><div class="hero-sub">' + esc(heroSub(d)) + "</div></div>" +
+    '</span><span class="' + (d.online ? "hs-hide" : "") + '">' + esc(t("js.ha.state.offline")) + '</span></span><span class="hero-an" data-s="' + esc((an && an.state) || "") + '"' + (anText ? "" : " hidden") + '><i class="an-dot" aria-hidden="true"></i><span class="an-txt">' + esc(anText) +
+    '</span></span></div><div class="hero-sub">' + esc(heroSub(d)) + "</div></div>" +
     (canWake(d) ? '<button type="button" class="icon-btn small touch rp hero-wake" data-act="wake" title="' + esc(t("js.ha.act.wake")) +
       '" aria-label="' + esc(t("js.ha.act.wake")) + '">' + icon("power") + "</button>" : "");
 }

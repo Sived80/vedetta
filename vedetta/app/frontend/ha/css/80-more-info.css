@@ -33,11 +33,18 @@
   .hero-st > span { grid-area: 1 / 1; }
   .hs-hide { visibility: hidden; }
   /* The words of the state of analysis (analysis/status.py), beside the state; the colour is never alone: the words and the sign on the icon say it */
-  .hero-an { flex: none; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; color: var(--warning-text-color, var(--warning-color)); }
-  .hero-an[data-s="settling"], .hero-an[data-s="unresolved"] { color: var(--secondary-text-color); }
-  .hero-an[data-s="analysing"]::after { display: inline-block; content: "..."; width: 1.5em; text-align: left; animation: an-dots 1.5s infinite steps(4, end); }
-  @keyframes an-dots { 0%, 20% { content: ""; } 40% { content: "."; } 60% { content: ".."; } 80%, 100% { content: "..."; } }
-  @media (prefers-reduced-motion: reduce) { .hero-an[data-s="analysing"]::after { animation: none; content: "..."; } }
+  /* The state of the analysis beside online/offline: a small rounded label (tonal blue, grey while it settles or cannot be told), a dot that pulses
+     while the analysis runs and the short text with a capital letter. It is the last item of the row, so nothing moves when it changes. */
+  .hero-an { flex: none; align-self: center; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px 0 8px; border-radius: 12px; box-sizing: border-box;
+    font-size: 12.5px; line-height: 1; font-weight: 500; white-space: nowrap; color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  .hero-an[hidden] { display: none; }
+  .hero-an[data-s="settling"], .hero-an[data-s="unresolved"] { color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent); }
+  .hero-an .an-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .hero-an .an-txt { display: inline-block; padding-top: 1px; }
+  .hero-an .an-txt::first-letter { text-transform: uppercase; }
+  .hero-an[data-s="analysing"] .an-dot { animation: an-pulse 1.4s ease-in-out infinite; }
+  @keyframes an-pulse { 0%, 100% { opacity: 0.35; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .hero-an[data-s="analysing"] .an-dot { animation: none; } }
   .hero-sub { font-size: 14px; color: var(--secondary-text-color); }
 
   /* Sections */

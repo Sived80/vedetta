@@ -109,6 +109,24 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(!!internet && internet.includes("203.0.113.7") && /Connessione diretta/.test(internet) && /Online/.test(internet) && /Salti: 3/.test(internet) && /controllato/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
   const lat = seen[labels.find((l) => /Latenza/i.test(l))];
   check(histCalls >= 1 && !!lat && lat.includes("0.5") && lat.includes("0.4") && lat.includes("0.6") && !lat.includes("1.0"), "tile della latenza: i numeri vengono dalla storia dell'ultima ora (0.4 - 0.6 ms), non piu' sempre «1.0 ms»");
+  // The MQTT tile: "exposed" counts the devices shared with Home Assistant, and only while the broker is connected.
+  const visit = async (label) => {
+    for (let i = 0; i < 7; i++) {
+      if ((q("#rot .t-l") || { textContent: "" }).textContent.trim() === label) return q("#rot .t-body");
+      q("#rot").click();
+      await wait(350);
+    }
+    return null;
+  };
+  let mq = await visit("MQTT");
+  check(!!mq && /Esposte MQTT\s*–/.test(mq.textContent.replace(/\s+/g, " ")) && /width:\s*0%/.test(mq.innerHTML), "MQTT spento o scollegato: «Esposte MQTT –» e barra vuota (prima diceva il totale dei dispositivi)");
+  data.summary.mqtt = { active: true, connected: true };
+  data.devices.devices[0].ha_share = true; data.devices.devices[1].ha_share = true;
+  // a change of the roles makes the page read everything again (that is how it learns that the broker is connected)
+  sources[sources.length - 1].emit("roles", { type: "roles", by_ip: { "192.0.2.250": { dhcp: "arp" } }, via: {}, names: {}, types: {}, dhcp: [], internet: data.summary.roles.internet });
+  await wait(900);
+  mq = await visit("MQTT");
+  check(!!mq && /Esposte MQTT\s*2(?!\d)/.test(mq.textContent.replace(/\s+/g, " ")) && /width:\s*66\.7%/.test(mq.innerHTML), "MQTT connesso: «Esposte MQTT 2» (i due condivisi su tre) e barra al 66,7%");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

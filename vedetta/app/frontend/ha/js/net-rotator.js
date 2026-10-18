@@ -156,11 +156,13 @@ function lensTile() {
 }
 
 function mqttTile() {
-  const on = !!(S.mqtt && S.mqtt.active && S.mqtt.connected), last = cycles[cycles.length - 1], hosts = S.list.length;
+  // "Exposed" = the devices shared with Home Assistant (the switch of each card), counted only while the broker is connected: offline, nothing is exposed.
+  const on = !!(S.mqtt && S.mqtt.active && S.mqtt.connected), last = cycles[cycles.length - 1];
+  const shared = S.list.filter(function (d) { return d.ha_share; }).length, total = S.list.length;
   const broker = statBox(t("js.ha.tile.broker_mqtt"), esc(t(on ? "js.ha.tile.online" : "js.ha.tile.offline")), on ? "var(--success-color)" : "var(--error-color)", "tinted");
   const cycle = statBox(t("js.ha.tile.last_cycle"), last === undefined ? "–" : last.toFixed(1) + ' <span class="unit">s</span>');
-  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.mqtt_exposed")) + '</span><b>' + hosts + '</b></div>' +
-    '<div class="pbar"><i style="width:100%"></i></div>';
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.mqtt_exposed")) + '</span><b>' + (on ? shared : "–") + '</b></div>' +
+    '<div class="pbar"><i style="width:' + (on && total ? (shared / total * 100).toFixed(1) : 0) + '%"></i></div>';
   return {
     id: "mqtt",
     tip: t(on ? "js.ha.tile.mqtt_tip" : "js.ha.tile.mqtt_tip_off", { s: last === undefined ? "?" : last.toFixed(1) }),

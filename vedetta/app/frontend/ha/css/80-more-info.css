@@ -115,6 +115,13 @@
 }
 
 @layer overrides {
+  /* Edit mode of the device card: the pencils and the type arrow (.mi-ed) show only while the switch next to "Ignore" is on. */
+  #more:not(.edit-on) .mi-ed { display: none; }
+  .mi-edit-toggle[aria-pressed="true"] { color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  /* The history range (24 h / 7 d): two buttons like the ones of the bar below, the chosen one tonal, the other outlined. */
+  .mi-range { display: flex; gap: 8px; }
+  .mi-range .btn { min-width: 72px; border-color: var(--divider-color); }
+  .mi-range .btn[aria-pressed="true"] { border-color: transparent; background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
   /* The flag of the report has the height of the buttons next to it (34 px) and a 20 px icon, instead of the 48 px of the generic small icon button. */
   #more .mi-actions .mi-flag { width: 34px; height: 34px; }
   #more .mi-actions .mi-flag .mdi { width: 20px; height: 20px; }

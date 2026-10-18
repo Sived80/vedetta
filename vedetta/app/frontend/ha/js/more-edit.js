@@ -202,6 +202,11 @@ dlg.addEventListener("click", function (e) {
   switch (act.dataset.act) {
     case "close": closeMore(); break;
     case "back": S.mi.view = "main"; renderMore(); break;
+    case "edit-toggle":
+      S.mi.edit = !S.mi.edit;
+      dlg.classList.toggle("edit-on", S.mi.edit);
+      act.setAttribute("aria-pressed", String(S.mi.edit));
+      break;
     case "rename": S.mi.view = "rename"; renderMore(); break;
     case "brand-edit": S.mi.view = "brand"; renderMore(); break;
     case "focus": S.mi.view = "focus"; renderMore(); break;

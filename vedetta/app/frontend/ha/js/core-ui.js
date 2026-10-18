@@ -25,7 +25,7 @@ export var S = {
   log: { events: [], limit: 30, ids: null, open: false, q: "",
          level: (function () { try { var v = localStorage.getItem("vedetta-ha-loglevel"); return v === "normal" || v === "detail" ? v : "min"; } catch (e) { return "min"; } })() },
   open: null,             // device shown in the "More info" dialog
-  mi: { range: 24, view: "main", win: {}, token: 0 },
+  mi: { range: 24, view: "main", win: {}, token: 0, edit: false },
   conn: { ok: false, everOk: false, retryAt: 3000, last: 0 },
   es: null,
   retryTimer: null,

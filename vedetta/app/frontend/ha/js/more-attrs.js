@@ -51,7 +51,7 @@ export function miAttrs(d) {
   // Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown.
   const rows = [], fixedRows = [];
   function row(label, value, extra, fixed, cls) { (fixed ? fixedRows : rows).push({ label: label, html: value, extra: extra || "", cls: cls || "" }); }
-  row(t("js.ha.attr.name"), evRowCells("name", t("js.ha.attr.name")), '<button type="button" class="icon-btn small touch rp" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
+  row(t("js.ha.attr.name"), evRowCells("name", t("js.ha.attr.name")), '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
     '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>", true, "ev-attr");
   row(t("js.ha.attr.ip"), esc(d.ip + (d.port && d.port !== 80 ? ":" + d.port : "")),
     d.url && canOpen(d) ? '<a class="icon-btn small touch rp" href="' + esc(d.url) + '" target="_blank" rel="noopener" title="' + esc(t("js.ha.act.open")) +
@@ -66,7 +66,7 @@ export function miAttrs(d) {
       ? '<span style="opacity:.75">' + esc(t("js.ha.brand_declared", { value: d.brand_declared })) + "</span>"
       : '<span style="opacity:.65">' + esc(t("js.ha.brand_unknown")) + "</span>";
   row(t("js.ha.attr.brand"), evRowCells("brand", t("js.ha.attr.brand")),
-    '<button type="button" class="icon-btn small touch rp" data-act="brand-edit" title="' + esc(t("js.ha.act.edit_brand")) +
+    '<button type="button" class="icon-btn small touch rp mi-ed" data-act="brand-edit" title="' + esc(t("js.ha.act.edit_brand")) +
       '" aria-label="' + esc(t("js.ha.act.edit_brand")) + '">' + icon("pencil") + "</button>", true, "ev-attr");
   if (DEBUG && d.name_source) row(t("js.ha.attr.name_src"), esc(d.name_source), "", false, "dbg");
   const rr = (S.roles.by_ip || {})[d.ip];
@@ -93,7 +93,7 @@ export function miAttrs(d) {
   if (DEBUG && d.battery === "yes") row(t("js.ha.attr.battery"), '<span class="batt-line">' + icon("battery") + "<span>" + esc(batteryTitle(d)) + "</span></span>", "", false, "dbg");
   const typeShown = esc(typeLabel(d.type)) + (d.type_user ? ' <span style="opacity:.65">· ' + esc(t("js.ha.type.manual")) + "</span>" : "");
   row(t("js.ha.attr.type"), evRowCells("group", t("js.ha.attr.type")),
-    '<button type="button" class="icon-btn small touch rp" data-act="type-menu" aria-haspopup="true" title="' + esc(t("js.ha.act.edit_type")) +
+    '<button type="button" class="icon-btn small touch rp mi-ed" data-act="type-menu" aria-haspopup="true" title="' + esc(t("js.ha.act.edit_type")) +
       '" aria-label="' + esc(t("js.ha.act.edit_type")) + '">' + icon("chevron-down") + "</button>", true, "ev-attr");
   const an = S.analysis[d.id];
   if (an) row(t("js.ha.attr.analysis"), esc(t("js.ha.an.state." + an.state)) + '<div class="field-hint">' +

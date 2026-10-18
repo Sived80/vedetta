@@ -11,6 +11,7 @@ export function openMore(id) {
   S.open = id;
   S.mi.moreOpen = false;   // "Other attributes" always starts closed
   S.mi.range = 24;
+  S.mi.edit = false;       // the edit icons (pencils, type arrow) start off in every card
   S.mi.view = "main";
   S.mi.win = {};
   renderMore();
@@ -29,8 +30,11 @@ dlg.addEventListener("click", function (e) { if (e.target === dlg) closeMore(); 
 export function miHeader(d, title, back) {
   return '<div class="mi-header"><button type="button" class="icon-btn touch rp" data-act="' + (back ? "back" : "close") + '" aria-label="' +
     esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><div class="mi-titles"><div class="mi-name-row"><h2 class="mi-title" id="more-title">' + esc(title) +
-    "</h2>" + (d ? '<button type="button" class="icon-btn small touch rp" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
+    "</h2>" + (d ? '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
     '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>" +
+    // The switch of the edit icons, on the left of "Ignore": pressed = the pencils and the type arrow show.
+    '<button type="button" class="icon-btn small touch rp mi-edit-toggle" data-act="edit-toggle" aria-pressed="' + !!S.mi.edit + '" title="' + esc(t("js.ha.act.edit_toggle")) +
+    '" aria-label="' + esc(t("js.ha.act.edit_toggle")) + '">' + icon("pencil") + "</button>" +
     '<button type="button" class="icon-btn small touch rp" data-act="ignore" title="' + esc(t("js.ha.act.ignore")) +
     '" aria-label="' + esc(t("js.ha.act.ignore")) + '">' + icon("eye-off") + "</button>" : "") + "</div>" + (d ? '<div class="mi-sub" id="mi-sub">' + esc(miSub(d)) + "</div>" : "") + "</div></div>";
 }
@@ -39,6 +43,7 @@ export function miSub(d) { return [chipText(d), typeLabel(d.type)].filter(Boolea
 export function renderMore() {
   const d = S.devices.get(S.open);
   if (!d) return closeMore();
+  dlg.classList.toggle("edit-on", !!S.mi.edit);
   if (S.mi.view === "rename") return renderRename(d);
   if (S.mi.view === "brand") return renderBrandEdit(d);
   if (S.mi.view === "focus") return renderFocus(d);
@@ -46,9 +51,9 @@ export function renderMore() {
   if (S.mi.view === "deep") return renderDeep(d);
   dlg.innerHTML = '<div class="mi">' + miHeader(d, d.name, false) +
     '<div class="mi-body"><div class="mi-hero" id="mi-hero"></div>' +
-    '<section class="mi-section"><div class="mi-sec-head"><h3>' + esc(t("js.ha.more.history")) + '</h3><div class="seg" role="group">' +
-    '<button type="button" class="rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
-    '<button type="button" class="rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
+    '<section class="mi-section"><div class="mi-sec-head"><h3>' + esc(t("js.ha.more.history")) + '</h3><div class="mi-range" role="group">' +
+    '<button type="button" class="btn rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
+    '<button type="button" class="btn rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
     '<div class="mi-graph" id="mi-graph"><div class="skeleton sk-graph"></div></div></section>' +
     '<section class="mi-section attrs"><dl class="attr-list" id="mi-attrs"></dl></section><div id="mi-debug"></div></div>' +
     '<div class="mi-actions" id="mi-actions"></div></div>';

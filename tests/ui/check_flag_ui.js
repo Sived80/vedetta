@@ -62,6 +62,17 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   check(!!iconFlag("d2") && iconFlag("d2").hidden, "scheda non segnalata: la bandierina sull'icona c'e' ma e' nascosta");
   q('.tile[data-id="d2"]').click();
   await wait(400);
+  // --- edit mode of the card: the pencils and the type arrow start off and the switch next to "Ignore" turns them on
+  const more = q("#more"), tog = () => q("#more .mi-edit-toggle");
+  check(!more.classList.contains("edit-on") && !!tog() && tog().getAttribute("aria-pressed") === "false", "la scheda parte con le icone di modifica spente e il tasto per accenderle");
+  check(tog().nextElementSibling && tog().nextElementSibling.getAttribute("data-act") === "ignore", "il tasto sta a sinistra di «Ignora», attaccato");
+  check(more.querySelectorAll(".mi-ed").length >= 3 && Array.from(more.querySelectorAll(".mi-ed")).every((b) => /^(rename|brand-edit|type-menu)$/.test(b.dataset.act)), "le matite (nome, marca) e la freccia del tipo sono le icone di modifica");
+  check(!more.querySelector("[data-copy]").classList.contains("mi-ed") && !more.querySelector(".attr-chev").classList.contains("mi-ed"), "«copia MAC» e «Altri attributi» restano sempre");
+  tog().click();
+  check(more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "true", "premuto: le icone di modifica si accendono");
+  tog().click();
+  check(!more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "false", "premuto di nuovo: si spengono");
+  check(more.querySelectorAll("[data-range].btn").length === 2, "24h / 7gg sono due tasti come quelli della barra in basso");
   check(!!flagBtn() && !flagBtn().classList.contains("on") && !flagBtn().querySelector(".mi-flag-txt") && flagBtn().getAttribute("aria-pressed") === "false", "scheda non segnalata: tasto normale, senza parola");
 
   // --- flag it: the form, the save, then the steady orange button with the word

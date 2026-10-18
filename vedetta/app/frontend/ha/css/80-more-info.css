@@ -46,11 +46,13 @@
   .mi-section h3 { font-size: 16px; line-height: 24px; font-weight: 500; }
 
   /* Segmented buttons (history range, rename mode) */
-  .seg { display: inline-flex; border: 1px solid var(--divider-color); border-radius: 17px; overflow: hidden; }
-  .seg button { height: 34px; padding: 2px 14px 0; border: 0; background: transparent; color: var(--secondary-text-color); font-size: 12.5px; font-weight: 500; }      /* the size of every button (11-components.css .btn) */
+  /* Segmented selector: the segments all have the same width (the widest one), so the two halves are symmetric, with a thin divider between them. */
+  .seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--divider-color); border-radius: 17px; overflow: hidden; }
+  .seg button + button { border-left: 1px solid var(--divider-color); }
+  .seg button { height: 34px; padding: 2px 14px 0; border: 0; white-space: nowrap; background: transparent; color: var(--secondary-text-color); font-size: 12.5px; font-weight: 500; }      /* the size of every button (11-components.css .btn) */
   .seg button[aria-pressed="true"] { background: color-mix(in srgb, var(--primary-color) 16%, transparent); color: var(--primary-color); }
-  .seg.wide { display: flex; width: 100%; }
-  .seg.wide button { flex: 1; height: 40px; }
+  .seg.wide { display: grid; width: 100%; }
+  .seg.wide button { height: 34px; }
 
   /* Statistics, timeline, axis, tooltip */
   .stats { display: flex; gap: 32px; margin: 4px 0 14px; }

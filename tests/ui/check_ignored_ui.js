@@ -76,6 +76,9 @@ const snacks = () => Array.from(doc.querySelectorAll(".snack")).map((s) => s.tex
 (async () => {
   await wait(800);
   doc.getElementById("btn-menu").click();
+  await wait(120);
+  const cnt = doc.querySelector("#menu [data-ignored] .menu-count");
+  check(!!cnt && cnt.textContent === String(srv.items.length + srv.macs.length), "nel menu, accanto a «Dispositivi ignorati», c'e' il numero di quelli ignorati (" + (srv.items.length + srv.macs.length) + ")");
   doc.querySelector("#menu [data-ignored]").click();
   await wait(300);
   check(dlg().hasAttribute("open"), "la finestra si apre");

@@ -266,10 +266,20 @@ function ignSubmit() {
   }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
 }
 
+// The two lists of ignored devices (the ones of a search and the ones seen on the network), asked together.
+export function refreshIgnored() {
+  return Promise.all([api("/api/ignored"), api("/api/new-devices/ignored")]).then(function (res) {
+    S.ign = { items: (res[0] && res[0].items) || [], macs: Array.isArray(res[1]) ? res[1] : [] };
+  });
+}
+// How many devices are ignored, for the number in the menu (0 while the lists have not been asked yet).
+export function ignoredCount() {
+  return S.ign ? (S.ign.items || []).length + (S.ign.macs || []).length : 0;
+}
+
 // --- opening and closing
 export function openIgnored() {
-  Promise.all([api("/api/ignored"), api("/api/new-devices/ignored")]).then(function (res) {
-    S.ign = { items: (res[0] && res[0].items) || [], macs: Array.isArray(res[1]) ? res[1] : [] };
+  refreshIgnored().then(function () {
     ignBuild();
     if (!ignDlg.open) {
       if (typeof ignDlg.showModal === "function") ignDlg.showModal(); else ignDlg.setAttribute("open", "");

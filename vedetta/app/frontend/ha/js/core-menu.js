@@ -3,7 +3,7 @@ import { S } from "./core-ui.js";
 import { openExport } from "./export.js";
 import { deepMenuEl, toggleDeepMenu } from "./deep.js";
 import { pauseEl, togglePause } from "./network.js";
-import { openIgnored } from "./ignored.js";
+import { ignoredCount, openIgnored, refreshIgnored } from "./ignored.js";
 import { openFlows } from "./flows.js";
 import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
@@ -168,6 +168,11 @@ function menuFoot() {
   return '<div class="menu-foot"><a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) +
     '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>";
 }
+// The number of ignored devices after the name of the entry, only when there are some.
+function ignoredCountHtml() {
+  const n = ignoredCount();
+  return n > 0 ? ' <span class="menu-count">' + n + "</span>" : "";
+}
 function buildMenu() {
   let html = starEntry() + langGroup();
   const theme = ROOT.getAttribute("data-theme") || "auto";
@@ -191,7 +196,7 @@ function buildMenu() {
   html += menuGroup(t("js.ha.menu.speed"), pills) +
     '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>";
   html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
-  html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1">' + esc(t("js.ha.menu.ignored")) + icon("eye-off") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1"><span class="menu-lbl">' + esc(t("js.ha.menu.ignored")) + ignoredCountHtml() + "</span>" + icon("eye-off") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
   html += menuFoot();
@@ -209,6 +214,12 @@ function toggleMenu(open) {
       api("/api/ha/star", { method: "POST" }).catch(function () { /* the next summary says again if it was not saved */ });
     }
     buildMenu();
+    // The number of ignored devices is asked now and put in place when it arrives (the menu does not wait for it).
+    refreshIgnored().then(function () {
+      const lbl = menuEl.querySelector("[data-ignored] .menu-lbl");
+      if (lbl) lbl.querySelectorAll(".menu-count").forEach(function (c) { c.remove(); });
+      if (lbl) lbl.insertAdjacentHTML("beforeend", ignoredCountHtml());
+    }).catch(function () { /* the entry stays without a number */ });
     // The menu sits inside a card that clips whatever goes past its edges: it is
     // positioned relative to the window, below the button, with a maximum height.
     var r = menuBtn.getBoundingClientRect();

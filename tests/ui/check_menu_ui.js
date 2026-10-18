@@ -60,6 +60,7 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   const menu = doc.getElementById("menu");
   const pills = () => Array.from(menu.querySelectorAll("[data-speed]"));
   check(!menu.hidden && pills().length === 3, "il menu e' aperto e ha i tre tasti di velocita'");
+  check(!!menu.querySelector("[data-ignored]") && !menu.querySelector("[data-ignored] .menu-count"), "senza dispositivi ignorati, accanto alla voce non c'e' nessun numero");
   check(pills().map((p) => p.querySelector(".pill-sub").textContent).join("|") === "10 s|30 s|1 min", "il tempo e' scritto dentro ai tasti: 10 s, 30 s, 1 min (" + pills().map((p) => p.querySelector(".pill-sub").textContent).join("|") + ")");
   check(pills().every((p) => p.querySelector(".pill-main").textContent.length > 0), "e sopra il tempo c'e' il nome");
   const hint = () => menu.querySelector(".menu-hint").textContent;

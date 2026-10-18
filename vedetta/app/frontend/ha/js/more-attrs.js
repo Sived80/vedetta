@@ -1,4 +1,4 @@
-import { $, ago, api, canOpen, esc, fmtStamp, fmtUptime, icon, t, typeLabel } from "./core.js";
+import { $, ago, api, canOpen, esc, icon, t, typeLabel } from "./core.js";
 import { S } from "./core-ui.js";
 import { DEBUG } from "./debug.js";
 import { deepOneBusy } from "./deep.js";
@@ -103,8 +103,7 @@ export function miAttrs(d) {
       esc(d.signal.display) + (d.signal.text ? " · " + esc(d.signal.text) : ""));
   }
   if (d.online && d.latency_ms != null) row(t("js.ha.attr.latency"), '<span class="lat lat-' + esc(d.latency_color || "none") + '">' + esc(d.latency_ms + " ms") + "</span>", "", true);
-  if (d.uptime != null && d.online) row(t("js.ha.attr.uptime"), esc(fmtUptime(d.uptime)));
-  if (!d.online && d.last_seen) row(t("js.ha.attr.last_seen"), esc(ago(d.last_seen) + " · " + fmtStamp(d.last_seen, true)));
+  // (how long it has been up, or when it was seen last, is said once: under the state at the top of the card)
   if (d.scanned_at) row(t("js.ha.attr.scanned"), esc(ago(d.scanned_at)));
   else if (d.deep_empty_at) row(t("js.ha.attr.scanned_empty"), esc(ago(d.deep_empty_at)));
   (d.attrs || []).forEach(function (a) { row(a.label, esc(a.value)); });

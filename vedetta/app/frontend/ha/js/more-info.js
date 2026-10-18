@@ -1,6 +1,5 @@
-import { $, ago, analysisText, canWake, devIcon, dlg, esc, fmtStamp, fmtUptime, icon, logoVar, t, typeLabel } from "./core.js";
+import { $, ago, analysisText, canWake, devIcon, dlg, esc, fmtStamp, fmtUptime, icon, logoVar, t } from "./core.js";
 import { S, raiseSnacks, snacksEl } from "./core-ui.js";
-import { chipText } from "./filters.js";
 import { miActions, miAttrs, miDebug } from "./more-attrs.js";
 import { loadGraph } from "./more-graph.js";
 import { renderBrandEdit, renderDeep, renderFocus, renderIgnore, renderRename } from "./more-edit.js";
@@ -30,13 +29,11 @@ dlg.addEventListener("click", function (e) { if (e.target === dlg) closeMore(); 
 export function miHeader(d, title, back) {
   return '<div class="mi-header"><button type="button" class="icon-btn touch rp" data-act="' + (back ? "back" : "close") + '" aria-label="' +
     esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><div class="mi-titles"><div class="mi-name-row"><h2 class="mi-title" id="more-title">' + esc(title) +
-    "</h2>" + (d ? '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
-    '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>" +
-    // The three dots: a menu with "Customize card" (shows the edit icons) and "Ignore device".
+    "</h2>" + (d ?
+    // Only the title (no brand and type line, they are in their rows) and the three dots: a menu with "Customize card" (shows the edit icons, among them the pencil of the name) and "Ignore device".
     '<button type="button" class="icon-btn small touch rp" data-act="card-menu" aria-haspopup="menu" aria-expanded="false" title="' + esc(t("js.ha.act.more_actions")) +
-    '" aria-label="' + esc(t("js.ha.act.more_actions")) + '">' + icon("dots-vertical") + "</button>" : "") + "</div>" + (d ? '<div class="mi-sub" id="mi-sub">' + esc(miSub(d)) + "</div>" : "") + "</div></div>";
+    '" aria-label="' + esc(t("js.ha.act.more_actions")) + '">' + icon("dots-vertical") + "</button>" : "") + "</div></div></div>";
 }
-export function miSub(d) { return [chipText(d), typeLabel(d.type)].filter(Boolean).join(" · "); }
 
 export function renderMore() {
   const d = S.devices.get(S.open);

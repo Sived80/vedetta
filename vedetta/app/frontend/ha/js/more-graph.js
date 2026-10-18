@@ -1,7 +1,7 @@
 import { $, LANG, api, dlg, esc, fmtClock, fmtStamp, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
 import { span } from "./core-menu.js";
-import { closeMore, miHero, miSub } from "./more-info.js";
+import { closeMore, miHero } from "./more-info.js";
 import { miActions, miAttrs, miDebug } from "./more-attrs.js";
 
 export function updateMore() {
@@ -10,8 +10,6 @@ export function updateMore() {
   if (!d) return closeMore();
   const title = $("more-title");
   if (title && title.textContent !== d.name) title.textContent = d.name;
-  const sub = $("mi-sub");
-  if (sub) sub.textContent = miSub(d);
   miHero(d);
   miAttrs(d);
   miDebug(d);

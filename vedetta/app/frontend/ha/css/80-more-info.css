@@ -120,7 +120,6 @@
      With the edit off the percentage and the "i" end in the column of the icons of the rows below (open, copy MAC): that column is 48 px wide
      with the glyph in its middle, the "i" is 20 px wide, hence 14 px on its right. */
   #more:not(.edit-on) .mi-ed { display: none; }
-  #more:not(.edit-on) .attr.ev-attr .ev-meter { padding-right: 14px; }
   .card-menu .menu-item { gap: 12px; }
   .card-menu .menu-check { margin-left: auto; display: flex; visibility: hidden; color: var(--primary-color); }
   .card-menu .menu-item[aria-checked="true"] .menu-check { visibility: visible; }
@@ -215,6 +214,8 @@
   .ev-cell { display: block; width: 100%; }
   .ev-v { display: block; min-height: 24px; line-height: 24px; overflow-wrap: anywhere; }
   .ev-meter { display: flex; align-items: center; gap: 6px; height: 20px; }
+  /* edit off: the percentage and the "i" end in the column of the icons of the rows below (see the note on .mi-ed above) */
+  #more:not(.edit-on) .attr.ev-attr .ev-meter { padding-right: 14px; }
   .ev-bar { flex: 1; min-width: 0; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); overflow: hidden; }
   .ev-bar i { display: block; width: 0; height: 100%; border-radius: 2px; transition: width 0.4s ease; }
   .ev-bar.lvl-high i { background: var(--success-color); }

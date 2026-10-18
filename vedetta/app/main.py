@@ -5,8 +5,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .storage import devices_config, journal
@@ -19,8 +18,8 @@ from .recognition import roles
 from .applog import logger
 from .ingress import IngressMiddleware, template_context
 from .maintenance import nightly_loop
-from . import assets
 from .assets import static_version
+from .frontend_serving import mount_frontend
 from .routes import flows as routes_flows
 from .routes.bodies import json_dict
 from .routes import brands as routes_brands, export_routes as routes_export, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt
@@ -80,28 +79,7 @@ app.include_router(routes_device_routes.router)
 app.include_router(routes_settings_routes.router)
 
 
-# ha.css is put together from its parts and the script is a set of modules (app/frontend, see assets.py); these routes come before the static folder.
-def _bundle_route(name: str):
-    async def serve():
-        return Response(assets.bundle(name), media_type=assets.media_type(name))
-    return serve
-
-
-class _Modules(StaticFiles):
-    """The modules of the page: served as JavaScript and always checked again (the browser asks with the ETag and gets a 304 when nothing changed), so that after a deploy nobody keeps an old part."""
-
-    def file_response(self, full_path, *args, **kwargs):
-        response = super().file_response(full_path, *args, **kwargs)
-        response.headers["Cache-Control"] = "no-cache"
-        if str(full_path).endswith(".js"):
-            response.headers["Content-Type"] = assets.MEDIA[".js"]    # a module must come with a JavaScript type, whatever the system guesses
-        return response
-
-
-for _name in assets.BUNDLES:
-    app.add_api_route("/static/" + _name, _bundle_route(_name), methods=["GET"], include_in_schema=False)
-app.mount("/static/ha/js", _Modules(directory=assets.MODULES), name="ha-js")
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+mount_frontend(app, BASE_DIR / "static")
 app.add_middleware(IngressMiddleware)  # ingress prefix -> request.state.base; optional 403 outside the Supervisor
 templates = Jinja2Templates(directory=BASE_DIR / "templates", context_processors=[template_context])  # `base` in the templates
 

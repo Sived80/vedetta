@@ -16,7 +16,7 @@ This page is written to be read in ten minutes. The index at the end is generate
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
 - **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `formatters`, `iface`, `netutil`, `paths`, `procfs`, `sse`
-- **layer 1**: `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
+- **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
 - **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
@@ -67,6 +67,7 @@ The functions that were restructured have a reference test that was generated fr
 | `datafile.py` | Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures). |
 | `eventbus.py` | Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each. |
 | `formatters.py` | Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded for display, and the quality labels of a Wi-Fi signal and of a LAN link speed. |
+| `frontend_serving.py` | Serving of the front-end of the /ha page: ha.css and the script from their parts, the modules one by one, and the static folder. |
 | `i18n.py` | Internationalization: one folder per language in app/locales/<code>/ with one or more flat JSON files key -> text (server.json for the templates and Python, js.json for the browser). |
 | `identity_upkeep.py` | Upkeep of the identity of the cards: what to do when the same device shows up with another address or another card. |
 | `iface.py` | LAN network interface: from VEDETTA_IFACE, otherwise from the default routing (/proc/net/route, no external command: it also works with BusyBox). |
@@ -261,7 +262,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/12-motion.css` | 173 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 492 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 493 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |

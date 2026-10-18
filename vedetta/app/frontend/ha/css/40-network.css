@@ -101,12 +101,13 @@
   .nettile {
     width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
     justify-content: space-between; padding: 12px 8px 8px; overflow: hidden; text-align: left;
-    position: relative; border-radius: var(--r-xl); background: var(--field); color: inherit;
+    /* TRIAL (18/10): the rotating tile with no background and no border (the border stays transparent so nothing moves). Back: background var(--field), border-color var(--divider-color). */
+    position: relative; border-radius: var(--r-xl); background: transparent; color: inherit;
     transition: background-color 0.15s, border-color 0.15s; box-sizing: border-box;
-    border: 1px solid var(--divider-color);
+    border: 1px solid transparent;
   }
   .nettile[hidden] { display: none; }
-  .nettile:hover { background: color-mix(in srgb, var(--primary-text-color) 12%, var(--card-background-color)); }
+  .nettile:hover { background: var(--ha-hover); }
   .t-dots { position: absolute; top: 12px; right: 8px; display: flex; flex-direction: row; gap: 4px; z-index: 2; }
   .t-dots i { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: all 0.2s; }
   .t-dots i.on { background: var(--primary-color); width: 10px; border-radius: 2px; }

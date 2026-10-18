@@ -89,12 +89,9 @@
   /* 3. Split button centered under the circle: compatto, 34px */
   .gauge-side { flex: none; display: flex; justify-content: center; width: 100%; margin-top: auto; }
   .split { position: relative; display: inline-flex; }
-  .split .btn { height: 34px; min-height: 34px; padding: 0 10px; border-radius: 17px; font-size: 12.5px; gap: 5px; white-space: nowrap; }
-  /* Optical centring in height: with line-height 1 the letters (no descenders) sit about 1 px above the middle of the 34 px, while the icon is on it.
-     The filters get 2 px of padding on top (1 px lower); here only the text moves, the icon stays. */
-  .split #btn-scan > span:not(.wave) { position: relative; top: 1px; }      /* not the ripple (span.wave, position: absolute): made in-flow it widened the button to ~290 px for 0.6 s at every click */
+  .split .btn { height: 34px; padding: 2px 10px 0; white-space: nowrap; }      /* size, font and radius: the common .btn (11-components.css) */
   .split #btn-scan { flex: none; border-top-right-radius: 0; border-bottom-right-radius: 0; }
-  .split .split-more { min-width: 0; padding: 0 7px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .split .split-more { min-width: 0; padding: 2px 7px 0; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
   /* Tile rotativo a destra del cerchio: 3 volte piu' alto (~178px), card verticale in puro stile HA */
   .tile-col { flex: 1 1 0; min-width: 0; display: flex; }

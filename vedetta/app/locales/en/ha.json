@@ -173,6 +173,7 @@
   "js.ha.act.copy_mac": "Copy MAC",
   "js.ha.act.rename": "Rename",
   "js.ha.act.edit_toggle": "Customize card",
+  "js.ha.act.more_actions": "More actions",
   "js.ha.act.ignore": "Ignore device",
   "js.ha.rename.title": "Rename device",
   "js.ha.rename.name": "Name",

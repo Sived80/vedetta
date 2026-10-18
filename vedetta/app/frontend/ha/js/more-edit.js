@@ -84,6 +84,37 @@ function openTypeMenu(btn, d) {
     saveOverride(d, { type: b.dataset.type || null });
   });
 }
+// Menu of the three dots in the header of the card: "Customize card" (the edit icons show or hide) and "Ignore device". Same rules as the type menu.
+var cardMenu = null;
+function closeCardMenu() {
+  if (cardMenu) { cardMenu.remove(); cardMenu = null; }
+  const b = dlg.querySelector('[data-act="card-menu"]');
+  if (b) b.setAttribute("aria-expanded", "false");
+}
+function openCardMenu(btn) {
+  if (cardMenu) { const wasOpen = cardMenu.isConnected; closeCardMenu(); if (wasOpen) return; }      // (a redraw of the card may have removed it already)
+  closeTypeMenu();
+  closePopups();
+  const m = document.createElement("div");
+  m.className = "menu type-menu card-menu"; m.setAttribute("role", "menu");
+  m.innerHTML = '<button type="button" class="menu-item rp" role="menuitemcheckbox" data-act="edit-toggle" aria-checked="' + !!S.mi.edit + '">' + icon("pencil") +
+    "<span>" + esc(t("js.ha.act.edit_toggle")) + '</span><span class="menu-check">' + icon("check") + "</span></button>" +
+    '<button type="button" class="menu-item rp" role="menuitem" data-act="ignore">' + icon("eye-off") + "<span>" + esc(t("js.ha.act.ignore")) + "</span></button>";
+  const r = btn.getBoundingClientRect();
+  m.style.top = Math.round(r.bottom + 4) + "px";
+  m.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + "px";
+  m.style.maxHeight = Math.max(160, window.innerHeight - r.bottom - 16) + "px";
+  dlg.appendChild(m);
+  cardMenu = m;
+  btn.setAttribute("aria-expanded", "true");
+  m.addEventListener("click", function () { closeCardMenu(); });      // the choice itself is done by the click handler of the card (data-act)
+  const first = m.querySelector(".menu-item");
+  if (first) first.focus();
+}
+document.addEventListener("click", function (e) {
+  if (cardMenu && !e.target.closest(".card-menu") && !e.target.closest('[data-act="card-menu"]')) closeCardMenu();
+});
+document.addEventListener("keydown", function (e) { if (e.key === "Escape" && cardMenu) { closeCardMenu(); } });
 document.addEventListener("click", function (e) {
   if (typeMenu && !e.target.closest(".type-menu") && !e.target.closest('[data-act="type-menu"]')) closeTypeMenu();
 });
@@ -205,8 +236,8 @@ dlg.addEventListener("click", function (e) {
     case "edit-toggle":
       S.mi.edit = !S.mi.edit;
       dlg.classList.toggle("edit-on", S.mi.edit);
-      act.setAttribute("aria-pressed", String(S.mi.edit));
       break;
+    case "card-menu": openCardMenu(act); break;
     case "rename": S.mi.view = "rename"; renderMore(); break;
     case "brand-edit": S.mi.view = "brand"; renderMore(); break;
     case "focus": S.mi.view = "focus"; renderMore(); break;

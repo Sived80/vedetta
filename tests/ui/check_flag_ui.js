@@ -62,18 +62,28 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   check(!!iconFlag("d2") && iconFlag("d2").hidden, "scheda non segnalata: la bandierina sull'icona c'e' ma e' nascosta");
   q('.tile[data-id="d2"]').click();
   await wait(400);
-  // --- edit mode of the card: the pencils and the type arrow start off and the switch next to "Ignore" turns them on
-  const more = q("#more"), tog = () => q("#more .mi-edit-toggle");
-  check(!more.classList.contains("edit-on") && !!tog() && tog().getAttribute("aria-pressed") === "false", "la scheda parte con le icone di modifica spente e il tasto per accenderle");
-  check(tog().nextElementSibling && tog().nextElementSibling.getAttribute("data-act") === "ignore", "il tasto sta a sinistra di «Ignora», attaccato");
+  // --- three dots in the header: a menu with "Customize card" (the edit icons) and "Ignore device"; the edit icons start off and keep their place
+  const more = q("#more"), dots = () => q('#more [data-act="card-menu"]'), menu = () => q("#more .card-menu");
+  check(!more.classList.contains("edit-on") && !!dots() && !q('#more .mi-name-row [data-act="ignore"]') && !q("#more .mi-edit-toggle"), "la scheda parte con le icone di modifica spente; «Ignora» non e' piu' un tasto: ci sono i tre puntini");
   check(more.querySelectorAll(".mi-ed").length >= 3 && Array.from(more.querySelectorAll(".mi-ed")).every((b) => /^(rename|brand-edit|type-menu)$/.test(b.dataset.act)), "le matite (nome, marca) e la freccia del tipo sono le icone di modifica");
   check(!more.querySelector("[data-copy]").classList.contains("mi-ed") && !more.querySelector(".attr-chev").classList.contains("mi-ed"), "«copia MAC» e «Altri attributi» restano sempre");
-  tog().click();
-  check(more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "true", "premuto: le icone di modifica si accendono");
-  tog().click();
-  check(!more.classList.contains("edit-on") && tog().getAttribute("aria-pressed") === "false", "premuto di nuovo: si spengono");
+  dots().click();
+  check(!!menu() && dots().getAttribute("aria-expanded") === "true" && Array.from(menu().querySelectorAll(".menu-item")).map((b) => b.textContent.trim()).join("|") === "Personalizza scheda|Ignora dispositivo", "i tre puntini aprono il menu: «Personalizza scheda» e «Ignora dispositivo»");
+  check(menu().querySelector('[data-act="edit-toggle"]').getAttribute("aria-checked") === "false", "«Personalizza scheda» parte non spuntata");
+  menu().querySelector('[data-act="edit-toggle"]').click();
+  check(more.classList.contains("edit-on") && !menu() && dots().getAttribute("aria-expanded") === "false", "scelto «Personalizza scheda»: le icone di modifica si accendono e il menu si chiude");
+  dots().click();
+  check(menu().querySelector('[data-act="edit-toggle"]').getAttribute("aria-checked") === "true", "riaperto: «Personalizza scheda» e' spuntata");
+  menu().querySelector('[data-act="edit-toggle"]').click();
+  check(!more.classList.contains("edit-on"), "scelto di nuovo: le icone si spengono");
+  dots().click();
+  menu().querySelector('[data-act="ignore"]').click();
+  await wait(50);
+  check(!!q('#more [data-act="ignore-confirm"]'), "«Ignora dispositivo» dal menu porta alla conferma");
+  q('#more [data-act="back"]').click();
+  await wait(50);
   check(more.querySelectorAll(".seg [data-range]").length === 2 && !more.querySelector("[data-range].btn"), "24h / 7gg e' un selettore a due segmenti");
-  check(tog().getAttribute("title") === "Personalizza scheda" && tog().getAttribute("aria-label") === "Personalizza scheda", "il tasto si chiama «Personalizza scheda»");
+  check(dots().getAttribute("title") === "Altre azioni" && dots().getAttribute("aria-label") === "Altre azioni", "i tre puntini hanno il nome «Altre azioni»");
   check(!!flagBtn() && !flagBtn().classList.contains("on") && !flagBtn().querySelector(".mi-flag-txt") && flagBtn().getAttribute("aria-pressed") === "false", "scheda non segnalata: tasto normale, senza parola");
 
   // --- flag it: the form, the save, then the steady orange button with the word

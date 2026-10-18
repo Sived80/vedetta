@@ -32,11 +32,9 @@ export function miHeader(d, title, back) {
     esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><div class="mi-titles"><div class="mi-name-row"><h2 class="mi-title" id="more-title">' + esc(title) +
     "</h2>" + (d ? '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
     '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>" +
-    // The switch of the edit icons, on the left of "Ignore": pressed = the pencils and the type arrow show.
-    '<button type="button" class="icon-btn small touch rp mi-edit-toggle" data-act="edit-toggle" aria-pressed="' + !!S.mi.edit + '" title="' + esc(t("js.ha.act.edit_toggle")) +
-    '" aria-label="' + esc(t("js.ha.act.edit_toggle")) + '">' + icon("pencil") + "</button>" +
-    '<button type="button" class="icon-btn small touch rp" data-act="ignore" title="' + esc(t("js.ha.act.ignore")) +
-    '" aria-label="' + esc(t("js.ha.act.ignore")) + '">' + icon("eye-off") + "</button>" : "") + "</div>" + (d ? '<div class="mi-sub" id="mi-sub">' + esc(miSub(d)) + "</div>" : "") + "</div></div>";
+    // The three dots: a menu with "Customize card" (shows the edit icons) and "Ignore device".
+    '<button type="button" class="icon-btn small touch rp" data-act="card-menu" aria-haspopup="menu" aria-expanded="false" title="' + esc(t("js.ha.act.more_actions")) +
+    '" aria-label="' + esc(t("js.ha.act.more_actions")) + '">' + icon("dots-vertical") + "</button>" : "") + "</div>" + (d ? '<div class="mi-sub" id="mi-sub">' + esc(miSub(d)) + "</div>" : "") + "</div></div>";
 }
 export function miSub(d) { return [chipText(d), typeLabel(d.type)].filter(Boolean).join(" · "); }
 

@@ -245,10 +245,10 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/live.js` | 249 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 183 | Always visible: IP, MAC, response time, ports. The rest is in the "Other attributes" dropdown. |
-| `js/more-edit.js` | 280 | Flag the device for the report: its card, history and this note go in the export for analysis. |
+| `js/more-edit.js` | 311 | Flag the device for the report: its card, history and this note go in the export for analysis. |
 | `js/more-evidence.js` | 133 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 137 | History chart: a single segmented band (online / offline / no data) |
-| `js/more-info.js` | 100 | "More info" dialog |
+| `js/more-info.js` | 98 | "More info" dialog |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
 | `js/net-rotator.js` | 185 | rotating tile of the Network card |
@@ -267,5 +267,5 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
-| `css/80-more-info.css` | 259 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/80-more-info.css` | 261 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 

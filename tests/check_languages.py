@@ -34,14 +34,12 @@ def holes(text):
 en = load("en")
 codes = sorted(p.name for p in LOC.iterdir() if p.is_dir())
 config = (ROOT / "vedetta" / "config.yaml").read_text(encoding="utf-8")
-schema = re.search(r"^\s+language: list\(([^)]*)\)", config, re.M)
-offered = schema.group(1).split("|") if schema else []
+check("language" not in re.findall(r"^\s+([a-z_]+):", config, re.M), "config.yaml has no language option: the page follows Home Assistant, each person picks theirs in the menu")
 docs = (ROOT / "vedetta" / "DOCS.md").read_text(encoding="utf-8")
 check("en" in codes, "English is there: it is the base the others are measured on")
 for code in codes:
     tr = load(code)
     check(bool(tr.get("server.json:lang.name")), f"{code}: names itself (lang.name)")
-    check(code in offered, f"{code}: is in the language option of config.yaml ({'|'.join(offered)})")
     check(bool(tr.get("ha.json:js.ha.menu.lang_auto")), f"{code}: translates the 'Automatic' entry of the language list")
     check(f"`{code}`" in docs, f"{code}: is named in DOCS.md")
     stray = [k for k in tr if k not in en]
@@ -50,6 +48,5 @@ for code in codes:
     check(not bad, f"{code}: placeholders match the English text {bad[:3]}")
     missing = len([k for k in en if k not in tr])
     print(f"info: {code}: {len(tr)} of {len(en)} texts translated ({missing} missing, English is shown for those)")
-check("auto" in offered and sorted(c for c in offered if c != "auto") == sorted(codes), "the options of config.yaml are `auto` plus exactly the folders of locales")
 print("ALL OK" if not failed else f"FAILED: {failed}")
 sys.exit(1 if failed else 0)

@@ -115,8 +115,7 @@ def resolve_request(request) -> tuple[str, bool]:
     chosen = explicit or match(userlang.get(request.headers.get("x-remote-user-id"))) or match(request.cookies.get(COOKIE_NAME))
     if chosen:
         return use(chosen), True
-    option = os.environ.get("VEDETTA_LANGUAGE", "").strip().lower()
-    default = (match(option) if option != "auto" else None) or _system_lang or from_accept_language(request.headers.get("accept-language"))
+    default = _system_lang or from_accept_language(request.headers.get("accept-language"))      # no option of the add-on: it follows Home Assistant, or the browser
     return use(default), False
 
 

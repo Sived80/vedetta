@@ -6,7 +6,6 @@ set -e
 export VEDETTA_DATA_DIR=/data
 export VEDETTA_PORT="$(bashio::addon.ingress_port)"
 export VEDETTA_INGRESS_ONLY=1
-export VEDETTA_LANGUAGE="$(bashio::config 'language')"
 LOG_LEVEL="$(bashio::config 'log_level')"
 export VEDETTA_LOG_LEVEL="${LOG_LEVEL}"
 if bashio::config.has_value 'star_hint'; then

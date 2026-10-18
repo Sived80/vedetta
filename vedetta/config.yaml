@@ -29,14 +29,11 @@ panel_title: Vedetta
 services:
   - mqtt:want
 options:
-  language: auto
-  log_level: info
   internet_public_ip: true
   internet_path: true
   internet_mac_database: true
+  log_level: info
 schema:
-  language: list(auto|en|it|cs)
-  log_level: list(debug|info|warning|error)
   star_hint: bool?
   interface: str?
   internet_public_ip: bool
@@ -47,3 +44,4 @@ schema:
   mqtt_port: port?
   mqtt_username: str?
   mqtt_password: password?
+  log_level: list(debug|info|warning|error)

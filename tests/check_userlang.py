@@ -47,11 +47,9 @@ i18n.set_system_language("it_IT")
 assert i18n.system_language() == "it", "it_IT e it-IT sono 'it'"
 i18n.set_system_language("cs")
 
-# 3) the app option decides the default, unless it is `auto`
+# 3) no option of the add-on: the default is the language of Home Assistant
 os.environ["VEDETTA_LANGUAGE"] = "en"
-assert page() == ("en", True), "l'opzione dell'app, se non e' auto, vale per tutti"
-os.environ["VEDETTA_LANGUAGE"] = "auto"
-assert page() == ("cs", True), "auto segue Home Assistant"
+assert page() == ("cs", True), "la variabile dell'opzione, tolta, non conta piu': si segue Home Assistant"
 os.environ.pop("VEDETTA_LANGUAGE")
 
 # 4) a choice is kept on the server for that user and follows them to a browser with no cookie

@@ -1,10 +1,4 @@
 configuration:
-  language:
-    name: "Lingua"
-    description: "Lingua predefinita della pagina di Vedetta per tutti: auto segue Home Assistant, o il browser. Ognuno può scegliere la propria dal menu della pagina."
-  log_level:
-    name: "Livello del registro"
-    description: "Quanto dettaglio Vedetta scrive nel registro dell'app."
   star_hint:
     name: "Invito alla stella"
     description: "Una volta, dopo un paio di giorni d'uso, una piccola stella sul tasto del menu rimanda al progetto su GitHub. Disattiva per non mostrarla mai. Non viene inviato niente."
@@ -35,3 +29,6 @@ configuration:
   mqtt_password:
     name: "Password MQTT"
     description: "Password del tuo broker, se la richiede."
+  log_level:
+    name: "Livello del registro"
+    description: "Quanto dettaglio Vedetta scrive nel registro dell'app."

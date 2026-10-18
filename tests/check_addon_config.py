@@ -15,6 +15,8 @@ langs = sorted(p.stem for p in (ROOT / "translations").glob("*.yaml"))
 assert langs == ["cs", "en", "it"], ("a translation for each language of the app", langs)
 
 # required options (no "?") have a default; the default is an option of the schema
+assert "language" not in schema and "language" not in options, "the language is chosen in the page, not in the configuration of the add-on"
+assert list(schema)[-1] == "log_level", "the log level is the last of the options"
 required = {k for k, v in schema.items() if not str(v).endswith("?")}
 assert required <= set(options), ("required options without a default", sorted(required - set(options)))
 assert set(options) <= set(schema), ("a default for an option that is not in the schema", sorted(set(options) - set(schema)))

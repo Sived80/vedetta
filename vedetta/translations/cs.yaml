@@ -1,10 +1,4 @@
 configuration:
-  language:
-    name: "Jazyk"
-    description: "Výchozí jazyk stránky Vedetta pro všechny: auto sleduje Home Assistant nebo prohlížeč. Každý si může vybrat vlastní v nabídce stránky."
-  log_level:
-    name: "Úroveň protokolu"
-    description: "Jak podrobně Vedetta zapisuje do protokolu aplikace."
   star_hint:
     name: "Pozvánka k hvězdičce"
     description: "Jednou, po několika dnech používání, malá hvězdička na tlačítku nabídky odkáže na projekt na GitHubu. Vypněte, aby se nikdy nezobrazila. Nic se nikam neodesílá."
@@ -35,3 +29,6 @@ configuration:
   mqtt_password:
     name: "Heslo MQTT"
     description: "Heslo vašeho brokeru, pokud ho vyžaduje."
+  log_level:
+    name: "Úroveň protokolu"
+    description: "Jak podrobně Vedetta zapisuje do protokolu aplikace."

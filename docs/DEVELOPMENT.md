@@ -36,7 +36,7 @@ The language list in the menu is built from the folders in [`vedetta/app/locales
 1. Copy `vedetta/app/locales/en/` to `vedetta/app/locales/<code>/` (the two-letter ISO code, e.g. `es`, `fr`).
 2. Set `lang.name` in `server.json` to the name of the language **in that language** (it is what the menu shows).
 3. Translate the texts. Keep the `{placeholders}` as they are; a text left out is shown in English.
-4. Add the code to `language: list(...)` in `vedetta/config.yaml` and to the `language` line of `vedetta/DOCS.md`.
+4. Name the code in the language line of `vedetta/DOCS.md` (the test checks it).
 5. Open a pull request. The tests (`python tools/run_tests.py`) check that nothing is broken.
 
 ## Development

@@ -1,0 +1,31 @@
+configuration:
+  log_level:
+    name: "Protokoll"
+    description: "Wie viel die App in ihr Protokoll schreibt."
+  interface:
+    name: "Netzwerk · Schnittstelle"
+    description: "Leer = automatisch (zum Beispiel eth0)."
+  internet_public_ip:
+    name: "Internet · Öffentliche IP"
+    description: "Fragt OpenDNS nach deiner öffentlichen IP. Aus: Es verlässt nichts das Netzwerk."
+  internet_path:
+    name: "Internet · Pfad"
+    description: "Traceroute, um doppeltes NAT oder CGNAT zu erkennen. Aus: Es verlässt nichts das Netzwerk."
+  internet_path_target:
+    name: "Internet · Ziel"
+    description: "Adresse für den Traceroute. Leer = 1.1.1.1."
+  internet_mac_database:
+    name: "Internet · MAC-Hersteller"
+    description: "Lädt die IEEE-Liste alle 30 Tage herunter. Aus: Die mitgelieferte wird verwendet."
+  mqtt_host:
+    name: "MQTT · Adresse"
+    description: "Dein eigener Broker. Leer = MQTT-Dienst von Home Assistant."
+  mqtt_port:
+    name: "MQTT · Port"
+    description: "Meist 1883."
+  mqtt_username:
+    name: "MQTT · Benutzer"
+    description: "Nur, wenn der Broker einen Benutzer verlangt."
+  mqtt_password:
+    name: "MQTT · Passwort"
+    description: "Nur, wenn der Broker ein Passwort verlangt."

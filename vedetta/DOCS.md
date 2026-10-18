@@ -31,7 +31,7 @@ Nothing about your devices leaves your network. Three optional checks that reach
   - Manufacturers: when the list is more than 30 days old, it is downloaded from the public IEEE registries.
 - `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant MQTT service (Mosquitto app) is used, if present.
 
-The language is not an option: the page follows Home Assistant (`en`, `it` or `cs`), and each person can pick theirs in the menu (⋮).
+The language is not an option: the page follows Home Assistant (`en`, `it`, `cs` or `de`), and each person can pick theirs in the menu (⋮).
 
 ## Permissions and what each one is for
 

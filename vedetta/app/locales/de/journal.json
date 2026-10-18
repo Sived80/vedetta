@@ -1,0 +1,20 @@
+{
+  "journal.quick": "Netzwerksuche: {seen} Geräte gesehen, {new} neu",
+  "journal.analyzed": "Analyse von {ip} abgeschlossen ({ports} offene Ports)",
+  "journal.cancelled": "Suche abgebrochen ({n} Analysen gestoppt)",
+  "journal.added": "{name} ({ip}) zum Dashboard hinzugefügt",
+  "journal.removed": "{name} ({ip}) aus dem Dashboard entfernt",
+  "journal.ignored": "{name} ({ip}) entfernt und ignoriert",
+  "journal.paused": "Überwachung für {minutes} Minuten pausiert",
+  "journal.paused_forever": "Überwachung pausiert, bis sie fortgesetzt wird",
+  "journal.resumed": "Überwachung fortgesetzt",
+  "journal.dhcp": "DHCP: Server {server} vergibt Gateway {router} und DNS {dns}",
+  "journal.internet_direct": "Direkte Internetanbindung (kein doppeltes NAT)",
+  "journal.internet_double": "Internetanbindung hinter doppeltem NAT",
+  "journal.internet_cgnat": "Internetanbindung über das CGNAT des Anbieters",
+  "journal.roles": "Netzwerkrollen: {roles}; über Repeater: {via}",
+  "journal.unignored": "{name} wird nicht mehr ignoriert",
+  "journal.forgotten": "{name} vergessen",
+  "journal.fullports": "{ip}: vollständige Hintergrundsuche beendet ({ports} Ports, {added} mehr)",
+  "journal.fullports_failed": "{ip}: vollständige Hintergrundsuche nicht beendet (Gerät zu langsam), gezielte Ports beibehalten"
+}

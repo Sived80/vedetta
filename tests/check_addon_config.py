@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent / "vedetta"
 cfg = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
 schema, options = cfg["schema"], cfg["options"]
 langs = sorted(p.stem for p in (ROOT / "translations").glob("*.yaml"))
-assert langs == ["cs", "en", "it"], ("a translation for each language of the app", langs)
+assert langs == ["cs", "de", "en", "it"], ("a translation for each language of the app", langs)
 
 # required options (no "?") have a default; the default is an option of the schema
 assert "language" not in schema and "language" not in options, "the language is chosen in the page, not in the configuration of the add-on"

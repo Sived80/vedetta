@@ -169,7 +169,7 @@ export function paintTile(fade) {
 
 function advance() { shown++; paintTile(true); }
 export function tileHTMLShell() {
-  return '<button type="button" class="nettile rp" id="rot" hidden><div class="t-body"></div><div class="t-dots"></div></button>';
+  return '<button type="button" class="nettile" id="rot" hidden><div class="t-body"></div><div class="t-dots"></div></button>';
 }
 export function mountTile() {
   const el = $("rot");

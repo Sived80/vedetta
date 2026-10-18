@@ -89,6 +89,9 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(120);
   // --- 1. the list
   check(rows().length === 3 && !q("#card-new").hidden, "la scheda mostra i tre dispositivi trovati");
+  check(!!q("#rot") && !q("#rot").classList.contains("rp") && !q("#rot .wave"), "la tile rotante non ha l'onda al clic (nessun effetto di pressione)");
+  await click("#rot");
+  check(!q("#rot .wave"), "e dopo un clic ancora nessuna onda");
   const panel = q("#card-new"), net = q("#card-network .card-content");
   check(panel.parentElement === net && panel.previousElementSibling.id === "badges" && panel.nextElementSibling.id === "brands", "l'elenco sta nella scheda Network, tra i tasti e i marchi");
   check(qa("#card-new button").every((b) => !b.textContent.trim() && !!b.getAttribute("aria-label") && !!b.querySelector("svg")), "i tasti sono simboli (la scritta resta nel tooltip)");

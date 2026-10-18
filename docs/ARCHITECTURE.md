@@ -251,7 +251,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-info.js` | 95 | "More info" dialog |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 185 | rotating tile of the Network card |
+| `js/net-rotator.js` | 224 | rotating tile of the Network card |
 | `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 331 | new devices |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |

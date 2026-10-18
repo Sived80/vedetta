@@ -1,4 +1,4 @@
-import { $, REDUCED, esc, icon, t } from "./core.js";
+import { $, REDUCED, ago, api, esc, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
 import { deepOneBusy } from "./deep.js";
 
@@ -9,6 +9,23 @@ var ROTATE_MS = 4200, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HO
 var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
 var shown = 0, hold = false, timer = 0;
 
+// The latency of the gateway over the last hour, from the history of the app (the average of each minute, to a tenth of a millisecond). The value
+// of the card is rounded to whole milliseconds (a LAN answers in less than one: it was always "1.0 ms"); the history is not.
+var gwHist = { id: null, at: 0, busy: false, series: null };
+function refreshGatewayHistory(gw) {
+  if (!gw || !gw.id || gwHist.busy) return;
+  if (gwHist.id === gw.id && Date.now() - gwHist.at < 60000) return;
+  gwHist.busy = true;
+  gwHist.id = gw.id;
+  api("/api/ha/history/" + encodeURIComponent(gw.id) + "?hours=1").then(function (x) {
+    const lat = x && x.latency;
+    gwHist.series = lat && lat.points && lat.points.length ? lat : null;
+  }).catch(function () { gwHist.series = null; }).then(function () {
+    gwHist.busy = false;
+    gwHist.at = Date.now();
+    paintTile(false);
+  });
+}
 function push(list, value, max) { list.push(value); if (list.length > max) list.shift(); }
 function ms(v) { return v < 10 ? v.toFixed(1) : String(Math.round(v)); }
 
@@ -47,15 +64,17 @@ function statBox(label, value, color, boxCls) {
 }
 
 function latencyTile(gw) {
-  if (!gw || !gw.online || !latency.length) return null;
-  const last = latency[latency.length - 1], lo = Math.min.apply(null, latency), hi = Math.max.apply(null, latency);
-  const avg = latency.reduce(function (a, v) { return a + v; }, 0) / latency.length;
+  const hist = gw && gwHist.id === gw.id && gwHist.series ? gwHist.series.points.map(function (p) { return p[1]; }) : null;
+  const samples = hist || latency;
+  if (!gw || !gw.online || !samples.length) return null;
+  const last = samples[samples.length - 1], lo = Math.min.apply(null, samples), hi = Math.max.apply(null, samples);
+  const avg = samples.reduce(function (a, v) { return a + v; }, 0) / samples.length;
   const pct = hi > lo ? Math.max(4, (last - lo) / (hi - lo) * 100) : 100;
   const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.min")) + " <b>" + ms(lo) + ' ms</b></span><span>' + esc(t("js.ha.tile.max")) + " <b>" + ms(hi) + ' ms</b></span></div>' +
     '<div class="pbar"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
   return {
     id: "latency",
-    tip: t("js.ha.tile.latency_tip", { n: latency.length, min: ms(lo), max: ms(hi) }),
+    tip: t("js.ha.tile.latency_tip", { n: samples.length, min: ms(lo), max: ms(hi) }),
     html: cardHTML("var(--primary-color)", "wifi-arrow-up-down", esc(t("js.ha.tile.latency")),
       '<div class="stat-grid-2">' +
         statBox(t("js.ha.tile.current"), ms(last) + ' <span class="unit">ms</span>', "var(--primary-color)") +
@@ -79,6 +98,25 @@ function gatewayTile(gw) {
     html: cardHTML("var(--teal-color)", "router-wireless", esc(t("js.ha.tile.gateway")),
       '<div class="t-v"><span class="t-n mono' + (gw.online ? "" : " gw-off") + '">' + esc(gw.ip) + '</span></div>' +
       '<div class="gw-net"><span class="gw-sub">' + esc(subnet) + '</span>' + (gw.online ? '<span class="gw-state">' + esc(t("js.ha.tile.net_active")) + '</span>' : "") + '</div>',
+      foot)
+  };
+}
+
+// Connection to the internet, in the style of the gateway tile: the public IP, how it is reached (direct, CGNAT, double NAT), the hops to the outside.
+function internetTile() {
+  const net = S.roles && S.roles.internet;
+  if (!net) return null;
+  const up = !!net.public_ip, hops = (net.hops || []).length;
+  const kind = t(net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : "js.ha.tile.net_direct");
+  const pct = Math.max(0, Math.min(100, hops / 5 * 100)).toFixed(1);
+  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: hops })) + '</span><span>' + esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })) + '</span></div>' +
+    '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
+  return {
+    id: "internet",
+    tip: t("js.ha.tile.internet_tip", { kind: kind, hops: hops }),
+    html: cardHTML("var(--info-color)", "earth", esc(t("js.ha.tile.internet")),
+      '<div class="t-v"><span class="t-n mono' + (up ? "" : " gw-off") + '">' + esc(net.public_ip || "–") + '</span></div>' +
+      '<div class="gw-net"><span class="gw-sub">' + esc(kind) + '</span><span class="gw-state' + (up ? "" : " gw-off") + '">' + esc(t(up ? "js.ha.tile.online" : "js.ha.tile.offline")) + '</span></div>',
       foot)
   };
 }
@@ -133,7 +171,8 @@ function mqttTile() {
 
 function tiles() {
   const gw = gateway();
-  return [latencyTile(gw), gatewayTile(gw), lensTile(), mqttTile()].filter(Boolean);
+  refreshGatewayHistory(gw);
+  return [latencyTile(gw), gatewayTile(gw), internetTile(), lensTile(), mqttTile()].filter(Boolean);
 }
 
 // The new content replaces the old one with a short fade; a refresh of the same tile (new numbers) is written at once.

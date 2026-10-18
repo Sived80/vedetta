@@ -56,8 +56,9 @@ class Engine:
         key = (row["id"], e.subject)
         found = self._found.get(key)
         if found is None:
-            self._found[key] = found = Finding(row["id"], e.subject, "tentative", row["severity"], now, now, evidence=e.data, shadow=row["status"] == "shadow")
-            return [Change("opened", found)]
+            immediate = row["params"]["min_cycles"] <= 1       # a rule that needs one sight only (an event that has already happened) is active at once
+            self._found[key] = found = Finding(row["id"], e.subject, "active" if immediate else "tentative", row["severity"], now, now, evidence=e.data, shadow=row["status"] == "shadow")
+            return [Change("raised" if immediate else "opened", found)]
         found.hits += 1
         found.quiet, found.last_seen, found.evidence = 0, now, e.data
         if found.state == "tentative" and found.hits >= row["params"]["min_cycles"]:

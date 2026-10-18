@@ -16,5 +16,35 @@
       "grade": "A",
       "sources": [{"title": "IPv4 Address Conflict Detection", "link": "https://www.rfc-editor.org/rfc/rfc5227", "verified": true}]
     }
+  },
+  {
+    "id": "H05",
+    "family": "periodic_dropout",
+    "params": {"min_cycles": 2, "clear_cycles": 6, "window_s": 86400, "min_drops": 5, "min_period_s": 120, "max_period_s": 21600, "max_cv": 0.35},
+    "signals": ["PRES"],
+    "scope": "over_time",
+    "class": "hardware",
+    "severity": "warning",
+    "message_key": "health.h05",
+    "remedy_key": "health.h05.remedy",
+    "detectability": "D1",
+    "status": "shadow",
+    "since": "next",
+    "existence": {"grade": "C", "sources": []}
+  },
+  {
+    "id": "H06",
+    "family": "simultaneous_drop",
+    "params": {"min_cycles": 1, "clear_cycles": 3, "window_s": 3600, "bin_s": 120, "min_devices": 5, "min_fraction": 0.25},
+    "signals": ["PRES"],
+    "scope": "over_time",
+    "class": "environment",
+    "severity": "warning",
+    "message_key": "health.h06",
+    "remedy_key": "health.h06.remedy",
+    "detectability": "D1",
+    "status": "shadow",
+    "since": "next",
+    "existence": {"grade": "C", "sources": []}
   }
 ]

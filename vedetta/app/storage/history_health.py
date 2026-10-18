@@ -40,6 +40,12 @@ class HealthMixin:
             rows = self._db.execute("SELECT * FROM health_finding WHERE last_seen >= ? ORDER BY first_seen DESC", (since,)).fetchall()
         return [{**dict(r), "evidence": json.loads(r["evidence"]), "shadow": bool(r["shadow"])} for r in rows]
 
+    def presence_since(self, since: float) -> list[tuple]:
+        """(device, online, ts) of the presence events after `since`, in time order: what the rules on drops are judged on."""
+        with self._lock:
+            rows = self._db.execute("SELECT device_id, online, ts FROM presence_events WHERE ts >= ? ORDER BY ts, id", (since,)).fetchall()
+        return [(r["device_id"], bool(r["online"]), r["ts"]) for r in rows]
+
     def prune_health(self) -> None:
         with self._lock:
             self._db.execute("DELETE FROM health_finding WHERE last_seen < ?", (time.time() - HEALTH_RETENTION_DAYS * 86400,))

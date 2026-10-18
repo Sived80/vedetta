@@ -6,6 +6,7 @@ import os
 import time
 
 from ..applog import logger
+from ..health import signals
 from ..health.engine import Change, Engine
 from ..scan import scanner
 from ..storage.history import history
@@ -22,8 +23,15 @@ def enabled() -> bool:
     return os.environ.get("VEDETTA_HEALTH", "").strip().lower() == "shadow"
 
 
-def read_signals() -> dict:
-    return {"conflicts": {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()}}
+SIGNAL_WINDOW_S = 86400      # the longest window a rule looks back (H05: one day)
+
+
+def read_signals(now: float | None = None, presence=None) -> dict:
+    """What the rules look at: the IP conflicts of the scan, and the drops of each device in the last day (from the presence history; the first sight of a device in the window is not a drop)."""
+    now = time.time() if now is None else now
+    events = (presence or history.presence_since)(now - SIGNAL_WINDOW_S)
+    return {"now": now, "conflicts": {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()},
+            "drops": signals.drops_by_device(events), "devices": len({device for device, _online, _ts in events})}
 
 
 def snapshot(engine: Engine | None = None) -> list[dict]:

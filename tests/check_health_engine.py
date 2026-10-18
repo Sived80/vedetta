@@ -45,6 +45,11 @@ assert e.findings() == [] and [(c.change, c.finding.state) for c in dropped] == 
 e.judge(CONFLICT, 40)
 assert [f.state for f in e.findings()] == ["tentative"] and e.findings()[0].hits == 1, "it counts from the start"
 
+# --- a rule that needs one sight only is active at once
+once = dict(ROW, params={"min_cycles": 1, "clear_cycles": 2})
+e = engine.Engine([once])
+assert [(c.change, c.finding.state) for c in e.judge(CONFLICT, 0)] == [("raised", "active")]
+
 # --- a rule in draft is not judged
 draft = dict(ROW, status="draft")
 e = engine.Engine([draft])

@@ -140,6 +140,7 @@ The functions that were restructured have a reference test that was generated fr
 | `health/detectors.py` | The detectors: one small pure function for each family of problem. |
 | `health/engine.py` | The judge: it runs the detector of every rule that is not a draft and keeps the findings. |
 | `health/matrix.py` | The matrix of the rules: loaded from matrix.json and checked in plain Python (no extra library). |
+| `health/signals.py` | Signals derived from the history, in one place so that the app and the replay of the exports see the same thing. |
 
 ### recognition/
 

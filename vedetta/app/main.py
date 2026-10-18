@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from .storage import devices_config, journal
 from .storage.history import history
-from .ha import analysis_view, ha_registry, ha_tz, ha_update
+from .ha import analysis_view, health_view, ha_registry, ha_tz, ha_update
 from .scan import mdns_listener, dhcp, internet, scanner
 from . import external, i18n, lifecycle, paths
 from .state_support import _process_info
@@ -52,6 +52,7 @@ async def lifespan(_: FastAPI):
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,
                 dhcp_discover=scanner.dhcp_discover, internet_check=internet.check if external.any_internet_check() else None)  # who does what: gateway, DHCP, DNS, repeaters
     analysis_view.start(on_change=state.emit_event)   # the state of each card: identified, settling or under analysis (read-only)
+    health_view.start(on_change=state.emit_event)   # network health: off unless VEDETTA_HEALTH=shadow, then judged and only counted in the log
     logger.info("Servizio avviato")
     yield
     if dhcp_transport:
@@ -61,6 +62,7 @@ async def lifespan(_: FastAPI):
     await ha_update.stop()
     await mdns_listener.stop()
     await analysis_view.stop()
+    await health_view.stop()
     await roles.stop()
     await mqtt_service.stop()
     await state.stop()

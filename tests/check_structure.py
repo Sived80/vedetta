@@ -102,7 +102,7 @@ assert count <= LATE_OK, "more imports inside functions than before (%d > %d): %
 ROOT_LAYER = {"paths": 0, "atomic": 0, "applog": 0, "netutil": 0, "iface": 0, "external": 0, "formatters": 0, "eventbus": 0, "assets": 0, "sse": 0, "cyclestats": 0, "procfs": 0, "datafile": 0,
               "i18n": 1, "frontend_serving": 1, "lifecycle": 1, "pause": 1, "macclassify": 1, "macidentity": 1, "maclayer": 1,
               "arpview": 4, "identity_upkeep": 4, "newdevicewatch": 4, "maintenance": 4, "state": 4, "state_cycle": 4, "state_support": 4, "ingress": 6, "main": 7}
-PKG_LAYER = {"storage": 1, "topology": 2, "analysis": 2, "recognition": 2, "scan": 3, "ha": 4, "export": 5, "routes": 6}
+PKG_LAYER = {"storage": 1, "topology": 2, "analysis": 2, "health": 2, "recognition": 2, "scan": 3, "ha": 4, "export": 5, "routes": 6}
 MOD_LAYER = {"ha.device_debug": 5, "ha.analysis_view": 5,
              # base modules: small, widely used, they import nothing above themselves (a stable foundation; they still live in the package they grew in)
              "scan.scan_common": 0, "scan.touch_policy": 1,

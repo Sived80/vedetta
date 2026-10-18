@@ -17,7 +17,7 @@ A module may import from its own layer or from a lower one, never from a higher 
 
 - **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `iface`, `netutil`, `paths`, `procfs`, `sse`
 - **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
-- **layer 2**: `analysis/`, `recognition/`, `topology/`
+- **layer 2**: `analysis/`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
 - **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
@@ -127,10 +127,19 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/ha_type_text.py` | ha_type_text: moved out of ha_type_evidence.py (see tools/split_module.py). |
 | `ha/ha_tz.py` | Time zone (and language) of Home Assistant. |
 | `ha/ha_update.py` | Whether Home Assistant has a newer version of this add-on: the red dot on the menu button and the arrow in the menu. |
+| `ha/health_view.py` | The network-health findings for the page and the log (health/). |
 | `ha/identity_shift.py` | Who is behind a card: two different devices answering at the same address. |
 | `ha/mqtt_config.py` | mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py). |
 | `ha/mqtt_ha.py` | Publishes Vedetta's state over MQTT using Home Assistant's "device" discovery (homeassistant/device/<id>/config). |
 | `ha/mqtt_payloads.py` | mqtt_payloads: moved out of mqtt_ha.py (see tools/split_module.py). |
+
+### health/
+
+| module | what it is for |
+|---|---|
+| `health/detectors.py` | The detectors: one small pure function for each family of problem. |
+| `health/engine.py` | The judge: it runs the detector of every rule that is not a draft and keeps the findings. |
+| `health/matrix.py` | The matrix of the rules: loaded from matrix.json and checked in plain Python (no extra library). |
 
 ### recognition/
 

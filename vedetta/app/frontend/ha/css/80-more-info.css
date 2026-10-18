@@ -135,9 +135,9 @@
   /* Wake button in the hero. */
   .hero-wake { margin-left: auto; flex: none; color: var(--primary-color); }
 
-  /* Ignore in red at the right end of the name row; its box shares the right edge with the attribute icons. */
-  .mi-name-row [data-act="ignore"] { margin-left: auto; color: var(--error-color); }
-  .mi-name-row [data-act="ignore"]:hover { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 14%, transparent); }
+  /* The three dots at the right end of the name row: its 48 px box shares the right edge (and so the centre of the glyph) with the attribute icons below
+     (open, copy MAC): the header and the body have the same right padding (24 px, 16 px on narrow screens). */
+  .mi-name-row [data-act="card-menu"] { margin-left: auto; }
 
   /* Visual polish: latency and signal text contrast in the light theme. */
   .lat-green, .sig-green { color: var(--success-text-color); }

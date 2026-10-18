@@ -27,7 +27,6 @@
   "js.ha.banner.lost": "Connection to Vedetta lost. Reconnecting automatically…",
   "js.ha.banner.retry": "Retry now",
   "js.ha.refresh": "Refresh now",
-  "js.ha.net.title": "Network",
   "js.ha.scan": "Scan network",
   "js.ha.cancel": "Cancel",
   "js.ha.save": "Save",

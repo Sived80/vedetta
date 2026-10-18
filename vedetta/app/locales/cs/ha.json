@@ -27,7 +27,6 @@
   "js.ha.banner.lost": "Spojení se systémem Vedetta bylo ztraceno. Probíhá automatické opětovné připojení…",
   "js.ha.banner.retry": "Zkusit znovu",
   "js.ha.refresh": "Obnovit",
-  "js.ha.net.title": "Síť",
   "js.ha.scan": "Prohledat síť",
   "js.ha.cancel": "Zrušit",
   "js.ha.save": "Uložit",

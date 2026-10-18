@@ -47,7 +47,7 @@ function versionText() { return "v" + String(window.VEDETTA_VERSION || S.version
 var NET_PARTS = null;
 var BADGES = ["all", "online", "offline", "mobile"];
 function headerHTML() {
-  return '<div class="card-header"><div class="ch-title">' + logoHTML() + '<span id="net-title">' + esc(t("js.ha.net.title")) + '<sup id="net-ver">' + esc(versionText()) + "</sup></span></div>" +
+  return '<div class="card-header"><div class="ch-title">' + logoHTML() + '<span id="net-title">Vedetta<sup id="net-ver">' + esc(versionText()) + "</sup></span></div>" +
     '<div class="card-tools" id="card-tools">' +
     '<button type="button" class="icon-btn touch rp" id="btn-refresh" title="' + esc(t("js.ha.refresh")) + '" aria-label="' + esc(t("js.ha.refresh")) + '">' +
     movingIcon("refresh", "spin-g") + "</button></div></div>";

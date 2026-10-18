@@ -35,13 +35,6 @@ os.environ["VEDETTA_STAR_MIN_AGE_DAYS"] = "0"
 assert starhint.should_show(now - 5, now) and starhint.should_show(None, now), "con il valore 0 non aspetta, nemmeno la storia (solo per provare)"
 os.environ.pop("VEDETTA_STAR_MIN_AGE_DAYS")
 
-# the option switches it off
-os.environ["VEDETTA_STAR_HINT"] = "false"
-assert not starhint.enabled() and not starhint.should_show(now - 9 * DAY, now), "l'opzione la spegne"
-os.environ["VEDETTA_STAR_HINT"] = "true"
-assert starhint.enabled()
-os.environ.pop("VEDETTA_STAR_HINT")
-
 # once: after mark_done it never comes back, also after a restart (the module forgets, the file remembers)
 starhint.mark_done()
 assert starhint.done() and not starhint.should_show(now - 9 * DAY, now)

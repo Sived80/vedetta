@@ -2,8 +2,7 @@
 
 It is shown once in the life of an installation, and the memory is on the server, not in the browser: another browser, another device
 or an update never shows it again. An installation that already has history (an old one) is treated like a new one that has just
-reached the age: it sees the invitation once, after the update. Nothing is sent anywhere; the invitation is only a link.
-The app option `star_hint: false` (VEDETTA_STAR_HINT=false) switches it off for good."""
+reached the age: it sees the invitation once, after the update. Nothing is sent anywhere; the invitation is only a link."""
 from ..atomic import write_atomic
 import json
 import os
@@ -15,10 +14,6 @@ STAR_PATH = CONFIG_DIR / "star_hint.json"
 MIN_AGE_DAYS = 2        # how long the installation must have been watching before the invitation can come: a couple of days of use, never at once (VEDETTA_STAR_MIN_AGE_DAYS overrides it, for a test)
 
 _done: bool | None = None
-
-
-def enabled() -> bool:
-    return os.environ.get("VEDETTA_STAR_HINT", "true").strip().lower() not in ("false", "0", "no", "off")
 
 
 def done() -> bool:
@@ -39,8 +34,8 @@ def mark_done() -> None:
 
 
 def should_show(first_ts: float | None, now: float | None = None) -> bool:
-    """True when the invitation may appear: on, never shown, and the installation has history at least MIN_AGE_DAYS old."""
-    if not enabled() or done():
+    """True when the invitation may appear: never shown, and the installation has history at least MIN_AGE_DAYS old."""
+    if done():
         return False
     try:
         days = float(os.environ.get("VEDETTA_STAR_MIN_AGE_DAYS", MIN_AGE_DAYS))

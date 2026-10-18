@@ -1,34 +1,31 @@
 configuration:
-  star_hint:
-    name: "Star invitation"
-    description: "Once, after a couple of days of use, a small star on the menu button links to the project on GitHub. Turn off to never show it. Nothing is sent anywhere."
-  interface:
-    name: "Network interface"
-    description: "Network interface to scan (for example eth0). Leave empty to choose it automatically."
-  internet_public_ip:
-    name: "Check the public IP address"
-    description: "At start and every 6 hours, one DNS query to the OpenDNS resolver (208.67.222.222) asks for your public IP address. Off: no such query leaves your network."
-  internet_path:
-    name: "Check the path to the internet"
-    description: "At start and every 6 hours, a traceroute to a public address (see the target below) tells a direct connection from a double NAT or a provider CGNAT. Off: no traceroute leaves your network."
-  internet_path_target:
-    name: "Traceroute target"
-    description: "Host name or IP address used by the path check. Leave empty for 1.1.1.1."
-  internet_mac_database:
-    name: "Update the MAC manufacturer database"
-    description: "When it is more than 30 days old, downloads the public IEEE registries (standards-oui.ieee.org) to recognise the manufacturers of the devices. Off: Vedetta only uses the list that comes with it."
-  mqtt_host:
-    name: "MQTT broker address"
-    description: "Host name or IP address of a broker of your own. Leave the four MQTT fields empty to use the Home Assistant MQTT service."
-  mqtt_port:
-    name: "MQTT broker port"
-    description: "Port of your broker (usually 1883)."
-  mqtt_username:
-    name: "MQTT user name"
-    description: "User name of your broker, if it asks for one."
-  mqtt_password:
-    name: "MQTT password"
-    description: "Password of your broker, if it asks for one."
   log_level:
-    name: "Log level"
-    description: "How much detail Vedetta writes to the app log."
+    name: "Log"
+    description: "How much the app writes to its log."
+  interface:
+    name: "Network · Interface"
+    description: "Empty = automatic (for example eth0)."
+  internet_public_ip:
+    name: "Internet · Public IP"
+    description: "Asks OpenDNS for your public IP. Off: nothing leaves."
+  internet_path:
+    name: "Internet · Path"
+    description: "Traceroute to spot double NAT or CGNAT. Off: nothing leaves."
+  internet_path_target:
+    name: "Internet · Target"
+    description: "Address for the traceroute. Empty = 1.1.1.1."
+  internet_mac_database:
+    name: "Internet · MAC makers"
+    description: "Downloads the IEEE list every 30 days. Off: uses the bundled one."
+  mqtt_host:
+    name: "MQTT · Address"
+    description: "Your own broker. Empty = Home Assistant MQTT service."
+  mqtt_port:
+    name: "MQTT · Port"
+    description: "Usually 1883."
+  mqtt_username:
+    name: "MQTT · User"
+    description: "Only if the broker needs a user."
+  mqtt_password:
+    name: "MQTT · Password"
+    description: "Only if the broker needs a password."

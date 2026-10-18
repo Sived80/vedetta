@@ -132,7 +132,7 @@ def _mqtt_event() -> dict:
 async def _star_hint() -> bool:
     """Whether the one-time invitation to star the project may appear (storage/starhint.py). The age of the installation is read once."""
     global _first_ts
-    if not starhint.enabled() or starhint.done():
+    if starhint.done():
         return False
     if _first_ts is None:
         _first_ts = await asyncio.to_thread(history.first_event_ts)

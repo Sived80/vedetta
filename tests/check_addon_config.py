@@ -16,7 +16,7 @@ assert langs == ["cs", "en", "it"], ("a translation for each language of the app
 
 # required options (no "?") have a default; the default is an option of the schema
 assert "language" not in schema and "language" not in options, "the language is chosen in the page, not in the configuration of the add-on"
-assert list(schema)[-1] == "log_level", "the log level is the last of the options"
+assert list(schema)[0] == "log_level", "the log level is the first of the options"
 required = {k for k, v in schema.items() if not str(v).endswith("?")}
 assert required <= set(options), ("required options without a default", sorted(required - set(options)))
 assert set(options) <= set(schema), ("a default for an option that is not in the schema", sorted(set(options) - set(schema)))
@@ -28,6 +28,7 @@ assert switches == ["internet_public_ip", "internet_path", "internet_mac_databas
 assert all(options[k] is True for k in switches), "the functions start on (they can be switched off before the first start)"
 assert schema["internet_path_target"] == "str?" and "internet_path_target" not in options, "the target is optional and has no default in the file (the app has it)"
 
+assert "star_hint" not in schema, "the star invitation has no option: it is there and stays"
 names_seen = {}
 for lang in langs:
     tr = yaml.safe_load((ROOT / "translations" / (lang + ".yaml")).read_text(encoding="utf-8"))

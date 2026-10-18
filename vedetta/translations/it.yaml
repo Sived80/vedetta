@@ -1,34 +1,31 @@
 configuration:
-  star_hint:
-    name: "Invito alla stella"
-    description: "Una volta, dopo un paio di giorni d'uso, una piccola stella sul tasto del menu rimanda al progetto su GitHub. Disattiva per non mostrarla mai. Non viene inviato niente."
-  interface:
-    name: "Interfaccia di rete"
-    description: "Interfaccia di rete da scansionare (per esempio eth0). Lascia vuoto per sceglierla in automatico."
-  internet_public_ip:
-    name: "Controlla l'indirizzo IP pubblico"
-    description: "All'avvio e ogni 6 ore, una domanda DNS al resolver OpenDNS (208.67.222.222) chiede il tuo indirizzo IP pubblico. Disattivato: nessuna domanda del genere esce dalla tua rete."
-  internet_path:
-    name: "Controlla il percorso verso Internet"
-    description: "All'avvio e ogni 6 ore, un traceroute verso un indirizzo pubblico (vedi il riferimento sotto) distingue una connessione diretta da un doppio NAT o da un CGNAT del provider. Disattivato: nessun traceroute esce dalla tua rete."
-  internet_path_target:
-    name: "Riferimento del traceroute"
-    description: "Nome o indirizzo IP usato dal controllo del percorso. Lascia vuoto per 1.1.1.1."
-  internet_mac_database:
-    name: "Aggiorna il database dei produttori dei MAC"
-    description: "Quando ha più di 30 giorni, scarica i registri pubblici IEEE (standards-oui.ieee.org) per riconoscere i produttori dei dispositivi. Disattivato: Vedetta usa solo l'elenco che ha con sé."
-  mqtt_host:
-    name: "Indirizzo del broker MQTT"
-    description: "Nome o indirizzo IP di un broker tuo. Lascia vuoti i quattro campi MQTT per usare il servizio MQTT di Home Assistant."
-  mqtt_port:
-    name: "Porta del broker MQTT"
-    description: "Porta del tuo broker (di solito 1883)."
-  mqtt_username:
-    name: "Utente MQTT"
-    description: "Nome utente del tuo broker, se lo richiede."
-  mqtt_password:
-    name: "Password MQTT"
-    description: "Password del tuo broker, se la richiede."
   log_level:
-    name: "Livello del registro"
-    description: "Quanto dettaglio Vedetta scrive nel registro dell'app."
+    name: "Registro"
+    description: "Quanto scrivere nel registro dell'app."
+  interface:
+    name: "Rete · Interfaccia"
+    description: "Vuoto = automatica (per esempio eth0)."
+  internet_public_ip:
+    name: "Internet · IP pubblico"
+    description: "Chiede il tuo IP pubblico a OpenDNS. Spento: non esce nulla."
+  internet_path:
+    name: "Internet · Percorso"
+    description: "Traceroute per riconoscere doppio NAT o CGNAT. Spento: non esce nulla."
+  internet_path_target:
+    name: "Internet · Riferimento"
+    description: "Indirizzo del traceroute. Vuoto = 1.1.1.1."
+  internet_mac_database:
+    name: "Internet · Produttori MAC"
+    description: "Scarica l'elenco IEEE ogni 30 giorni. Spento: usa quello incluso."
+  mqtt_host:
+    name: "MQTT · Indirizzo"
+    description: "Tuo broker. Vuoto = servizio MQTT di Home Assistant."
+  mqtt_port:
+    name: "MQTT · Porta"
+    description: "Di solito 1883."
+  mqtt_username:
+    name: "MQTT · Utente"
+    description: "Solo se il broker lo richiede."
+  mqtt_password:
+    name: "MQTT · Password"
+    description: "Solo se il broker la richiede."

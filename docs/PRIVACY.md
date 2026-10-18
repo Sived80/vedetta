@@ -6,7 +6,7 @@ What stays local, what leaves your network, and how to export data for a bug rep
 
 - 🏡 Everything runs **inside your network**. Data lives in the app’s own `/data`, included in Home Assistant backups.
 - 🌐 Three functions reach the Internet, all **on** by default, and each one can be switched off in the Configuration tab of the app (before the first start too): a DNS query to the OpenDNS resolver that tells your public IP address (`internet_public_ip`), a traceroute to a public address, `1.1.1.1` by default (`internet_path`), and the download of the public IEEE registries to recognise manufacturers (`internet_mac_database`). The first two run at start and every 6 hours. None of them carries anything about your devices, and the page shows which ones are on.
-- ⭐ Once, after a couple of days of use, a small star on the menu invites you to star the project. It is only a link to the project page on GitHub, opened by you with a click; the app sends nothing when it is shown, closed or ignored. It can be switched off with the `star_hint` option.
+- ⭐ Once, after a couple of days of use, a small star on the menu invites you to star the project. It is only a link to the project page on GitHub, opened by you with a click; the app sends nothing when it is shown, closed or ignored.
 - 🌍 The language you pick in the menu is remembered on the server for your Home Assistant user, so it follows you to every browser. The only thing stored is an anonymous code of your Home Assistant user next to the language, in `/data`; it never leaves your installation and is not in any export.
 - 🔒 Home Assistant access is **read-only by construction**: only registry reads, no services, no writes.
 - 🚪 The ingress panel only accepts the Supervisor. Passwords are never exported.

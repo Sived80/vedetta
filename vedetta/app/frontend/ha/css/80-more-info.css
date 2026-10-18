@@ -231,11 +231,26 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); animation: pop-in 0.12s ease-out;
     overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; box-sizing: border-box;
   }
-  .ev-pop-h { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-  .ev-pop-h span, .ev-pop-r { color: var(--secondary-text-color); }
-  .ev-pop-r { margin-top: 6px; font-size: 12px; }
-  .ev-pop ul { margin: 2px 0 0 16px; list-style: disc; color: var(--secondary-text-color); }
-  .ev-pop li { margin: 2px 0; }
+  /* The pop-up of the (i): a header (the name of the row and the certainty as a small coloured pill), one line of "why" or the clues, and the rejected
+     hypotheses. Name, small bar and points are in three aligned columns; every text is cut at 2-3 lines (the whole text is in the title), so the
+     pop-up stays compact whatever the language or the longest sentence. */
+  .ev-pop { font-size: 12.5px; line-height: 1.4; }
+  .evp-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+  .evp-h b { font-size: 13px; font-weight: 500; }
+  .evp-n { flex: none; padding: 0 8px; border-radius: 9px; font-size: 12px; font-weight: 500; line-height: 18px; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); background: color-mix(in srgb, var(--secondary-text-color) 16%, transparent); }
+  .evp-n.lvl-high { color: var(--success-text-color); background: color-mix(in srgb, var(--success-color) 16%, transparent); }
+  .evp-n.lvl-mid { color: var(--warning-text-color); background: color-mix(in srgb, var(--warning-color) 16%, transparent); }
+  .evp-n.lvl-low { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 16%, transparent); }
+  .evp-line { margin: 0 0 4px; color: var(--secondary-text-color); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .evp-sec { margin: 8px 0 4px; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--secondary-text-color); }
+  .evp-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .evp-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 32px; column-gap: 8px; align-items: center; }
+  .evp-row.nopts { grid-template-columns: minmax(0, 1fr); }
+  .evp-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .evp-bar { height: 4px; border-radius: 2px; overflow: hidden; background: color-mix(in srgb, var(--secondary-text-color) 18%, transparent); }
+  .evp-bar i { display: block; height: 100%; border-radius: 2px; background: var(--primary-color); }
+  .evp-pts { text-align: right; font-variant-numeric: tabular-nums; color: var(--secondary-text-color); }
+  .evp-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--secondary-text-color); display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   @media (prefers-reduced-motion: reduce) {
     .ev-bar i, .ev-pop { transition: none; animation: none; }
   }

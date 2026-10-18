@@ -384,6 +384,7 @@
   "js.ha.ev.sure": "{n}% sure",
   "js.ha.ev.unknown": "unknown",
   "js.ha.ev.rejected": "Rejected hypotheses ({n})",
+  "js.ha.ev.h_clues": "Clues",
   "js.ha.ev.points": "{n} points",
   "js.ha.ev.g.manual": "You chose this group: it is never changed by itself.",
   "js.ha.ev.g.mobile": "It looks like a phone or tablet: {reason}.",

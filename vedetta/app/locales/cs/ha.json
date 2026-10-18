@@ -382,6 +382,7 @@
   "js.ha.ev.sure": "Jistota {n} %",
   "js.ha.ev.unknown": "neznámé",
   "js.ha.ev.rejected": "Zamítnuté hypotézy ({n})",
+  "js.ha.ev.h_clues": "Indicie",
   "js.ha.ev.points": "{n} bodů",
   "js.ha.ev.g.manual": "Vybrali jste tuto skupinu: sama se nikdy nemění.",
   "js.ha.ev.g.mobile": "Vypadá to na telefon nebo tablet: {reason}.",

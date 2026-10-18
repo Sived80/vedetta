@@ -121,10 +121,12 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   check(!!pop() && !!pop().closest("dialog#more") && btn("brand").getAttribute("aria-expanded") === "true", "(i) apre un pop-up dentro la scheda");
   check(popText().includes("45%") && popText().includes("Espressif") && popText().includes(IT ? "Ipotesi scartate (1)" : "Rejected hypotheses (1)"), "il pop-up spiega e mostra l'ipotesi scartata");
   check(qa("#ev-pop").length === 1, "un solo pop-up");
+  check(!!pop().querySelector(".evp-h .evp-n.lvl-mid") && pop().querySelector(".evp-h .evp-n").textContent === "45%" && !!pop().querySelector(".evp-line") && pop().querySelectorAll(".evp-row.nopts").length === 1, "marca: la certezza e' un'etichetta colorata, una riga di «perche'» e l'ipotesi scartata senza punti");
   if (pop()) { ev("click", pop()); ev("mousedown", pop()); }
   check(!!pop(), "premere dentro il pop-up non lo chiude");
   btn("group").click();
   check(qa("#ev-pop").length === 1 && popText().includes("83%") && btn("brand").getAttribute("aria-expanded") === "false", "un'altra (i) sposta il pop-up, non ne crea due");
+  check(pop().querySelectorAll(".evp-row .evp-bar").length === 2 && !pop().querySelector(".evp-line") && /\+10/.test(popText()) && pop().querySelectorAll(".evp-sec").length === 2, "tipo: indizi e ipotesi scartate in righe allineate (nome, barra, punti), senza frase");
   btn("group").click();
   check(!pop(), "premere di nuovo la stessa (i) lo chiude");
   btn("name").click();

@@ -29,28 +29,38 @@ export function evRowCells(key, label) {
     '<button type="button" class="ev-i" data-ev-i="' + key + '" aria-haspopup="dialog" aria-expanded="false" title="' + info + '" aria-label="' + info + '">' +
     icon("information-outline") + "</button></span></span>";
 }
+// What the pop-up says, as data: one line of "why" (when there are no clues to list), the clues with their points (the type), and the
+// rejected hypotheses, each with its points (the type) and a short note.
 function evText(x, key) {
-  let e = x[key], why = "", rej = [];
+  const e = x[key], out = { certainty: e.certainty, line: "", clues: [], rej: [] };
   if (key === "group") {
-    var clues = (e.clues || []).map(function (c) { return evClue(c.source) + " +" + c.points; }).join(", ");
-    why = e.basis === "manual" ? t("js.ha.ev.g.manual") : e.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", e.reason) })
-      : e.basis === "scored" ? t("js.ha.ev.g.scored", { clues: clues || "-" }) : t("js.ha.ev.g." + e.basis);
-    rej = (e.rejected || []).map(function (r) {
-      return typePlural(r.value) + " \u2014 " + t("js.ha.ev.points", { n: r.points }) + ": " + t("js.ha.ev.why." + r.why, { chosen: typePlural(e.value) });
+    if (e.basis === "scored") out.clues = (e.clues || []).map(function (c) { return { name: evClue(c.source), pts: c.points }; });
+    else out.line = e.basis === "manual" ? t("js.ha.ev.g.manual") : e.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", e.reason) }) : t("js.ha.ev.g." + e.basis);
+    out.rej = (e.rejected || []).map(function (r) {
+      return { name: typePlural(r.value), pts: r.points, note: t("js.ha.ev.why." + r.why, { chosen: typePlural(e.value) }) };
     });
   } else if (key === "brand") {
-    why = e.basis === "manual" ? t("js.ha.ev.b.manual") : e.basis === "found" ? t("js.ha.ev.b.found", { source: evKey("js.ha.ev.bsrc.", e.source) }) : t("js.ha.ev.b.none");
-    rej = (e.rejected || []).map(function (r) {
-      return r.value + ": " + (r.kind === "vendor" ? t("js.ha.ev.vendor", { role: evKey("js.ha.ev.role.", r.role || "other") }) : t("js.ha.ev.declared"));
+    out.line = e.basis === "manual" ? t("js.ha.ev.b.manual") : e.basis === "found" ? t("js.ha.ev.b.found", { source: evKey("js.ha.ev.bsrc.", e.source) }) : t("js.ha.ev.b.none");
+    out.rej = (e.rejected || []).map(function (r) {
+      return { name: r.value, pts: null, note: r.kind === "vendor" ? t("js.ha.ev.vendor", { role: evKey("js.ha.ev.role.", r.role || "other") }) : t("js.ha.ev.declared") };
     });
   } else {
-    why = e.basis === "ip" ? t("js.ha.ev.n.ip") : e.basis === "manual" ? t("js.ha.ev.n.manual") : e.basis === "placeholder" ? t("js.ha.ev.n.placeholder")
+    out.line = e.basis === "ip" ? t("js.ha.ev.n.ip") : e.basis === "manual" ? t("js.ha.ev.n.manual") : e.basis === "placeholder" ? t("js.ha.ev.n.placeholder")
       : e.basis === "brand" ? t("js.ha.ev.n.brand") : e.basis === "source" ? t("js.ha.ev.n.source", { source: evKey("js.ha.ev.nsrc.", e.source) }) : t("js.ha.ev.n.unknown");
-    rej = (e.rejected || []).map(function (r) {
-      return evKey("js.ha.ev.nsrc.", r.source) + ": " + r.value + " \u2014 " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical");
+    out.rej = (e.rejected || []).map(function (r) {
+      return { name: r.value, pts: null, note: evKey("js.ha.ev.nsrc.", r.source) + " — " + t(r.cleaned ? "js.ha.ev.n.lower" : "js.ha.ev.n.technical") };
     });
   }
-  return { why: why, rej: rej, certainty: e.certainty };
+  return out;
+}
+// The rows of the pop-up: name, small bar and points in three aligned columns (no bar when the hypothesis has no points).
+function evRows(list, max) {
+  return '<ul class="evp-rows">' + list.map(function (r) {
+    const has = r.pts != null;
+    return '<li class="evp-row' + (has ? "" : " nopts") + '"><span class="evp-name" title="' + esc(r.name) + '">' + esc(r.name) + "</span>" +
+      (has ? '<span class="evp-bar"><i style="width:' + Math.max(8, Math.round(100 * r.pts / max)) + '%"></i></span><span class="evp-pts">' + (r.note === undefined ? "+" : "") + r.pts + "</span>" : "") +
+      (r.note ? '<span class="evp-note" title="' + esc(r.note) + '">' + esc(r.note) + "</span>" : "") + "</li>";
+  }).join("") + "</ul>";
 }
 function evPaint(x) {
   const root = $("mi-attrs");
@@ -99,9 +109,12 @@ function evPopOpen(key, btn) {
   const info = evText(x, key), label = btn.closest(".attr").querySelector("dt").textContent;
   const el = document.createElement("div");
   el.className = "ev-pop"; el.id = "ev-pop"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", label);
-  el.innerHTML = '<div class="ev-pop-h"><b>' + esc(label) + "</b><span>" + (info.certainty > 0 ? esc(t("js.ha.ev.sure", { n: info.certainty })) : "\u2014") + "</span></div>" +
-    "<p>" + esc(info.why) + "</p>" +
-    (info.rej.length ? '<div class="ev-pop-r">' + esc(t("js.ha.ev.rejected", { n: info.rej.length })) + "</div><ul>" + info.rej.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ul>" : "");
+  const maxPts = Math.max.apply(null, [1].concat(info.clues.map(function (c) { return c.pts; }), info.rej.map(function (r) { return r.pts || 0; })));
+  const n = info.certainty, sure = n > 0 ? esc(t("js.ha.ev.sure", { n: n })) : "";
+  el.innerHTML = '<div class="evp-h"><b>' + esc(label) + '</b><span class="evp-n' + (n > 0 ? " lvl-" + evLevel(n) : "") + '"' + (sure ? ' title="' + sure + '"' : "") + ">" + (n > 0 ? n + "%" : "—") + "</span></div>" +
+    (info.line ? '<p class="evp-line" title="' + esc(info.line) + '">' + esc(info.line) + "</p>" : "") +
+    (info.clues.length ? '<div class="evp-sec">' + esc(t("js.ha.ev.h_clues")) + "</div>" + evRows(info.clues.map(function (c) { return { name: c.name, pts: c.pts, note: undefined }; }), maxPts) : "") +
+    (info.rej.length ? '<div class="evp-sec">' + esc(t("js.ha.ev.rejected", { n: info.rej.length })) + "</div>" + evRows(info.rej, maxPts) : "");
   host.appendChild(el);
   const hr = host.getBoundingClientRect(), br = btn.getBoundingClientRect(), w = Math.min(300, hr.width - 16);
   el.style.width = w + "px";

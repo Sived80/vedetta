@@ -384,6 +384,7 @@
   "js.ha.ev.sure": "sicuro al {n}%",
   "js.ha.ev.unknown": "sconosciuto",
   "js.ha.ev.rejected": "Ipotesi scartate ({n})",
+  "js.ha.ev.h_clues": "Indizi",
   "js.ha.ev.points": "{n} punti",
   "js.ha.ev.g.manual": "Hai scelto tu questo gruppo: non cambia da solo.",
   "js.ha.ev.g.mobile": "Sembra un telefono o un tablet: {reason}.",

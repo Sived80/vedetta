@@ -177,6 +177,9 @@ async function openHealth(p) {
   await click(".hs-row-main");
   await click(".hs-pane.detail .hs-d-head [data-act='hide']");
   check(qa(".hs-row:not(.dim)").length === 0 && text(".hs-hidrow").includes(tx("js.ha.health.hidden", { n: 1 })) && !!q(".hs-empty"), "Nascondi riporta all'elenco: nessun problema e «1 nascosto»");
+  await click(".hs-pane.detail .hs-d-head [data-act='close']");
+  check(/(^|,)0\/1(,|$)/.test(qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.replace(/\s/g, "")).join()), "sulla tile il conteggio dei nascosti e' visibile: attivi 0, nascosti 1 (0/1)");
+  await click(".hs-tile[data-key='addr']");
   check(p.hidden.join() === "H20:192.168.1.50", "la scelta e' salvata dal server, non nel browser");
   await click(".hs-hidrow");
   check(qa(".hs-row.dim").length === 1 && text(".hs-row.dim .hs-rf").includes(tx("js.ha.devices_count", { n: 2 }) + " · 192.168.1.50"), "il nascosto si apre e dice quanti dispositivi e l'IP");
@@ -198,7 +201,7 @@ async function openHealth(p) {
   await click(qa(".hs-tile")[2]);
   await click(".hs-row-main");
   check(/Luce cucina\s*192\.168\.1\.37/.test(text(".hs-nm")), "un solo dispositivo: nome e IP in alto");
-  check(qa(".hs-strip circle").length === 11 && text(".hs-sl").includes(tx("js.ha.health.times", { n: 11 })) && text(".hs-sl").includes(EVERY10), "i puntini dei riavvii: undici, «ogni 10 min»");
+  check(qa(".hs-strip .hs-dots i").length === 11 && !q(".hs-strip svg") && text(".hs-sl").includes(tx("js.ha.health.times", { n: 11 })) && text(".hs-sl").includes(EVERY10), "i puntini dei riavvii: undici, «ogni 10 min»");
   check(text(".hs-ln").includes(EVERY10) && !!q(".hs-act"), "la causa e l'azione ci sono");
   await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
@@ -221,7 +224,7 @@ async function openHealth(p) {
   p = boot(true, running(FINDINGS), null, ["H05:" + D[1].id]);
   await wait(1500);
   await openHealth(p);
-  check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0,0");
+  check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0/1,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0/1,0");
 
   // --- the preview of the public demo: no debug mode, the feature shown with made-up findings and marked "coming soon", nothing asked of the server
   p = boot(false, running([]), null, null, true);
@@ -230,6 +233,7 @@ async function openHealth(p) {
   await openHealth(p);
   check(p.text("#rot .hs-soon") === tx("js.ha.health.soon") && TITLE.test(p.text("#rot .t-l")) && p.text("#rot .t-l") !== tx("js.ha.health.sim.tile"), "anteprima: la tile dice «in arrivo» e porta il suo nome");
   check(p.qa(".hs-tile").length === 4 && p.text(".hs-pane.health .hs-soon") === tx("js.ha.health.soon") && !p.q(".hs-sim"), "anteprima: quattro tile, «in arrivo» nella testata, nessun pulsante per cambiare scenario");
+  check(p.text("#rot .t-mid .hs-soon") === tx("js.ha.health.soon") && !p.q("#rot .t-head .hs-soon"), "anteprima: «in arrivo» sta sopra le caselle, non nel titolo dove verrebbe tagliato");
   check(p.errors.length === 0, "anteprima: nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- made-up findings (debug only): the button of the head steps through the scenarios, nothing goes to the server
@@ -261,7 +265,7 @@ async function openHealth(p) {
   await wait(1500);
   check(p.hidden.join() === "H05:" + D[1].id && p.win.localStorage.getItem("vedetta-health-hidden") === null, "la scelta vecchia del browser passa al server e poi sparisce dal browser");
   await openHealth(p);
-  check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "dopo il passaggio il nascosto vale ancora");
+  check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0/1,0", "dopo il passaggio il nascosto vale ancora");
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);
 })();

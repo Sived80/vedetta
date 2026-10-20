@@ -255,7 +255,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 241 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
-| `js/health-card.js` | 271 | network health: the "Health" screen of the Network card |
+| `js/health-card.js` | 276 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/health-sim.js` | 48 | network health: made-up findings, debug mode only |
 | `js/ignored.js` | 342 | ignored devices |
@@ -280,7 +280,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 506 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
-| `css/42-health.css` | 98 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
+| `css/42-health.css` | 103 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
 | `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |

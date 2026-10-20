@@ -42,10 +42,15 @@ function hcSecond(tl) {
   const ms = gatewayLatencyText();
   return hcStatBox(t("js.ha.health.router"), ms === null ? "–" : esc(ms) + ' <span class="unit">ms</span>');
 }
+// "Active", and when some findings of the tile are hidden the number of those after a slash ("0/1"), so a hidden finding is never lost from sight; the tooltip says it in words.
+function hcActiveValue(tl) {
+  if (!tl.hid.length) return tl.finds.length;
+  return '<span title="' + esc(t("js.ha.health.hidden", { n: tl.hid.length })) + '">' + tl.finds.length + '<span class="unit">/' + tl.hid.length + "</span></span>";
+}
 function hcTileHTML(tl) {
   const c = HC_COLOR[healthWorst(tl.finds)];
   return '<button type="button" class="hs-tile" data-key="' + tl.key + '"><div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_TILE_ICON[tl.key]) + '</span><span class="t-l">' +
-    esc(t("js.ha.health.tile." + tl.key)) + '</span></div><div class="t-mid"><div class="stat-grid-2">' + hcStatBox(t("js.ha.health.active"), tl.finds.length, c, tl.finds.length > 0) + hcSecond(tl) + "</div></div></div></button>";
+    esc(t("js.ha.health.tile." + tl.key)) + '</span></div><div class="t-mid"><div class="stat-grid-2">' + hcStatBox(t("js.ha.health.active"), hcActiveValue(tl), c, tl.finds.length > 0) + hcSecond(tl) + "</div></div></div></button>";
 }
 // With no finding at all the four tiles would only say zero: the screen is a short report of the network instead.
 function hcReportHTML() {
@@ -70,8 +75,8 @@ function hcCarouselTile() {
   const two = finds.length ? hcStatBox(t("js.ha.health.last"), esc(fmtClock(last))) : hcStatBox(t("js.ha.health.card.check"), judged ? esc(fmtClock(judged)) : "–");
   return {
     id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
-    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</span>" + hcSoon() +
-      '</div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
+    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</span>" +
+      '</div><div class="t-mid">' + hcSoon() + '<div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
   };
 }
 
@@ -104,10 +109,10 @@ function hcList(tl) {
 function hcAction(f) {
   return '<div class="hs-act" style="--c:' + HC_COLOR[f.lv] + '">' + icon("lightbulb-on-outline") + "<span>" + esc(healthAction(f)) + "</span></div>";
 }
+// The restarts as round dots on a line: plain elements (an SVG stretched to the width would draw ellipses), left = the place on the line.
 function hcStrip(s, color) {
-  const dots = s.pts.map(function (x) { return '<circle cx="' + (6 + x * 288).toFixed(1) + '" cy="6" r="3.5"/>'; }).join("");
-  return '<div class="hs-strip"><div class="hs-sl"><b>' + esc(s.l1) + "</b><span>" + esc(s.l2) + '</span></div><svg viewBox="0 0 300 12" width="100%" height="12" preserveAspectRatio="none" aria-hidden="true">' +
-    '<line x1="0" y1="6" x2="300" y2="6" stroke="currentColor" stroke-opacity="0.2"/><g fill="' + color + '">' + dots + "</g></svg></div>";
+  const dots = s.pts.map(function (x) { return '<i style="left:' + (x * 100).toFixed(1) + '%"></i>'; }).join("");
+  return '<div class="hs-strip"><div class="hs-sl"><b>' + esc(s.l1) + "</b><span>" + esc(s.l2) + '</span></div><div class="hs-dots" style="--c:' + color + '" aria-hidden="true"><div>' + dots + "</div></div></div>";
 }
 function hcOne(f) {
   const d = f.devs[0], strip = healthStrip(f);

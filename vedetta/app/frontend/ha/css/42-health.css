@@ -15,6 +15,7 @@
   #card-network .hs-sim { flex: none; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px dashed var(--divider-color); background: none; font: inherit; font-size: 12px; color: var(--secondary-text-color); cursor: pointer; }
   #card-network .hs-sim.on { border-style: solid; border-color: var(--warning-color); color: var(--primary-text-color); font-weight: 500; }
   #card-network .hs-soon { flex: none; margin-left: auto; height: 20px; display: inline-flex; align-items: center; padding: 0 8px; border-radius: 10px; border: 1px solid var(--primary-color); font-size: 11px; font-weight: 600; letter-spacing: 0.02em; color: var(--primary-text-color); white-space: nowrap; }
+  #card-network .t-mid > .hs-soon { margin: 0 0 3px 8px; align-self: flex-start; }
   #card-network .hs-go .mdi { width: 16px; height: 16px; color: var(--secondary-text-color); }
 
   /* the small tiles */
@@ -82,6 +83,10 @@
   #card-network .hs-ln { font-size: var(--fs-s, 13px); line-height: 18px; color: var(--primary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #card-network .hs-strip { display: flex; flex-direction: column; gap: 2px; color: var(--primary-text-color); }
   #card-network .hs-sl { display: flex; justify-content: space-between; font-size: var(--fs-xs, 12px); line-height: 16px; color: var(--secondary-text-color); }
+  #card-network .hs-dots { position: relative; height: 12px; }
+  #card-network .hs-dots::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: currentColor; opacity: 0.2; }
+  #card-network .hs-dots > div { position: absolute; inset: 0 4px; }
+  #card-network .hs-dots i { position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: var(--c); }
   #card-network .hs-sl b { color: var(--primary-text-color); font-weight: 500; }
   #card-network .hs-act { margin-top: auto; flex: none; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 10px; background: color-mix(in srgb, var(--c) 14%, transparent); font-size: var(--fs-s, 13px); color: var(--primary-text-color); }
   #card-network .hs-act .mdi { width: 16px; height: 16px; color: var(--c); }

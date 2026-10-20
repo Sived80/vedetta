@@ -1,7 +1,7 @@
 import { $, COMPACT, LANG, ago, api, dlg, reloadHost, t } from "./core.js";
 import { S, setConn, snack } from "./core-ui.js";
 import { setStarBadge, setUpdateDot } from "./core-menu.js";
-import { buildNetwork, netEl, refreshDone, updateNetwork, updateScan } from "./filters.js";
+import { buildNetwork, netEl, networkBuilt, refreshDone, updateNetwork, updateScan } from "./filters.js";
 import { emptyState, flash, groupsEl, layout, prepare, rebuildList, reconcile, updateTile } from "./tile.js";
 import { newEl, renderNew } from "./new-devices.js";
 import { fetchHist, fetchLog, fetchLogSoon, histPush } from "./log.js";
@@ -213,7 +213,7 @@ export function load(opts) {
     S.newDevices = { count: nd.count || 0, devices: nd.devices || [], init: false };
     S.loaded = true;
     netEl.hidden = false;
-    buildNetwork();
+    if (!(opts.silent && networkBuilt())) buildNetwork();
     renderNew();
     layout();
     armNew();

@@ -62,6 +62,8 @@ function badgesHTML() {
     return '<button type="button" class="badge rp touch" data-badge="' + k + '">' + esc(t("js.ha.badge." + k)) + " <em>0</em></button>";
   }).join("");
 }
+// The card is built once; a resync of the data (coming back to the page, a dropped stream) only repaints it, so what is open or pressed in it stays where it is.
+export function networkBuilt() { return !!($("gauge") && $("btn-scan") && $("badges")); }
 export function buildNetwork() {
   if (!NET_PARTS) NET_PARTS = { live: $("live"), wrap: document.querySelector(".menu-wrap"), search: $("search-box") };
   const stash = document.createDocumentFragment();

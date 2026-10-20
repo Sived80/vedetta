@@ -140,7 +140,7 @@ async function openHealth(p) {
   await wait(300);
   check(q(".hs-stack").getAttribute("data-at") === "0" && TITLE.test(text("#rot .t-l")) === false, "un tocco sul corpo della tile passa alla successiva, non apre il pannello");
   for (let i = 0; i < 10 && !TITLE.test(text("#rot .t-l")); i++) await click("#rot");
-  await click("#rot .hs-go");
+  await openHealth(p);
   check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "il tasto «Apri» apre la schermata e la X e' in alto a sinistra");
   const tiles = qa(".hs-tile");
   check(tiles.length === 4 && tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join() === ["addr", "drop", "boot", "lat"].map((k) => tx("js.ha.health.tile." + k)).join(), "quattro tile: " + tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join());
@@ -188,14 +188,25 @@ async function openHealth(p) {
   await click(".hs-pane.detail .hs-d-head [data-act='close']");
   check(q(".hs-stack").getAttribute("data-at") === "1", "la X dell'elenco chiude la tile grande e torna alle quattro");
 
+  // --- coming back to the page after a long time resyncs the data without building the card again: the open screen, the buttons and the pending clicks stay where they are
+  const gaugeBefore = q("#gauge"), rotBefore = q("#rot");
+  const visibility = (state) => { Object.defineProperty(p.doc, "visibilityState", { value: state, configurable: true }); Object.defineProperty(p.doc, "hidden", { value: state === "hidden", configurable: true }); p.doc.dispatchEvent(new p.win.Event("visibilitychange")); };
+  const realNow = p.win.Date.now.bind(p.win.Date);
+  visibility("hidden");
+  p.win.Date.now = () => realNow() + 31000;
+  visibility("visible");
+  await wait(800);
+  p.win.Date.now = realNow;
+  check(q(".hs-stack").getAttribute("data-at") === "1" && q("#gauge") === gaugeBefore && q("#rot") === rotBefore, "tornando alla pagina dopo un po' la scheda non viene ricostruita: schermata aperta, cerchio e tile restano gli stessi");
+
   // --- the X of the screen goes back to the carousel, Esc too
   await click(".hs-pane.health [data-act='exit']");
   check(q(".hs-stack").getAttribute("data-at") === "0", "la X della schermata torna al carosello");
-  await click("#rot .hs-go");
+  await openHealth(p);
   p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   await wait(40);
   check(q(".hs-stack").getAttribute("data-at") === "0", "Esc dalla schermata torna al carosello");
-  await click("#rot .hs-go");
+  await openHealth(p);
 
   // --- a device that restarts: the name and the IP at the top, the dots of the restarts, when, what to do
   await click(qa(".hs-tile")[2]);

@@ -193,6 +193,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/pipeline.py` | Single search flow: independent functions (steps) enabled by profiles. |
 | `scan/pipeline_plan.py` | pipeline_plan: moved out of pipeline.py (see tools/split_module.py). |
 | `scan/pipeline_probes.py` | pipeline_probes: moved out of pipeline.py (see tools/split_module.py). |
+| `scan/presence.py` | Whose answer is an ARP answer. |
 | `scan/probe.py` | Builds the card of ONE device (probe_device): asks its adapter, adds what the search, Bonjour, DHCP and Home Assistant know, decides name, brand and "mobile", and returns a single record. |
 | `scan/probe_names.py` | probe_names: moved out of probe.py (see tools/split_module.py). |
 | `scan/probe_record.py` | probe_record: the records that the stages of probe_device pass to each other (what is known about the device, how it is reached, the brand stage, the name, the product) and the builder of the final card record. |
@@ -252,7 +253,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
 | `js/export.js` | 253 | export for analysis |
-| `js/filters.js` | 241 | filters |
+| `js/filters.js` | 243 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
 | `js/health-card.js` | 276 | network health: the "Health" screen of the Network card |
@@ -274,7 +275,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
 | `js/tile.js` | 311 | tile |
 | `js/update.js` | 34 | update available |
-| `css/10-base.css` | 166 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
+| `css/10-base.css` | 169 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 181 | components |
 | `css/12-motion.css` | 175 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |

@@ -1,0 +1,95 @@
+/* Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of one finding. Only drawn in the debug mode (js/health-card.js).
+   The same tokens, borders and sizes as the other tiles of the card; the colour of a state is in the icon and the number, never in the border alone. */
+
+@layer overrides {
+  /* the two screens and the big tile are stacked in one cell: the cell is as high as the network screen, so nothing moves when one is shown */
+  #card-network .hs-stack { display: grid; }
+  #card-network .hs-pane { grid-area: 1 / 1; min-width: 0; transition: opacity 0.28s ease, visibility 0s linear 0s; }
+  #card-network .hs-pane.net { display: flex; flex-direction: column; gap: 16px; }
+  #card-network .hs-pane.health { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px 14px; padding: 1px; box-sizing: border-box; }
+  #card-network .hs-stack[data-at="0"] .health, #card-network .hs-stack[data-at="1"] .net { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.28s ease, visibility 0s linear 0.28s; }
+  #card-network .hs-stack[data-at="2"] .net { opacity: 0; visibility: hidden; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #card-network .hs-pane, #card-network .hs-stack[data-at] .hs-pane { transition: none !important; } }
+
+  /* the small tiles */
+  #card-network .hs-tile { appearance: none; -webkit-appearance: none; background: transparent; color: inherit; font: inherit; display: flex; flex-direction: column; min-width: 0; padding: 8px; border-radius: var(--r-xl, 16px); border: 1px solid var(--divider-color); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; }
+  #card-network .hs-tile:hover { background: var(--ha-hover); }
+  #card-network .hs-tile .t-card { height: 100%; justify-content: flex-start; gap: 8px; min-width: 0; }
+  #card-network .hs-tile .t-head { padding-right: 0; min-width: 0; }
+  #card-network .hs-tile .t-l { overflow: hidden; text-overflow: ellipsis; }
+  #card-network .hs-tile .t-mid { margin: 0; flex: 1; justify-content: center; }
+  #card-network .hs-tile .stat-box { gap: 6px; }
+
+  /* the two dots under the card: the network screen and the health one (the second takes the colour of the worst finding while it is not the one shown) */
+  #card-network .hs-dots { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 2px 0 0; }
+  #card-network .hs-dots button { border: 0; background: none; padding: 8px 4px; cursor: pointer; display: inline-flex; align-items: center; }
+  #card-network .hs-dots i { display: block; width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: width 0.2s, background-color 0.2s, border-radius 0.2s; }
+  #card-network .hs-dots button[aria-current="true"] i { width: 18px; border-radius: 3px; background: var(--primary-color); }
+  #card-network .hs-dots button.warn[aria-current="false"] i { background: var(--warning-color); }
+  #card-network .hs-dots button.bad[aria-current="false"] i { background: var(--error-color); }
+
+  /* the big tile: it opens from the small one and fills the box of the four; it never makes the box taller (contain: size), what does not fit scrolls inside */
+  #card-network .hs-pane.detail { position: relative; contain: size; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 8px 12px; box-sizing: border-box; overflow: hidden; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: var(--r-xl, 16px);
+    clip-path: inset(var(--t, 0) var(--r, 0) var(--b, 0) var(--l, 0) round 16px); opacity: 0; visibility: hidden; pointer-events: none; transition: clip-path 0.3s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.2s ease 0.05s, visibility 0s linear 0.3s; }
+  #card-network .hs-stack[data-at="2"] .hs-pane.detail { clip-path: inset(0 0 0 0 round 16px); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path 0.3s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.12s ease, visibility 0s; }
+  #card-network .hs-d-head { display: flex; align-items: center; gap: 8px; flex: none; min-height: 32px; }
+  #card-network .hs-d-head .t-l { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #card-network .hs-ttl { text-transform: none; font-size: var(--fs-s, 14px); color: var(--primary-text-color); }
+  /* the round buttons of the head, as in the other windows: the close button on the left (it goes back one step), the one that hides on the right */
+  #card-network .hs-x { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: var(--secondary-text-color); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; margin: -4px -6px -4px 0; flex: none; }
+  #card-network .hs-x.hs-lx { margin: -4px 0 -4px -10px; }
+  #card-network .hs-x:hover { background: var(--ha-hover); color: var(--primary-text-color); }
+  #card-network .hs-x .mdi { width: 20px; height: 20px; }
+  #card-network .hs-d-body { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); padding-bottom: 14px; }
+  #card-network .hs-d-body::-webkit-scrollbar { display: none; }
+  #card-network .hs-d-body.pgbody { overflow: hidden; -webkit-mask-image: none; mask-image: none; padding-bottom: 0; }
+  #card-network .hs-d-body.hs-in > * { animation: hs-in 0.22s ease both; }
+  @keyframes hs-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #card-network .hs-d-body.hs-in > * { animation: none; } }
+
+  /* the list of findings */
+  #card-network .hs-row { border-top: 1px solid var(--divider-color); }
+  #card-network .hs-row:first-child { border-top: 0; }
+  #card-network .hs-row-main { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit; font: inherit; width: 100%; min-height: 52px; display: flex; align-items: center; gap: 10px; padding: 0; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  #card-network .hs-lv { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); }
+  #card-network .hs-lv .mdi { width: 16px; height: 16px; }
+  #card-network .hs-empty .hs-lv { width: 36px; height: 36px; margin-bottom: 6px; }
+  #card-network .hs-empty .hs-lv .mdi { width: 22px; height: 22px; }
+  #card-network .hs-rt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #card-network .hs-rn { font-size: var(--fs-s, 14px); line-height: 19px; color: var(--primary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #card-network .hs-rf { font-size: var(--fs-xs, 12px); line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #card-network .hs-ch { color: var(--secondary-text-color); display: grid; place-items: center; width: 24px; flex: none; transition: transform 0.2s; }
+  #card-network .hs-ch .mdi { width: 18px; height: 18px; }
+  #card-network .hs-row.dim .hs-rn { color: var(--secondary-text-color); }
+  #card-network .hs-btn { appearance: none; -webkit-appearance: none; background: transparent; color: var(--primary-text-color); font: inherit; font-size: 12.5px; font-weight: 500; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--divider-color); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  #card-network .hs-btn:hover { background: var(--ha-hover); }
+  #card-network .hs-btn .mdi { width: 15px; height: 15px; }
+  #card-network .hs-hidrow { appearance: none; -webkit-appearance: none; border: 0; border-top: 1px solid var(--divider-color); background: transparent; color: var(--secondary-text-color); font: inherit; font-size: var(--fs-s, 13px); width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0; cursor: pointer; text-align: left; }
+  #card-network .hs-hidrow span:nth-child(2) { flex: 1; }
+  #card-network .hs-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; padding: 6px 0 12px; }
+  #card-network .hs-empty b { font-size: var(--fs-s, 14px); font-weight: 500; }
+  #card-network .hs-empty > span:not(.hs-lv) { font-size: var(--fs-xs, 12px); color: var(--secondary-text-color); }
+
+  /* the detail of one finding: who, what, when, what to do */
+  #card-network .hs-pg { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+  #card-network .hs-nm { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit; font: inherit; padding: 0; text-align: left; cursor: pointer; display: flex; align-items: baseline; gap: 8px; min-width: 0; line-height: 20px; }
+  #card-network .hs-nm:disabled, #card-network .hs-dev:disabled { cursor: default; }
+  #card-network .hs-nm b { font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; color: var(--primary-text-color); }
+  #card-network .hs-nm span { font-size: var(--fs-s, 13px); color: var(--secondary-text-color); white-space: nowrap; }
+  #card-network .hs-ln { font-size: var(--fs-s, 13px); line-height: 18px; color: var(--primary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #card-network .hs-strip { display: flex; flex-direction: column; gap: 2px; color: var(--primary-text-color); }
+  #card-network .hs-sl { display: flex; justify-content: space-between; font-size: var(--fs-xs, 12px); line-height: 16px; color: var(--secondary-text-color); }
+  #card-network .hs-sl b { color: var(--primary-text-color); font-weight: 500; }
+  #card-network .hs-act { margin-top: auto; flex: none; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 10px; background: color-mix(in srgb, var(--c) 14%, transparent); font-size: var(--fs-s, 13px); color: var(--primary-text-color); }
+  #card-network .hs-act .mdi { width: 16px; height: 16px; color: var(--c); }
+  #card-network .hs-act span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  #card-network .hs-devs { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 14px), transparent); }
+  #card-network .hs-devs::-webkit-scrollbar { display: none; }
+  #card-network .hs-dev { appearance: none; -webkit-appearance: none; border: 0; border-top: 1px solid var(--divider-color); background: transparent; color: inherit; font: inherit; width: 100%; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  #card-network .hs-dev:first-child { border-top: 0; }
+  #card-network .hs-dev b { flex: 1; min-width: 0; font-size: var(--fs-s, 14px); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
+  #card-network .hs-dev span { font-size: var(--fs-xs, 12px); color: var(--secondary-text-color); white-space: nowrap; }
+  #card-network .hs-dev .hs-ch { width: 18px; font-style: normal; }
+  #card-network .hs-dev .hs-ch .mdi { width: 16px; height: 16px; }
+  #card-network .hs-dev:not(:disabled):hover { background: var(--ha-hover); }
+}

@@ -1,17 +1,19 @@
 """The network-health findings for the page and the log (health/). It reads the signals the app already has (the IP conflicts of the ARP scan), hands them to the judge now and then, and keeps the findings. Read-only: it sends nothing to any device.
-Off unless VEDETTA_HEALTH=shadow is set. In shadow the findings are only counted in the log and kept for the export; nothing reaches the page, because a rule is shown only after it has been judged on real networks (see the promotion criteria of the project)."""
+On unless VEDETTA_HEALTH=off is set. A rule in shadow is only counted in the log and kept for the export; nothing of it reaches the event of the page, because a rule is shown to everyone only after it has been judged on real networks (see the promotion criteria of the project).
+The page of the debug mode asks for everything, shadow included (page())."""
 import asyncio
 import contextlib
 import os
 import time
 
 from ..applog import logger
-from ..health import signals
+from ..health import matrix, signals
 from ..health.engine import Change, Engine
 from ..recognition.identity import default_gateway
 from ..scan import scanner
 from ..storage import devices_config
 from ..storage.history import history
+from . import health_page
 
 REFRESH_S = 120
 FIRST_AFTER_S = 600      # as for the analysis: right after a start the scan has not settled yet
@@ -21,8 +23,12 @@ _task: asyncio.Task | None = None
 _on_change = None
 
 
+SWITCHED_OFF = ("off", "0", "no", "false")
+TILE_OF = {row["id"]: row["tile"] for row in matrix.load()}
+
+
 def enabled() -> bool:
-    return os.environ.get("VEDETTA_HEALTH", "").strip().lower() == "shadow"
+    return os.environ.get("VEDETTA_HEALTH", "").strip().lower() not in SWITCHED_OFF
 
 
 SIGNAL_WINDOW_S = 86400      # the longest window a rule looks back (H05: one day)
@@ -51,6 +57,19 @@ def snapshot(engine: Engine | None = None) -> list[dict]:
         return []
     return [{"rule": f.rule, "subject": f.subject, "severity": f.severity, "since": f.first_seen, "hits": f.hits}
             for f in engine.findings() if f.state == "active" and not f.shadow]
+
+
+def running() -> bool:
+    return _engine is not None
+
+
+def page(engine: Engine | None = None, devices=devices_config.load_devices, gateway=default_gateway) -> list[dict]:
+    """What the page of the debug mode draws: every active finding, shadow included, with who (name and IP), what and when (ha/health_page.py)."""
+    engine = _engine if engine is None else engine
+    if engine is None:
+        return []
+    conflicts = {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()}
+    return health_page.build(engine.findings(), TILE_OF, devices(), conflicts, gateway())
 
 
 def summary(engine: Engine | None = None) -> dict:

@@ -1,4 +1,4 @@
-"""The health findings for the page (ha/health_view.py): off unless VEDETTA_HEALTH=shadow; a rule in shadow is judged and counted but never reaches the snapshot or the event; a rule that is shown reaches both once it is active; the summary counts by rule and state
+"""The health findings for the page (ha/health_view.py): on unless VEDETTA_HEALTH=off; a rule in shadow is judged and counted but never reaches the snapshot or the event; a rule that is shown reaches both once it is active; the summary counts by rule and state
 and holds no address. The signals are handed in, nothing is sent to any device."""
 import asyncio
 import os
@@ -15,13 +15,15 @@ NOW = 1_000_000.0
 ROW = matrix.load()[0]
 CONFLICT = {"conflicts": {"192.168.1.20": ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02"]}}
 
-# --- off by default; on only with the exact word
+# --- on by default (the judge runs in shadow, it sends nothing); off only with an explicit word
 os.environ.pop("VEDETTA_HEALTH", None)
-assert not hv.enabled()
-os.environ["VEDETTA_HEALTH"] = "on"
-assert not hv.enabled(), "only «shadow» turns it on"
+assert hv.enabled(), "the judge runs unless it is switched off"
 os.environ["VEDETTA_HEALTH"] = "shadow"
 assert hv.enabled()
+for word in ("off", "OFF", " 0 ", "no", "false"):
+    os.environ["VEDETTA_HEALTH"] = word
+    assert not hv.enabled(), word
+os.environ["VEDETTA_HEALTH"] = "shadow"
 
 # --- a rule in shadow: judged, counted, never shown
 shadow = Engine([dict(ROW, status="shadow")])
@@ -56,8 +58,28 @@ read["conflicts"]["10.0.0.5"].append("m3")
 assert hv.scanner.arp_conflicts["10.0.0.5"] == ["m1", "m2"], "the signals are a copy"
 hv.scanner.arp_conflicts.clear()
 
-# --- start does nothing when it is off, and stop is safe
-os.environ.pop("VEDETTA_HEALTH")
+# --- the page: every active finding, the ones in shadow included (the page that asks is the debug one), with the names and addresses resolved from the cards
+hv.scanner.arp_conflicts["10.0.0.5"] = ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02"]
+cards = [{"id": "a", "name": "Stampante", "ip": "10.0.0.5", "mac": "AA:BB:CC:00:00:01"}]
+sh = Engine([dict(ROW, status="shadow")])
+hv.judge_once(sh, CONFLICT, 0)
+hv.judge_once(sh, CONFLICT, 10)
+got = hv.page(sh, devices=lambda: cards, gateway=lambda: None)
+assert len(got) == 1 and got[0]["id"] == "H20:10.0.0.5" and got[0]["shadow"] is True and got[0]["tile"] == "addr", got
+assert got[0]["devs"][0] == {"id": "a", "name": "Stampante", "ip": "10.0.0.5"} and got[0]["devs"][1]["mac"] == "aa:bb:cc:00:00:02", got[0]["devs"]
+assert hv.page(None) == [] and hv.snapshot(sh) == [], "no engine, nothing; and the snapshot of the event still hides the shadow"
+hv.scanner.arp_conflicts.clear()
+
+# --- the route of the page: it says whether the judge is running and hands over the entries; with no judge, an empty list
+from app.routes import ha as routes_ha  # noqa: E402
+assert not hv.running()
+assert asyncio.run(routes_ha.api_ha_health()) == {"running": False, "findings": []}
+hv._engine = sh
+assert hv.running() and asyncio.run(routes_ha.api_ha_health())["running"] is True
+hv._engine = None
+
+# --- start does nothing when it is switched off, and stop is safe
+os.environ["VEDETTA_HEALTH"] = "off"
 
 
 async def lifecycle():

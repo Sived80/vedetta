@@ -52,7 +52,7 @@ async def lifespan(_: FastAPI):
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,
                 dhcp_discover=scanner.dhcp_discover, internet_check=internet.check if external.any_internet_check() else None)  # who does what: gateway, DHCP, DNS, repeaters
     analysis_view.start(on_change=state.emit_event)   # the state of each card: identified, settling or under analysis (read-only)
-    health_view.start(on_change=state.emit_event)   # network health: off unless VEDETTA_HEALTH=shadow, then judged and only counted in the log
+    health_view.start(on_change=state.emit_event)   # network health: judged in shadow (only counted in the log) unless VEDETTA_HEALTH=off
     logger.info("Servizio avviato")
     yield
     if dhcp_transport:

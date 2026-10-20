@@ -15,7 +15,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from .. import applog, external, i18n
-from ..ha import analysis_view, ha_data, ha_update
+from ..ha import analysis_view, ha_data, ha_update, health_view
 from ..ha.device_debug import device_debug
 from ..storage import journal, starhint
 from ..scan import latency
@@ -93,6 +93,12 @@ async def api_ha_device_evidence(device_id: str):
     if out is None:
         raise HTTPException(404, "Dispositivo non trovato")
     return evidence.summarize(out, state.devices.get(device_id) or {})
+
+
+@router.get("/api/ha/health")
+async def api_ha_health():
+    """The network-health findings with who, what and when, shadow included. Only the page's debug mode asks for it; the judge runs in shadow in any case."""
+    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page)}
 
 
 @router.get("/api/ha/registry/status")

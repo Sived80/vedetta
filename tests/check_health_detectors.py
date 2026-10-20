@@ -1,5 +1,5 @@
 """The detectors of the second group (health/detectors.py): cyclic drops of one device (a restart that repeats) and many devices that drop together (a common cause: the switch, the access point, the power). The thresholds are the ones chosen from the real exports
-(tools/replay_health.py). The evidence holds counts only. And the drops are derived from the presence events in one place (health/signals.py)."""
+(tools/replay_health.py). The evidence holds counts and device ids, never an address or a name. And the drops are derived from the presence events in one place (health/signals.py)."""
 import os
 import sys
 
@@ -42,7 +42,10 @@ assert detectors.periodic_dropout({"now": NOW, "drops": 5}, PERIODIC) == [] and 
 # --- drops together: six of twenty devices within two minutes
 together = {"d%d" % i: [NOW - 1800 + i * 10] for i in range(6)}
 found = detectors.simultaneous_drop(sig(together, devices=20), TOGETHER)
-assert len(found) == 1 and found[0].subject == "lan" and found[0].data == {"devices": 6, "of": 20}, found
+assert len(found) == 1 and found[0].subject == "lan" and found[0].data == {"devices": 6, "of": 20, "ids": ["d0", "d1", "d2", "d3", "d4", "d5"]}, found
+# the ids are those of the biggest group of the hour, not of every device that dropped
+mixed = dict(together, late=[NOW - 300], later=[NOW - 100])
+assert detectors.simultaneous_drop(sig(mixed, devices=20), TOGETHER)[0].data["ids"] == ["d0", "d1", "d2", "d3", "d4", "d5"]
 # four is not enough, and neither is a crowd that is a small part of a big network
 assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(4)}, devices=20), TOGETHER) == []
 assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(6)}, devices=60), TOGETHER) == [], "6 of 60 is 10%: below the share"

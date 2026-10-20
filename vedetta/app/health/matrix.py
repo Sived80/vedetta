@@ -5,7 +5,8 @@ from pathlib import Path
 from . import detectors
 
 PATH = Path(__file__).with_name("matrix.json")
-REQUIRED = ("id", "family", "params", "signals", "scope", "class", "severity", "message_key", "remedy_key", "detectability", "status", "since", "existence")
+REQUIRED = ("id", "family", "tile", "params", "signals", "scope", "class", "severity", "message_key", "remedy_key", "detectability", "status", "since", "existence")
+TILES = ("addr", "drop", "boot", "lat")          # the four tiles of the page: addresses, drops, restarts, latency
 SEVERITIES = ("info", "warning", "critical")
 STATUSES = ("draft", "shadow", "active")
 DETECTABILITY = ("D1", "D2", "D3")
@@ -16,7 +17,7 @@ def _fail(row: dict, field: str, why: str) -> None:
     raise ValueError("health rule %s: field %s %s" % (row.get("id", "?"), field, why))
 
 
-ENUMS = {"severity": SEVERITIES, "status": STATUSES, "detectability": DETECTABILITY}
+ENUMS = {"severity": SEVERITIES, "status": STATUSES, "detectability": DETECTABILITY, "tile": TILES}
 
 
 def _check_sources(row: dict) -> None:

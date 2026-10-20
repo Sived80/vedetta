@@ -1,6 +1,7 @@
 import { $, REDUCED, api, esc, icon, t } from "./core.js";
 import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
+import { mountHealth } from "./health-card.js";
 import { newEl, renderNew } from "./new-devices.js";
 import { schedule } from "./live.js";
 import { bindGauge, gaugeHTML, paintCycle, paintGauge, paintNewDot } from "./net-gauge.js";
@@ -91,6 +92,7 @@ export function buildNetwork() {
     if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
   });
   mountTile();
+  mountHealth();                                       // only in the debug mode: a second screen with the network health
   // Brands: the list opens on hover (CSS) and, on touch screens, with a tap on the block (.expanded).
   $("brands").addEventListener("click", function () { this.classList.toggle("expanded"); });
 }

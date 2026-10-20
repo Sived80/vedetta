@@ -36,6 +36,12 @@ function gateway() {
   return S.list.find(function (d) { return d.ip === ip; }) || { ip: ip, online: false };
 }
 
+// The latency of the gateway now, as the tile says it (tenths below 10 ms), or null while it does not answer; the health screen shows it.
+export function gatewayLatencyText() {
+  const gw = gateway();
+  return gw && gw.online && gw.latency_ms != null ? ms(gw.latency_ms) : null;
+}
+
 // Called at every update of the scan state. A later "next check" means the previous one has just ended: that is the moment to sample.
 // Returns true when a sample was taken (the tile has new numbers).
 export function sampleCycle() {

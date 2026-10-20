@@ -1,4 +1,4 @@
-"""The detectors: one small pure function for each family of problem. A detector reads the signals and the parameters of its row and returns the evidence it finds (nothing if the signal is quiet or unreadable). Evidence holds counts, never addresses or names."""
+"""The detectors: one small pure function for each family of problem. A detector reads the signals and the parameters of its row and returns the evidence it finds (nothing if the signal is quiet or unreadable). Evidence holds counts and device ids, never addresses or names."""
 import statistics
 from dataclasses import dataclass, field
 
@@ -50,9 +50,9 @@ def simultaneous_drop(signals: dict, params: dict) -> list[Evidence]:
     for device, times in _recent(signals.get("drops"), now, params["window_s"]).items():
         for t in times:
             bins.setdefault(int(t // params["bin_s"]), set()).add(device)
-    biggest = max((len(d) for d in bins.values()), default=0)
-    if biggest >= params["min_devices"] and biggest >= params["min_fraction"] * devices:
-        return [Evidence("lan", {"devices": biggest, "of": devices})]
+    group = max(bins.values(), key=len, default=set())
+    if len(group) >= params["min_devices"] and len(group) >= params["min_fraction"] * devices:
+        return [Evidence("lan", {"devices": len(group), "of": devices, "ids": sorted(group)})]
     return []
 
 

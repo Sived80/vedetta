@@ -1,5 +1,6 @@
 import { ROOT, dlg, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
+import { mountHealth } from "./health-card.js";
 import { updateTile } from "./tile.js";
 import { miAttrs, miDebug } from "./more-attrs.js";
 
@@ -22,6 +23,7 @@ function setDebug(on) {
   ROOT.toggleAttribute("data-debug", DEBUG);
   try { localStorage.setItem("vedetta-debug", DEBUG ? "1" : "0"); } catch (e) { /* ignore */ }
   showDebugBadge();
+  mountHealth();                                       // the network health screen exists only while the debug mode is on
   snack(t(DEBUG ? "js.ha.debug.on" : "js.ha.debug.off"), { kind: DEBUG ? "warning" : "success", ms: 3500 });
   S.tiles.forEach(function (el, id) { updateTile(id); });
   const od = S.open && S.devices.get(S.open);

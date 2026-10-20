@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app.health import detectors, matrix  # noqa: E402
 
-GOOD = {"id": "H99", "family": "conflict", "params": {"min_cycles": 2, "clear_cycles": 3}, "signals": ["ARP"], "scope": "live", "class": "configuration", "severity": "warning",
+GOOD = {"id": "H99", "family": "conflict", "tile": "addr", "params": {"min_cycles": 2, "clear_cycles": 3}, "signals": ["ARP"], "scope": "live", "class": "configuration", "severity": "warning",
         "message_key": "health.h99", "remedy_key": "health.h99.remedy", "detectability": "D1", "status": "shadow", "since": "next",
         "existence": {"grade": "A", "sources": [{"title": "IPv4 Address Conflict Detection", "link": "https://www.rfc-editor.org/rfc/rfc5227", "verified": True}]}}
 
@@ -29,6 +29,9 @@ assert rows, "the shipped matrix is empty"
 assert all(r["family"] in detectors.FAMILIES for r in rows), "a row uses a family that has no detector"
 assert all(r["status"] in ("draft", "shadow", "active") for r in rows)
 
+assert {r["tile"] for r in rows} == set(matrix.TILES), "every tile of the page has a rule"
+refused(lambda r: r.pop("tile"), "tile")
+refused(lambda r: r.update(tile="moon"), "tile")
 refused(lambda r: r.pop("severity"), "severity")
 refused(lambda r: r.update(severity="catastrophic"), "severity")
 refused(lambda r: r.update(family="telepathy"), "family")

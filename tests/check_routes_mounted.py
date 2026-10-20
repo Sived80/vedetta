@@ -16,7 +16,7 @@ assert not twice, "a route is mounted twice: %s" % twice
 EXPECTED = {
     ("POST", "/api/export"), ("GET", "/api/export/info"), ("POST", "/api/export/jobs"), ("GET", "/api/export/jobs/{job_id}"), ("DELETE", "/api/export/jobs/{job_id}"),
     ("POST", "/api/export/jobs/{job_id}/choices"), ("POST", "/api/export/jobs/{job_id}/file"),
-    ("GET", "/ha"), ("GET", "/api/ha/devices"), ("GET", "/api/ha/events"), ("GET", "/api/ha/summary"),
+    ("GET", "/ha"), ("GET", "/api/ha/devices"), ("GET", "/api/ha/events"), ("GET", "/api/ha/summary"), ("GET", "/api/ha/health"),
     ("POST", "/api/settings"), ("POST", "/api/pause"),
 }
 missing = sorted(EXPECTED - set(routes))

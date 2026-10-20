@@ -17,6 +17,7 @@
 ['GET'] /api/ha/devices/{device_id}/debug
 ['GET'] /api/ha/devices/{device_id}/evidence
 ['GET'] /api/ha/events
+['GET'] /api/ha/health
 ['GET'] /api/ha/history
 ['GET'] /api/ha/history/{device_id}
 ['GET'] /api/ha/logbook

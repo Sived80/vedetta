@@ -577,9 +577,6 @@
   "js.ha.an.state.unresolved": "Non identificato",
   "js.ha.an.short.unresolved": "da identificare",
   "js.ha.an.reason.expired": "In osservazione da oltre 7 giorni senza prove sufficienti: dagli un nome o scegli tu il tipo.",
-  "js.ha.health.screens": "Schermata",
-  "js.ha.health.screen_net": "Rete",
-  "js.ha.health.screen_health": "Salute",
   "js.ha.health.detail": "Dettaglio",
   "js.ha.health.back": "Indietro",
   "js.ha.health.tile.addr": "Indirizzi",
@@ -621,5 +618,12 @@
   "js.ha.health.report.judged": "Ultimo controllo alle {time}",
   "js.ha.health.report.looking": "Sto osservando la rete: il primo controllo arriva a breve.",
   "js.ha.health.report.last": "Ultimo problema: {name}, {when}",
-  "js.ha.health.report.never": "Nessun problema registrato."
+  "js.ha.health.report.never": "Nessun problema registrato.",
+  "js.ha.health.title": "Salute della rete",
+  "js.ha.health.card.state": "Stato",
+  "js.ha.health.card.ok": "In ordine",
+  "js.ha.health.card.watching": "In osservazione",
+  "js.ha.health.card.problems": "Problemi",
+  "js.ha.health.card.check": "Controllo",
+  "js.ha.health.card.tip": "Salute della rete: tocca per aprire"
 }

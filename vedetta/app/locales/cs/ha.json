@@ -574,9 +574,6 @@
   "js.ha.an.state.unresolved": "Neurčeno",
   "js.ha.an.short.unresolved": "k určení",
   "js.ha.an.reason.expired": "Sledováno déle než 7 dní bez dostatečných důkazů: pojmenujte zařízení nebo zvolte typ sami.",
-  "js.ha.health.screens": "Obrazovka",
-  "js.ha.health.screen_net": "Síť",
-  "js.ha.health.screen_health": "Stav",
   "js.ha.health.detail": "Detail",
   "js.ha.health.back": "Zpět",
   "js.ha.health.tile.addr": "Adresy",
@@ -618,5 +615,12 @@
   "js.ha.health.report.judged": "Poslední kontrola v {time}",
   "js.ha.health.report.looking": "Sleduji síť: první kontrola proběhne brzy.",
   "js.ha.health.report.last": "Poslední problém: {name}, {when}",
-  "js.ha.health.report.never": "Žádný zaznamenaný problém."
+  "js.ha.health.report.never": "Žádný zaznamenaný problém.",
+  "js.ha.health.title": "Zdraví sítě",
+  "js.ha.health.card.state": "Stav",
+  "js.ha.health.card.ok": "V pořádku",
+  "js.ha.health.card.watching": "Sleduji",
+  "js.ha.health.card.problems": "Problémy",
+  "js.ha.health.card.check": "Kontrola",
+  "js.ha.health.card.tip": "Zdraví sítě: klepnutím otevřete"
 }

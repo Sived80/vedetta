@@ -1,16 +1,16 @@
 import { $, ROOT, api, dlg, esc, fmtClock, icon, t } from "./core.js";
 import { healthAction, healthDeviceName, healthName, healthReport, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
-import { gatewayLatencyText } from "./net-rotator.js";
+import { gatewayLatencyText, paintTile, setExtraTile } from "./net-rotator.js";
 import { openMore } from "./more-info.js";
 
 // ------------------------------------------------------------ network health: the "Health" screen of the Network card
-// Dormant: it exists only while the debug mode is on (three taps on the title). The card gets a second screen next to the network one (the two dots under it): four tiles; a tile opens, from its own place, the big tile
-// with its findings; a row opens the detail of one finding: who (name and IP), what, when, what to do. The data comes from /api/ha/health, the judge runs on the server in any case.
+// Dormant: it exists only while the debug mode is on (three taps on the title). The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
+// all is well); a tile of the four opens, from its own place, the big tile with its findings; a row opens the detail of one finding: who (name and IP), what, when, what to do. The data comes from /api/ha/health, the judge runs on the server in any case.
 var HC_POLL_MS = 30000, HC_HIDDEN_KEY = "vedetta-health-hidden";
 var HC_LEVEL_ICON = { bad: "alert-circle", warn: "alert", ok: "check-circle" };
 var HC_TILE_ICON = { addr: "lan", drop: "access-point", boot: "refresh", lat: "wifi-arrow-up-down" };
 var HC_COLOR = { bad: "var(--error-color)", warn: "var(--warning-color)", ok: "var(--success-color)", none: "var(--secondary-text-color)" };
-var HC = { findings: [], report: null, running: false, hidden: hcLoadHidden(), stack: null, tilesEl: null, detail: null, dots: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
+var HC = { findings: [], report: null, running: false, hidden: hcLoadHidden(), stack: null, screen: null, tilesEl: null, detail: null, rot: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
 
 function hcLoadHidden() {
   try { const v = JSON.parse(localStorage.getItem(HC_HIDDEN_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; }
@@ -47,8 +47,22 @@ function hcPaintTiles() {
   const m = hcModel(), quiet = HC.findings.length === 0;
   HC.tilesEl.classList.toggle("quiet", quiet);
   HC.tilesEl.innerHTML = quiet ? hcReportHTML() : m.map(hcTileHTML).join("");
-  const worst = healthWorst(m.reduce(function (all, tl) { return all.concat(tl.finds); }, []));
-  HC.dots.children[1].className = worst === "ok" ? "" : worst;
+  paintTile(false);                                            // the tile of the carousel says the same in two numbers
+}
+
+// ------------------------------------------------------------ the tile of the carousel: the one way in
+// All well: "Status: all good" and the time of the last check. Findings: how many and when the last was seen, in the colour of the worst. `attention` changes with the set of shown findings: the carousel goes to the tile then.
+function hcCarouselTile() {
+  if (!HC.stack) return null;
+  const finds = HC.findings.filter(function (f) { return HC.hidden.indexOf(f.id) < 0; }), worst = healthWorst(finds), judged = HC.report && HC.report.judged;
+  const c = finds.length || judged ? HC_COLOR[worst] : HC_COLOR.none, last = finds.reduce(function (m, f) { return Math.max(m, f.last); }, 0);
+  const one = finds.length ? hcStatBox(t("js.ha.health.card.problems"), finds.length, c, true) : hcStatBox(t("js.ha.health.card.state"), esc(t(judged ? "js.ha.health.card.ok" : "js.ha.health.card.watching")), c, !!judged);
+  const two = finds.length ? hcStatBox(t("js.ha.health.last"), esc(fmtClock(last))) : hcStatBox(t("js.ha.health.card.check"), judged ? esc(fmtClock(judged)) : "–");
+  return {
+    id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
+    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t("js.ha.health.title")) +
+      '</span></div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"></div></div>',
+  };
 }
 
 // ------------------------------------------------------------ the big tile: the list of findings and the detail of one
@@ -107,31 +121,43 @@ function hcPaintDetail() {
 
 // ------------------------------------------------------------ opening and closing
 function hcAt() { return HC.stack ? HC.stack.getAttribute("data-at") : "0"; }
-function hcGo(i) {
-  HC.stack.setAttribute("data-at", String(i));
-  Array.prototype.forEach.call(HC.dots.children, function (b, n) { b.setAttribute("aria-current", String(n === i)); });
+function hcGo(i) { HC.stack.setAttribute("data-at", String(i)); }
+// A pane grows from the place of the small tile: its start is that place, set without a transition.
+function hcGrow(pane, tileEl, go) {
+  const stack = HC.stack.getBoundingClientRect(), tile = tileEl.getBoundingClientRect();
+  pane.style.transition = "none";
+  pane.style.setProperty("--t", (tile.top - stack.top) + "px"); pane.style.setProperty("--r", (stack.right - tile.right) + "px");
+  pane.style.setProperty("--b", (stack.bottom - tile.bottom) + "px"); pane.style.setProperty("--l", (tile.left - stack.left) + "px");
+  void pane.offsetWidth;
+  pane.style.transition = "";
+  hcGo(go);
+  const first = pane.querySelector(".hs-x");
+  if (first) first.focus({ preventScroll: true });
+}
+function hcOpenScreen(rotEl) {
+  if (!HC.stack || hcAt() !== "0") return;
+  HC.rot = rotEl;
+  hcGrow(HC.screen, rotEl, 1);
+}
+function hcExit() {
+  if (hcAt() !== "1") return;
+  hcGo(0);
+  if (HC.rot && HC.rot.focus) HC.rot.focus({ preventScroll: true });
 }
 function hcOpen(key, tileEl) {
-  const stack = HC.stack.getBoundingClientRect(), tile = tileEl.getBoundingClientRect();
   HC.tile = key; HC.page = null; HC.showHidden = false;
-  HC.detail.style.transition = "none";
   hcPaintDetail();
-  HC.detail.style.setProperty("--t", (tile.top - stack.top) + "px"); HC.detail.style.setProperty("--r", (stack.right - tile.right) + "px");
-  HC.detail.style.setProperty("--b", (stack.bottom - tile.bottom) + "px"); HC.detail.style.setProperty("--l", (tile.left - stack.left) + "px");
-  void HC.detail.offsetWidth;                                     // the start is the place of the small tile, set without a transition
-  HC.detail.style.transition = "";
-  hcGo(2); HC.from = tileEl;
-  const first = HC.detail.querySelector(".hs-x");
-  if (first) first.focus({ preventScroll: true });
+  HC.from = tileEl;
+  hcGrow(HC.detail, tileEl, 2);
 }
 function hcClose() {
   if (hcAt() !== "2") return;
   hcGo(1);
   if (HC.from && HC.from.focus) HC.from.focus({ preventScroll: true });
 }
-// One step back: from the detail to the list, from the list to the tiles.
+// One step back: from the detail to the list, from the list to the tiles, from the tiles to the carousel.
 function hcBack() {
-  if (HC.page) { HC.page = null; HC.anim = true; hcPaintDetail(); } else hcClose();
+  if (HC.page) { HC.page = null; HC.anim = true; hcPaintDetail(); } else if (hcAt() === "2") hcClose(); else hcExit();
 }
 function hcHide(id) {
   const tl = hcTile(HC.tile);
@@ -163,47 +189,39 @@ function hcOpenDevice(i) {
 // ------------------------------------------------------------ the card: the stack of the two screens
 // Esc is listened to only while the screens exist: in the normal mode the page has no listener of this feature.
 function hcOnKey(e) {
-  if (e.key === "Escape" && hcAt() === "2" && !dlg.open) { e.preventDefault(); hcBack(); }
+  if (e.key === "Escape" && hcAt() !== "0" && !dlg.open) { e.preventDefault(); hcBack(); }
 }
 function hcDiv(cls) { const e = document.createElement("div"); e.className = cls; return e; }
-function hcSwipe(stack) {
-  let x0 = null;
-  stack.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
-  stack.addEventListener("pointerup", function (e) {
-    const start = x0, dx = e.clientX - (start === null ? e.clientX : start);
-    x0 = null;
-    if (start !== null && hcAt() !== "2" && Math.abs(dx) > 40) hcGo(Math.max(0, Math.min(1, +hcAt() + (dx < 0 ? 1 : -1))));
-  });
-}
 function hcBuild() {
   const card = $("card-network"), hero = card && card.querySelector(".hero-row"), search = $("search-row"), badges = $("badges");
   if (!hero || !search || !badges) return;
   const stack = hcDiv("hs-stack"), net = hcDiv("hs-pane net");
-  HC.stack = stack; HC.tilesEl = hcDiv("hs-pane health"); HC.detail = hcDiv("hs-pane detail"); HC.dots = hcDiv("hs-dots");
+  HC.stack = stack; HC.screen = hcDiv("hs-pane health"); HC.tilesEl = hcDiv("hs-tiles"); HC.detail = hcDiv("hs-pane detail");
   stack.setAttribute("data-at", "0");
+  HC.screen.setAttribute("role", "region"); HC.screen.setAttribute("aria-label", t("js.ha.health.title"));
+  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + "</span></div>";
+  HC.screen.appendChild(HC.tilesEl);
   HC.detail.setAttribute("role", "region"); HC.detail.setAttribute("aria-label", t("js.ha.health.detail"));
   hero.parentNode.insertBefore(stack, hero);
   net.appendChild(search); net.appendChild(hero); net.appendChild(badges);
-  stack.appendChild(net); stack.appendChild(HC.tilesEl); stack.appendChild(HC.detail);
-  HC.dots.setAttribute("role", "group"); HC.dots.setAttribute("aria-label", t("js.ha.health.screens"));
-  HC.dots.innerHTML = '<button type="button" data-i="0" aria-current="true" aria-label="' + esc(t("js.ha.health.screen_net")) + '"><i></i></button><button type="button" data-i="1" aria-current="false" aria-label="' + esc(t("js.ha.health.screen_health")) + '"><i></i></button>';
-  stack.parentNode.insertBefore(HC.dots, stack.nextSibling);
-  HC.dots.addEventListener("click", function (e) { const b = e.target.closest("button[data-i]"); if (b) hcGo(+b.dataset.i); });
+  stack.appendChild(net); stack.appendChild(HC.screen); stack.appendChild(HC.detail);
+  HC.screen.addEventListener("click", function (e) { if (e.target.closest("[data-act='exit']")) hcExit(); });
   HC.tilesEl.addEventListener("click", function (e) { const tl = e.target.closest(".hs-tile"); if (tl) hcOpen(tl.dataset.key, tl); });
   HC.detail.addEventListener("click", hcOnClick);
-  hcSwipe(stack);
   document.addEventListener("keydown", hcOnKey);
+  setExtraTile(hcCarouselTile);
   hcPaintTiles();
 }
-// The three parts of the network screen go back where they were and the screens are taken away.
+// The three parts of the network screen go back where they were and the screens are taken away, the tile leaves the carousel.
 function hcRemove() {
   if (!HC.stack) return;
   document.removeEventListener("keydown", hcOnKey);
   const parent = HC.stack.parentNode, net = HC.stack.querySelector(".hs-pane.net");
   if (parent && net) Array.prototype.slice.call(net.children).forEach(function (n) { parent.insertBefore(n, HC.stack); });
-  if (HC.dots) HC.dots.remove();
   HC.stack.remove();
-  HC.stack = HC.tilesEl = HC.detail = HC.dots = null;
+  HC.stack = HC.screen = HC.tilesEl = HC.detail = HC.rot = null;
+  setExtraTile(null);
+  paintTile(false);
 }
 function hcRepaint() {
   if (!HC.stack) return;
@@ -222,7 +240,7 @@ function hcRefresh() {
 
 // Called after the card is built and when the debug mode is turned on or off.
 export function mountHealth() {
-  if (HC.stack && !document.contains(HC.stack)) HC.stack = HC.tilesEl = HC.detail = HC.dots = null;        // the card was rebuilt: the old screens went with it
+  if (HC.stack && !document.contains(HC.stack)) HC.stack = HC.screen = HC.tilesEl = HC.detail = HC.rot = null;        // the card was rebuilt: the old screens went with it
   if (!hcDebugOn()) { hcRemove(); clearInterval(HC.timer); HC.timer = 0; return; }
   if (HC.running && !HC.stack) hcBuild();
   hcRefresh();

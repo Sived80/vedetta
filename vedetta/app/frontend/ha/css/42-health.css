@@ -6,9 +6,8 @@
   #card-network .hs-stack { display: grid; }
   #card-network .hs-pane { grid-area: 1 / 1; min-width: 0; transition: opacity 0.28s ease, visibility 0s linear 0s; }
   #card-network .hs-pane.net { display: flex; flex-direction: column; gap: 16px; }
-  #card-network .hs-pane.health { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px 14px; padding: 1px; box-sizing: border-box; }
-  #card-network .hs-stack[data-at="0"] .health, #card-network .hs-stack[data-at="1"] .net { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.28s ease, visibility 0s linear 0.28s; }
-  #card-network .hs-stack[data-at="2"] .net { opacity: 0; visibility: hidden; pointer-events: none; }
+  #card-network .hs-tiles { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px 14px; padding: 1px; box-sizing: border-box; }
+  #card-network .hs-stack:not([data-at="0"]) .net { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease 0.12s, visibility 0s linear 0.32s; }
   @media (prefers-reduced-motion: reduce) { #card-network .hs-pane, #card-network .hs-stack[data-at] .hs-pane { transition: none !important; } }
 
   /* the small tiles */
@@ -20,18 +19,10 @@
   #card-network .hs-tile .t-mid { margin: 0; flex: 1; justify-content: center; }
   #card-network .hs-tile .stat-box { gap: 6px; }
 
-  /* the two dots under the card: the network screen and the health one (the second takes the colour of the worst finding while it is not the one shown) */
-  #card-network .hs-dots { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 2px 0 0; }
-  #card-network .hs-dots button { border: 0; background: none; padding: 8px 4px; cursor: pointer; display: inline-flex; align-items: center; }
-  #card-network .hs-dots i { display: block; width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--primary-text-color) 25%, transparent); transition: width 0.2s, background-color 0.2s, border-radius 0.2s; }
-  #card-network .hs-dots button[aria-current="true"] i { width: 18px; border-radius: 3px; background: var(--primary-color); }
-  #card-network .hs-dots button.warn[aria-current="false"] i { background: var(--warning-color); }
-  #card-network .hs-dots button.bad[aria-current="false"] i { background: var(--error-color); }
-
-  /* the big tile: it opens from the small one and fills the box of the four; it never makes the box taller (contain: size), what does not fit scrolls inside */
-  #card-network .hs-pane.detail { position: relative; contain: size; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 8px 12px; box-sizing: border-box; overflow: hidden; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: var(--r-xl, 16px);
+  /* the health screen opens from the tile of the carousel and the big tile from a small one; both fill the box of the network screen and never make it taller (contain: size), what does not fit scrolls inside */
+  #card-network .hs-pane.health, #card-network .hs-pane.detail { position: relative; contain: size; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 8px 12px; box-sizing: border-box; overflow: hidden; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: var(--r-xl, 16px);
     clip-path: inset(var(--t, 0) var(--r, 0) var(--b, 0) var(--l, 0) round 16px); opacity: 0; visibility: hidden; pointer-events: none; transition: clip-path 0.3s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.2s ease 0.05s, visibility 0s linear 0.3s; }
-  #card-network .hs-stack[data-at="2"] .hs-pane.detail { clip-path: inset(0 0 0 0 round 16px); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path 0.3s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.12s ease, visibility 0s; }
+  #card-network .hs-stack[data-at="1"] .hs-pane.health, #card-network .hs-stack[data-at="2"] .hs-pane.health, #card-network .hs-stack[data-at="2"] .hs-pane.detail { clip-path: inset(0 0 0 0 round 16px); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path 0.3s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.12s ease, visibility 0s; }
   #card-network .hs-d-head { display: flex; align-items: center; gap: 8px; flex: none; min-height: 32px; }
   #card-network .hs-d-head .t-l { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   #card-network .hs-ttl { text-transform: none; font-size: var(--fs-s, 14px); color: var(--primary-text-color); }
@@ -67,7 +58,7 @@
   #card-network .hs-hidrow { appearance: none; -webkit-appearance: none; border: 0; border-top: 1px solid var(--divider-color); background: transparent; color: var(--secondary-text-color); font: inherit; font-size: var(--fs-s, 13px); width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0; cursor: pointer; text-align: left; }
   #card-network .hs-hidrow span:nth-child(2) { flex: 1; }
   #card-network .hs-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; padding: 6px 0 12px; }
-  #card-network .hs-pane.health.quiet { display: flex; }
+  #card-network .hs-tiles.quiet { display: flex; }
   #card-network .hs-report { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-align: center; padding: 4px 12px; min-width: 0; }
   #card-network .hs-report .hs-lv { width: 36px; height: 36px; margin-bottom: 4px; }
   #card-network .hs-report .hs-lv .mdi { width: 22px; height: 22px; }

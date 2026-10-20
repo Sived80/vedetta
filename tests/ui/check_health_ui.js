@@ -74,6 +74,12 @@ function boot(debug, health, stored) {
   return { win, doc, q, qa, click, text, errors, calls };
 }
 const running = (list) => () => ({ running: true, findings: list });
+// The way in is the tile of the carousel: it turns by itself and a click on another tile passes to the next; this goes to the health one and opens it.
+const TITLE = /Salute della rete|Network health/;
+async function openHealth(p) {
+  for (let i = 0; i < 10 && !TITLE.test(p.text("#rot .t-l")); i++) await p.click("#rot");
+  await p.click("#rot");
+}
 
 (async () => {
   // --- without the debug mode: nothing exists and nothing is asked
@@ -92,7 +98,7 @@ const running = (list) => () => ({ running: true, findings: list });
   const quiet = (report) => () => ({ running: true, findings: [], report });
   p = boot(true, quiet({ judged: NOW - 60, last_problem: { rule: "H20", end: NOW - 3 * 86400 } }));
   await wait(1500);
-  await p.click(".hs-dots button[data-i='1']");
+  await openHealth(p);
   check(!p.q(".hs-tile") && !!p.q(".hs-report"), "senza problemi: niente quattro tile a zero, un resoconto");
   check(/(Nessun indirizzo duplicato|No duplicate address)/.test(p.text(".hs-report p")), "il resoconto dice cosa e' stato controllato");
   check(/(Ultimo controllo|Last check)/.test(p.text(".hs-report")) && /(Indirizzo duplicato|Duplicate address)/.test(p.text(".hs-report")), "il resoconto dice l'ultimo controllo e l'ultimo problema");
@@ -105,24 +111,28 @@ const running = (list) => () => ({ running: true, findings: list });
   p = boot(true, running(FINDINGS));
   await wait(1500);
   const { q, qa, click, text } = p;
-  check(!!q(".hs-stack") && qa(".hs-dots button").length === 2, "col debug la scheda ha due schermate e due puntini");
+  check(!!q(".hs-stack") && !q(".hs-dots"), "col debug la scheda ha lo strato della salute e nessun puntino");
+  check(TITLE.test(text("#rot .t-l")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
+  const heldOn = text("#rot .t-l");
+  await wait(5000);
+  check(text("#rot .t-l") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");
   check(!!q("#card-network .hs-pane.net #gauge") && !!q("#card-network .hs-pane.net #badges") && !!q("#card-network .hs-pane.net #search-row"), "la schermata rete tiene il cerchio, i badge e la ricerca (con i loro gestori)");
-  await click(".hs-dots button[data-i='1']");
+  await click("#rot");
+  check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "un tocco sulla tile apre la schermata e la X e' in alto a sinistra");
   const tiles = qa(".hs-tile");
   check(tiles.length === 4 && tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join() === (lang === "it" ? "Indirizzi,Cadute,Riavvii,Latenza" : "Addresses,Drops,Restarts,Latency"), "quattro tile: " + tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join());
   const active = tiles.map((t) => t.querySelector(".stat-box-val").textContent.trim()).join();
   check(active === "1,1,1,0", "i numeri «Attivi» vengono dal server: " + active);
-  check(q(".hs-dots button[data-i='1']").className === "warn" || q(".hs-dots button[data-i='1']").getAttribute("aria-current") === "true", "il puntino della salute segue il peggiore");
 
   // --- a tile opens the big one: the X on the left, no total, no coloured icon; a row for each finding
   await click(tiles[0]);
-  check(q(".hs-stack").getAttribute("data-at") === "2" && q(".hs-d-head").firstElementChild.dataset.act === "close", "la tile si apre e la X di chiusura e' il primo elemento a sinistra");
-  check(!q(".hs-d-head .hs-d-count") && !q(".hs-d-head .hs-lv") && qa(".hs-d-head button").length === 1, "nella testata dell'elenco: solo la X, niente totale, niente icona colorata");
+  check(q(".hs-stack").getAttribute("data-at") === "2" && q(".hs-pane.detail .hs-d-head").firstElementChild.dataset.act === "close", "la tile si apre e la X di chiusura e' il primo elemento a sinistra");
+  check(!q(".hs-pane.detail .hs-d-head .hs-d-count") && !q(".hs-pane.detail .hs-d-head .hs-lv") && qa(".hs-pane.detail .hs-d-head button").length === 1, "nella testata dell'elenco: solo la X, niente totale, niente icona colorata");
   check(qa(".hs-row").length === 1 && /2 (dispositivi|devices) · 192\.168\.1\.50/.test(text(".hs-rf")), "la riga dice quanti dispositivi e l'IP: " + text(".hs-rf"));
 
   // --- a row opens the detail: who (name left, IP right), what, when, what to do; no MAC
   await click(".hs-row-main");
-  check(q(".hs-d-head").firstElementChild.dataset.act === "back" && q(".hs-d-head").lastElementChild.dataset.act === "hide" && qa(".hs-d-head button").length === 2, "nel dettaglio: la X a sinistra torna indietro, a destra resta solo l'occhio barrato");
+  check(q(".hs-pane.detail .hs-d-head").firstElementChild.dataset.act === "back" && q(".hs-pane.detail .hs-d-head").lastElementChild.dataset.act === "hide" && qa(".hs-pane.detail .hs-d-head button").length === 2, "nel dettaglio: la X a sinistra torna indietro, a destra resta solo l'occhio barrato");
   const devs = qa(".hs-dev");
   check(devs.length === 2 && devs[0].querySelector("b").textContent === "Router casa" && devs[0].querySelector("span").textContent === "192.168.1.50", "l'elenco dei dispositivi: nome a sinistra, IP a destra");
   check(/(Sconosciuto|Unknown) …00:99/.test(devs[1].textContent) && !/aa:bb:cc:00:00:99/i.test(q(".hs-pg").textContent), "un dispositivo senza scheda si riconosce dalla coda del MAC, il MAC intero non c'e'");
@@ -135,22 +145,31 @@ const running = (list) => () => ({ running: true, findings: list });
   check(devs[1].disabled === true, "un dispositivo senza scheda non e' toccabile");
 
   // --- the X goes back one step, Esc too; the eye hides, and the choice is kept
-  await click(".hs-d-head [data-act='back']");
+  await click(".hs-pane.detail .hs-d-head [data-act='back']");
   check(qa(".hs-row").length === 1 && q(".hs-stack").getAttribute("data-at") === "2", "la X nel dettaglio torna all'elenco");
   await click(".hs-row-main");
   p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   await wait(40);
   check(qa(".hs-row").length === 1, "Esc torna all'elenco");
   await click(".hs-row-main");
-  await click(".hs-d-head [data-act='hide']");
+  await click(".hs-pane.detail .hs-d-head [data-act='hide']");
   check(qa(".hs-row:not(.dim)").length === 0 && /1 (nascosto|hidden)/.test(text(".hs-hidrow")) && !!q(".hs-empty"), "Nascondi riporta all'elenco: nessun problema e «1 nascosto»");
   check(JSON.parse(p.win.localStorage.getItem("vedetta-health-hidden")).join() === "H20:192.168.1.50", "la scelta resta salvata");
   await click(".hs-hidrow");
   check(qa(".hs-row.dim").length === 1 && /2 (dispositivi|devices) · 192\.168\.1\.50/.test(text(".hs-row.dim .hs-rf")), "il nascosto si apre e dice quanti dispositivi e l'IP");
   await click(".hs-row.dim [data-act='restore']");
   check(qa(".hs-row:not(.dim)").length === 1 && !q(".hs-hidrow"), "Ripristina lo riporta tra gli attivi");
-  await click(".hs-d-head [data-act='close']");
+  await click(".hs-pane.detail .hs-d-head [data-act='close']");
   check(q(".hs-stack").getAttribute("data-at") === "1", "la X dell'elenco chiude la tile grande e torna alle quattro");
+
+  // --- the X of the screen goes back to the carousel, Esc too
+  await click(".hs-pane.health [data-act='exit']");
+  check(q(".hs-stack").getAttribute("data-at") === "0", "la X della schermata torna al carosello");
+  await click("#rot");
+  p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  await wait(40);
+  check(q(".hs-stack").getAttribute("data-at") === "0", "Esc dalla schermata torna al carosello");
+  await click("#rot");
 
   // --- a device that restarts: the name and the IP at the top, the dots of the restarts, when, what to do
   await click(qa(".hs-tile")[2]);
@@ -158,13 +177,13 @@ const running = (list) => () => ({ running: true, findings: list });
   check(/Luce cucina\s*192\.168\.1\.37/.test(text(".hs-nm")), "un solo dispositivo: nome e IP in alto");
   check(qa(".hs-strip circle").length === 11 && /11 (volte|times)/.test(text(".hs-sl")) && /(ogni|every) 10 min/.test(text(".hs-sl")), "i puntini dei riavvii: undici, «ogni 10 min»");
   check(/(ogni|every) 10 min/.test(text(".hs-ln")) && !!q(".hs-act"), "la causa e l'azione ci sono");
-  await click(".hs-d-head [data-act='back']"); await click(".hs-d-head [data-act='close']");
+  await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
   // --- many devices: the list scrolls inside, the box does not grow
   await click(qa(".hs-tile")[1]);
   await click(".hs-row-main");
   check(qa(".hs-dev").length === 6 && /2 (dispositivi|devices)|6/.test(text(".hs-rf") + "6"), "sei dispositivi: l'elenco ha sei righe che scorrono dentro la scheda");
-  await click(".hs-d-head [data-act='back']"); await click(".hs-d-head [data-act='close']");
+  await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
   // --- the debug mode off: the screens go and the network screen is as before
   p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, bubbles: true }));
@@ -178,7 +197,7 @@ const running = (list) => () => ({ running: true, findings: list });
   // --- a choice that was made before is still there at the next visit
   p = boot(true, running(FINDINGS), ["H05:" + D[1].id]);
   await wait(1500);
-  await p.click(".hs-dots button[data-i='1']");
+  await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0,0");
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

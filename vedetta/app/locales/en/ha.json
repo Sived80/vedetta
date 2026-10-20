@@ -577,9 +577,6 @@
   "js.ha.an.state.unresolved": "Unresolved",
   "js.ha.an.short.unresolved": "to identify",
   "js.ha.an.reason.expired": "Watched for over 7 days without enough evidence: give it a name or choose the type yourself.",
-  "js.ha.health.screens": "Screen",
-  "js.ha.health.screen_net": "Network",
-  "js.ha.health.screen_health": "Health",
   "js.ha.health.detail": "Detail",
   "js.ha.health.back": "Back",
   "js.ha.health.tile.addr": "Addresses",
@@ -621,5 +618,12 @@
   "js.ha.health.report.judged": "Last check at {time}",
   "js.ha.health.report.looking": "Watching the network: the first check comes shortly.",
   "js.ha.health.report.last": "Last problem: {name}, {when}",
-  "js.ha.health.report.never": "No problem on record."
+  "js.ha.health.report.never": "No problem on record.",
+  "js.ha.health.title": "Network health",
+  "js.ha.health.card.state": "Status",
+  "js.ha.health.card.ok": "All good",
+  "js.ha.health.card.watching": "Watching",
+  "js.ha.health.card.problems": "Problems",
+  "js.ha.health.card.check": "Checked",
+  "js.ha.health.card.tip": "Network health: tap to open"
 }

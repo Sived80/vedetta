@@ -5,9 +5,13 @@ import { deepOneBusy } from "./deep.js";
 // ------------------------------------------------------------ rotating tile of the Network card
 // One tile that shows, in turn, a datum of the network: LAN latency, gateway, recognised devices, Home Assistant link.
 // A tile with no data to show is left out. It turns by itself, stops under the pointer, and a click goes to the next one.
-var ROTATE_MS = 4200, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HOSTS = 254;
+var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HOSTS = 254;
 var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
 var shown = 0, hold = false, timer = 0;
+// One more tile that another part of the page offers (the network health, only in the debug mode): `extra()` returns {id, tip, html, open(el), attention} or null. A tile with `open` does that when
+// it is clicked instead of passing to the next. When `attention` becomes something new the carousel goes to the tile and stays on it for a while.
+var extra = null, seenAttention = "", holdUntil = 0, current = null;
+export function setExtraTile(fn) { extra = fn; seenAttention = ""; }
 
 // The latency of the gateway over the last hour, from the history of the app (the average of each minute, to a tenth of a millisecond). The value
 // of the card is rounded to whole milliseconds (a LAN answers in less than one: it was always "1.0 ms"); the history is not.
@@ -211,7 +215,8 @@ function mqttTile() {
 function tiles() {
   const gw = gateway();
   refreshGatewayHistory(gw);
-  return [latencyTile(gw), gatewayTile(gw), internetTile(), externalTile(), lensTile(), mqttTile()].filter(Boolean);
+  const own = extra ? extra() : null, list = [latencyTile(gw), gatewayTile(gw), internetTile(), externalTile(), lensTile(), mqttTile()].filter(Boolean);
+  return own ? list.concat([own]) : list;
 }
 
 // The new content replaces the old one with a short fade; a refresh of the same tile (new numbers) is written at once.
@@ -237,15 +242,31 @@ export function paintTile(fade) {
   el.hidden = !list.length;
   row.classList.toggle("solo", !list.length);
   if (!list.length) return;
-  const cur = list[shown % list.length], dots = el.querySelector(".t-dots");
-  if (dots.children.length !== list.length) dots.innerHTML = list.map(function () { return "<i></i>"; }).join("");
-  Array.prototype.forEach.call(dots.children, function (d, n) { d.classList.toggle("on", n === shown % list.length); });
+  const own = list[list.length - 1];
+  if (own && own.attention !== undefined) {
+    if (own.attention && own.attention !== seenAttention) { shown = list.length - 1; holdUntil = Date.now() + ATTENTION_HOLD_MS; fade = true; }
+    seenAttention = own.attention;
+  }
+  const cur = current = list[shown % list.length], dots = el.querySelector(".t-dots");
+  paintDots(dots, cur, own);
   el.title = cur.tip;
   el.setAttribute("aria-label", cur.tip + " · " + t("js.ha.tile.next"));
   put(el.querySelector(".t-body"), cur, fade);
 }
 
+// The two segments: the bar starts again at each new tile; the dot shows that the tile of the page asks for attention, in its colour.
+function paintDots(dots, cur, own) {
+  if (!dots.children.length) dots.innerHTML = '<i class="bar"></i><i class="dot"></i>';
+  const bar = dots.children[0], dot = dots.children[1], alert = !!(own && own.attention);
+  dot.classList.toggle("alert", alert);
+  if (alert) dots.style.setProperty("--ac", own.color);
+  if (dots._id === cur.id) return;
+  dots._id = cur.id;
+  dots.style.setProperty("--ms", ROTATE_MS + "ms");
+  bar.classList.remove("run"); void bar.offsetWidth; bar.classList.add("run");
+}
 function advance() { shown++; paintTile(true); }
+function onTileClick() { if (current && current.open) current.open($("rot")); else advance(); }
 export function tileHTMLShell() {
   return '<button type="button" class="nettile" id="rot" hidden><div class="t-body"></div><div class="t-dots"></div></button>';
 }
@@ -253,11 +274,11 @@ export function mountTile() {
   const el = $("rot");
   clearInterval(timer);
   hold = false;
-  el.addEventListener("click", advance);
+  el.addEventListener("click", onTileClick);
   el.addEventListener("mouseenter", function () { hold = true; });
   el.addEventListener("mouseleave", function () { hold = false; });
   el.addEventListener("focus", function () { hold = true; });
   el.addEventListener("blur", function () { hold = false; });
-  if (!REDUCED) timer = setInterval(function () { if (!hold && !document.hidden) advance(); }, ROTATE_MS);
+  if (!REDUCED) timer = setInterval(function () { if (!hold && !document.hidden && Date.now() >= holdUntil) advance(); }, ROTATE_MS);
   paintTile(false);
 }

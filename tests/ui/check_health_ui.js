@@ -78,7 +78,7 @@ const running = (list) => () => ({ running: true, findings: list });
 const TITLE = /Salute della rete|Network health/;
 async function openHealth(p) {
   for (let i = 0; i < 10 && !TITLE.test(p.text("#rot .t-l")); i++) await p.click("#rot");
-  await p.click("#rot");
+  await p.click("#rot .hs-go");
 }
 
 (async () => {
@@ -119,7 +119,11 @@ async function openHealth(p) {
   check(text("#rot .t-l") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");
   check(!!q("#card-network .hs-pane.net #gauge") && !!q("#card-network .hs-pane.net #badges") && !!q("#card-network .hs-pane.net #search-row"), "la schermata rete tiene il cerchio, i badge e la ricerca (con i loro gestori)");
   await click("#rot");
-  check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "un tocco sulla tile apre la schermata e la X e' in alto a sinistra");
+  await wait(300);
+  check(q(".hs-stack").getAttribute("data-at") === "0" && TITLE.test(text("#rot .t-l")) === false, "un tocco sul corpo della tile passa alla successiva, non apre il pannello");
+  for (let i = 0; i < 10 && !TITLE.test(text("#rot .t-l")); i++) await click("#rot");
+  await click("#rot .hs-go");
+  check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "il tasto «Apri» apre la schermata e la X e' in alto a sinistra");
   const tiles = qa(".hs-tile");
   check(tiles.length === 4 && tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join() === (lang === "it" ? "Indirizzi,Cadute,Riavvii,Latenza" : "Addresses,Drops,Restarts,Latency"), "quattro tile: " + tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join());
   const active = tiles.map((t) => t.querySelector(".stat-box-val").textContent.trim()).join();
@@ -166,11 +170,11 @@ async function openHealth(p) {
   // --- the X of the screen goes back to the carousel, Esc too
   await click(".hs-pane.health [data-act='exit']");
   check(q(".hs-stack").getAttribute("data-at") === "0", "la X della schermata torna al carosello");
-  await click("#rot");
+  await click("#rot .hs-go");
   p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   await wait(40);
   check(q(".hs-stack").getAttribute("data-at") === "0", "Esc dalla schermata torna al carosello");
-  await click("#rot");
+  await click("#rot .hs-go");
 
   // --- a device that restarts: the name and the IP at the top, the dots of the restarts, when, what to do
   await click(qa(".hs-tile")[2]);

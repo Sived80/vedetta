@@ -8,8 +8,8 @@ import { deepOneBusy } from "./deep.js";
 var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HOSTS = 254;
 var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
 var shown = 0, hold = false, timer = 0;
-// One more tile that another part of the page offers (the network health, only in the debug mode): `extra()` returns {id, tip, html, open(el), attention} or null. A tile with `open` does that when
-// it is clicked instead of passing to the next. When `attention` becomes something new the carousel goes to the tile and stays on it for a while.
+// One more tile that another part of the page offers (the network health, only in the debug mode): `extra()` returns {id, tip, html, open(el), attention} or null. A tile with `open` does that only when
+// its `[data-open]` part is clicked; any other click passes to the next tile. When `attention` becomes something new the carousel goes to the tile and stays on it for a while.
 var extra = null, seenAttention = "", holdUntil = 0, current = null;
 export function setExtraTile(fn) { extra = fn; seenAttention = ""; }
 
@@ -266,7 +266,7 @@ function paintDots(dots, cur, own) {
   bar.classList.remove("run"); void bar.offsetWidth; bar.classList.add("run");
 }
 function advance() { shown++; paintTile(true); }
-function onTileClick() { if (current && current.open) current.open($("rot")); else advance(); }
+function onTileClick(e) { if (current && current.open && e.target.closest("[data-open]")) current.open($("rot")); else advance(); }
 export function tileHTMLShell() {
   return '<button type="button" class="nettile" id="rot" hidden><div class="t-body"></div><div class="t-dots"></div></button>';
 }

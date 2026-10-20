@@ -619,7 +619,7 @@
   "js.ha.health.report.looking": "Watching the network: the first check comes shortly.",
   "js.ha.health.report.last": "Last problem: {name}, {when}",
   "js.ha.health.report.never": "No problem on record.",
-  "js.ha.health.title": "Network health",
+  "js.ha.health.title": "Health",
   "js.ha.health.card.state": "Status",
   "js.ha.health.card.ok": "All good",
   "js.ha.health.card.watching": "Watching",

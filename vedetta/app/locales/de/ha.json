@@ -619,7 +619,7 @@
   "js.ha.health.report.looking": "Das Netzwerk wird beobachtet: die erste Prüfung folgt in Kürze.",
   "js.ha.health.report.last": "Letztes Problem: {name}, {when}",
   "js.ha.health.report.never": "Kein Problem aufgezeichnet.",
-  "js.ha.health.title": "Netzwerkgesundheit",
+  "js.ha.health.title": "Gesundheit",
   "js.ha.health.card.state": "Status",
   "js.ha.health.card.ok": "In Ordnung",
   "js.ha.health.card.watching": "Beobachtung",

@@ -616,7 +616,7 @@
   "js.ha.health.report.looking": "Sleduji síť: první kontrola proběhne brzy.",
   "js.ha.health.report.last": "Poslední problém: {name}, {when}",
   "js.ha.health.report.never": "Žádný zaznamenaný problém.",
-  "js.ha.health.title": "Zdraví sítě",
+  "js.ha.health.title": "Zdraví",
   "js.ha.health.card.state": "Stav",
   "js.ha.health.card.ok": "V pořádku",
   "js.ha.health.card.watching": "Sleduji",

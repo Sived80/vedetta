@@ -70,10 +70,22 @@ assert got[0]["devs"][0] == {"id": "a", "name": "Stampante", "ip": "10.0.0.5"} a
 assert hv.page(None) == [] and hv.snapshot(sh) == [], "no engine, nothing; and the snapshot of the event still hides the shadow"
 hv.scanner.arp_conflicts.clear()
 
+# --- the report of a quiet network: when the judge looked last and the last problem of the log (the one that ended most recently), none if the log is empty
+hv._judged = None
+assert hv.report(1000, past=lambda since: []) == {"judged": None, "last_problem": None}
+hv._judged = 900
+log = [{"rule": "H20", "last_seen": 100}, {"rule": "H05", "last_seen": 400}, {"rule": "H06", "last_seen": 200}]
+assert hv.report(1000, past=lambda since: log) == {"judged": 900, "last_problem": {"rule": "H05", "end": 400}}
+asked = []
+hv.report(1000, past=lambda since: asked.append(since) or [])
+assert asked == [1000 - hv.REPORT_LOOKBACK_S], asked
+hv._judged = None
+
 # --- the route of the page: it says whether the judge is running and hands over the entries; with no judge, an empty list
 from app.routes import ha as routes_ha  # noqa: E402
 assert not hv.running()
-assert asyncio.run(routes_ha.api_ha_health()) == {"running": False, "findings": []}
+got = asyncio.run(routes_ha.api_ha_health())
+assert got["running"] is False and got["findings"] == [] and set(got["report"]) == {"judged", "last_problem"}, got
 hv._engine = sh
 assert hv.running() and asyncio.run(routes_ha.api_ha_health())["running"] is True
 hv._engine = None

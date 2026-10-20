@@ -615,5 +615,11 @@
   "js.ha.health.h05.action": "Prova un altro alimentatore",
   "js.ha.health.h07.name": "Latenza alta",
   "js.ha.health.h07.what": "Risponde in {to} ms invece di {from} ms",
-  "js.ha.health.h07.action": "Controlla il cavo e cosa è collegato"
+  "js.ha.health.h07.action": "Controlla il cavo e cosa è collegato",
+  "js.ha.health.report.ok": "Rete in ordine",
+  "js.ha.health.report.checked": "Nessun indirizzo duplicato, nessuna perdita simultanea, nessun riavvio ciclico, latenza del router stabile.",
+  "js.ha.health.report.judged": "Ultimo controllo alle {time}",
+  "js.ha.health.report.looking": "Sto osservando la rete: il primo controllo arriva a breve.",
+  "js.ha.health.report.last": "Ultimo problema: {name}, {when}",
+  "js.ha.health.report.never": "Nessun problema registrato."
 }

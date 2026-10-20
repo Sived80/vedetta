@@ -16,11 +16,13 @@ from ..storage.history import history
 from . import health_page
 
 REFRESH_S = 120
+REPORT_LOOKBACK_S = 90 * 86400   # as long as the log keeps the findings
 FIRST_AFTER_S = 600      # as for the analysis: right after a start the scan has not settled yet
 
 _engine: Engine | None = None
 _task: asyncio.Task | None = None
 _on_change = None
+_judged: float | None = None   # when the judge looked last
 
 
 SWITCHED_OFF = ("off", "0", "no", "false")
@@ -72,6 +74,14 @@ def page(engine: Engine | None = None, devices=devices_config.load_devices, gate
     return health_page.build(engine.findings(), TILE_OF, devices(), conflicts, gateway())
 
 
+def report(now: float | None = None, past=history.health_findings) -> dict:
+    """What the page says when nothing is wrong: when the judge looked last (None before the first judgment after a start) and the last problem it saw, if any (rule and end)."""
+    now = time.time() if now is None else now
+    seen = past(now - REPORT_LOOKBACK_S)
+    last = max(seen, key=lambda f: f["last_seen"], default=None)
+    return {"judged": _judged, "last_problem": {"rule": last["rule"], "end": last["last_seen"]} if last else None}
+
+
 def summary(engine: Engine | None = None) -> dict:
     """What the export may tell about the judge, shadow included: how many findings, for which rule and in which state."""
     engine = _engine if engine is None else engine
@@ -106,8 +116,11 @@ def judge_once(engine: Engine, signals: dict, now: float, record=None) -> list[C
 
 def _tick() -> bool:
     """One judgment of the real signals (and the write to disk); True if something the page shows has changed."""
+    global _judged
     try:
-        return bool(judge_once(_engine, read_signals(), time.time(), record=history.record_finding))
+        changed = bool(judge_once(_engine, read_signals(), time.time(), record=history.record_finding))
+        _judged = time.time()
+        return changed
     except Exception:
         logger.exception("Judging the network health failed")
         return False

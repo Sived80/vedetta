@@ -615,5 +615,11 @@
   "js.ha.health.h05.action": "Try another power supply",
   "js.ha.health.h07.name": "High latency",
   "js.ha.health.h07.what": "Answers in {to} ms instead of {from} ms",
-  "js.ha.health.h07.action": "Check the cable and what is connected"
+  "js.ha.health.h07.action": "Check the cable and what is connected",
+  "js.ha.health.report.ok": "Network in good shape",
+  "js.ha.health.report.checked": "No duplicate address, no simultaneous drop, no restart loop, router latency steady.",
+  "js.ha.health.report.judged": "Last check at {time}",
+  "js.ha.health.report.looking": "Watching the network: the first check comes shortly.",
+  "js.ha.health.report.last": "Last problem: {name}, {when}",
+  "js.ha.health.report.never": "No problem on record."
 }

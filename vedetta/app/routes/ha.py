@@ -98,7 +98,7 @@ async def api_ha_device_evidence(device_id: str):
 @router.get("/api/ha/health")
 async def api_ha_health():
     """The network-health findings with who, what and when, shadow included. Only the page's debug mode asks for it; the judge runs in shadow in any case."""
-    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page)}
+    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page), "report": await asyncio.to_thread(health_view.report)}
 
 
 @router.get("/api/ha/registry/status")

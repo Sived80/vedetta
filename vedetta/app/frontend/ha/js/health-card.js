@@ -1,5 +1,5 @@
 import { $, ROOT, api, dlg, esc, fmtClock, icon, t } from "./core.js";
-import { healthAction, healthDeviceName, healthName, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
+import { healthAction, healthDeviceName, healthName, healthReport, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
 import { gatewayLatencyText } from "./net-rotator.js";
 import { openMore } from "./more-info.js";
 
@@ -10,7 +10,7 @@ var HC_POLL_MS = 30000, HC_HIDDEN_KEY = "vedetta-health-hidden";
 var HC_LEVEL_ICON = { bad: "alert-circle", warn: "alert", ok: "check-circle" };
 var HC_TILE_ICON = { addr: "lan", drop: "access-point", boot: "refresh", lat: "wifi-arrow-up-down" };
 var HC_COLOR = { bad: "var(--error-color)", warn: "var(--warning-color)", ok: "var(--success-color)", none: "var(--secondary-text-color)" };
-var HC = { findings: [], running: false, hidden: hcLoadHidden(), stack: null, tilesEl: null, detail: null, dots: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
+var HC = { findings: [], report: null, running: false, hidden: hcLoadHidden(), stack: null, tilesEl: null, detail: null, dots: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
 
 function hcLoadHidden() {
   try { const v = JSON.parse(localStorage.getItem(HC_HIDDEN_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; }
@@ -37,9 +37,16 @@ function hcTileHTML(tl) {
   return '<button type="button" class="hs-tile" data-key="' + tl.key + '"><div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_TILE_ICON[tl.key]) + '</span><span class="t-l">' +
     esc(t("js.ha.health.tile." + tl.key)) + '</span></div><div class="t-mid"><div class="stat-grid-2">' + hcStatBox(t("js.ha.health.active"), tl.finds.length, c, tl.finds.length > 0) + hcSecond(tl) + "</div></div></div></button>";
 }
+// With no finding at all the four tiles would only say zero: the screen is a short report of the network instead.
+function hcReportHTML() {
+  const r = healthReport(HC.report);
+  return '<div class="hs-report"><span class="hs-lv" style="--c:' + HC_COLOR.ok + '">' + icon("check-circle") + "</span><b>" + esc(t("js.ha.health.report.ok")) + "</b><p>" + esc(r.checked) +
+    '</p><span class="hs-rep-f">' + esc(r.judged) + '</span><span class="hs-rep-f">' + esc(r.last) + "</span></div>";
+}
 function hcPaintTiles() {
-  const m = hcModel();
-  HC.tilesEl.innerHTML = m.map(hcTileHTML).join("");
+  const m = hcModel(), quiet = HC.findings.length === 0;
+  HC.tilesEl.classList.toggle("quiet", quiet);
+  HC.tilesEl.innerHTML = quiet ? hcReportHTML() : m.map(hcTileHTML).join("");
   const worst = healthWorst(m.reduce(function (all, tl) { return all.concat(tl.finds); }, []));
   HC.dots.children[1].className = worst === "ok" ? "" : worst;
 }
@@ -206,7 +213,7 @@ function hcRepaint() {
 function hcRefresh() {
   if (!hcDebugOn()) return;
   api("/api/ha/health").then(function (x) {
-    HC.running = !!(x && x.running); HC.findings = (x && x.findings) || [];
+    HC.running = !!(x && x.running); HC.findings = (x && x.findings) || []; HC.report = (x && x.report) || null;
     if (!HC.running) { hcRemove(); return; }
     if (!HC.stack) hcBuild();
     hcRepaint();

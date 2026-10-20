@@ -88,6 +88,19 @@ const running = (list) => () => ({ running: true, findings: list });
   await wait(1500);
   check(p.calls.some((u) => u.startsWith("/api/ha/health")) && !p.q(".hs-stack"), "col debug ma senza giudice acceso sul server: si chiede e non compare nulla");
 
+  // --- nothing wrong: no four empty tiles, a short report (what was checked, the last check, the last problem); the same facts once
+  const quiet = (report) => () => ({ running: true, findings: [], report });
+  p = boot(true, quiet({ judged: NOW - 60, last_problem: { rule: "H20", end: NOW - 3 * 86400 } }));
+  await wait(1500);
+  await p.click(".hs-dots button[data-i='1']");
+  check(!p.q(".hs-tile") && !!p.q(".hs-report"), "senza problemi: niente quattro tile a zero, un resoconto");
+  check(/(Nessun indirizzo duplicato|No duplicate address)/.test(p.text(".hs-report p")), "il resoconto dice cosa e' stato controllato");
+  check(/(Ultimo controllo|Last check)/.test(p.text(".hs-report")) && /(Indirizzo duplicato|Duplicate address)/.test(p.text(".hs-report")), "il resoconto dice l'ultimo controllo e l'ultimo problema");
+  check(p.qa(".hs-report .hs-rep-f").length === 2 && !p.q(".hs-report .stat-box"), "solo la frase e due righe: nessun numero gia' mostrato dalle altre schermate");
+  p = boot(true, quiet(null));
+  await wait(1500);
+  check(/(primo controllo|first check)/.test(p.text(".hs-report")) && /(Nessun problema registrato|No problem on record)/.test(p.text(".hs-report")), "prima del primo giudizio e senza storia: lo dice");
+
   // --- the debug mode on: two dots, four tiles
   p = boot(true, running(FINDINGS));
   await wait(1500);

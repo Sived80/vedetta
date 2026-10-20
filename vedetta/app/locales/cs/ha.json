@@ -612,5 +612,11 @@
   "js.ha.health.h05.action": "Zkuste jiný napájecí zdroj",
   "js.ha.health.h07.name": "Vysoká odezva",
   "js.ha.health.h07.what": "Odpovídá za {to} ms místo {from} ms",
-  "js.ha.health.h07.action": "Zkontrolujte kabel a připojená zařízení"
+  "js.ha.health.h07.action": "Zkontrolujte kabel a připojená zařízení",
+  "js.ha.health.report.ok": "Síť je v pořádku",
+  "js.ha.health.report.checked": "Žádná duplicitní adresa, žádný souběžný výpadek, žádný cyklický restart, odezva routeru stabilní.",
+  "js.ha.health.report.judged": "Poslední kontrola v {time}",
+  "js.ha.health.report.looking": "Sleduji síť: první kontrola proběhne brzy.",
+  "js.ha.health.report.last": "Poslední problém: {name}, {when}",
+  "js.ha.health.report.never": "Žádný zaznamenaný problém."
 }

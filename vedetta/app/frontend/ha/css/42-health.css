@@ -67,6 +67,13 @@
   #card-network .hs-hidrow { appearance: none; -webkit-appearance: none; border: 0; border-top: 1px solid var(--divider-color); background: transparent; color: var(--secondary-text-color); font: inherit; font-size: var(--fs-s, 13px); width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0; cursor: pointer; text-align: left; }
   #card-network .hs-hidrow span:nth-child(2) { flex: 1; }
   #card-network .hs-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; padding: 6px 0 12px; }
+  #card-network .hs-pane.health.quiet { display: flex; }
+  #card-network .hs-report { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-align: center; padding: 4px 12px; min-width: 0; }
+  #card-network .hs-report .hs-lv { width: 36px; height: 36px; margin-bottom: 4px; }
+  #card-network .hs-report .hs-lv .mdi { width: 22px; height: 22px; }
+  #card-network .hs-report b { font-size: var(--fs-s, 14px); font-weight: 500; }
+  #card-network .hs-report p { margin: 0 0 4px; font-size: var(--fs-xs, 12px); color: var(--primary-text-color); line-height: 1.35; }
+  #card-network .hs-rep-f { font-size: var(--fs-xs, 12px); color: var(--secondary-text-color); }
   #card-network .hs-empty b { font-size: var(--fs-s, 14px); font-weight: 500; }
   #card-network .hs-empty > span:not(.hs-lv) { font-size: var(--fs-xs, 12px); color: var(--secondary-text-color); }
 

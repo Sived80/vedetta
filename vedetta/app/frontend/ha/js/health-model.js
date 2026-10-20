@@ -37,6 +37,17 @@ export function healthWhen(f) {
   return t(today ? "js.ha.health.when_today" : "js.ha.health.when_day", { since: fmtStamp(f.since, !today), last: fmtClock(f.last) });
 }
 
+// The report of a quiet network: what was checked, when the judge looked last and the last problem it saw (or that there was none).
+// `report` is {judged, last_problem: {rule, end}} from the server; `nowTs` lets the day be told from today.
+export function healthReport(report) {
+  const r = report || {}, p = r.last_problem;
+  return {
+    checked: t("js.ha.health.report.checked"),
+    judged: r.judged ? t("js.ha.health.report.judged", { time: fmtClock(r.judged) }) : t("js.ha.health.report.looking"),
+    last: p ? t("js.ha.health.report.last", { name: healthName({ rule: p.rule }), when: fmtStamp(p.end, true) }) : t("js.ha.health.report.never"),
+  };
+}
+
 // Who: the name of the device, or what tells it apart when it has none.
 export function healthDeviceName(d) {
   if (d.name) return d.name;

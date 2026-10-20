@@ -6,7 +6,7 @@
   #card-network .hs-stack { display: grid; }
   #card-network .hs-pane { grid-area: 1 / 1; min-width: 0; transition: opacity 0.28s ease, visibility 0s linear 0s; }
   #card-network .hs-pane.net { display: flex; flex-direction: column; gap: 16px; }
-  #card-network .hs-tiles { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px 14px; padding: 1px; box-sizing: border-box; }
+  #card-network .hs-tiles { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px 14px; padding: 1px; box-sizing: border-box; }
   #card-network .hs-stack:not([data-at="0"]) .net { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease 0.12s, visibility 0s linear 0.32s; }
   @media (prefers-reduced-motion: reduce) { #card-network .hs-pane, #card-network .hs-stack[data-at] .hs-pane { transition: none !important; } }
 
@@ -22,6 +22,7 @@
   #card-network .hs-tile { appearance: none; -webkit-appearance: none; background: transparent; color: inherit; font: inherit; display: flex; flex-direction: column; min-width: 0; border-radius: var(--r-xl, 16px); border: 1px solid var(--divider-color); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; }
   #card-network .hs-tile:hover { background: var(--ha-hover); }
   #card-network .hs-tile .t-card { min-width: 0; }
+  #card-network .hs-tile .t-mid { margin: 0; }                    /* the four tiles share the height of the screen: the 4 px above and below the boxes are what does not fit */
   #card-network .hs-tile .t-head { padding-right: 0; min-width: 0; }
   #card-network .hs-tile .t-l { overflow: hidden; text-overflow: ellipsis; }
 

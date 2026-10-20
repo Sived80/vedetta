@@ -10,6 +10,10 @@
   #card-network .hs-stack:not([data-at="0"]) .net { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease 0.12s, visibility 0s linear 0.32s; }
   @media (prefers-reduced-motion: reduce) { #card-network .hs-pane, #card-network .hs-stack[data-at] .hs-pane { transition: none !important; } }
 
+  /* the look of a button in the tile of the carousel (the whole tile is the button: the carousel is a button itself) */
+  #card-network .hs-go { align-self: flex-end; margin-left: auto; display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 6px 0 12px; border-radius: 14px; border: 1px solid var(--divider-color); font-size: 12.5px; font-weight: 500; color: var(--primary-text-color); }
+  #card-network .hs-go .mdi { width: 16px; height: 16px; color: var(--secondary-text-color); }
+
   /* the small tiles */
   #card-network .hs-tile { appearance: none; -webkit-appearance: none; background: transparent; color: inherit; font: inherit; display: flex; flex-direction: column; min-width: 0; padding: 8px; border-radius: var(--r-xl, 16px); border: 1px solid var(--divider-color); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; }
   #card-network .hs-tile:hover { background: var(--ha-hover); }

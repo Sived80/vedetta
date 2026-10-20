@@ -113,6 +113,7 @@ async function openHealth(p) {
   const { q, qa, click, text } = p;
   check(!!q(".hs-stack") && !q(".hs-dots"), "col debug la scheda ha lo strato della salute e nessun puntino");
   check(TITLE.test(text("#rot .t-l")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
+  check(!!q("#rot .hs-go") && /(Apri|Open)/.test(text("#rot .hs-go")), "la tile ha il tasto «Apri» ben visibile");
   const heldOn = text("#rot .t-l");
   await wait(5000);
   check(text("#rot .t-l") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");

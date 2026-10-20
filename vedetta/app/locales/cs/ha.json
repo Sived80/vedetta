@@ -622,5 +622,6 @@
   "js.ha.health.card.watching": "Sleduji",
   "js.ha.health.card.problems": "Problémy",
   "js.ha.health.card.check": "Kontrola",
-  "js.ha.health.card.tip": "Zdraví sítě: klepnutím otevřete"
+  "js.ha.health.card.tip": "Zdraví sítě: klepnutím otevřete",
+  "js.ha.health.card.open": "Otevřít"
 }

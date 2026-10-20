@@ -625,5 +625,6 @@
   "js.ha.health.card.watching": "In osservazione",
   "js.ha.health.card.problems": "Problemi",
   "js.ha.health.card.check": "Controllo",
-  "js.ha.health.card.tip": "Salute della rete: tocca per aprire"
+  "js.ha.health.card.tip": "Salute della rete: tocca per aprire",
+  "js.ha.health.card.open": "Apri"
 }

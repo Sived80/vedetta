@@ -625,5 +625,6 @@
   "js.ha.health.card.watching": "Watching",
   "js.ha.health.card.problems": "Problems",
   "js.ha.health.card.check": "Checked",
-  "js.ha.health.card.tip": "Network health: tap to open"
+  "js.ha.health.card.tip": "Network health: tap to open",
+  "js.ha.health.card.open": "Open"
 }

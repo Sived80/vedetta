@@ -626,5 +626,13 @@
   "js.ha.health.card.problems": "Problems",
   "js.ha.health.card.check": "Checked",
   "js.ha.health.card.tip": "Network health: tap to open",
-  "js.ha.health.card.open": "Open"
+  "js.ha.health.card.open": "Open",
+  "js.ha.health.sim.tile": "Simulation",
+  "js.ha.health.sim.off": "Simulate",
+  "js.ha.health.sim.on": "Simulation: {name}",
+  "js.ha.health.sim.calm": "all well",
+  "js.ha.health.sim.one": "one problem",
+  "js.ha.health.sim.all": "all four kinds",
+  "js.ha.health.sim.grave": "serious",
+  "js.ha.health.sim.many": "many devices"
 }

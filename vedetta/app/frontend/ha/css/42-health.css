@@ -12,6 +12,8 @@
 
   /* the look of a button in the tile of the carousel (the whole tile is the button: the carousel is a button itself) */
   #card-network .hs-go { align-self: flex-end; margin-left: auto; display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 6px 0 12px; border-radius: 14px; border: 1px solid var(--divider-color); font-size: 12.5px; font-weight: 500; color: var(--primary-text-color); }
+  #card-network .hs-sim { flex: none; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px dashed var(--divider-color); background: none; font: inherit; font-size: 12px; color: var(--secondary-text-color); cursor: pointer; }
+  #card-network .hs-sim.on { border-style: solid; border-color: var(--warning-color); color: var(--primary-text-color); font-weight: 500; }
   #card-network .hs-go .mdi { width: 16px; height: 16px; color: var(--secondary-text-color); }
 
   /* the small tiles */

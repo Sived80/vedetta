@@ -21,6 +21,18 @@ if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout +
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// The expected texts come from the translation file of the language under test, so the checks hold for every language (a new one needs no change here).
+const L = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "locales", lang, "ha.json"), "utf8"));
+const tx = (key, params) => {
+  params = params || {};
+  const form = params.n === undefined ? key : [key + "_" + new Intl.PluralRules(lang).select(params.n), key + "_other", key].find((k) => L[k] !== undefined);
+  return L[form].replace(/\{(\w+)\}/g, (_, name) => params[name]);
+};
+// The same text as a pattern: the placeholders that the test does not know (a time, a name) match anything.
+const rx = (key) => new RegExp(L[key].replace(/[.*+?^$()|[\]\\]/g, "\\$&").replace(/\{\w+\}/g, ".+"));
+const EVERY10 = tx("js.ha.health.every", { every: tx("js.ha.health.every_min", { n: 10 }) });
+const SIM_ON = (k) => tx("js.ha.health.sim.on", { name: tx("js.ha.health.sim." + k) });
+
 let failed = 0;
 function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
 
@@ -80,7 +92,7 @@ function boot(debug, health, stored, serverHidden) {
 }
 const running = (list) => () => ({ running: true, findings: list });
 // The way in is the tile of the carousel: it turns by itself and a click on another tile passes to the next; this goes to the health one and opens it.
-const TITLE = /Salute della rete|Network health/;
+const TITLE = new RegExp(L["js.ha.health.title"] + "|" + L["js.ha.health.sim.tile"]);
 async function openHealth(p) {
   for (let i = 0; i < 10 && !TITLE.test(p.text("#rot .t-l")); i++) await p.click("#rot");
   await p.click("#rot .hs-go");
@@ -105,12 +117,12 @@ async function openHealth(p) {
   await wait(1500);
   await openHealth(p);
   check(!p.q(".hs-tile") && !!p.q(".hs-report"), "senza problemi: niente quattro tile a zero, un resoconto");
-  check(/(Nessun indirizzo duplicato|No duplicate address)/.test(p.text(".hs-report p")), "il resoconto dice cosa e' stato controllato");
-  check(/(Ultimo controllo|Last check)/.test(p.text(".hs-report")) && /(Indirizzo duplicato|Duplicate address)/.test(p.text(".hs-report")), "il resoconto dice l'ultimo controllo e l'ultimo problema");
+  check(rx("js.ha.health.report.checked").test(p.text(".hs-report p")), "il resoconto dice cosa e' stato controllato");
+  check(rx("js.ha.health.report.judged").test(p.text(".hs-report")) && rx("js.ha.health.report.last").test(p.text(".hs-report")), "il resoconto dice l'ultimo controllo e l'ultimo problema");
   check(p.qa(".hs-report .hs-rep-f").length === 2 && !p.q(".hs-report .stat-box"), "solo la frase e due righe: nessun numero gia' mostrato dalle altre schermate");
   p = boot(true, quiet(null));
   await wait(1500);
-  check(/(primo controllo|first check)/.test(p.text(".hs-report")) && /(Nessun problema registrato|No problem on record)/.test(p.text(".hs-report")), "prima del primo giudizio e senza storia: lo dice");
+  check(rx("js.ha.health.report.looking").test(p.text(".hs-report")) && rx("js.ha.health.report.never").test(p.text(".hs-report")), "prima del primo giudizio e senza storia: lo dice");
 
   // --- the debug mode on: two dots, four tiles
   p = boot(true, running(FINDINGS));
@@ -118,7 +130,7 @@ async function openHealth(p) {
   const { q, qa, click, text } = p;
   check(!!q(".hs-stack") && !q(".hs-dots"), "col debug la scheda ha lo strato della salute e nessun puntino");
   check(TITLE.test(text("#rot .t-l")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
-  check(!!q("#rot .hs-go") && /(Apri|Open)/.test(text("#rot .hs-go")), "la tile ha il tasto «Apri» ben visibile");
+  check(!!q("#rot .hs-go") && text("#rot .hs-go").includes(tx("js.ha.health.card.open")), "la tile ha il tasto «Apri» ben visibile");
   const heldOn = text("#rot .t-l");
   await wait(5000);
   check(text("#rot .t-l") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");
@@ -130,7 +142,7 @@ async function openHealth(p) {
   await click("#rot .hs-go");
   check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "il tasto «Apri» apre la schermata e la X e' in alto a sinistra");
   const tiles = qa(".hs-tile");
-  check(tiles.length === 4 && tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join() === (lang === "it" ? "Indirizzi,Cadute,Riavvii,Latenza" : "Addresses,Drops,Restarts,Latency"), "quattro tile: " + tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join());
+  check(tiles.length === 4 && tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join() === ["addr", "drop", "boot", "lat"].map((k) => tx("js.ha.health.tile." + k)).join(), "quattro tile: " + tiles.map((t) => t.querySelector(".t-l").textContent.trim()).join());
   const active = tiles.map((t) => t.querySelector(".stat-box-val").textContent.trim()).join();
   check(active === "1,1,1,0", "i numeri «Attivi» vengono dal server: " + active);
 
@@ -138,15 +150,15 @@ async function openHealth(p) {
   await click(tiles[0]);
   check(q(".hs-stack").getAttribute("data-at") === "2" && q(".hs-pane.detail .hs-d-head").firstElementChild.dataset.act === "close", "la tile si apre e la X di chiusura e' il primo elemento a sinistra");
   check(!q(".hs-pane.detail .hs-d-head .hs-d-count") && !q(".hs-pane.detail .hs-d-head .hs-lv") && qa(".hs-pane.detail .hs-d-head button").length === 1, "nella testata dell'elenco: solo la X, niente totale, niente icona colorata");
-  check(qa(".hs-row").length === 1 && /2 (dispositivi|devices) · 192\.168\.1\.50/.test(text(".hs-rf")), "la riga dice quanti dispositivi e l'IP: " + text(".hs-rf"));
+  check(qa(".hs-row").length === 1 && text(".hs-rf").includes(tx("js.ha.devices_count", { n: 2 }) + " · 192.168.1.50"), "la riga dice quanti dispositivi e l'IP: " + text(".hs-rf"));
 
   // --- a row opens the detail: who (name left, IP right), what, when, what to do; no MAC
   await click(".hs-row-main");
   check(q(".hs-pane.detail .hs-d-head").firstElementChild.dataset.act === "back" && q(".hs-pane.detail .hs-d-head").lastElementChild.dataset.act === "hide" && qa(".hs-pane.detail .hs-d-head button").length === 2, "nel dettaglio: la X a sinistra torna indietro, a destra resta solo l'occhio barrato");
   const devs = qa(".hs-dev");
   check(devs.length === 2 && devs[0].querySelector("b").textContent === "Router casa" && devs[0].querySelector("span").textContent === "192.168.1.50", "l'elenco dei dispositivi: nome a sinistra, IP a destra");
-  check(/(Sconosciuto|Unknown) …00:99/.test(devs[1].textContent) && !/aa:bb:cc:00:00:99/i.test(q(".hs-pg").textContent), "un dispositivo senza scheda si riconosce dalla coda del MAC, il MAC intero non c'e'");
-  check(/(Dalle|Since) .* · (ultimo|last) /.test(text(".hs-pg")) && /IP/.test(text(".hs-pg")) && !!q(".hs-act"), "il dettaglio ha cosa, quando e cosa fare");
+  check(devs[1].textContent.includes(tx("js.ha.health.unknown", { mac: "…00:99" })) && !/aa:bb:cc:00:00:99/i.test(q(".hs-pg").textContent), "un dispositivo senza scheda si riconosce dalla coda del MAC, il MAC intero non c'e'");
+  check((rx("js.ha.health.when_today").test(text(".hs-pg")) || rx("js.ha.health.when_day").test(text(".hs-pg"))) && /IP/.test(text(".hs-pg")) && !!q(".hs-act"), "il dettaglio ha cosa, quando e cosa fare");
 
   // --- the device opens its card; a device without a card does nothing
   await click(devs[0]);
@@ -163,10 +175,10 @@ async function openHealth(p) {
   check(qa(".hs-row").length === 1, "Esc torna all'elenco");
   await click(".hs-row-main");
   await click(".hs-pane.detail .hs-d-head [data-act='hide']");
-  check(qa(".hs-row:not(.dim)").length === 0 && /1 (nascosto|hidden)/.test(text(".hs-hidrow")) && !!q(".hs-empty"), "Nascondi riporta all'elenco: nessun problema e «1 nascosto»");
+  check(qa(".hs-row:not(.dim)").length === 0 && text(".hs-hidrow").includes(tx("js.ha.health.hidden", { n: 1 })) && !!q(".hs-empty"), "Nascondi riporta all'elenco: nessun problema e «1 nascosto»");
   check(p.hidden.join() === "H20:192.168.1.50", "la scelta e' salvata dal server, non nel browser");
   await click(".hs-hidrow");
-  check(qa(".hs-row.dim").length === 1 && /2 (dispositivi|devices) · 192\.168\.1\.50/.test(text(".hs-row.dim .hs-rf")), "il nascosto si apre e dice quanti dispositivi e l'IP");
+  check(qa(".hs-row.dim").length === 1 && text(".hs-row.dim .hs-rf").includes(tx("js.ha.devices_count", { n: 2 }) + " · 192.168.1.50"), "il nascosto si apre e dice quanti dispositivi e l'IP");
   await click(".hs-row.dim [data-act='restore']");
   check(qa(".hs-row:not(.dim)").length === 1 && !q(".hs-hidrow"), "Ripristina lo riporta tra gli attivi");
   await click(".hs-pane.detail .hs-d-head [data-act='close']");
@@ -185,14 +197,14 @@ async function openHealth(p) {
   await click(qa(".hs-tile")[2]);
   await click(".hs-row-main");
   check(/Luce cucina\s*192\.168\.1\.37/.test(text(".hs-nm")), "un solo dispositivo: nome e IP in alto");
-  check(qa(".hs-strip circle").length === 11 && /11 (volte|times)/.test(text(".hs-sl")) && /(ogni|every) 10 min/.test(text(".hs-sl")), "i puntini dei riavvii: undici, «ogni 10 min»");
-  check(/(ogni|every) 10 min/.test(text(".hs-ln")) && !!q(".hs-act"), "la causa e l'azione ci sono");
+  check(qa(".hs-strip circle").length === 11 && text(".hs-sl").includes(tx("js.ha.health.times", { n: 11 })) && text(".hs-sl").includes(EVERY10), "i puntini dei riavvii: undici, «ogni 10 min»");
+  check(text(".hs-ln").includes(EVERY10) && !!q(".hs-act"), "la causa e l'azione ci sono");
   await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
   // --- many devices: the list scrolls inside, the box does not grow
   await click(qa(".hs-tile")[1]);
   await click(".hs-row-main");
-  check(qa(".hs-dev").length === 6 && /2 (dispositivi|devices)|6/.test(text(".hs-rf") + "6"), "sei dispositivi: l'elenco ha sei righe che scorrono dentro la scheda");
+  check(qa(".hs-dev").length === 6, "sei dispositivi: l'elenco ha sei righe che scorrono dentro la scheda");
   await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
   // --- the debug mode off: the screens go and the network screen is as before
@@ -209,6 +221,30 @@ async function openHealth(p) {
   await wait(1500);
   await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0,0");
+
+  // --- made-up findings (debug only): the button of the head steps through the scenarios, nothing goes to the server
+  p = boot(true, quiet(null));
+  await wait(1500);
+  await openHealth(p);
+  check(p.text(".hs-sim") === tx("js.ha.health.sim.off") && !p.q(".hs-sim.on"), "il pulsante «Simula» e' nella testata e a riposo");
+  await p.click(".hs-sim");
+  await wait(150);
+  check(p.q(".hs-sim.on") && p.text(".hs-sim") === SIM_ON("calm") && !!p.q(".hs-tiles.quiet"), "primo scenario: tutto bene, il resoconto della rete tranquilla");
+  await p.click(".hs-sim");
+  await wait(150);
+  check(p.text(".hs-sim") === SIM_ON("one") && p.qa(".hs-tile").length === 4, "secondo scenario: un problema, le quattro tile");
+  await p.click(".hs-tile[data-key='boot']");
+  await p.click(".hs-row-main");
+  await p.click(".hs-pane.detail .hs-d-head [data-act='hide']");
+  check(p.hidden.length === 0 && !p.calls.some((u) => u.includes("/health/hidden")), "nascondere un rilievo finto non scrive nulla sul server");
+  await p.click(".hs-pane.detail .hs-d-head [data-act='close']");
+  await p.click(".hs-pane.health [data-act='exit']");
+  await wait(300);
+  check(p.text("#rot .t-l") === tx("js.ha.health.sim.tile"), "con la simulazione accesa la tile del carosello lo dice");
+  await openHealth(p);
+  for (let i = 0; i < 4; i++) { await p.click(".hs-sim"); await wait(100); }
+  check(!p.q(".hs-sim.on") && p.text(".hs-sim") === tx("js.ha.health.sim.off"), "dopo l'ultimo scenario si torna ai dati veri");
+  check(p.errors.length === 0, "simulazione: nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- an older version kept the choice in the browser: it goes to the server once, then leaves the browser
   p = boot(true, running(FINDINGS), ["H05:" + D[1].id]);

@@ -2,6 +2,7 @@ import { $, ROOT, api, dlg, esc, fmtClock, icon, t } from "./core.js";
 import { healthAction, healthDeviceName, healthName, healthReport, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
 import { gatewayLatencyText, paintTile, setExtraTile } from "./net-rotator.js";
 import { openMore } from "./more-info.js";
+import { simAnswer, simNext, simOn, simScenario } from "./health-sim.js";
 
 // ------------------------------------------------------------ network health: the "Health" screen of the Network card
 // Dormant: it exists only while the debug mode is on (three taps on the title). The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
@@ -17,11 +18,12 @@ function hcOldHidden() {
   try { const v = JSON.parse(localStorage.getItem(HC_HIDDEN_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; }
 }
 function hcSendHidden(hide, show) {
+  if (simOn()) return Promise.resolve();                       // made-up findings: the choice stays in this page, the server never hears of it
   return api("/api/ha/health/hidden", { method: "POST", json: { hide: hide, show: show } }).then(function (x) { if (x && x.hidden) HC.hidden = x.hidden; });
 }
 function hcMigrateHidden() {
   const old = hcOldHidden();
-  if (!old.length) return;
+  if (!old.length || simOn()) return;
   hcSendHidden(old, []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
 }
 function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
@@ -66,7 +68,7 @@ function hcCarouselTile() {
   const two = finds.length ? hcStatBox(t("js.ha.health.last"), esc(fmtClock(last))) : hcStatBox(t("js.ha.health.card.check"), judged ? esc(fmtClock(judged)) : "–");
   return {
     id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
-    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t("js.ha.health.title")) +
+    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() ? "js.ha.health.sim.tile" : "js.ha.health.title")) +
       '</span></div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
   };
 }
@@ -205,13 +207,14 @@ function hcBuild() {
   HC.stack = stack; HC.screen = hcDiv("hs-pane health"); HC.tilesEl = hcDiv("hs-tiles"); HC.detail = hcDiv("hs-pane detail");
   stack.setAttribute("data-at", "0");
   HC.screen.setAttribute("role", "region"); HC.screen.setAttribute("aria-label", t("js.ha.health.title"));
-  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + "</span></div>";
+  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + '</span><button type="button" class="hs-sim" data-act="sim"></button></div>';
   HC.screen.appendChild(HC.tilesEl);
   HC.detail.setAttribute("role", "region"); HC.detail.setAttribute("aria-label", t("js.ha.health.detail"));
   hero.parentNode.insertBefore(stack, hero);
   net.appendChild(search); net.appendChild(hero); net.appendChild(badges);
   stack.appendChild(net); stack.appendChild(HC.screen); stack.appendChild(HC.detail);
-  HC.screen.addEventListener("click", function (e) { if (e.target.closest("[data-act='exit']")) hcExit(); });
+  HC.screen.addEventListener("click", function (e) { if (e.target.closest("[data-act='exit']")) hcExit(); else if (e.target.closest("[data-act='sim']")) hcSimStep(); });
+  hcPaintSim();
   HC.tilesEl.addEventListener("click", function (e) { const tl = e.target.closest(".hs-tile"); if (tl) hcOpen(tl.dataset.key, tl); });
   HC.detail.addEventListener("click", hcOnClick);
   document.addEventListener("keydown", hcOnKey);
@@ -229,6 +232,16 @@ function hcRemove() {
   setExtraTile(null);
   paintTile(false);
 }
+// The button of the head: asks for the next made-up scenario (debug only, nothing goes to the server).
+function hcPaintSim() {
+  const b = HC.screen && HC.screen.querySelector(".hs-sim"), on = simOn();
+  if (!b) return;
+  b.classList.toggle("on", on);
+  b.textContent = on ? t("js.ha.health.sim.on", { name: t("js.ha.health.sim." + simScenario()) }) : t("js.ha.health.sim.off");
+}
+function hcSimStep() {
+  simNext(); HC.hidden = []; hcPaintSim(); hcRefresh();
+}
 function hcRepaint() {
   if (!HC.stack) return;
   hcPaintTiles();
@@ -236,9 +249,9 @@ function hcRepaint() {
 }
 function hcRefresh() {
   if (!hcDebugOn()) return;
-  api("/api/ha/health").then(function (x) {
+  (simOn() ? Promise.resolve(simAnswer()) : api("/api/ha/health")).then(function (x) {
     HC.running = !!(x && x.running); HC.findings = (x && x.findings) || []; HC.report = (x && x.report) || null;
-    HC.hidden = (x && x.hidden) || [];
+    if (!simOn()) HC.hidden = (x && x.hidden) || [];
     if (!HC.running) { hcRemove(); return; }
     if (!HC.stack) hcBuild();
     hcRepaint();

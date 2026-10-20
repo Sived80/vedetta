@@ -623,5 +623,13 @@
   "js.ha.health.card.problems": "Problémy",
   "js.ha.health.card.check": "Kontrola",
   "js.ha.health.card.tip": "Zdraví sítě: klepnutím otevřete",
-  "js.ha.health.card.open": "Otevřít"
+  "js.ha.health.card.open": "Otevřít",
+  "js.ha.health.sim.tile": "Simulace",
+  "js.ha.health.sim.off": "Simulovat",
+  "js.ha.health.sim.on": "Simulace: {name}",
+  "js.ha.health.sim.calm": "vše v pořádku",
+  "js.ha.health.sim.one": "jeden problém",
+  "js.ha.health.sim.all": "všechny čtyři druhy",
+  "js.ha.health.sim.grave": "závažný",
+  "js.ha.health.sim.many": "mnoho zařízení"
 }

@@ -9,6 +9,9 @@
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
+  /* No scroll bar is drawn anywhere (a bar at the side of a card looks dated): everything still scrolls with the wheel, the touch and the keys. */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
   body, h1, h2, h3, p, ul, dl, dd { margin: 0; }
   ul { padding: 0; list-style: none; }
   button, input { font: inherit; color: inherit; }

@@ -97,8 +97,7 @@
   .tile-col { flex: 1 1 0; min-width: 0; display: flex; }
   .nettile {
     width: 100%; min-height: 178px; height: 100%; display: flex; flex-direction: column;
-    --px: 8px;      /* side padding of the tile: the dots end where the graphics end (changed in the narrow media query) */
-    justify-content: space-between; padding: 12px var(--px) 8px; overflow: hidden; text-align: left;
+    justify-content: space-between; overflow: hidden; text-align: left;
     /* TRIAL (18/10): the rotating tile with no background and no border (the border stays transparent so nothing moves). Back: background var(--field), border-color var(--divider-color). */
     position: relative; border-radius: var(--r-xl); background: transparent; color: inherit;
     transition: background-color 0.15s, border-color 0.15s; box-sizing: border-box;
@@ -108,6 +107,8 @@
   .nettile { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
   .nettile:focus:not(:focus-visible) { outline: none; }
   .nettile[hidden] { display: none; }
+  /* One box model for every tile of the card: the rotating one and the four of the health screen (42-health.css) keep the same distances from the edge. --px is the side padding: the dots end where the graphics end (changed in the narrow media query). */
+  .nettile, .hs-tile { --px: 8px; padding: 12px var(--px) 8px; box-sizing: border-box; }
   /* the dots start at the same height as the icon of the title (the tile padding, 12) and end where the graphics end (8 px): without the tile background nothing else shows where they belong */
   /* Two fixed segments whatever the number of tiles: a bar that fills while the tile is shown (the time to the next one) and a dot that takes the colour of a tile that asks for attention */
   .t-dots { position: absolute; top: 12px; right: var(--px, 8px); display: flex; flex-direction: row; align-items: center; gap: 5px; z-index: 2; }
@@ -283,7 +284,7 @@
   }
   @container (max-width: 400px) {
     .hero-row { gap: 10px; }
-    .nettile { --px: 14px; padding: 12px var(--px); }
+    .nettile, .hs-tile { --px: 14px; padding: 12px var(--px); }
     .t-v { font-size: 18px; gap: 4px; }
     .mm { padding: 0 4px; gap: 2px; }
     .badge { gap: 4px; }

@@ -14,16 +14,15 @@
   #card-network .hs-go { align-self: flex-end; margin-left: auto; display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 6px 0 12px; border-radius: 14px; border: 1px solid var(--divider-color); font-size: 12.5px; font-weight: 500; color: var(--primary-text-color); }
   #card-network .hs-sim { flex: none; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px dashed var(--divider-color); background: none; font: inherit; font-size: 12px; color: var(--secondary-text-color); cursor: pointer; }
   #card-network .hs-sim.on { border-style: solid; border-color: var(--warning-color); color: var(--primary-text-color); font-weight: 500; }
+  #card-network .hs-soon { flex: none; margin-left: auto; height: 20px; display: inline-flex; align-items: center; padding: 0 8px; border-radius: 10px; border: 1px solid var(--primary-color); font-size: 11px; font-weight: 600; letter-spacing: 0.02em; color: var(--primary-text-color); white-space: nowrap; }
   #card-network .hs-go .mdi { width: 16px; height: 16px; color: var(--secondary-text-color); }
 
   /* the small tiles */
-  #card-network .hs-tile { appearance: none; -webkit-appearance: none; background: transparent; color: inherit; font: inherit; display: flex; flex-direction: column; min-width: 0; padding: 8px; border-radius: var(--r-xl, 16px); border: 1px solid var(--divider-color); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; }
+  #card-network .hs-tile { appearance: none; -webkit-appearance: none; background: transparent; color: inherit; font: inherit; display: flex; flex-direction: column; min-width: 0; border-radius: var(--r-xl, 16px); border: 1px solid var(--divider-color); cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: left; }
   #card-network .hs-tile:hover { background: var(--ha-hover); }
-  #card-network .hs-tile .t-card { height: 100%; justify-content: flex-start; gap: 8px; min-width: 0; }
+  #card-network .hs-tile .t-card { min-width: 0; }
   #card-network .hs-tile .t-head { padding-right: 0; min-width: 0; }
   #card-network .hs-tile .t-l { overflow: hidden; text-overflow: ellipsis; }
-  #card-network .hs-tile .t-mid { margin: 0; flex: 1; justify-content: center; }
-  #card-network .hs-tile .stat-box { gap: 6px; }
 
   /* the health screen opens from the tile of the carousel and the big tile from a small one; both fill the box of the network screen and never make it taller (contain: size), what does not fit scrolls inside */
   #card-network .hs-pane.health, #card-network .hs-pane.detail { position: relative; contain: size; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 8px 12px; box-sizing: border-box; overflow: hidden; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: var(--r-xl, 16px);

@@ -634,5 +634,6 @@
   "js.ha.health.sim.one": "one problem",
   "js.ha.health.sim.all": "all four kinds",
   "js.ha.health.sim.grave": "serious",
-  "js.ha.health.sim.many": "many devices"
+  "js.ha.health.sim.many": "many devices",
+  "js.ha.health.soon": "Coming soon"
 }

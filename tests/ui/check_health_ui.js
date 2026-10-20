@@ -46,7 +46,7 @@ const FINDINGS = [
 ];
 
 // One page, as the browser would load it: with or without the debug mode, and with the answer of /api/ha/health chosen by the test.
-function boot(debug, health, stored, serverHidden) {
+function boot(debug, health, stored, serverHidden, preview) {
   const errors = [], calls = [], hidden = (serverHidden || []).slice();     // `hidden` is what the server keeps; `stored` is what an older version left in the browser
   const vc = new VirtualConsole();
   vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.stack) || e.message)));
@@ -56,6 +56,7 @@ function boot(debug, health, stored, serverHidden) {
     beforeParse(win) {
       win.addEventListener("unhandledrejection", (ev) => errors.push("rejection: " + (ev.reason && ev.reason.stack || ev.reason)));
       if (debug) win.localStorage.setItem("vedetta-debug", "1");
+      if (preview) win.VEDETTA_PREVIEW = "health";
       if (stored) win.localStorage.setItem("vedetta-health-hidden", JSON.stringify(stored));
       win.HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
       win.HTMLDialogElement.prototype.close = function () { this.removeAttribute("open"); };
@@ -221,6 +222,15 @@ async function openHealth(p) {
   await wait(1500);
   await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0,0");
+
+  // --- the preview of the public demo: no debug mode, the feature shown with made-up findings and marked "coming soon", nothing asked of the server
+  p = boot(false, running([]), null, null, true);
+  await wait(1500);
+  check(!p.doc.documentElement.hasAttribute("data-debug") && !!p.q(".hs-stack") && !p.calls.some((u) => u.includes("/api/ha/health")), "anteprima: senza debug la schermata c'e' e non chiede nulla al server");
+  await openHealth(p);
+  check(p.text("#rot .hs-soon") === tx("js.ha.health.soon") && TITLE.test(p.text("#rot .t-l")) && p.text("#rot .t-l") !== tx("js.ha.health.sim.tile"), "anteprima: la tile dice «in arrivo» e porta il suo nome");
+  check(p.qa(".hs-tile").length === 4 && p.text(".hs-pane.health .hs-soon") === tx("js.ha.health.soon") && !p.q(".hs-sim"), "anteprima: quattro tile, «in arrivo» nella testata, nessun pulsante per cambiare scenario");
+  check(p.errors.length === 0, "anteprima: nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- made-up findings (debug only): the button of the head steps through the scenarios, nothing goes to the server
   p = boot(true, quiet(null));

@@ -634,5 +634,6 @@
   "js.ha.health.sim.one": "un problema",
   "js.ha.health.sim.all": "tutti e quattro",
   "js.ha.health.sim.grave": "grave",
-  "js.ha.health.sim.many": "molti dispositivi"
+  "js.ha.health.sim.many": "molti dispositivi",
+  "js.ha.health.soon": "In arrivo"
 }

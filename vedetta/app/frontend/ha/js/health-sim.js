@@ -4,12 +4,16 @@
 const SIM_KEY = "vedetta-health-sim";
 export const SIM_SCENARIOS = ["off", "calm", "one", "all", "grave", "many"];
 
+// The preview of the public demo (the page sets window.VEDETTA_PREVIEW = "health"): the feature is shown with all four kinds of finding and no way to change them, marked "coming soon".
+export function simPreview() { return window.VEDETTA_PREVIEW === "health"; }
 export function simScenario() {
+  if (simPreview()) return "all";
   try { const v = localStorage.getItem(SIM_KEY); return SIM_SCENARIOS.indexOf(v) > 0 ? v : "off"; } catch (e) { return "off"; }
 }
 export function simOn() { return simScenario() !== "off"; }
 // The next scenario in the list, back to "off" after the last; returns it.
 export function simNext() {
+  if (simPreview()) return "all";
   const next = SIM_SCENARIOS[(SIM_SCENARIOS.indexOf(simScenario()) + 1) % SIM_SCENARIOS.length];
   try { localStorage.setItem(SIM_KEY, next); } catch (e) { /* storage not available: the scenario lasts until the page is closed */ }
   return next;

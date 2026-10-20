@@ -2,7 +2,7 @@ import { $, ROOT, api, dlg, esc, fmtClock, icon, t } from "./core.js";
 import { healthAction, healthDeviceName, healthName, healthReport, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
 import { gatewayLatencyText, paintTile, setExtraTile } from "./net-rotator.js";
 import { openMore } from "./more-info.js";
-import { simAnswer, simNext, simOn, simScenario } from "./health-sim.js";
+import { simAnswer, simNext, simOn, simPreview, simScenario } from "./health-sim.js";
 
 // ------------------------------------------------------------ network health: the "Health" screen of the Network card
 // Dormant: it exists only while the debug mode is on (three taps on the title). The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
@@ -26,7 +26,9 @@ function hcMigrateHidden() {
   if (!old.length || simOn()) return;
   hcSendHidden(old, []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
 }
-function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
+// "Coming soon": only in the preview of the public demo, in text and shape, never by colour alone.
+function hcSoon() { return simPreview() ? '<span class="hs-soon">' + esc(t("js.ha.health.soon")) + "</span>" : ""; }
+function hcDebugOn() { return ROOT.hasAttribute("data-debug") || simPreview(); }
 function hcModel() { return healthTiles(HC.findings, HC.hidden); }
 function hcTile(key) { return hcModel().filter(function (x) { return x.key === key; })[0]; }
 function hcFind(tile, id) { return tile.finds.concat(tile.hid).filter(function (f) { return f.id === id; })[0]; }
@@ -68,8 +70,8 @@ function hcCarouselTile() {
   const two = finds.length ? hcStatBox(t("js.ha.health.last"), esc(fmtClock(last))) : hcStatBox(t("js.ha.health.card.check"), judged ? esc(fmtClock(judged)) : "–");
   return {
     id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
-    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() ? "js.ha.health.sim.tile" : "js.ha.health.title")) +
-      '</span></div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
+    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</span>" + hcSoon() +
+      '</div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
   };
 }
 
@@ -207,7 +209,7 @@ function hcBuild() {
   HC.stack = stack; HC.screen = hcDiv("hs-pane health"); HC.tilesEl = hcDiv("hs-tiles"); HC.detail = hcDiv("hs-pane detail");
   stack.setAttribute("data-at", "0");
   HC.screen.setAttribute("role", "region"); HC.screen.setAttribute("aria-label", t("js.ha.health.title"));
-  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + '</span><button type="button" class="hs-sim" data-act="sim"></button></div>';
+  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + '</span>' + (simPreview() ? hcSoon() : '<button type="button" class="hs-sim" data-act="sim"></button>') + "</div>";
   HC.screen.appendChild(HC.tilesEl);
   HC.detail.setAttribute("role", "region"); HC.detail.setAttribute("aria-label", t("js.ha.health.detail"));
   hero.parentNode.insertBefore(stack, hero);

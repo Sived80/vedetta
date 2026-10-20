@@ -17,7 +17,7 @@ from fastapi.templating import Jinja2Templates
 from .. import applog, external, i18n
 from ..ha import analysis_view, ha_data, ha_update, health_view
 from ..ha.device_debug import device_debug
-from ..storage import journal, starhint
+from ..storage import health_hidden, journal, starhint
 from ..scan import latency
 from ..recognition import oui_update, roles
 from ..storage.history import history
@@ -26,6 +26,7 @@ from ..state import state
 from ..recognition import evidence
 from ..ha import ha_registry
 from ..assets import static_version
+from .bodies import json_dict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 router = APIRouter()
@@ -98,7 +99,17 @@ async def api_ha_device_evidence(device_id: str):
 @router.get("/api/ha/health")
 async def api_ha_health():
     """The network-health findings with who, what and when, shadow included. Only the page's debug mode asks for it; the judge runs in shadow in any case."""
-    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page), "report": await asyncio.to_thread(health_view.report)}
+    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page), "report": await asyncio.to_thread(health_view.report), "hidden": await asyncio.to_thread(health_hidden.load)}
+
+
+@router.post("/api/ha/health/hidden")
+async def api_ha_health_hidden(request: Request):
+    """Hide or show again findings ({"hide": [ids], "show": [ids]}); the answer is the list now kept, the same for every browser."""
+    body = await json_dict(request)
+    hide, show = body.get("hide", []), body.get("show", [])
+    if not isinstance(hide, list) or not isinstance(show, list):
+        raise HTTPException(400, "hide and show must be lists")
+    return {"hidden": await asyncio.to_thread(health_hidden.apply, hide, show)}
 
 
 @router.get("/api/ha/registry/status")

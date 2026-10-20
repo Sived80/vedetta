@@ -217,6 +217,7 @@ The functions that were restructured have a reference test that was generated fr
 |---|---|
 | `storage/blocklist.py` | Ignored devices: they do not appear in searches nor in new-device alerts. |
 | `storage/devices_config.py` | The list of monitored devices, saved in devices.yaml: load, add, update, set by hand (override), change of address, automatic name, scan info, remove. |
+| `storage/health_hidden.py` | The health findings a person chose to hide (config/health_hidden.json). |
 | `storage/history.py` | The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer. |
 | `storage/history_health.py` | HealthMixin: the findings of the network health (health/) kept on disk, so a restart does not lose the record of what was seen. |
 | `storage/history_known.py` | KnownMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
@@ -254,7 +255,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 241 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
-| `js/health-card.js` | 248 | network health: the "Health" screen of the Network card |
+| `js/health-card.js` | 256 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/ignored.js` | 342 | ignored devices |
 | `js/live.js` | 252 | update |

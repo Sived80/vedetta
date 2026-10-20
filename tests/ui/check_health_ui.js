@@ -34,8 +34,8 @@ const FINDINGS = [
 ];
 
 // One page, as the browser would load it: with or without the debug mode, and with the answer of /api/ha/health chosen by the test.
-function boot(debug, health, stored) {
-  const errors = [], calls = [];
+function boot(debug, health, stored, serverHidden) {
+  const errors = [], calls = [], hidden = (serverHidden || []).slice();     // `hidden` is what the server keeps; `stored` is what an older version left in the browser
   const vc = new VirtualConsole();
   vc.on("jsdomError", (e) => errors.push("jsdomError: " + ((e.detail && e.detail.stack) || e.message)));
   vc.on("error", (e) => errors.push("console.error: " + e));
@@ -50,11 +50,16 @@ function boot(debug, health, stored) {
       win.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
       win.HTMLElement.prototype.scrollIntoView = function () {};
       win.TextDecoder = require("util").TextDecoder;
-      win.fetch = (url) => {
+      win.fetch = (url, opts) => {
         calls.push(url);
         const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
         let b = {};
-        if (url.startsWith("/api/ha/health")) b = health();
+        if (url.startsWith("/api/ha/health/hidden")) {
+          const body = JSON.parse(opts.body);
+          body.show.forEach((id) => { const i = hidden.indexOf(id); if (i >= 0) hidden.splice(i, 1); });
+          body.hide.forEach((id) => { if (hidden.indexOf(id) < 0) hidden.push(id); });
+          b = { hidden: hidden.slice() };
+        } else if (url.startsWith("/api/ha/health")) b = Object.assign({}, health(), { hidden: hidden.slice() });
         else if (url.startsWith("/api/ha/devices") && !url.includes("/debug")) b = data.devices;
         else if (url.startsWith("/api/ha/summary")) b = data.summary;
         else if (url.startsWith("/api/ha/logbook")) b = data.logbook;
@@ -71,7 +76,7 @@ function boot(debug, health, stored) {
   const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
   const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(40); };
   const text = (sel) => (q(sel) ? q(sel).textContent.replace(/\s+/g, " ").trim() : "");
-  return { win, doc, q, qa, click, text, errors, calls };
+  return { win, doc, q, qa, click, text, errors, calls, hidden };
 }
 const running = (list) => () => ({ running: true, findings: list });
 // The way in is the tile of the carousel: it turns by itself and a click on another tile passes to the next; this goes to the health one and opens it.
@@ -159,7 +164,7 @@ async function openHealth(p) {
   await click(".hs-row-main");
   await click(".hs-pane.detail .hs-d-head [data-act='hide']");
   check(qa(".hs-row:not(.dim)").length === 0 && /1 (nascosto|hidden)/.test(text(".hs-hidrow")) && !!q(".hs-empty"), "Nascondi riporta all'elenco: nessun problema e «1 nascosto»");
-  check(JSON.parse(p.win.localStorage.getItem("vedetta-health-hidden")).join() === "H20:192.168.1.50", "la scelta resta salvata");
+  check(p.hidden.join() === "H20:192.168.1.50", "la scelta e' salvata dal server, non nel browser");
   await click(".hs-hidrow");
   check(qa(".hs-row.dim").length === 1 && /2 (dispositivi|devices) · 192\.168\.1\.50/.test(text(".hs-row.dim .hs-rf")), "il nascosto si apre e dice quanti dispositivi e l'IP");
   await click(".hs-row.dim [data-act='restore']");
@@ -200,10 +205,17 @@ async function openHealth(p) {
   check(p.errors.length === 0, "nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- a choice that was made before is still there at the next visit
-  p = boot(true, running(FINDINGS), ["H05:" + D[1].id]);
+  p = boot(true, running(FINDINGS), null, ["H05:" + D[1].id]);
   await wait(1500);
   await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0,0");
+
+  // --- an older version kept the choice in the browser: it goes to the server once, then leaves the browser
+  p = boot(true, running(FINDINGS), ["H05:" + D[1].id]);
+  await wait(1500);
+  check(p.hidden.join() === "H05:" + D[1].id && p.win.localStorage.getItem("vedetta-health-hidden") === null, "la scelta vecchia del browser passa al server e poi sparisce dal browser");
+  await openHealth(p);
+  check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0,0", "dopo il passaggio il nascosto vale ancora");
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);
 })();

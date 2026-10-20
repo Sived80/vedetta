@@ -10,13 +10,19 @@ var HC_POLL_MS = 30000, HC_HIDDEN_KEY = "vedetta-health-hidden";
 var HC_LEVEL_ICON = { bad: "alert-circle", warn: "alert", ok: "check-circle" };
 var HC_TILE_ICON = { addr: "lan", drop: "access-point", boot: "refresh", lat: "wifi-arrow-up-down" };
 var HC_COLOR = { bad: "var(--error-color)", warn: "var(--warning-color)", ok: "var(--success-color)", none: "var(--secondary-text-color)" };
-var HC = { findings: [], report: null, running: false, hidden: hcLoadHidden(), stack: null, screen: null, tilesEl: null, detail: null, rot: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
+var HC = { findings: [], report: null, running: false, hidden: [], stack: null, screen: null, tilesEl: null, detail: null, rot: null, timer: 0, tile: null, page: null, showHidden: false, anim: false, from: null };
 
-function hcLoadHidden() {
+// The hidden findings are kept by the server (every browser agrees). What an older version left in this browser is sent once and then removed.
+function hcOldHidden() {
   try { const v = JSON.parse(localStorage.getItem(HC_HIDDEN_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; }
 }
-function hcSaveHidden() {
-  try { localStorage.setItem(HC_HIDDEN_KEY, JSON.stringify(HC.hidden)); } catch (e) { /* storage not available: the choice lasts until the page is closed */ }
+function hcSendHidden(hide, show) {
+  return api("/api/ha/health/hidden", { method: "POST", json: { hide: hide, show: show } }).then(function (x) { if (x && x.hidden) HC.hidden = x.hidden; });
+}
+function hcMigrateHidden() {
+  const old = hcOldHidden();
+  if (!old.length) return;
+  hcSendHidden(old, []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
 }
 function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
 function hcModel() { return healthTiles(HC.findings, HC.hidden); }
@@ -162,11 +168,11 @@ function hcBack() {
 function hcHide(id) {
   const tl = hcTile(HC.tile);
   if (!tl || !hcFind(tl, id)) return;
-  HC.hidden.push(id); hcSaveHidden(); HC.page = null; HC.anim = true;
+  HC.hidden.push(id); hcSendHidden([id], []); HC.page = null; HC.anim = true;
   hcPaintTiles(); hcPaintDetail();
 }
 function hcRestore(id) {
-  HC.hidden = HC.hidden.filter(function (x) { return x !== id; }); hcSaveHidden();
+  HC.hidden = HC.hidden.filter(function (x) { return x !== id; }); hcSendHidden([], [id]);
   hcPaintTiles(); hcPaintDetail();
 }
 function hcOnClick(e) {
@@ -232,9 +238,11 @@ function hcRefresh() {
   if (!hcDebugOn()) return;
   api("/api/ha/health").then(function (x) {
     HC.running = !!(x && x.running); HC.findings = (x && x.findings) || []; HC.report = (x && x.report) || null;
+    HC.hidden = (x && x.hidden) || [];
     if (!HC.running) { hcRemove(); return; }
     if (!HC.stack) hcBuild();
     hcRepaint();
+    hcMigrateHidden();
   }).catch(function () { /* the next round asks again */ });
 }
 

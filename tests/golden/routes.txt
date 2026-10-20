@@ -46,6 +46,7 @@
 ['POST'] /api/export/jobs/{job_id}/file
 ['POST'] /api/flows
 ['POST'] /api/flows/reset
+['POST'] /api/ha/health/hidden
 ['POST'] /api/ha/star
 ['POST'] /api/ignored
 ['POST'] /api/ignored/forget

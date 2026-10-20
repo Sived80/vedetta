@@ -101,3 +101,16 @@ async def lifecycle():
 
 asyncio.run(lifecycle())
 print("check_health_view OK")
+
+# --- the hidden findings are kept by the server and come back with the findings
+from app.storage import health_hidden as _hh  # noqa: E402
+
+
+async def _body(request):      # the body parsing has its own tests; here the request is the body itself
+    return request
+
+
+routes_ha.json_dict = _body
+assert asyncio.run(routes_ha.api_ha_health_hidden(({"hide": ["H20:x"], "show": []}))) == {"hidden": ["H20:x"]}
+assert asyncio.run(routes_ha.api_ha_health())["hidden"] == ["H20:x"]
+assert asyncio.run(routes_ha.api_ha_health_hidden(({"hide": [], "show": ["H20:x"]}))) == {"hidden": []}

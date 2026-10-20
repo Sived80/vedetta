@@ -5,7 +5,7 @@ import time
 
 from .applog import logger
 from .formatters import update_generic_titles
-from .scan import latency, probe, touch_policy
+from .scan import latency, presence, probe, touch_policy
 from .storage import devices_config
 
 
@@ -20,8 +20,9 @@ async def poll_once(state) -> None:
     arp_task = asyncio.create_task(state._arp_by_ip(0))
     # Response time measured in parallel with the probes, in the same cycle.
     lat_task = asyncio.create_task(latency.measure_many(latency_targets(snapshot)))
+    owner = presence.owners(state._last_mac)
     results = await asyncio.gather(
-        *(probe.probe_device({**d, "last_mac": state._last_mac.get(d["id"])}, arp_task) for d in snapshot),
+        *(probe.probe_device({**d, "last_mac": state._last_mac.get(d["id"]), "mac_owner": owner}, arp_task) for d in snapshot),
         return_exceptions=True,
     )
     samples = await _samples(lat_task)

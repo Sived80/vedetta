@@ -5,7 +5,7 @@ import time
 
 from .formatters import update_generic_titles
 from .storage import devices_config, newdevices, settings
-from .scan import latency, probe, touch_policy
+from .scan import latency, presence, probe, touch_policy
 from . import maclayer, state_support, state_cycle
 from .cyclestats import CycleStats
 from .identity_upkeep import IdentityUpkeep
@@ -319,7 +319,7 @@ class DeviceState(IdentityUpkeep):
             return
         arp_task = asyncio.create_task(self._arp_by_ip(ARP_MAX_AGE))
         result, sample = await asyncio.gather(
-            probe.probe_device({**config, "last_mac": self._last_mac.get(device_id)}, arp_task),
+            probe.probe_device({**config, "last_mac": self._last_mac.get(device_id), "mac_owner": presence.owners(self._last_mac)}, arp_task),
             self._measure(config),
         )
         current = {c["id"]: c for c in devices_config.load_devices()}

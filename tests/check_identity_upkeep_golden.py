@@ -75,6 +75,15 @@ class FakeConfig:
         return None
 
     @staticmethod
+    def swap_ips(id_a, id_b):
+        LOG.append(["swap_ips", id_a, id_b])
+        cards = {c["id"]: c for c in WORLD["configs"]}
+        if id_a not in cards or id_b not in cards or id_a == id_b:
+            return False
+        cards[id_a]["ip"], cards[id_b]["ip"] = cards[id_b]["ip"], cards[id_a]["ip"]
+        return True
+
+    @staticmethod
     def remove_device(device_id):
         LOG.append(["remove_device", device_id])
         return device_id not in WORLD["remove_fails"]

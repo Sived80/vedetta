@@ -1,7 +1,7 @@
 """Builds the card of ONE device (probe_device): asks its adapter, adds what the search, Bonjour, DHCP and Home Assistant know, decides name, brand and "mobile", and
 returns a single record. The decisions about names are in probe_names, the web address in probe_web."""
 import re
-from . import dhcp, touch_policy
+from . import dhcp, presence, touch_policy
 from .probe_record import Brand, Facts, Naming, Signal, _build_probe_record
 from .adapters import ADAPTERS
 from ..formatters import should_show_title, wifi_quality, lan_quality
@@ -69,13 +69,7 @@ async def _probe_device_gather(device, arp_task):
     # with all the checks instead of before them in sequence (otherwise
     # every page refresh cost the sum of the two, not the slower of the two -
     # verified: 4.2s in sequence versus 2.2s in parallel).
-    if arp_task is not None:
-        arp_info = (await arp_task).get(ip)
-        if arp_info:
-            if not result.get("online"):
-                result = {**result, "online": True}
-            if not result.get("mac"):
-                result["mac"] = arp_info.get("mac")
+    result = await presence.complete_with_arp(result, device, ip, arp_task)
     return ip, port, result
 
 

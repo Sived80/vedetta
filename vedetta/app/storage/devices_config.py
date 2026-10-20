@@ -206,6 +206,26 @@ def update_ip(device_id: str, new_ip: str) -> str | None:
 
 
 @_locked
+def swap_ips(id_a: str, id_b: str) -> bool:
+    """The two cards exchange their addresses (a device took the address of another that left, and this one takes the address the first left free).
+    False if one of them does not exist."""
+    if not DEVICES_PATH.exists():
+        return False
+    data = _read_yaml(DEVICES_PATH.read_text(encoding="utf-8")) or {}
+    cards = {d["id"]: d for d in data.get("devices", [])}
+    a, b = cards.get(id_a), cards.get(id_b)
+    if a is None or b is None or id_a == id_b:
+        return False
+    old_a, old_b = a["ip"], b["ip"]
+    a["ip"], b["ip"] = old_b, old_a
+    for card, old in ((a, old_a), (b, old_b)):
+        if card.get("name") == old:  # the name was the IP itself
+            card["name"] = card["ip"]
+    _save(data)
+    return True
+
+
+@_locked
 def update_auto_name(device_id: str, name: str, source: str, force: bool = False) -> bool:
     """Replace an automatic name with a better one (see naming.is_better); the
     check is redone here on the file, so as not to override a rename made in the meantime."""

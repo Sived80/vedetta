@@ -39,7 +39,7 @@ class IdentityUpkeep:
                 by_mac.setdefault(mac, []).append(ip)
         return by_mac
 
-    def _moved_device(self, config: dict, arp: dict[str, dict], by_mac: dict[str, list[str]], used: set):
+    def _moved_device(self, config: dict, arp: dict[str, dict], by_mac: dict[str, list[str]], used: set, holders: dict[str, dict]):
         """(card, new address) of an offline device whose known MAC answers at exactly one address nobody uses; None otherwise."""
         device = self.devices.get(config["id"])
         mac = newdevices.normalize_mac(self._last_mac.get(config["id"]))
@@ -50,16 +50,34 @@ class IdentityUpkeep:
         # device, so nothing is followed.
         if len(by_mac.get(mac, [])) != 1:
             return None
-        candidates = [ip for ip in by_mac[mac] if ip not in used]
+        candidates = [ip for ip in by_mac[mac] if ip not in used or self._holder_is_gone(ip, mac, holders)]
         return (device, candidates[0]) if len(candidates) == 1 else None
 
-    async def _apply_ip_change(self, config: dict, device: dict, new_ip: str, used: set) -> None:
-        """Writes the new address of the device, forgets the misses and tells it."""
-        old_ip = await asyncio.to_thread(devices_config.update_ip, config["id"], new_ip)
-        if old_ip is None:
-            return
-        used.discard(old_ip)
+    def _holder_is_gone(self, ip: str, mac: str, holders: dict[str, dict]) -> bool:
+        """The card that has this address in its settings is offline and its own last MAC is not the one that answers there: the address passed to another device."""
+        holder = holders.get(ip)
+        if holder is None or (self.devices.get(holder["id"]) or {}).get("online", True):
+            return False
+        return newdevices.normalize_mac(self._last_mac.get(holder["id"])) != mac
+
+    async def _apply_ip_change(self, config: dict, device: dict, new_ip: str, used: set, holders: dict[str, dict]) -> None:
+        """Writes the new address of the device, forgets the misses and tells it. An address held by a card that is gone is exchanged: that card takes the one left free."""
+        holder = holders.get(new_ip)
+        if holder is not None:
+            old_ip = config["ip"]
+            if not await asyncio.to_thread(devices_config.swap_ips, config["id"], holder["id"]):
+                return
+        else:
+            old_ip = await asyncio.to_thread(devices_config.update_ip, config["id"], new_ip)
+            if old_ip is None:
+                return
         used.add(new_ip)
+        holders[new_ip] = config
+        if holder is None:
+            used.discard(old_ip)
+            holders.pop(old_ip, None)
+        else:
+            holders[old_ip] = holder
         self._misses[config["id"]] = 0
         label = device.get("name") or old_ip
         self.emit_alert(f"{label}: IP cambiato {old_ip} -> {new_ip}", "alert.ip_changed",
@@ -75,10 +93,11 @@ class IdentityUpkeep:
         by_mac = self._ips_by_mac(arp)
         configs = devices_config.load_devices()
         used = {c["ip"] for c in configs}
+        holders = {c["ip"]: c for c in configs}
         for config in configs:
-            moved = self._moved_device(config, arp, by_mac, used)
+            moved = self._moved_device(config, arp, by_mac, used, holders)
             if moved is not None:
-                await self._apply_ip_change(config, moved[0], moved[1], used)
+                await self._apply_ip_change(config, moved[0], moved[1], used, holders)
 
     @staticmethod
     def _alnum_lower(text: str) -> str:

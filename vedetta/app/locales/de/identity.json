@@ -1,0 +1,9 @@
+{
+  "extra.brand": "Marke",
+  "extra.mdns_model": "mDNS-Modell",
+  "battery.yes": "Batteriebetrieben",
+  "battery.src.api": "vom Gerät gemeldet",
+  "battery.src.scan": "aus der letzten Suche",
+  "battery.src.hint": "aus dem Modell abgeleitet",
+  "battery.src.model": "aus dem Modell"
+}

@@ -1,0 +1,14 @@
+{
+  "brands.error.invalid_body": "Ungültige Anfrage",
+  "brands.error.invalid_kind": "Ungültiger Regeltyp",
+  "brands.error.invalid_text": "Der Suchtext muss 2 bis 80 Zeichen lang sein",
+  "brands.error.invalid_brand": "Die Marke muss 1 bis 60 Zeichen lang sein",
+  "brands.error.rule_not_found": "Regel nicht gefunden",
+  "brands.error.save_failed": "Die Regel konnte nicht gespeichert werden",
+  "brands.error.locked": "Diese Einstellung wird von der Konfiguration der App bestimmt (internet_mac_database)",
+  "brands.error.update_running": "Ein Update läuft bereits",
+  "brands.error.update_network": "Download fehlgeschlagen, prüfe die Internetverbindung ({detail})",
+  "brands.error.update_invalid": "Die heruntergeladene Datei ist keine gültige Liste von MAC-Präfixen",
+  "brands.error.update_too_small": "Die heruntergeladene Liste wirkt unvollständig ({detail} Einträge), Update abgebrochen",
+  "brands.error.update_write": "Die aktualisierte Liste konnte nicht gespeichert werden {detail}"
+}

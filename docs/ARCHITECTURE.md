@@ -212,6 +212,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/scanner.py` | Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define, so callers and tests keep writing scanner.name. |
 | `scan/touch_policy.py` | The touch policy: how much a device is contacted. |
 | `scan/wol.py` | Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC = 102 bytes) sent as a UDP broadcast. |
+| `scan/work_time.py` | work_time: how long a deep search of one device really worked. |
 
 ### storage/
 

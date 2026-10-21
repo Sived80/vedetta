@@ -4,7 +4,9 @@ import asyncio
 import time
 
 from ..storage import devices_config
-from . import dhcp, pipeline, scanner, touch_policy
+import logging
+
+from . import dhcp, pipeline, scanner, touch_policy, work_time
 from .rescan_background import FAST_SET, FULL_PORTS_EVERY_S, merge_ports, port_numbers, schedule_full_ports
 from .scan_common import port_number
 from ..recognition import naming
@@ -57,6 +59,11 @@ async def rescan_device(device: dict, batch: pipeline.Batch) -> dict:
     return await _apply_name_and_refresh(fields, name, label, elapsed, device, source, info, now, previous)
 
 
+def _empty_result_level(device: dict) -> int:
+    """An empty deep search is normal for a card that never had a real port (a phone with only dynamic ports open): INFO. It is worth a WARNING when the card had real ports and now there is none."""
+    return logging.WARNING if port_numbers((device.get("scan_info") or {}).get("ports")) else logging.INFO
+
+
 async def _run_deep_scan(device, batch):
     ip = device["ip"]
     label = f"{ip} ({device.get('name') or ip})"
@@ -64,14 +71,15 @@ async def _run_deep_scan(device, batch):
     slow = bool((device.get("scan_info") or {}).get("slow_scan"))
     if touch_policy.touch_level(device) == touch_policy.CALM:
         batch = touch_policy.calm_batch(batch)
-    info = await pipeline.run_deep(ip, batch, slow)
+    with work_time.track() as runs:
+        info = await pipeline.run_deep(ip, batch, slow)
     fields = scanner.format_scan_info(info)
-    elapsed = time.monotonic() - started
+    elapsed = work_time.describe(time.monotonic() - started, work_time.busy_seconds(runs))
 
     if not fields:
         # An old but good scan is not overwritten with an empty result
         # (host momentarily unreachable or too filtered).
-        logger.warning("%s scansione completata senza alcun risultato utile (%.0fs), dati precedenti mantenuti", label, elapsed)
+        logger.log(_empty_result_level(device), "%s scansione completata senza alcun risultato utile (%s), dati precedenti mantenuti", label, elapsed)
         # Remember that the deep search was done, without touching scanned_at (that one means "ports and services
         # were really read" and feeds the mobile guess): otherwise a device that never answers (a phone with every
         # port closed) would stay "never analysed" forever and be retried by every "only missing" search and night.
@@ -163,7 +171,7 @@ async def _apply_name_and_refresh(fields, name, label, elapsed, device, source, 
         if await asyncio.to_thread(devices_config.update_auto_name, device["id"], name, source):
             logger.info("%s nome aggiornato: \"%s\" (%s)", label, name, source)
 
-    logger.info("%s scansionato in %.0fs", label, elapsed)
+    logger.info("%s scansionato in %s", label, elapsed)
     await state.refresh_device(device["id"], force=True)
     # Slow device: the full port scan continues in the background.
     if info.get("slow_scan") and (now - float(previous.get("full_ports_at") or 0) > FULL_PORTS_EVERY_S

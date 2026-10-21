@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import asyncio
 from .scan_common import NO_REQUEST_PORTS, is_no_talk_port, is_valid_ipv4, timed_out, version_exclusion
 from ..applog import logger
+from . import work_time
 from .scan_cert import parse_ssh_hostkey, parse_ssl_cert
 from ..recognition.vendor_lookup import resolve_vendor_info
 import time
@@ -143,7 +144,7 @@ async def _run_nmap(args: list[str], semaphore: asyncio.Semaphore | None = None)
     label = _describe_nmap(args)
     if sem.locked():
         logger.info("In coda (nmap occupato): %s", label)
-    async with sem:
+    async with sem, work_time.running():
         logger.info("Avviata: %s", label)
         t0 = time.monotonic()
         proc = await asyncio.create_subprocess_exec(

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0 · Battito
+**Battito** is Italian for *heartbeat*: a quiet, steady check of how your network is doing.
+- **German.** Vedetta now speaks German too: the whole page, the Configuration tab and the documentation line. It is a first translation and has not been read by a native speaker yet: corrections are welcome.
+- **A card no longer stays online because of someone else's address.** When two devices swap addresses (a PC that takes the address a phone had), the answer to a probe no longer keeps the wrong card online, and the two cards swap their addresses. Fixed after a real case.
+- **A steadier Network card.** It is built once, so an open screen or a click in progress is not lost when the page refreshes by itself; in the stacked layout (narrow window, phone) the log sits right under the card; the side column keeps its height and scrolls; the open log list is at most 340 px or 45% of the height.
+- **No scroll bars drawn.** Everything still scrolls with the wheel, touch and keys.
+- **A first network health check, running quietly.** It looks for repeated restarts, many devices dropping together, a step in the latency of the gateway and an address used twice, and keeps what it finds in a small table of the local database for 90 days. Nothing leaves your network, and it is shown only in the debug mode (three taps on the logo) while it collects data: a later release will switch it on for everyone.
+
+**Thank you** to everyone who shared an export: real networks made this release possible.
+
 ## 0.8.0 · Vetrina
 **Vetrina** is Italian for *shop window*: the page you open every day, redrawn so that what matters is the first thing you see.
 - **A new Network card** in the Home Assistant style: the state of the network at a glance, a tile that rotates between latency, gateway, Internet connection and what Vedetta knows, a full-width search and one scan button. Light and dark.

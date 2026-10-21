@@ -103,7 +103,7 @@ All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 
 ## 🌍 Your language?
 
-Vedetta speaks **English, Italian and Czech** (thanks to the community for the Czech). Adding yours takes no code: copy the `en` folder, translate the texts, open a pull request. [Step by step →](docs/DEVELOPMENT.md#add-a-language)
+Vedetta speaks **English, Italian, Czech and German** (thanks to the community for the Czech; the German is a first translation, not yet read by a native speaker). Adding yours takes no code: copy the `en` folder, translate the texts, open a pull request. [Step by step →](docs/DEVELOPMENT.md#add-a-language)
 
 ## Documentation
 

@@ -1,6 +1,7 @@
 import { $, LANG, api, esc, icon, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { tick } from "./live.js";
+import { vlanClick, vlanEscape, vlanGuide, vlanInit, vlanSection, vlanWanted } from "./export-vlan.js";
 
 // ------------------------------------------------- export for analysis
 // One window, five moments: who is it for (the developer: masked and encrypted; me: my own data as it is) -> which days (two
@@ -128,7 +129,7 @@ function xpView() {
     acts = cancel;
   } else if (X.stage === "pick") {
     var over = xpOver();
-    body = '<div class="xp-chosen"><span class="xp-tag' + (X.dest === "me" ? " warn" : "") + '">' + esc(t(X.dest === "me" ? "js.ha.export.chip_me" : "js.ha.export.chip_dev")) + "</span></div>" + xpChart() + xpSummary() + xpPresets();
+    body = '<div class="xp-chosen"><span class="xp-tag' + (X.dest === "me" ? " warn" : "") + '">' + esc(t(X.dest === "me" ? "js.ha.export.chip_me" : "js.ha.export.chip_dev")) + "</span></div>" + xpChart() + xpSummary() + xpPresets() + vlanSection(X);
     acts = cancel + '<button type="button" class="btn filled rp" data-xp="go"' + (over || !X.info ? " disabled" : "") + ">" + icon("download") + "<span>" + esc(t(X.dest === "me" ? "js.ha.export.go_me" : "js.ha.export.go_dev")) + "</span></button>";
   } else if (X.stage === "run") {
     body = xpSteps();
@@ -145,7 +146,7 @@ function xpView() {
     body = '<div class="xp-tone bad"><span>' + icon("alert") + "</span><div>" + esc(code === "too_big" ? t("js.ha.export.err_too_big", { size: X.info ? xpSize(X.info.limit) : "20 MB" }) : code === "encryption_unavailable" ? t("js.ha.export.no_crypto") : code === "busy" ? t("js.ha.export.err_busy") : t("js.ha.export.failed")) + "</div></div>";
     acts = '<button type="button" class="btn text rp" data-xp="back">' + esc(t("js.ha.export.back")) + "</button>";
   }
-  return '<div class="mi">' + title + '<div class="mi-body xp-body">' + body + '</div><div class="mi-actions">' + acts + "</div></div>";
+  return '<div class="mi">' + title + '<div class="mi-body xp-body">' + body + '</div><div class="mi-actions">' + acts + "</div>" + (X.stage === "pick" ? vlanGuide(X) : "") + "</div>";
 }
 function xpRender() {
   if (!X) return;
@@ -153,7 +154,7 @@ function xpRender() {
   X.intro = false;
 }
 export function openExport() {
-  X = { stage: "dest", dest: null, from: 7, to: 0, off: 0, all: false, pend: null, intro: false, note: "", info: null, job: null, snap: null, choice: {}, error: null, saved: false, decided: null, timer: null };
+  X = { stage: "dest", dest: null, from: 7, to: 0, off: 0, all: false, pend: null, intro: false, note: "", info: null, job: null, snap: null, choice: {}, error: null, saved: false, decided: null, timer: null, vlan: vlanInit() };
   xpRender();
   if (typeof exportDlg.showModal === "function") exportDlg.showModal(); else exportDlg.setAttribute("open", "");
   const mine = X;
@@ -189,6 +190,7 @@ function xpPoll() {
 function xpGo() {
   const body = { dest: X.dest };
   if (X.all) body.all = true; else { body.from_day = X.from - 1; body.to_day = X.to; }
+  if (vlanWanted(X)) body.survey = true;                       // the network option, only when its button is green (debug mode)
   const mine = X;
   mine.stage = "run"; mine.snap = { steps: [], status: "running", items: [], items_total: 0 }; mine.decided = null; mine.saved = false;
   xpRender();
@@ -245,9 +247,11 @@ exportDlg.addEventListener("click", function (e) {
       .catch(function () { if (X === mine) { mine.stage = "error"; mine.error = "export_failed"; xpRender(); } });
     return;
   }
+  else if (act.indexOf("vlan") === 0) vlanClick(X, act, xpRender);
   else if (act === "save") return xpSave();
   else if (act === "finish") return xpClose();
   xpRender();
 });
+exportDlg.addEventListener("cancel", function (e) { if (X && vlanEscape(X)) { e.preventDefault(); xpRender(); } });      // Escape closes the guide, then the small panel, then the window
 exportDlg.addEventListener("close", function () { if (X) xpClose(); });
 

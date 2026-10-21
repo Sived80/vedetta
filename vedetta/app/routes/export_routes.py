@@ -10,6 +10,7 @@ from ..applog import logger
 from ..export import export_zip as export, report_crypto
 from ..export import export_engine
 from ..export import export_jobs
+from ..export import network_survey
 from .bodies import json_dict
 
 router = APIRouter()
@@ -46,8 +47,17 @@ async def api_export(plain: bool = False):
 @router.get("/api/export/info")
 async def api_export_info():
     """Bytes of raw data for each of the last days, what the file always has, and the limit: the window draws the columns and
-    says how big a period will be with these."""
-    return await asyncio.to_thread(export_engine.estimate)
+    says how big a period will be with these; `survey` tells whether the window may offer the network survey."""
+    return {**await asyncio.to_thread(export_engine.estimate), "survey": network_survey.ENABLED}
+
+
+@router.post("/api/export/survey/check")
+async def api_export_survey_check():
+    """The check button of the network option: is there anything to include? {"state": "ok"|"none"|"noha", "clients": N}, numbers and a state, never a name or an address.
+    POST: it reads Home Assistant, so a link must not start it. 404 while the survey is off."""
+    if not network_survey.ENABLED:
+        raise HTTPException(404, "the network survey is off")
+    return await asyncio.to_thread(network_survey.check)
 
 
 def _job_or_404(job_id: str):
@@ -57,14 +67,25 @@ def _job_or_404(job_id: str):
     return job
 
 
+def _survey_flag(body: dict, dest: str) -> bool:
+    """The tick of the network survey: a yes or a no, and a yes only for the developer export while the survey is on."""
+    flag = body.get("survey", False)
+    if not isinstance(flag, bool):
+        raise HTTPException(422, "survey must be true or false")
+    if flag and (dest != "dev" or not network_survey.ENABLED):
+        raise HTTPException(422, "the network survey is only for the developer export, and only while it is on")
+    return flag
+
+
 @router.post("/api/export/jobs")
 async def api_export_job_start(request: Request):
     """Body: {"dest": "dev"|"me", "from_day": N, "to_day": M} (days ago: the oldest and the newest included, 0 = today) or
-    {"dest": ..., "all": true} for the whole history."""
+    {"dest": ..., "all": true} for the whole history; "survey": true adds the network survey (developer export only)."""
     body = await json_dict(request)
     dest = body.get("dest")
     if dest not in ("dev", "me"):
         raise HTTPException(422, "dest must be dev or me")
+    survey = _survey_flag(body, dest)
     if body.get("all") is True:
         first = last = None
     else:
@@ -75,7 +96,7 @@ async def api_export_job_start(request: Request):
         if not (0 <= last <= first < export_engine.HORIZON_DAYS):
             raise HTTPException(422, "period out of range")
     try:
-        job = export_jobs.start(dest, first, last)
+        job = export_jobs.start(dest, first, last, survey)
     except export_jobs.Busy:
         raise HTTPException(409, "an export is already running") from None
     return export_jobs.snapshot(job)

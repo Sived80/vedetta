@@ -20,7 +20,7 @@ from pathlib import Path
 from ..storage import devices_config
 from ..recognition import evidence
 from .. import paths
-from . import export_zip as legacy
+from . import export_zip as legacy, network_survey
 from ..state import state
 from .export_estimate import HORIZON_DAYS, LIMIT_BYTES, MAX_LOG_PERIOD, SEAL_FACTOR, ZIP_RATIO, _TS, _add_database_row_sizes, _add_log_and_data_file_sizes, _cache_estimate_result, _est_cache, _line_ts, _open_estimate_buckets, _period_db, bounds, day_start, estimate, filter_jsonl, filter_log  # noqa: F401
 from .export_gather import FOCUS_DEFAULT_DAYS, FORMAT, JOURNAL_LIMIT, Prepared, _add_focus_section, _collect_data_file, _collect_device_debug, _convert_data_text, _fill_manifest_header, _focus_days, _focus_entries, _gather, _gather_data_files, _gather_database_copy, _gather_device_debug_and_focus, _gather_state_snapshots, _is_skipped_data_file, _read_data_file, _text_of  # noqa: F401
@@ -30,11 +30,13 @@ REMOVED = "[removed]"
 STEPS_DEV = ("collect", "mask", "check", "fix", "seal", "ready")
 
 
-def prepare(dest: str, first_day: int | None = None, last_day: int | None = None, progress=None) -> Prepared:
-    """Phase 1: gathers, masks (for the developer), checks and fixes. progress(step) is told when each step starts."""
+def prepare(dest: str, first_day: int | None = None, last_day: int | None = None, progress=None, survey: bool = False) -> Prepared:
+    """Phase 1: gathers, masks (for the developer), checks and fixes. progress(step) is told when each step starts.
+    `survey` adds the network survey, for the developer only and only while network_survey.ENABLED is on."""
     note = progress or (lambda step: None)
     since, until = bounds(first_day, last_day)
     p = Prepared(dest)
+    p.want_survey = bool(survey) and dest == "dev" and network_survey.ENABLED
     try:
         note("collect")
         _gather(p, since, until)
@@ -43,6 +45,8 @@ def prepare(dest: str, first_day: int | None = None, last_day: int | None = None
             return p
         note("mask")
         p.anon = anon = legacy._collect(state.sorted_devices())
+        if p.survey:
+            network_survey.register_for_masking(anon, p.survey)
         p.manifest["notes"].append("anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)")
         _mask_files(p, anon)
         note("check")

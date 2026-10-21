@@ -17,9 +17,9 @@ class Busy(RuntimeError):
 
 
 class Job:
-    def __init__(self, dest: str, first_day: int | None, last_day: int | None) -> None:
+    def __init__(self, dest: str, first_day: int | None, last_day: int | None, survey: bool = False) -> None:
         self.id = secrets.token_urlsafe(12)
-        self.dest, self.first_day, self.last_day = dest, first_day, last_day
+        self.dest, self.first_day, self.last_day, self.survey = dest, first_day, last_day, survey
         self.status = "running"            # running | choose | done | error
         self.steps: list[str] = []
         self.error: str | None = None
@@ -52,12 +52,12 @@ def _purge() -> None:
             _jobs.pop(jid, None)
 
 
-def start(dest: str, first_day: int | None, last_day: int | None) -> Job:
+def start(dest: str, first_day: int | None, last_day: int | None, survey: bool = False) -> Job:
     with _guard:
         _purge()
         if any(j.status == "running" for j in _jobs.values()):
             raise Busy("an export is already running")
-        job = Job(dest, first_day, last_day)
+        job = Job(dest, first_day, last_day, survey)
         _jobs[job.id] = job
     threading.Thread(target=_run, args=(job,), daemon=True, name="export-" + job.id[:6]).start()
     return job
@@ -65,7 +65,7 @@ def start(dest: str, first_day: int | None, last_day: int | None) -> Job:
 
 def _run(job: Job) -> None:
     try:
-        job.prepared = E.prepare(job.dest, job.first_day, job.last_day, progress=job.note)
+        job.prepared = E.prepare(job.dest, job.first_day, job.last_day, progress=job.note, survey=job.survey)
         job.fixed = job.prepared.fixed
         if job.prepared.pending:
             job.pending = job.prepared.pending

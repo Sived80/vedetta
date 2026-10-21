@@ -1,7 +1,7 @@
 """export_gather: moved out of export_engine.py (see tools/split_module.py)."""
 from pathlib import Path
 from .export_estimate import _period_db, filter_jsonl, filter_log
-from . import anonymize, export_analysis
+from . import anonymize, export_analysis, network_survey
 from ..storage import devices_config, journal, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
@@ -39,6 +39,8 @@ class Prepared:
         self.since: float | None = None           # the period that the files cover (None = everything)
         self.until: float | None = None
         self.anon: anonymize.Anonymizer | None = None
+        self.want_survey = False                  # the person ticked the network survey (network_survey.add_to decides whether it applies)
+        self.survey: dict | None = None           # the survey, once read: the masking is told about its names and addresses
         self.tmp = tempfile.TemporaryDirectory(prefix="vedetta-export-")
 
     def add(self, name: str, text: str) -> None:
@@ -58,6 +60,7 @@ def _gather(p: Prepared, since: float | None, until: float | None) -> None:
     _gather_database_copy(p, data_dir)
     dbg, evi = _gather_device_debug_and_focus(p, device_debug_, ha_data_)
     _gather_state_snapshots(p, dbg, evi, ha_data_)
+    network_survey.add_to(p)
 
 
 def _fill_manifest_header(p):

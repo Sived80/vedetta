@@ -44,6 +44,7 @@
 ['POST'] /api/export/jobs
 ['POST'] /api/export/jobs/{job_id}/choices
 ['POST'] /api/export/jobs/{job_id}/file
+['POST'] /api/export/survey/check
 ['POST'] /api/flows
 ['POST'] /api/flows/reset
 ['POST'] /api/ha/health/hidden

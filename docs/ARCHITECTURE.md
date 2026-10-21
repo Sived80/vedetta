@@ -113,6 +113,7 @@ The functions that were restructured have a reference test that was generated fr
 | `export/export_mask.py` | export_mask: moved out of export_engine.py (see tools/split_module.py). |
 | `export/export_zip.py` | Export for analysis: a zip file with the data needed to understand why a name, a brand or a category is wrong. |
 | `export/mac_shadow.py` | Shadow data per MAC: collected for analysis only, nothing here decides what a card shows. |
+| `export/network_survey.py` | The network survey of the export for the developer: what the host of Vedetta and Home Assistant say about the networks (VLANs) of the house, in a form that does not depend on a make. |
 | `export/report_crypto.py` | Encrypted report: the zip is sealed with the maintainer's public key (data/report_key.pub). |
 
 ### ha/

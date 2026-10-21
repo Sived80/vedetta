@@ -51,6 +51,15 @@ async def api_export_info():
     return {**await asyncio.to_thread(export_engine.estimate), "survey": network_survey.ENABLED}
 
 
+@router.post("/api/export/survey/check")
+async def api_export_survey_check():
+    """The check button of the network option: is there anything to include? {"state": "ok"|"none"|"noha", "clients": N}, numbers and a state, never a name or an address.
+    POST: it reads Home Assistant, so a link must not start it. 404 while the survey is off."""
+    if not network_survey.ENABLED:
+        raise HTTPException(404, "the network survey is off")
+    return await asyncio.to_thread(network_survey.check)
+
+
 def _job_or_404(job_id: str):
     job = export_jobs.get(job_id)
     if job is None:

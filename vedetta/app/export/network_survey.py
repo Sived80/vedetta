@@ -29,6 +29,7 @@ MAX_CLIENTS = 2000                   # rows kept; the count stays true
 MAX_TEXT = 64                        # a name is free text: cut it
 TEMPLATE_TIMEOUT_S = 20
 RECV_TIMEOUT_S = 25
+CHECK_TIMEOUT_S = 25                 # the check button waits this long at most, then says Home Assistant cannot be read
 SYS_NET = Path("/sys/class/net")
 PROC = Path("/proc")
 
@@ -276,6 +277,19 @@ def collect() -> tuple[dict, str | None]:
         logger.warning("network survey: Home Assistant not read (%s: %s)", type(exc).__name__, str(exc)[:120])
         note = f"Home Assistant not read ({type(exc).__name__})"
     return build(host, rows, registry), note
+
+
+def check() -> dict:
+    """What the check button of the export window asks: is there anything to include? {"state": ok | none | noha, "clients": N}: ok = router trackers found,
+    none = Home Assistant answered and there are none, noha = Home Assistant cannot be read (no token, an error, too slow). A state and a number: never a name or an
+    address. It never raises and it never waits longer than CHECK_TIMEOUT_S (the export itself is never held up by it)."""
+    try:
+        registry, rows = asyncio.run(asyncio.wait_for(_read_home_assistant(), CHECK_TIMEOUT_S))
+    except Exception as exc:        # whatever goes wrong is "cannot read": the person is told so and the reason goes to the log
+        logger.warning("network survey check: Home Assistant not read (%s: %s)", type(exc).__name__, str(exc)[:120])
+        return {"state": "noha", "clients": 0}
+    clients = clients_section(rows, registry.get("entities") or [], registry.get("devices") or [], registry.get("entries") or [], limit=0)["count"]
+    return {"state": "ok" if clients else "none", "clients": clients}
 
 
 def add_to(p) -> None:

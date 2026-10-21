@@ -46,6 +46,13 @@
     "with_note": 1
    },
    "format": 2,
+   "health": {
+    "enabled": true,
+    "findings": {},
+    "judged_ago_s": null,
+    "judgments": 0,
+    "running": false
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -114,6 +121,13 @@
     "with_note": 1
    },
    "format": 2,
+   "health": {
+    "enabled": true,
+    "findings": {},
+    "judged_ago_s": null,
+    "judgments": 0,
+    "running": false
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -181,6 +195,13 @@
     "with_note": 1
    },
    "format": 2,
+   "health": {
+    "enabled": true,
+    "findings": {},
+    "judged_ago_s": null,
+    "judgments": 0,
+    "running": false
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -246,6 +267,13 @@
     "with_note": 1
    },
    "format": 2,
+   "health": {
+    "enabled": true,
+    "findings": {},
+    "judged_ago_s": null,
+    "judgments": 0,
+    "running": false
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -314,6 +342,13 @@
     "with_note": 1
    },
    "format": 2,
+   "health": {
+    "enabled": true,
+    "findings": {},
+    "judged_ago_s": null,
+    "judgments": 0,
+    "running": false
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,

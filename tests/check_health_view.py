@@ -90,6 +90,42 @@ hv._engine = sh
 assert hv.running() and asyncio.run(routes_ha.api_ha_health())["running"] is True
 hv._engine = None
 
+# --- what the export says about the judge: counts and seconds only, never an address, a name or a rule subject
+os.environ["VEDETTA_HEALTH"] = "shadow"
+hv._engine, hv._judged, hv._judgments = None, None, 0
+assert hv.manifest_part(1000) == {"enabled": True, "running": False, "judged_ago_s": None, "judgments": 0, "findings": {}}, hv.manifest_part(1000)
+hv._engine, hv._judged, hv._judgments = sh, 940.4, 7
+part = hv.manifest_part(1000)
+assert part == {"enabled": True, "running": True, "judged_ago_s": 60, "judgments": 7, "findings": {"H20": {"active": 1}}}, part
+assert "10.0.0.5" not in repr(part) and "Stampante" not in repr(part) and "aa:bb" not in repr(part)
+os.environ["VEDETTA_HEALTH"] = "off"
+assert hv.manifest_part(1000)["enabled"] is False, "switched off: the export says so"
+os.environ["VEDETTA_HEALTH"] = "shadow"
+
+# --- the hourly line of the log: silent the first time (the clock starts), then once an hour, with the count of judgments since the last line; without it
+# a quiet judge and a judge that does not run look the same in the log
+hv._engine, hv._judgments, hv._reported = sh, 30, None
+assert hv.hourly_line(5000) is None and hv._reported == 5000, "the first call only starts the clock"
+assert hv.hourly_line(5000 + hv.REPORT_EVERY_S - 1) is None, "not yet an hour"
+line = hv.hourly_line(5000 + hv.REPORT_EVERY_S)
+assert line == "Health: judged 30 times in the last hour, 1 findings open (shadow included)", line
+assert hv._judgments == 0 and hv.hourly_line(5000 + hv.REPORT_EVERY_S + 1) is None, "the count restarts after a line"
+assert "10.0.0.5" not in line and "H20" not in line
+
+# --- a judgment counts itself and writes the line when it is due
+LOGGED = []
+saved_signals, saved_info = hv.read_signals, hv.logger.info
+hv.read_signals, hv.logger.info = (lambda: {}), (lambda msg, *a: LOGGED.append(msg % a if a else msg))
+try:
+    hv._engine, hv._judgments, hv._reported = Engine([]), 0, 0.0      # the clock started at time 0: an hour has passed
+    assert hv._tick() is False and hv._judgments == 0 and LOGGED and LOGGED[-1] == "Health: judged 1 times in the last hour, 0 findings open (shadow included)", (hv._judgments, LOGGED)
+    LOGGED.clear()
+    hv._tick()
+    assert hv._judgments == 1 and LOGGED == [], "inside the hour a judgment only counts"
+finally:
+    hv.read_signals, hv.logger.info = saved_signals, saved_info
+hv._engine, hv._judgments, hv._reported = None, 0, None
+
 # --- start does nothing when it is switched off, and stop is safe
 os.environ["VEDETTA_HEALTH"] = "off"
 

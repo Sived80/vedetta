@@ -5,7 +5,7 @@ from . import anonymize, export_analysis, network_survey
 from ..storage import devices_config, journal, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
-from ..ha import ha_data
+from ..ha import ha_data, health_view
 from ..ha import ha_registry, ha_tz, mqtt_ha
 import json
 from . import export_zip as legacy
@@ -82,6 +82,10 @@ def _fill_manifest_header(p):
         m["mqtt"] = {"enabled": bool(st.get("enabled")), "connected": bool(st.get("connected"))}
     except Exception:
         m["mqtt"] = {"enabled": False, "connected": False}
+    try:
+        m["health"] = health_view.manifest_part()      # counts and seconds of the health judge: no address, no name
+    except Exception as exc:
+        m["notes"].append(f"health: {exc!r}")
     return device_debug_, ha_data_, data_dir, m
 
 

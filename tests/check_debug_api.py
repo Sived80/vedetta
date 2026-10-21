@@ -68,4 +68,7 @@ assert set(man["time"]) == {"utc_offset", "from_home_assistant", "night_hour"} a
 assert man["time"]["utc_offset"] and "/" not in str(man["time"]), "the offset, not the name of the zone"
 assert set(man["deep_search"]) == {"never_analysed", "devices"}, man["deep_search"]
 assert "phone_merge" in man and (man["phone_merge"] is None or set(man["phone_merge"]) >= {"merged", "merged_total"}), man.get("phone_merge")
+# what the export says about the health judge: counts and seconds only (a quiet judge can be told from one that does not run)
+assert set(man["health"]) == {"enabled", "running", "judged_ago_s", "judgments", "findings"}, man.get("health")
+assert isinstance(man["health"]["enabled"], bool) and isinstance(man["health"]["findings"], dict), man["health"]
 print("TUTTO OK (esportazione)")

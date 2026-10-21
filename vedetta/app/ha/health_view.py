@@ -23,6 +23,9 @@ _engine: Engine | None = None
 _task: asyncio.Task | None = None
 _on_change = None
 _judged: float | None = None   # when the judge looked last
+_judgments = 0                 # judgments since the last line of the log
+_reported: float | None = None   # when that line was written (the first call only starts the clock)
+REPORT_EVERY_S = 3600
 
 
 SWITCHED_OFF = ("off", "0", "no", "false")
@@ -92,6 +95,28 @@ def summary(engine: Engine | None = None) -> dict:
     return out
 
 
+def manifest_part(now: float | None = None) -> dict:
+    """What the export says about the judge, so a quiet judge can be told from one that does not run: counts and seconds only, never an address, a name or the subject of a finding."""
+    now = time.time() if now is None else now
+    return {"enabled": enabled(), "running": running(), "judged_ago_s": None if _judged is None else round(now - _judged),
+            "judgments": _judgments, "findings": summary()}
+
+
+def hourly_line(now: float) -> str | None:
+    """The line for the log once an hour (None before): how many times the judge looked and how many findings are open. The log of a finding is written only when it changes, so without this line a quiet judge
+    and a judge that does not run look the same."""
+    global _judgments, _reported
+    if _reported is None:
+        _reported = now
+        return None
+    if now - _reported < REPORT_EVERY_S:
+        return None
+    open_findings = len(_engine.findings()) if _engine else 0
+    line = f"Health: judged {_judgments} times in the last hour, {open_findings} findings open (shadow included)"
+    _judgments, _reported = 0, now
+    return line
+
+
 def event() -> dict:
     return {"type": "health", "findings": snapshot()}
 
@@ -116,10 +141,13 @@ def judge_once(engine: Engine, signals: dict, now: float, record=None) -> list[C
 
 def _tick() -> bool:
     """One judgment of the real signals (and the write to disk); True if something the page shows has changed."""
-    global _judged
+    global _judged, _judgments
     try:
         changed = bool(judge_once(_engine, read_signals(), time.time(), record=history.record_finding))
         _judged = time.time()
+        _judgments += 1
+        if line := hourly_line(_judged):
+            logger.info(line)
         return changed
     except Exception:
         logger.exception("Judging the network health failed")

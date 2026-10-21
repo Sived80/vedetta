@@ -43,6 +43,13 @@
      "with_note": 1
     },
     "format": 1,
+    "health": {
+     "enabled": true,
+     "findings": {},
+     "judged_ago_s": null,
+     "judgments": 0,
+     "running": false
+    },
     "lines_removed": [],
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
@@ -103,6 +110,13 @@
      "with_note": 0
     },
     "format": 1,
+    "health": {
+     "enabled": true,
+     "findings": {},
+     "judged_ago_s": null,
+     "judgments": 0,
+     "running": false
+    },
     "lines_removed": [],
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
@@ -162,6 +176,13 @@
      "with_note": 1
     },
     "format": 1,
+    "health": {
+     "enabled": true,
+     "findings": {},
+     "judged_ago_s": null,
+     "judgments": 0,
+     "running": false
+    },
     "lines_removed": [],
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
@@ -225,6 +246,13 @@
      "with_note": 0
     },
     "format": 1,
+    "health": {
+     "enabled": true,
+     "findings": {},
+     "judged_ago_s": null,
+     "judgments": 0,
+     "running": false
+    },
     "lines_removed": [],
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",

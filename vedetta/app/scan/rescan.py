@@ -13,10 +13,22 @@ from ..storage.history import history
 from ..state import state
 
 
+CHURN_BAND_START = 32768   # the default dynamic range of Linux (32768-60999), which a TV, a phone or a repeater uses for the ports it listens on
+
+
+def _all_numbers(ports: list[dict] | None) -> set[int]:
+    return {n for p in ports or [] if (n := port_number(p)) is not None}
+
+
 def diff_ports(old_ports: list[dict] | None, new_ports: list[dict] | None) -> tuple[list[int], list[int]]:
-    """(new ports, vanished ports) between two consecutive scans."""
+    """(new ports, vanished ports) between two consecutive scans. When the ports of the high band (CHURN_BAND_START and up) change in BOTH directions the device is only shuffling its
+    dynamic ports, so none of the high ones is reported; one direction only (a service that appears or goes) and everything below the band are reported as before."""
     old, new = port_numbers(old_ports), port_numbers(new_ports)
-    return sorted(new - old), sorted(old - new)
+    opened, closed = sorted(new - old), sorted(old - new)
+    all_old, all_new = _all_numbers(old_ports), _all_numbers(new_ports)
+    if any(p >= CHURN_BAND_START for p in all_new - all_old) and any(p >= CHURN_BAND_START for p in all_old - all_new):
+        opened, closed = [p for p in opened if p < CHURN_BAND_START], [p for p in closed if p < CHURN_BAND_START]
+    return opened, closed
 
 
 # Clues a device announces by itself (multicast / broadcast). A sleeping phone often stays silent during a scan.

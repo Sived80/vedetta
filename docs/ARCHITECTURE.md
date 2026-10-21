@@ -113,7 +113,7 @@ The functions that were restructured have a reference test that was generated fr
 | `export/export_mask.py` | export_mask: moved out of export_engine.py (see tools/split_module.py). |
 | `export/export_zip.py` | Export for analysis: a zip file with the data needed to understand why a name, a brand or a category is wrong. |
 | `export/mac_shadow.py` | Shadow data per MAC: collected for analysis only, nothing here decides what a card shows. |
-| `export/network_survey.py` | The network survey of the export for the developer: what the host of Vedetta and Home Assistant say about the networks (VLANs) of the house, in a form that does not depend on a make. |
+| `export/network_survey.py` | An optional extra section of the export for the developer, shown only in the debug mode. |
 | `export/report_crypto.py` | Encrypted report: the zip is sealed with the maintainer's public key (data/report_key.pub). |
 
 ### ha/
@@ -239,7 +239,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/core.js` | 225 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 47 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
-| `js/export.js` | 253 | export for analysis |
+| `js/export-vlan.js` | 108 | an optional extra of the export for the developer (debug mode only) |
+| `js/export.js` | 257 | export for analysis |
 | `js/filters.js` | 239 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
@@ -263,6 +264,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/11-components.css` | 181 | components |
 | `css/12-motion.css` | 175 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
+| `css/21-export-vlan.css` | 82 | An optional extra of the export for the developer, debug mode only (xv-*): a check button in its own advanced section, a small panel with wh |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
 | `css/40-network.css` | 496 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |

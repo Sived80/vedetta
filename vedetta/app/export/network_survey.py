@@ -1,5 +1,5 @@
-"""The network survey of the export for the developer: what the host of Vedetta and Home Assistant say about the networks (VLANs) of the house, in a form that
-does not depend on a make. It is added to the export only when the person ticks it (and while ENABLED is on) and it goes through the masking and the seal like every
+"""An optional extra section of the export for the developer, shown only in the debug mode.
+It holds what the host of Vedetta and Home Assistant say about the networks (VLANs) of the house, in a form that does not depend on a make. It is added to the export only when the person ticks it (and while ENABLED is on) and it goes through the masking and the seal like every
 other file. Everything here is a READ: files of the host, the registries Vedetta already reads and ONE template that Home Assistant renders itself, so that a
 tracker that is not a router (a phone with a position) never leaves Home Assistant.
 

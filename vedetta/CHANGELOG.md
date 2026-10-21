@@ -1,7 +1,7 @@
 # Changelog
 
-## 0.9.0 · Battito
-**Battito** is Italian for *heartbeat*: a quiet, steady check of how your network is doing.
+## 0.9.0 · Sintonia
+**Sintonia** is Italian for *tuning*, being in tune: one more language, cards that stay true to their devices, a steadier page and a quiet check of how your network is doing.
 - **German.** Vedetta now speaks German too: the whole page, the Configuration tab and the documentation line. It is a first translation and has not been read by a native speaker yet: corrections are welcome.
 - **A card no longer stays online because of someone else's address.** When two devices swap addresses (a PC that takes the address a phone had), the answer to a probe no longer keeps the wrong card online, and the two cards swap their addresses. Fixed after a real case.
 - **A steadier Network card.** It is built once, so an open screen or a click in progress is not lost when the page refreshes by itself; in the stacked layout (narrow window, phone) the log sits right under the card; the side column keeps its height and scrolls; the open log list is at most 340 px or 45% of the height.

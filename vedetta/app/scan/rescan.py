@@ -109,6 +109,7 @@ def _keep_ports_of_slow_device(fields, info, device):
 async def _save_scan_and_alert_ports(previous, fields, device, now, label):
     _keep_previous_clues(previous, fields)
     _keep_analysis_ports(previous, fields)
+    _hold_unanswered_ports(previous, fields)
     devices_config.update_scan_info(device["id"], fields)
     await asyncio.to_thread(history.save_scan, device["id"], now, fields)
 
@@ -122,6 +123,13 @@ async def _save_scan_and_alert_ports(previous, fields, device, now, label):
         if closed:
             ports = ", ".join(map(str, closed))
             state.emit_alert(f"{label}: porta non piu' aperta {ports}", "alert.port_closed", label=label, ports=ports)
+
+
+def _hold_unanswered_ports(previous: dict, fields: dict) -> None:
+    """A search that finds no stable port at all on a card that had some most probably got no answer (a busy host, a Wi-Fi device asleep, a scan cut short): the first time the old ports are kept and nothing is said, and the
+    card remembers it (`ports_unseen`, which a new scan does not carry over: the second time in a row it is taken as true). Without this a device that did not answer is reported with every port closed and, at the next search, with the same ports open."""
+    if port_numbers(previous.get("ports")) and not port_numbers(fields.get("ports")) and not previous.get("ports_unseen"):
+        fields["ports"], fields["ports_unseen"] = previous["ports"], 1
 
 
 def _keep_analysis_ports(previous: dict, fields: dict) -> None:

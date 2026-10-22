@@ -83,7 +83,8 @@ assert "http_title" not in info and "ssh_hostkey" not in info, info             
 info = run_web({"ports": [{"port": 8123, "service": "polipo", "confirmed": False}], "http_title": "Home Assistant 2"})
 assert info["http_title"] == "Home Assistant 2", info                                            # a new value always wins
 # 5) the ports kept from the analysis (a card with no `scanned_at` yet) are not erased by a deep search that answers something but finds no port (a TV or a recorder that stalls under the
-#    long scan: the analysis had seen its ports); once a deep search has read ports, an empty result is a real change and the list goes, as before
+#    long scan: the analysis had seen its ports); once a deep search has read ports, an empty result is held ONCE (the device most probably did not answer: seen on 22 Oct with a camera and an ESPHome device while
+#    the host disk was saturated) and taken as a real change the second time in a row (scan/rescan.py _hold_unanswered_ports; its own test is check_ports_unanswered)
 ANALYSIS_PORTS = [{"label": "554 · rtsp", "confirmed": True, "category": "media"}, {"label": "80 · http", "confirmed": True, "category": "web", "web_ui": True, "web_scheme": "http"}]
 
 
@@ -100,7 +101,9 @@ def run_ports(before, result):
 info = run_ports({"ports": ANALYSIS_PORTS, "http_title": "x"}, {"mdns_name": "Answered-but-no-ports"})
 assert info["ports"] == ANALYSIS_PORTS and info["mdns_name"] == "Answered-but-no-ports" and info["scanned_at"] > 1.0, info
 info = run_ports({"ports": ANALYSIS_PORTS, "scanned_at": 1.0}, {"mdns_name": "Answered-but-no-ports"})
-assert "ports" not in info, info                                                                   # a deep search had read them: now none is open
+assert info["ports"] == ANALYSIS_PORTS and info["ports_unseen"] == 1, info                          # a deep search had read them: the first empty answer is held and remembered
+info = run_ports({"ports": ANALYSIS_PORTS, "scanned_at": 1.0, "ports_unseen": 1}, {"mdns_name": "Answered-but-no-ports"})
+assert "ports" not in info and "ports_unseen" not in info, info                                  # the second one in a row is true: now none is open
 info = run_ports({"ports": ANALYSIS_PORTS}, {"ports": [{"port": 22, "service": "ssh", "confirmed": True}]})
 assert [p["label"][:2] for p in info["ports"]] == ["22"], info                                   # a deep search that finds ports replaces the list
 print("TUTTO OK")

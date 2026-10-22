@@ -85,5 +85,5 @@ def _mobile_section(device_id: str, device: dict, cfg: dict) -> dict:
 
 
 def _scan_section(scan: dict) -> dict:
-    return {k: scan.get(k) for k in ("scanned_at", "deep_empty_at", "slow_scan", "full_ports_at", "full_ports_next", "full_ports_failures", "full_ports_retry_at", "services_at", "mdns_model", "mdns_manufacturer",
+    return {k: scan.get(k) for k in ("scanned_at", "deep_empty_at", "slow_scan", "full_ports_at", "full_ports_next", "full_ports_failures", "full_ports_retry_at", "ports_unseen", "services_at", "mdns_model", "mdns_manufacturer",
                                      "mdns_services", "http_server", "http_title", "tls_subject", "ssh_hostkey") if scan.get(k)}

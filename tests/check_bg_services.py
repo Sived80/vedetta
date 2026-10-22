@@ -8,7 +8,9 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app.storage import devices_config
-from app.scan import rescan, rescan_background, scanner  # noqa: E402
+from app.scan import full_ports_plan, rescan, rescan_background, scanner  # noqa: E402
+
+full_ports_plan.BLOCK_SIZE, full_ports_plan.PAUSE_S = 65535, 0      # one block for the whole range: this test is about what comes after the ports (the services of the open ones); the blocks have their own test
 
 tmp = Path(tempfile.mkdtemp())
 devices_config.DEVICES_PATH = tmp / "devices.yaml"

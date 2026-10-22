@@ -4,7 +4,7 @@ import asyncio
 import time
 
 from ..storage import devices_config
-from . import scanner, touch_policy
+from . import full_ports_plan, scanner, touch_policy
 from .scan_common import is_no_talk_port, port_number
 from ..applog import logger
 from ..state import state
@@ -62,33 +62,67 @@ def _may_be_scanned(device_id: str) -> bool:
     return waiting is not None and touch_policy.may_touch(waiting)
 
 
+def _card(device_id: str) -> dict | None:
+    return next((d for d in devices_config.load_devices() if d["id"] == device_id), None)
+
+
 async def _scan_all_ports(device_id: str, ip: str) -> None:
-    if not _may_be_scanned(device_id):
-        return
-    hosts = await _background_nmap(ip, ["-T3", "-p-", "--host-timeout", "900s", ip])
-    if ip in scanner.timed_out:
-        scanner.timed_out.discard(ip)
-        logger.info("%s: scansione completa in background scaduta, restano le porte mirate", ip)
-        journal.add("detail", "journal.fullports_failed", icon="alert", ip=ip)
-        return
-    await _save_found_ports(device_id, ip, _ports_found(hosts))
+    """The full scan by blocks of ports: each block has its own limit, what it finds is saved at once and the card remembers the next block, so a slow device never loses a whole run to one timeout. A run stops after
+    a few blocks (the next deep search goes on) and at the first block that times out (it is not repeated for a day, then two, four, seven)."""
+    for done in range(full_ports_plan.BLOCKS_PER_RUN):
+        if not _may_be_scanned(device_id):
+            return
+        first, last = full_ports_plan.block(int((_card(device_id).get("scan_info") or {}).get("full_ports_next") or 1))
+        hosts = await _background_nmap(ip, ["-T3", "-p", f"{first}-{last}", "--host-timeout", f"{full_ports_plan.BLOCK_TIMEOUT_S}s", ip])
+        if ip in scanner.timed_out:
+            scanner.timed_out.discard(ip)
+            _note_block_timed_out(device_id, ip, first, last)
+            return
+        if await _save_block(device_id, ip, last, _ports_found(hosts)):
+            return
+        if done + 1 < full_ports_plan.BLOCKS_PER_RUN:
+            await asyncio.sleep(full_ports_plan.PAUSE_S)
 
 
-async def _save_found_ports(device_id: str, ip: str, found: list[dict]) -> None:
-    """The ports of the full scan joined to the card as it is NOW (it may have changed while nmap ran), the services read, the page and the journal told."""
-    current = next((d for d in devices_config.load_devices() if d["id"] == device_id), None)
+def _note_block_timed_out(device_id: str, ip: str, first: int, last: int) -> None:
+    """The block stays the next one; the card waits before the scan is tried again."""
+    current = _card(device_id)
     if not current:
         return
     info = dict(current.get("scan_info") or {})
-    before = len(info.get("ports") or [])
+    failures = int(info.get("full_ports_failures") or 0) + 1
+    delay = full_ports_plan.retry_delay(failures)
+    info.update(full_ports_next=first, full_ports_failures=failures, full_ports_retry_at=time.time() + delay)
+    devices_config.update_scan_info(device_id, info)
+    logger.info("%s: porte %d-%d: scansione in background scaduta, restano le porte lette; si riprova tra %d ore", ip, first, last, delay // 3600)
+    journal.add("detail", "journal.fullports_failed", icon="alert", ip=ip)
+
+
+async def _save_block(device_id: str, ip: str, last: int, found: list[dict]) -> bool:
+    """The ports of a block joined to the card as it is NOW (it may have changed while nmap ran); the next block remembered. True when there is nothing more to scan: the last block was done (the services are read, the
+    page and the journal told) or the card is gone."""
+    current = _card(device_id)
+    if not current:
+        return True
+    info = dict(current.get("scan_info") or {})
+    info.setdefault("full_ports_base", len(info.get("ports") or []))
     info["ports"] = merge_ports(info.get("ports"), found)
+    for key in ("full_ports_failures", "full_ports_retry_at"):
+        info.pop(key, None)
+    if last < full_ports_plan.LAST_PORT:
+        info["full_ports_next"] = last + 1
+        devices_config.update_scan_info(device_id, info)
+        logger.info("%s: porte fino alla %d lette in background, %d porte aperte finora", ip, last, len(info["ports"]))
+        return False
     info["full_ports_at"] = time.time()
     await _read_services(info, ip)
+    added = len(info["ports"]) - int(info.pop("full_ports_base"))
+    info.pop("full_ports_next", None)
     devices_config.update_scan_info(device_id, info)
     await state.refresh_device(device_id, force=True)
-    added = len(info["ports"]) - before
     logger.info("%s: scansione completa in background terminata, %d porte (%+d)", ip, len(info["ports"]), added)
     journal.add("detail", "journal.fullports", icon="magnify", ip=ip, ports=len(info["ports"]), added=max(added, 0))
+    return True
 
 
 async def _read_services(info: dict, ip: str) -> None:

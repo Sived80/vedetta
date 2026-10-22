@@ -52,6 +52,8 @@ assert seen == [["10.0.0.1", "10.0.0.4"], ["10.0.0.1", "10.0.0.4"]], seen
 # 2) the background scan of all ports checks again when its turn comes: the user may have said «don't touch» while it waited
 dc.DEVICES_PATH.write_text("devices:\n- {id: a, ip: 10.0.0.1, port: 80, adapter: generic, no_touch: 'on'}\n- {id: b, ip: 10.0.0.2, port: 80, adapter: generic}\n", encoding="utf-8")
 ran: list = []
+from app.scan import full_ports_plan  # noqa: E402
+full_ports_plan.BLOCK_SIZE, full_ports_plan.PAUSE_S = 65535, 0      # one block for the whole range: this test is about who may be touched; the blocks have their own test
 
 
 async def stub_nmap(ip, args):

@@ -36,4 +36,7 @@ assert runs(True, {}), "slow, never scanned in full"
 assert runs(True, {"full_ports_at": NOW - WEEK - 1, "services_at": NOW - 5}), "slow, the full scan is older than a week"
 assert not runs(True, {"full_ports_at": NOW - WEEK + 60, "services_at": NOW - 5}), "slow, scanned in full less than a week ago and the services were read"
 assert runs(True, {"full_ports_at": NOW - 60}), "slow, scanned recently but the services were never read"
+assert runs(True, {"full_ports_at": NOW - 60, "services_at": NOW - 5, "full_ports_next": 8193}), "slow, the scan by blocks is in progress"
+assert not runs(True, {"full_ports_next": 8193, "full_ports_retry_at": NOW + 3600}), "slow, a block timed out and the card waits"
+assert not runs(True, {"full_ports_retry_at": NOW + 3600}), "slow, never scanned but waiting after a failure"
 print("TUTTO OK")

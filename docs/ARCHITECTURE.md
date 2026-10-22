@@ -185,6 +185,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/dhcp.py` | Passive DHCP listening: clients (phones included) broadcast their own name (option 12), the list of requested parameters (option 55, which has a characteristic order for each operating system - the principle behind Fingerbank fingerprints) and the vendor class (option 60) when they join the network or ask for a lease. |
 | `scan/discovery.py` | Self-declaration protocols not covered by nmap/zeroconf, in pure Python. |
 | `scan/flows.py` | Registry of the functions (steps) and profiles (sub-flows) of the search. |
+| `scan/full_ports_plan.py` | The plan of the full port scan of a slow device, in the background: blocks of ports (each with its own limit, so a slow device never loses a whole run to one timeout), how many blocks a run may do, how long to wait after a block that timed out (a day, then two, four, seven: capped, as the retry of any background job), and when a card is due for the scan. |
 | `scan/internet.py` | Outbound internet connectivity: public IP, double NAT, provider CGNAT. |
 | `scan/latency.py` | Device response time, measured in the same check cycle. |
 | `scan/localapi.py` | Documented local interfaces of the manufacturers, read-only and without credentials. |

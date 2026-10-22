@@ -6,7 +6,7 @@ import time
 from ..storage import devices_config
 import logging
 
-from . import dhcp, pipeline, scanner, touch_policy, work_time
+from . import dhcp, full_ports_plan, pipeline, scanner, touch_policy, work_time
 from .rescan_background import FAST_SET, FULL_PORTS_EVERY_S, merge_ports, port_numbers, schedule_full_ports
 from .scan_common import port_number
 from ..recognition import naming
@@ -100,10 +100,9 @@ def _keep_ports_of_slow_device(fields, info, device):
         keep = [p for p in previous.get("ports") or [] if port_number(p) not in (None, *FAST_SET)]
         if keep:
             fields["ports"] = merge_ports(keep, fields.get("ports"))
-        if previous.get("full_ports_at"):
-            fields["full_ports_at"] = previous["full_ports_at"]
-        if previous.get("services_at"):
-            fields["services_at"] = previous["services_at"]
+        for key in ("full_ports_at", "services_at", "full_ports_next", "full_ports_base", "full_ports_failures", "full_ports_retry_at"):
+            if previous.get(key):
+                fields[key] = previous[key]
     return previous, now
 
 
@@ -174,7 +173,6 @@ async def _apply_name_and_refresh(fields, name, label, elapsed, device, source, 
     logger.info("%s scansionato in %s", label, elapsed)
     await state.refresh_device(device["id"], force=True)
     # Slow device: the full port scan continues in the background.
-    if info.get("slow_scan") and (now - float(previous.get("full_ports_at") or 0) > FULL_PORTS_EVERY_S
-                                  or not previous.get("services_at")):
+    if info.get("slow_scan") and full_ports_plan.is_due(previous, now, FULL_PORTS_EVERY_S):
         schedule_full_ports(device)
     return fields

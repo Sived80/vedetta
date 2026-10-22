@@ -19,6 +19,7 @@ from ..ha import ha_registry, ha_tz, mqtt_ha
 from .. import maintenance, paths
 from ..state import state
 from ..ha import ha_data, health_view
+from ..scan import host_load
 from ..storage import devices_config
 import contextlib
 
@@ -250,6 +251,10 @@ def _describe_service(manifest: dict, pending) -> None:
         manifest["health"] = health_view.manifest_part()  # counts and seconds of the health judge: no address, no name
     except Exception as exc:
         manifest["notes"].append(f"health: {exc!r}")
+    try:
+        manifest["host_load"] = host_load.manifest_part()  # pressure of the system, numbers only
+    except Exception as exc:
+        manifest["notes"].append(f"host_load: {exc!r}")
 
 
 def _put_data_files(z: _Zip, data_dir: Path) -> None:

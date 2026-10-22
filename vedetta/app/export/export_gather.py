@@ -6,6 +6,7 @@ from ..storage import devices_config, journal, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
 from ..ha import ha_data, health_view
+from ..scan import host_load
 from ..ha import ha_registry, ha_tz, mqtt_ha
 import json
 from . import export_zip as legacy
@@ -86,6 +87,10 @@ def _fill_manifest_header(p):
         m["health"] = health_view.manifest_part()      # counts and seconds of the health judge: no address, no name
     except Exception as exc:
         m["notes"].append(f"health: {exc!r}")
+    try:
+        m["host_load"] = host_load.manifest_part()     # pressure of the system, numbers only
+    except Exception as exc:
+        m["notes"].append(f"host_load: {exc!r}")
     return device_debug_, ha_data_, data_dir, m
 
 

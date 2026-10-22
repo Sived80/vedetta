@@ -71,4 +71,7 @@ assert "phone_merge" in man and (man["phone_merge"] is None or set(man["phone_me
 # what the export says about the health judge: counts and seconds only (a quiet judge can be told from one that does not run)
 assert set(man["health"]) == {"enabled", "running", "judged_ago_s", "judgments", "findings"}, man.get("health")
 assert isinstance(man["health"]["enabled"], bool) and isinstance(man["health"]["findings"], dict), man["health"]
+# what the export says about the load of the system: limits, last reading, deferrals and samples (numbers only)
+assert set(man["host_load"]) == {"available", "limits", "last", "deferred", "samples"}, man.get("host_load")
+assert isinstance(man["host_load"]["available"], bool) and set(man["host_load"]["limits"]) == {"io", "cpu", "memory"}, man["host_load"]
 print("TUTTO OK (esportazione)")

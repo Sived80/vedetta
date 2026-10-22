@@ -54,6 +54,8 @@ dc.DEVICES_PATH.write_text("devices:\n- {id: a, ip: 10.0.0.1, port: 80, adapter:
 ran: list = []
 from app.scan import full_ports_plan  # noqa: E402
 full_ports_plan.BLOCK_SIZE, full_ports_plan.PAUSE_S = 65535, 0      # one block for the whole range: this test is about who may be touched; the blocks have their own test
+from app.scan import host_load  # noqa: E402
+host_load.busy = lambda reading=None: None      # never the real kernel here: a runner under pressure must not put the scan off
 
 
 async def stub_nmap(ip, args):

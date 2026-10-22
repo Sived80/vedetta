@@ -186,6 +186,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/discovery.py` | Self-declaration protocols not covered by nmap/zeroconf, in pure Python. |
 | `scan/flows.py` | Registry of the functions (steps) and profiles (sub-flows) of the search. |
 | `scan/full_ports_plan.py` | The plan of the full port scan of a slow device, in the background: blocks of ports (each with its own limit, so a slow device never loses a whole run to one timeout), how many blocks a run may do, how long to wait after a block that timed out (a day, then two, four, seven: capped, as the retry of any background job), and when a card is due for the scan. |
+| `scan/host_load.py` | host_load: the load of the system under the app, from the pressure stall information of the kernel (/proc/pressure/{cpu,io,memory}: the "some" line, average of the last 60 seconds), which any process may read. |
 | `scan/internet.py` | Outbound internet connectivity: public IP, double NAT, provider CGNAT. |
 | `scan/latency.py` | Device response time, measured in the same check cycle. |
 | `scan/localapi.py` | Documented local interfaces of the manufacturers, read-only and without credentials. |

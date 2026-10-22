@@ -4,7 +4,7 @@ import asyncio
 import time
 
 from ..storage import devices_config
-from . import full_ports_plan, scanner, touch_policy
+from . import full_ports_plan, host_load, scanner, touch_policy
 from .scan_common import is_no_talk_port, port_number
 from ..applog import logger
 from ..state import state
@@ -71,6 +71,10 @@ async def _scan_all_ports(device_id: str, ip: str) -> None:
     a few blocks (the next deep search goes on) and at the first block that times out (it is not repeated for a day, then two, four, seven)."""
     for done in range(full_ports_plan.BLOCKS_PER_RUN):
         if not _may_be_scanned(device_id):
+            return
+        if pressure := host_load.busy():
+            host_load.note_deferred(pressure)
+            logger.info("%s: scansione completa rimandata, il sistema e' sotto pressione (%s)", ip, pressure)
             return
         first, last = full_ports_plan.block(int((_card(device_id).get("scan_info") or {}).get("full_ports_next") or 1))
         hosts = await _background_nmap(ip, ["-T3", "-p", f"{first}-{last}", "--host-timeout", f"{full_ports_plan.BLOCK_TIMEOUT_S}s", ip])

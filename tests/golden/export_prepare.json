@@ -53,6 +53,21 @@
     "judgments": 0,
     "running": false
    },
+   "host_load": {
+    "available": false,
+    "deferred": {
+     "count": 0,
+     "last_at": null,
+     "last_reason": null
+    },
+    "last": {},
+    "limits": {
+     "cpu": 25.0,
+     "io": 15.0,
+     "memory": 10.0
+    },
+    "samples": []
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -128,6 +143,21 @@
     "judgments": 0,
     "running": false
    },
+   "host_load": {
+    "available": false,
+    "deferred": {
+     "count": 0,
+     "last_at": null,
+     "last_reason": null
+    },
+    "last": {},
+    "limits": {
+     "cpu": 25.0,
+     "io": 15.0,
+     "memory": 10.0
+    },
+    "samples": []
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -202,6 +232,21 @@
     "judgments": 0,
     "running": false
    },
+   "host_load": {
+    "available": false,
+    "deferred": {
+     "count": 0,
+     "last_at": null,
+     "last_reason": null
+    },
+    "last": {},
+    "limits": {
+     "cpu": 25.0,
+     "io": 15.0,
+     "memory": 10.0
+    },
+    "samples": []
+   },
    "lines_removed": [],
    "mqtt": {
     "connected": false,
@@ -273,6 +318,21 @@
     "judged_ago_s": null,
     "judgments": 0,
     "running": false
+   },
+   "host_load": {
+    "available": false,
+    "deferred": {
+     "count": 0,
+     "last_at": null,
+     "last_reason": null
+    },
+    "last": {},
+    "limits": {
+     "cpu": 25.0,
+     "io": 15.0,
+     "memory": 10.0
+    },
+    "samples": []
    },
    "lines_removed": [],
    "mqtt": {
@@ -348,6 +408,21 @@
     "judged_ago_s": null,
     "judgments": 0,
     "running": false
+   },
+   "host_load": {
+    "available": false,
+    "deferred": {
+     "count": 0,
+     "last_at": null,
+     "last_reason": null
+    },
+    "last": {},
+    "limits": {
+     "cpu": 25.0,
+     "io": 15.0,
+     "memory": 10.0
+    },
+    "samples": []
    },
    "lines_removed": [],
    "mqtt": {

@@ -10,7 +10,7 @@ import types
 
 os.environ["VEDETTA_DATA_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app.scan import full_ports_plan as plan, rescan, rescan_background as bg, scanner  # noqa: E402
+from app.scan import full_ports_plan as plan, host_load, rescan, rescan_background as bg, scanner  # noqa: E402
 
 DAY = 86400
 
@@ -50,6 +50,7 @@ bg._ports_found = lambda hosts: list(hosts)
 bg.devices_config.load_devices = lambda: [dict(CARD)] if CARD else []
 bg.devices_config.update_scan_info = lambda device_id, info: CARD.__setitem__("scan_info", dict(info)) or CALLS.append(("saved", dict(info)))
 bg.touch_policy.may_touch = lambda device: True
+host_load.busy = lambda reading=None: None      # the traffic light is tested below; here the system is free
 bg.journal.add = lambda *a, **k: CALLS.append(("journal", a[1], k))
 
 
@@ -151,6 +152,23 @@ assert CARD["scan_info"]["full_ports_failures"] == 2 and CARD["scan_info"]["full
 fresh(dict(CARD["scan_info"]))
 run(bg._scan_all_ports("d1", "10.0.0.5"))
 assert "full_ports_failures" not in CARD["scan_info"] and "full_ports_retry_at" not in CARD["scan_info"], CARD["scan_info"]
+
+# --- the traffic light: a system under pressure puts the run off before any block (nothing sent, nothing changed on the card, no failure counted, the deferral counted and told);
+# if it becomes busy between two blocks the run stops there and the card remembers where to go on
+fresh()
+host_load._deferred.update(count=0, last_reason=None, last_at=None)
+host_load.busy = lambda reading=None: "io"
+before = dict(CARD["scan_info"])
+run(bg._scan_all_ports("d1", "10.0.0.5"))
+assert not nmaps() and CARD["scan_info"] == before and not any(c[0] in ("saved", "journal") for c in CALLS), CALLS
+assert host_load._deferred["count"] == 1 and host_load._deferred["last_reason"] == "io"
+assert any(c[0] == "info" and "rimandata" in c[1] and "io" in c[1] and "10.0.0.5" in c[1] for c in CALLS), CALLS
+fresh()
+answers = iter([None, None, "cpu"])
+host_load.busy = lambda reading=None: next(answers, "cpu")
+run(bg._scan_all_ports("d1", "10.0.0.5"))
+assert len(nmaps()) == 2 and CARD["scan_info"]["full_ports_next"] == 8193 and "full_ports_failures" not in CARD["scan_info"], (len(nmaps()), CARD["scan_info"])
+host_load.busy = lambda reading=None: None
 
 # --- the card is gone or became «don't touch» between blocks: it stops, nothing is sent after that, nothing saved
 fresh()

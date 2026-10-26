@@ -4,13 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.8.0 · Vetrina**, released 18 October 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 0.9.0 · Sintonia**, released 26 October 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
-| **0.9.0 · Sintonia** | Oct | German (first translation) · a card no longer stays online on someone else's address · a steadier Network card and no scroll bars drawn · a first network health check, quiet and visible only in the debug mode |
+| **0.9.0 · Sintonia** | 26 Oct | German (first translation) · a card no longer stays online on someone else's address · a steadier Network card and no scroll bars drawn · gentler scans of slow devices and fewer false port alerts · a first network health check, quiet and visible only in the debug mode |
 | **0.8.0 · Vetrina** | 18 Oct | The Network card redrawn in the Home Assistant style · devices found open inside it · a tidier device card · groups that fold · a red dot when an update is ready · three switches for what reaches the Internet · a simpler Configuration tab |
 | **0.7.1 · Calibro** | 16 Oct | Aligned buttons on the card of the devices found · a diagnostic bundle with the state of the analysis · safer notes and reports · an IP address sensor for shared devices |
 | **0.7.0 · Lente** | 13 Oct | A lens on what it cannot name with confidence (read-only) · fewer wrong guesses (maker names that are also words, service names read as names, UniFi and MikroTik clients) · stricter checks before asking a device anything · the share button waits for MQTT · rebuilt in small modules |

@@ -6,6 +6,9 @@
 - **A card no longer stays online because of someone else's address.** When two devices swap addresses (a PC that takes the address a phone had), the answer to a probe no longer keeps the wrong card online, and the two cards swap their addresses. Fixed after a real case.
 - **A steadier Network card.** It is built once, so an open screen or a click in progress is not lost when the page refreshes by itself; in the stacked layout (narrow window, phone) the log sits right under the card; the side column keeps its height and scrolls; the open log list is at most 340 px or 45% of the height.
 - **No scroll bars drawn.** Everything still scrolls with the wheel, touch and keys.
+- **Gentler on slow devices.** The full port scan of a slow or fragile device goes in small steps, resumes where it stopped and waits after a failure, and heavy background scans pause while the system is busy. The report gains a few load figures (percentages only).
+- **Fewer false port alerts.** A device that does not answer a scan, or only changes its temporary ports, is no longer reported as having closed ports: a change has to be seen twice in a row.
+- **A clearer log.** It now says why two cards of one phone were not merged, and an empty deep search is only information for a device with no real port.
 - **A first network health check, running quietly.** It looks for repeated restarts, many devices dropping together, a step in the latency of the gateway and an address used twice, and keeps what it finds in a small table of the local database for 90 days. Nothing leaves your network, and it is shown only in the debug mode (three taps on the logo) while it collects data: a later release will switch it on for everyone.
 
 **Thank you** to everyone who shared an export: real networks made this release possible.

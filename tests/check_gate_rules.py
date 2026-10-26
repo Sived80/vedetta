@@ -51,4 +51,14 @@ mid = g.folder_state(folder)
 assert "vedetta.db" in g.folder_problem(mid, g.folder_state(folder)), "a changed file is a problem"
 (folder / "vedetta.db").unlink()
 assert "vedetta.db" in g.folder_problem(mid, g.folder_state(folder)), "a removed file is a problem"
+
+# 6) how many tests run together: the Python pool leaves 6 processors to the system, the UI pool takes a quarter of them; a CI runner with 2 cores gets 1 + 1,
+#    --serial gets 1 + 1 whatever the machine, and the caps (VEDETTA_TEST_JOBS, VEDETTA_UI_JOBS) are never exceeded
+assert g.worker_counts(20, False, 4, 3) == (4, 3), "this computer: 4 Python tests and 3 UI tests"
+assert g.worker_counts(20, False, 8, 3) == (8, 3) and g.worker_counts(20, False, 4, 1) == (4, 1)
+assert g.worker_counts(20, False, 100, 100) == (14, 5), "the caps are limited by the processors: 20 - 6 and 20 // 4"
+assert g.worker_counts(2, False, 4, 3) == (1, 1), "a CI runner with 2 cores: 1 + 1, as before"
+assert g.worker_counts(4, False, 4, 3) == (1, 1) and g.worker_counts(8, False, 4, 3) == (2, 2)
+assert g.worker_counts(20, True, 4, 3) == (1, 1), "serial: one at a time"
+assert g.worker_counts(1, False, 4, 3) == (1, 1), "never fewer than one"
 print("TUTTO OK")

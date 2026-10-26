@@ -2,8 +2,9 @@
 starts any child, and a child inherits that limit, so everything the gate starts (the tests, radon, the structure check) shares those few processors and the rest of the machine stays free.
 Windows only; elsewhere (a CI runner, a Linux box) it does nothing. VEDETTA_TEST_CPUS changes the number (0 = no limit)."""
 import os
+import struct
 
-DEFAULT_CPUS = 8          # a middle way: about 40% of a 20-processor machine at most, with a low priority (4 made the gate last 15 minutes, all of them froze the computer)
+DEFAULT_CPUS = 8         # a middle way: about 40% of a 20-processor machine at most, with a low priority (4 made the gate last 15 minutes, all of them froze the computer)
 
 
 def wanted_cpus() -> int:
@@ -11,13 +12,56 @@ def wanted_cpus() -> int:
     return int(text) if text.strip().isdigit() else DEFAULT_CPUS
 
 
+def pick_mask(classes: list[tuple[int, int]], count: int) -> int:
+    """Bit mask of `count` logical processors out of `classes` [(index, efficiency class)]: the fastest class first (a higher class number is a faster core), and inside a class
+    the highest indexes first (the lowest are left to the system). With one class this is the last `count` processors; on a computer with performance and efficiency cores
+    the slow ones are taken only after all the fast ones."""
+    ranked = sorted(classes, key=lambda c: (-c[1], -c[0]))
+    return sum(1 << index for index, _ in ranked[:count])
+
+
+def parse_cpu_sets(data: bytes) -> list[tuple[int, int]]:
+    """[(logical processor, efficiency class)] from the answer of GetSystemCpuSetInformation (SYSTEM_CPU_SET_INFORMATION entries, each with its own size: size and type
+    first, then id, group, logical index, core, cache, numa node, efficiency class). Entries of another type are skipped; rubbish gives an empty list."""
+    out, pos = [], 0
+    while pos + 8 <= len(data):
+        size, kind = struct.unpack_from("<II", data, pos)
+        if size < 8:
+            break
+        if kind == 0 and pos + 8 + 13 <= len(data):
+            _, _, logical, _, _, _, efficiency, _, _ = struct.unpack_from("<IHBBBBBBB", data, pos + 8)
+            out.append((logical, efficiency))
+        pos += size
+    return out
+
+
+def cpu_classes() -> list[tuple[int, int]]:
+    """[(logical processor, efficiency class)] of this computer; empty where Windows cannot say (or this is not Windows)."""
+    if os.name != "nt":
+        return []
+    import ctypes
+    kernel = ctypes.windll.kernel32
+    needed = ctypes.c_ulong(0)
+    kernel.GetSystemCpuSetInformation(None, 0, ctypes.byref(needed), None, 0)
+    if not needed.value:
+        return []
+    buffer = (ctypes.c_ubyte * needed.value)()
+    if not kernel.GetSystemCpuSetInformation(buffer, needed.value, ctypes.byref(needed), None, 0):
+        return []
+    return parse_cpu_sets(bytes(buffer)[:needed.value])
+
+
 def limit_cpus(count: int | None = None) -> int:
-    """Restricts this process, and so every process it starts, to the last `count` logical processors (the first ones are left to the system). Returns the mask applied, 0 when nothing was done."""
+    """Restricts this process, and so every process it starts, to `count` logical processors, the fastest ones (see pick_mask; the first ones are left to the system).
+    Returns the mask applied, 0 when nothing was done."""
     count = wanted_cpus() if count is None else count
     cpus = os.cpu_count() or 1
     if os.name != "nt" or count <= 0 or cpus <= count or cpus > 64:
         return 0
-    mask = ((1 << count) - 1) << (cpus - count)
+    classes = cpu_classes()
+    if len(classes) != cpus:      # Windows could not say, or says something else than this process sees: every processor counts the same
+        classes = [(i, 0) for i in range(cpus)]
+    mask = pick_mask(classes, count)
     kernel, handle = _kernel()
     return mask if kernel.SetProcessAffinityMask(handle, mask) else 0
 

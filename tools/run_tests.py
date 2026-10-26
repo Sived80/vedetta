@@ -21,6 +21,7 @@ SKIP = {"check_phase_d.py"}      # historical test no longer maintained
 # The tests must not take the computer of the person who runs them: they start with a low priority on Windows (a child inherits the priority of its parent, so a test that starts
 # other processes is gentle too) and only a few at a time (VEDETTA_TEST_JOBS raises or lowers the number of Python tests that run together).
 LOW_PRIORITY = getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
+DEFAULT_UI_JOBS = 3       # UI tests that run together (VEDETTA_UI_JOBS; they fail when more than 4 run at once, and were one at a time before: that queue was the longest part of the run)
 DEFAULT_JOBS = 4          # Python tests that run together (the limit on the processors, tools/gentle.py, comes first)
 SLOW_FIRST = ("check_mask_log_templates.py",)   # the heaviest start first, so the others fill the time they take
 TEST_TIMEOUT_S = 120             # one test never needs more than a few seconds; this only catches a test that is stuck
@@ -86,8 +87,8 @@ def main() -> int:
     # so they get a pool of their own and the two pools work at the same time.
     cpus = os.cpu_count() or 4
     jobs_cap = int(os.environ.get("VEDETTA_TEST_JOBS") or DEFAULT_JOBS)
-    py_workers = 1 if serial else max(1, min(jobs_cap, cpus - 6))   # 2 cores (CI): 1 + 1
-    ui_workers = 1
+    ui_cap = int(os.environ.get("VEDETTA_UI_JOBS") or DEFAULT_UI_JOBS)
+    py_workers, ui_workers = gate_rules.worker_counts(cpus, serial, jobs_cap, ui_cap)   # 2 cores (CI): 1 + 1
     t0 = time.monotonic()
 
     def drain(items, n):

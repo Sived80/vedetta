@@ -6,6 +6,14 @@ _GOLDEN = "tests/golden/"
 _PATH = re.compile(r'^(?:\?\?|[ MADRCU?!]{1,2})\s+(?:"?[^"]*"?\s+->\s+)?"?(?P<path>[^"]+?)"?\s*$')
 
 
+def worker_counts(cpus: int, serial: bool, python_cap: int, ui_cap: int) -> tuple[int, int]:
+    """(Python tests, UI tests) that run together: the caps asked for, limited by the machine (the Python pool leaves 6 processors to the system, the UI pool takes
+    a quarter of them), never fewer than one; a CI runner with 2 cores gets 1 + 1, and `serial` gets 1 + 1 whatever the machine."""
+    if serial:
+        return 1, 1
+    return max(1, min(python_cap, cpus - 6)), max(1, min(ui_cap, cpus // 4))
+
+
 def is_skip(stdout: str) -> bool:
     """A test that exited 0 but printed a line starting with SKIP did not test anything (jsdom or a browser is missing)."""
     return bool(_SKIP.search(stdout or ""))

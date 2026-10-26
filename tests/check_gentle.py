@@ -31,9 +31,33 @@ if saved is None:
 else:
     os.environ["VEDETTA_TEST_CPUS"] = saved
 
+# which processors: the fastest class first, and inside a class the highest numbers first (the lowest are left to the system). A computer with performance
+# and efficiency cores (a 13th generation Intel: 0-11 performance, 12-19 efficiency) must not be given the slow ones; with one class it is the last N, as it always was.
+hybrid = [(i, 1) for i in range(12)] + [(i, 0) for i in range(12, 20)]
+assert gentle.pick_mask(hybrid, 8) == 0xFF0, "8 of the 12 performance processors, the last 8 of that class"
+assert gentle.pick_mask(hybrid, 12) == 0xFFF and gentle.pick_mask(hybrid, 2) == 0xC00
+assert gentle.pick_mask(hybrid, 14) == 0xFFF | (1 << 19) | (1 << 18), "only after the fast ones are all taken does it take the slow ones, highest first"
+assert gentle.pick_mask([(i, 0) for i in range(8)], 4) == 0xF0, "one class: the last N processors, as before"
+assert gentle.pick_mask([(i, 0) for i in range(8)], 0) == 0
+# the answer of Windows (SYSTEM_CPU_SET_INFORMATION, 32 bytes each: size, type, id, group, logical index, core, cache, numa, efficiency class, flags, scheduling class, tag)
+import struct  # noqa: E402
+
+
+def cpu_set(logical, efficiency, kind=0):
+    return struct.pack("<IIIHBBBBBBBxxx", 32, kind, 256 + logical, 0, logical, logical // 2, 0, 0, efficiency, 0, 0) + b"\0" * 8
+
+
+blob = cpu_set(0, 1) + cpu_set(1, 1) + cpu_set(2, 0) + cpu_set(3, 0, kind=9) + cpu_set(4, 0)
+assert len(cpu_set(0, 1)) == 32
+assert gentle.parse_cpu_sets(blob) == [(0, 1), (1, 1), (2, 0), (4, 0)], "an entry of another type is skipped"
+assert gentle.parse_cpu_sets(b"") == [] and gentle.parse_cpu_sets(b"\x01\x02") == [], "nothing or rubbish: no processors, no crash"
+
 cpus = os.cpu_count() or 1
 if os.name == "nt" and 2 < cpus <= 64:
-    expected = ((1 << 2) - 1) << (cpus - 2)
+    classes = gentle.cpu_classes() or [(i, 0) for i in range(cpus)]
+    assert len(classes) == cpus and {i for i, _ in classes} == set(range(cpus)), classes
+    expected = gentle.pick_mask(classes, 2)
+    assert bin(expected).count("1") == 2
     applied, mask = run(CHILD, 2).split()
     assert int(applied) == expected and int(mask) == expected, (applied, mask, expected)
     assert int(run(GRANDCHILD, 2)) == expected, "a process started by a limited process must be limited too"

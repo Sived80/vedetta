@@ -5,6 +5,7 @@ address is followed there, and two cards of the same phone (new address and priv
 
 This is a mixin of DeviceState: it works on its cards, MACs and alerts. The single MAC layer planned for the new heart will replace it."""
 import asyncio
+import logging
 import time
 
 from .recognition import brands, naming
@@ -16,6 +17,9 @@ from .storage.history import history
 # Two cards of the same phone (it changed IP and private MAC): merged only if their names are the same and the two were
 # never online together for longer than this (the 3 failed checks of tolerance already add a few minutes of overlap).
 MERGE_MAX_OVERLAP_S = SAME_MOMENT_S
+_OVERLAP_LOG_STEP_S = 600          # a pair that stays unmerged is logged again only when its overlap grows by this much
+logger = logging.getLogger("dashboard")
+_overlap_logged: dict[tuple[str, str], float] = {}     # (older id, newer id) -> overlap at the last line written
 _GENERIC_PHONE_NAMES = {"iphone", "ipad", "android", "phone", "tablet", "galaxy", "pixel", "smartphone", "telefono", "cellulare"}
 
 
@@ -128,12 +132,26 @@ class IdentityUpkeep:
                 groups.setdefault(key, []).append(device)
         return groups
 
-    async def _older_and_newer(self, cards: list[dict], now: float) -> tuple[dict, dict, float]:
-        """The two cards by age (the first seen is the older) and how long they were online together in the last week."""
+    async def _older_and_newer(self, cards: list[dict], now: float) -> tuple[dict, dict, float, dict[str, float]]:
+        """The two cards by age (the first seen is the older), how long they were online together in the last week, and when each was first seen."""
         first_seen = await asyncio.to_thread(history.first_presence, [c["id"] for c in cards])
         older, newer = sorted(cards, key=lambda c: first_seen.get(c["id"], now))
         overlap = await asyncio.to_thread(history.online_overlap, older["id"], newer["id"], now - 7 * 86400, now)
-        return older, newer, overlap
+        return older, newer, overlap, first_seen
+
+    @staticmethod
+    def _log_online_together(older: dict, newer: dict, overlap: float, first_seen: dict[str, float], now: float) -> None:
+        """Says in the log why two cards of one name were not merged: how long they were online together, when each card was first seen (hours ago,
+        older first) and whether each is online now, which is where a false overlap can come from. Once per pair, again only when the time grows by
+        more than _OVERLAP_LOG_STEP_S (the check runs at every cycle). Cards by id, never by name."""
+        key = (older["id"], newer["id"])
+        if overlap - _overlap_logged.get(key, -_OVERLAP_LOG_STEP_S) < _OVERLAP_LOG_STEP_S:
+            return
+        _overlap_logged[key] = overlap
+        ages = [(now - first_seen[c["id"]]) / 3600 if c["id"] in first_seen else float("nan") for c in (older, newer)]
+        online = [("yes" if c.get("online") else "no") for c in (older, newer)]
+        logger.info("Phone cards %s and %s not merged: online together %d s in the last week (limit %d s); first seen %.1f h and %.1f h ago; online now: %s, %s",
+                    older["id"], newer["id"], round(overlap), MERGE_MAX_OVERLAP_S, ages[0], ages[1], online[0], online[1])
 
     async def _merge_group(self, cards: list[dict], now: float, outcome: dict) -> None:
         """One group of cards with the same name: merged if it is clear, otherwise the reason is counted."""
@@ -145,9 +163,10 @@ class IdentityUpkeep:
         if not any(c.get("online") for c in cards):
             outcome["both_offline"] += 1
             return
-        older, newer, overlap = await self._older_and_newer(cards, now)
+        older, newer, overlap, first_seen = await self._older_and_newer(cards, now)
         if overlap > MERGE_MAX_OVERLAP_S:
             outcome["online_together"] += 1
+            self._log_online_together(older, newer, overlap, first_seen, now)
             return
         await self._merge_cards(keep=older, drop=newer, now=now)
         outcome["merged"] += 1

@@ -152,6 +152,7 @@ The functions that were restructured have a reference test that was generated fr
 | `recognition/brands.py` | Device brands. |
 | `recognition/evidence.py` | Evidence card: for a device, what decided its name, brand and group, how sure the app is (0-100) and which other hypotheses it rejected. |
 | `recognition/identity.py` | Identity of a device in a single place: product brand, "mobile" and battery. |
+| `recognition/name_family.py` | Does the automatic name of a card agree with the system of the phone behind it? |
 | `recognition/naming.py` | Device names. |
 | `recognition/oui_update.py` | Update of the MAC prefix database from the public IEEE registries (MA-L 24 bit, MA-M 28 bit, MA-S 36 bit and the old IABs, 36 bit). |
 | `recognition/roles.py` | Who does what on the network: gateway, DHCP server, DNS server, router, access point, Wi-Fi repeater, and which clients go through a repeater. |

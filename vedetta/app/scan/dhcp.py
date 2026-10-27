@@ -209,6 +209,11 @@ def _apple_family(opts: list) -> str | None:
 
 def os_family(mac: str | None) -> str | None:
     """Operating system family inferred from the MAC's DHCP fingerprint, if seen."""
+    return fingerprint_family(mac)
+
+
+def fingerprint_family(mac: str | None) -> str | None:
+    """The same answer as os_family(), read straight from the fingerprint (for a caller that must not depend on os_family being replaced)."""
     entry = seen.get((mac or "").lower())
     return _os_family(entry.get("prl"), entry.get("vendor_class")) if entry else None
 

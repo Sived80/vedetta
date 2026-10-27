@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from ..ha import ha_registry
 from .probe_record import Facts, Product
 from ..i18n import t_or as i18n_t_or
-from ..recognition import naming
+from ..recognition import naming, name_family
 from ..recognition import roles
 from ..formatters import truncate_name
 from .. import i18n
@@ -53,9 +53,12 @@ class NameState:
     generated: bool = False              # built by the app (brand + type...): must not count as a hint for the type
 
 
-def choose_automatic_name(f: Facts, names: NameState) -> None:
-    """Which automatic name the device gets: an upgrade of the one it has, else the best candidate when it needs a name."""
+def choose_automatic_name(f: Facts, names: NameState, family: str | None = None) -> None:
+    """Which automatic name the device gets: an upgrade of the one it has, else the best candidate when it needs a name.
+    `family` is the system of the MAC now behind the card (DHCP fingerprint): an automatic name that it contradicts is dropped first."""
     candidates = _name_candidates(f)
+    if _drop_contradicted_name(f, names, candidates, family):
+        return
     # A name found automatically earlier is replaced as soon as a better one is available (same ranking as when it was chosen)
     upgrade = None if (not names.base_name or names.base_name == f.ip or names.placeholder) else naming.upgrade(
         {"name": names.base_name, "ip": f.ip, "name_source": f.device.get("name_source")}, candidates)
@@ -63,6 +66,18 @@ def choose_automatic_name(f: Facts, names: NameState) -> None:
         names.base_name, names.auto_name = upgrade[0], (upgrade[0], upgrade[1], False)
     elif _needs_name(names.base_name, f.ip, names.placeholder):
         _name_from_candidates(f, names, candidates)
+
+
+def _drop_contradicted_name(f: Facts, names: NameState, candidates: list, family: str | None) -> bool:
+    """The automatic name of the card says another system than the phone behind it (an iPhone called "Pixel 7"): the best candidate that does not
+    contradict it replaces the name for good, and without one the name is not shown (the card falls back to brand and type). Names chosen by hand or taken from Home Assistant are never judged."""
+    source = f.device.get("name_source")
+    if source not in naming.PRIORITY or source in ("ha", "ha_user") or not name_family.contradicts(names.base_name, family):
+        return False
+    found, src = naming.pick([c for c in candidates if not name_family.contradicts(c[1], family)])
+    names.base_name = found
+    names.auto_name = (found, src, True) if found else None
+    return True
 
 
 def _name_candidates(f: Facts) -> list:

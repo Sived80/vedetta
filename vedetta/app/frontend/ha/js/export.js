@@ -9,7 +9,7 @@ import { vlanClick, vlanEscape, vlanGuide, vlanInit, vlanSection, vlanWanted } f
 // -> the file. The size is estimated from what the server says each day weighs.
 var exportDlg = $("exportdlg");
 var X = null;                                             // state of the open window (null = closed)
-var XP = { MIN: 2, MAXN: 20, W: 20, HOR: 90, SHOWN: 10 };
+var XP = { MIN: 2, MAXN: 20, W: 20, HOR: 90, SHOWN: 10, TRIES: 3, RETRY_MS: 1500 };
 function xpT(key, vars) { const v = t(key, vars); return v === key ? "" : v; }          // a text that may not exist
 function xpDay(a) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - a); return d; }
 function xpFmt(d, o) { try { return d.toLocaleDateString(LANG, o); } catch (e) { return d.toDateString(); } }
@@ -67,7 +67,7 @@ function xpSummary() {
     : X.to === 0 ? t("js.ha.export.sum_to_today", { from: xpLong(X.from - 1) }) : t("js.ha.export.sum_from_to", { from: xpLong(X.from - 1), to: xpLong(X.to) });
   const meter = xpLimited() && X.info ? '<div class="xp-meter' + (over ? " over" : "") + '"><i style="width:' + Math.min(100, bytes / X.info.limit * 100).toFixed(1) + '%"></i></div><div class="xp-sub">' +
     esc(over ? t("js.ha.export.limit_over", { size: lim }) : t("js.ha.export.limit_ok", { size: lim })) + "</div>" : "";
-  return '<div><div class="xp-read"><b>' + esc(head) + "</b><span>" + esc(t("js.ha.export.sum_size", { n: X.all ? XP.HOR : xpDays(), size: xpSize(bytes) })) + "</span></div>" + meter +
+  return '<div><div class="xp-read"><b>' + esc(head) + "</b><span>" + esc(t("js.ha.export.sum_size", { n: X.all ? XP.HOR : xpDays(), size: X.info ? xpSize(bytes) : "…" })) + "</span></div>" + meter +
     (X.note ? '<div class="xp-sub warn">' + esc(X.note) + "</div>" : "") + "</div>";
 }
 function xpPresets() {
@@ -130,7 +130,7 @@ function xpView() {
   } else if (X.stage === "pick") {
     var over = xpOver();
     body = '<div class="xp-chosen"><span class="xp-tag' + (X.dest === "me" ? " warn" : "") + '">' + esc(t(X.dest === "me" ? "js.ha.export.chip_me" : "js.ha.export.chip_dev")) + "</span></div>" + xpChart() + xpSummary() + xpPresets() + vlanSection(X);
-    acts = cancel + '<button type="button" class="btn filled rp" data-xp="go"' + (over || !X.info ? " disabled" : "") + ">" + icon("download") + "<span>" + esc(t(X.dest === "me" ? "js.ha.export.go_me" : "js.ha.export.go_dev")) + "</span></button>";
+    acts = cancel + '<button type="button" class="btn filled rp" data-xp="go"' + (over || (!X.info && X.dest !== "me") ? " disabled" : "") + ">" + icon("download") + "<span>" + esc(t(X.dest === "me" ? "js.ha.export.go_me" : "js.ha.export.go_dev")) + "</span></button>";
   } else if (X.stage === "run") {
     body = xpSteps();
     acts = '<button type="button" class="btn text rp" data-xp="stop">' + esc(t("js.ha.export.stop")) + "</button>";
@@ -157,8 +157,15 @@ export function openExport() {
   X = { stage: "dest", dest: null, from: 7, to: 0, off: 0, all: false, pend: null, intro: false, note: "", info: null, job: null, snap: null, choice: {}, error: null, saved: false, decided: null, timer: null, vlan: vlanInit() };
   xpRender();
   if (typeof exportDlg.showModal === "function") exportDlg.showModal(); else exportDlg.setAttribute("open", "");
-  const mine = X;
-  api("/api/export/info").then(function (i) { if (X === mine) { X.info = i; xpRender(); } }).catch(function () {});
+  xpInfo(X, 1);
+}
+// The estimate of the sizes: it only informs, and for the developer it also gives the limit. If the request fails it is asked again (a few times, a little later);
+// "for me" does not wait for it, so the button never stays off because of it.
+function xpInfo(mine, attempt) {
+  api("/api/export/info").then(function (i) { if (X === mine) { X.info = i; xpRender(); } }).catch(function (e) {
+    console.warn("export info failed (attempt " + attempt + "):", e && e.message);
+    if (attempt < XP.TRIES) setTimeout(function () { if (X === mine && !X.info) xpInfo(mine, attempt + 1); }, XP.RETRY_MS * attempt);
+  });
 }
 function xpPick(a) {
   X.note = "";

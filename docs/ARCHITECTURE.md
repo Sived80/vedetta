@@ -257,7 +257,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer (debug mode only) |
-| `js/export.js` | 257 | export for analysis |
+| `js/export.js` | 264 | export for analysis |
 | `js/filters.js` | 243 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |

@@ -29,6 +29,7 @@ const calls = [];                                    // what the window asked of
 const INFO = { daily: Array.from({ length: 90 }, (_, i) => 200000 + (i % 7) * 50000), base: 800000, ratio: 0.3, seal_factor: 1.34, limit: 20 * 1024 * 1024, horizon: 90, flagged: 0 };
 let job = null;                                      // the snapshot the server answers while polling
 let allSizeBig = false;
+let infoMode = "ok";                                 // what the estimate does: "ok", "fail" (the request is refused) or "hang" (it never answers)
 const dom = new JSDOM(html, {
   runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc, url: "http://localhost/ha?lang=" + lang,
   beforeParse(win) {
@@ -42,6 +43,8 @@ const dom = new JSDOM(html, {
       const method = (opts && opts.method) || "GET", body = opts && opts.body ? JSON.parse(opts.body) : null;
       calls.push({ url, method, body });
       const ok = (b, headers) => Promise.resolve({ ok: true, status: 200, headers: { get: (k) => (headers || {})[k] || null }, blob: () => Promise.resolve(new win.Blob(["x"])), json: () => Promise.resolve(b) });
+      if (url.startsWith("/api/export/info") && infoMode === "fail") return Promise.reject(new Error("offline"));
+      if (url.startsWith("/api/export/info") && infoMode === "hang") return new Promise(() => {});
       if (url.startsWith("/api/export/info")) { const i = JSON.parse(JSON.stringify(INFO)); if (allSizeBig) i.daily = i.daily.map((v) => v * 40); return ok(i); }
       if (url === "/api/export/jobs" && method === "POST") return ok(job = Object.assign({ id: "j1", status: "running", steps: ["collect"], items: [], items_total: 0, fixed: 0 }, { dest: body.dest }));
       if (/^\/api\/export\/jobs\/j1\/file/.test(url)) return ok({}, { "Content-Disposition": 'attachment; filename="vedetta-report-ab12cd.txt"' });
@@ -180,6 +183,28 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   await click("[data-xp='cancel']");
   await click("[data-xp='cancel']");
   check(reqs("/api/export/jobs/j1").some((c) => c.method === "DELETE"), "chiudendo la finestra un lavoro non finito viene dimenticato");
+
+  // --- 7. the estimate does not arrive: "for me" has no limit, so it does not need it (the button stayed off for ever); for the developer it is asked again
+  infoMode = "hang";
+  await openWindow();
+  await click("[data-xp='dest:me']");
+  check(!!q("[data-xp='go']") && !q("[data-xp='go']").disabled, "per me, se la stima non arriva il tasto Esporta resta acceso");
+  check(!!q(".xp-read") && !/NaN|undefined/.test(q(".xp-read").textContent), "e il riepilogo non scrive numeri senza senso");
+  await click("[data-xp='cancel']");
+  await click("[data-xp='dest:dev']");
+  check(q("[data-xp='go']").disabled, "per lo sviluppatore, senza la stima, il tasto e' spento (serve il limite)");
+  await click("[data-xp='cancel']");
+  await click("[data-xp='cancel']");
+  infoMode = "fail";
+  const before = reqs("/api/export/info").length;
+  await openWindow();                                  // the first request is refused
+  infoMode = "ok";
+  await click("[data-xp='dest:dev']");
+  let tries = 0;
+  while (q("[data-xp='go']").disabled && tries++ < 60) await wait(100);
+  check(!q("[data-xp='go']").disabled && reqs("/api/export/info").length > before + 1, "se la stima fallisce viene chiesta di nuovo e il tasto si accende");
+  await click("[data-xp='cancel']");
+  await click("[data-xp='cancel']");
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");

@@ -24,7 +24,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
 function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
 
-function openPage(mqtt) {
+function openPage(mqtt, failSave) {
   const errors = [], posts = [];
   const local = JSON.parse(JSON.stringify(data));          // each page has its own copy: a click that saves would change the data of the next page
   for (const d of local.devices.devices) if (d.id === "d2") d.ha_share = false;
@@ -41,6 +41,7 @@ function openPage(mqtt) {
       win.fetch = (url, opts) => {
         const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
         let b = {};
+        if (url.includes("/override") && failSave) { posts.push(JSON.parse(opts.body)); return Promise.resolve({ ok: false, status: 500, headers: { get: () => null }, json: () => Promise.resolve({}), text: () => Promise.resolve("{}") }); }
         if (url.includes("/override")) { posts.push(JSON.parse(opts.body)); b = { ok: true }; }
         else if (url.startsWith("/api/ha/devices") && !url.includes("/debug") && !url.includes("/evidence")) b = local.devices;
         else if (url.startsWith("/api/ha/summary")) b = Object.assign({}, local.summary, { mqtt: mqtt });
@@ -85,7 +86,26 @@ function openPage(mqtt) {
   await wait(300);
   check(on.posts.length === 1 && on.posts[0].ha_share === true, "MQTT attivo: il clic salva la condivisione");
   check(on.errors.length === 0, "nessun errore nella pagina (MQTT attivo)" + (on.errors.length ? ": " + on.errors.join("; ") : ""));
+  // the message says what happened: shared after sharing, removed after removing (it was the other way round: the card was updated before the message was chosen)
+  const texts = (page) => Array.from(page.dom.window.document.querySelectorAll(".snack .snack-text")).map((n) => n.textContent);
+  const words = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "locales", lang, "ha.json"), "utf8"));
+  check(JSON.stringify(texts(on)) === JSON.stringify([words["js.ha.share.added"]]), "dopo aver condiviso il messaggio dice «" + words["js.ha.share.added"] + "» (dice: " + JSON.stringify(texts(on)) + ")");
+  on.dom.window.document.querySelector('#more [data-act="share"]').click();
+  await wait(300);
+  check(on.posts.length === 2 && on.posts[1].ha_share === false, "il secondo clic toglie la condivisione");
+  check(JSON.stringify(texts(on).slice(-1)) === JSON.stringify([words["js.ha.share.removed"]]), "dopo aver tolto la condivisione il messaggio dice «" + words["js.ha.share.removed"] + "» (dice: " + JSON.stringify(texts(on)) + ")");
   on.dom.window.close();
+
+  // --- the save fails: the error is told, and the success message is NOT shown as well
+  const bad = openPage({ active: true, connected: true }, true);
+  await wait(800);
+  bad.dom.window.document.querySelector('.tile[data-id="d2"]').click();
+  await wait(400);
+  bad.dom.window.document.querySelector('#more [data-act="share"]').click();
+  await wait(300);
+  check(bad.dom.window.document.querySelectorAll(".snack.error").length === 1, "salvataggio non riuscito: un messaggio di errore");
+  check(!texts(bad).includes(words["js.ha.share.added"]) && !texts(bad).includes(words["js.ha.share.removed"]), "salvataggio non riuscito: nessun messaggio di successo (dice: " + JSON.stringify(texts(bad)) + ")");
+  bad.dom.window.close();
 
   console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

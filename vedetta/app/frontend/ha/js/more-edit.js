@@ -52,7 +52,8 @@ function saveOverride(d, body) {
     S.dirty.more = true;
     S.dirty.net = true;
     schedule();
-  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
+    return true;
+  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); return false; });
 }
 // Type dropdown menu: inside the dialog (it is modal), with the same rules as the other
 // menus (closes with Esc, click outside and scroll; opening one closes the others).
@@ -257,7 +258,7 @@ dlg.addEventListener("click", function (e) {
       }
       S.mi.view = "main"; closeMore(); break;
     case "wake": if (d) wakeDevice(d.id); break;
-    case "share": if (d) saveOverride(d, { ha_share: !d.ha_share }).then(function () { snack(t(d.ha_share ? "js.ha.share.removed" : "js.ha.share.added"), { kind: "success" }); }); break;
+    case "share": if (d) { const share = !d.ha_share; saveOverride(d, { ha_share: share }).then(function (saved) { if (saved) snack(t(share ? "js.ha.share.added" : "js.ha.share.removed"), { kind: "success" }); }); } break;
     case "ignore-confirm": if (d) ignoreDevice(d, act); break;
   }
 });

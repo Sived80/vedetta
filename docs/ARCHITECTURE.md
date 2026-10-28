@@ -270,7 +270,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/live.js` | 252 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 182 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
-| `js/more-edit.js` | 311 | Flag the device for the report: its card, history and this note go in the export for analysis. |
+| `js/more-edit.js` | 312 | Flag the device for the report: its card, history and this note go in the export for analysis. |
 | `js/more-evidence.js` | 146 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
 | `js/more-info.js` | 95 | "More info" dialog |

@@ -64,6 +64,10 @@ class VedettaProcess:
         """The cards as the interface gets them (address, name, where the name comes from, online, mobile)."""
         return self.get("/api/ha/devices")["devices"]
 
+    def rename(self, device_id: str, name: str) -> None:
+        """What the user does when they give a card a name by hand."""
+        self.post("/api/devices/%s/rename" % device_id, {"name": name})
+
     def add_found(self) -> list[dict]:
         """What a user does after "search the network": the search, then adding everything it found as cards. Returns the hosts that were added."""
         hosts = self.post("/api/scan/quick", {})

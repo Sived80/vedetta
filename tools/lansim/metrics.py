@@ -17,6 +17,10 @@ THRESHOLDS = {
 }
 
 
+# only when there are two extenders (a modelling choice, not a real measure: the user's network has one): placed at the same distance from the router, they are used about equally
+TWO_EXTENDERS = {"ext_balance": (0.35, 0.65)}
+
+
 @dataclass(frozen=True)
 class Observation:
     cycle: int
@@ -48,12 +52,12 @@ def _quantile(values: list[int], p: float) -> int | None:
     return sorted(values)[min(len(values) - 1, int(p * len(values)))] if values else None
 
 
-def _stays(found: list[Flip], extender: str) -> list[int]:
+def _stays(found: list[Flip], extenders: set[str]) -> list[int]:
     """How many cycles the extender kept an address: from the change to it to the next change on that address."""
     per_ip = defaultdict(list)
     for f in found:
         per_ip[f.ip].append(f)
-    return [b.cycle - a.cycle for seq in per_ip.values() for a, b in zip(seq, seq[1:]) if a.new == extender]
+    return [b.cycle - a.cycle for seq in per_ip.values() for a, b in zip(seq, seq[1:]) if a.new in extenders]
 
 
 def _bounces(found: list[Flip]) -> int:
@@ -63,20 +67,32 @@ def _bounces(found: list[Flip]) -> int:
     return sum(1 for cycles in per_ip.values() for a, b in zip(cycles, cycles[1:]) if b - a <= 1)
 
 
-def summarize(observations: list[Observation], extender: str) -> dict:
-    """The measures of a timeline; `extender` is the MAC of the Wi-Fi extender."""
+def _balance(found: list[Flip], extenders: tuple[str, ...]) -> float | None:
+    """With two extenders: the share of the changes that involve the first one, among those that involve either (0.5 = used equally); None with a different number of extenders."""
+    if len(extenders) != 2:
+        return None
+    first, second = (sum(e in (f.old, f.new) for f in found) for e in extenders)
+    return first / (first + second) if first + second else None
+
+
+def summarize(observations: list[Observation], extender: str | tuple[str, ...]) -> dict:
+    """The measures of a timeline; `extender` is the MAC of the Wi-Fi extender, or the MACs of several."""
+    extenders = (extender,) if isinstance(extender, str) else tuple(extender)
+    exts = set(extenders)
     found = flips(observations)
-    with_ext = [f for f in found if extender in (f.old, f.new)]
-    to_ext, from_ext = sum(f.new == extender for f in with_ext), sum(f.old == extender for f in with_ext)
+    with_ext = [f for f in found if f.old in exts or f.new in exts]
+    to_ext, from_ext = sum(f.new in exts for f in with_ext), sum(f.old in exts for f in with_ext)
     per_ip = Counter(f.ip for f in found)
     macs = defaultdict(set)
     for o in observations:
         macs[o.ip].add(o.mac)
     macs_per_address = {ip: len(macs[ip]) for ip in per_ip}
     ext_addresses = {f.ip for f in with_ext}
-    stays = _stays(found, extender)
+    stays = _stays(found, exts)
     return {
         "flips": len(found),
+        "handoffs": sum(f.old in exts and f.new in exts for f in found),
+        "ext_balance": _balance(found, extenders),
         "extender_share": len(with_ext) / len(found) if found else 0.0,
         "symmetry": abs(to_ext - from_ext) / len(with_ext) if with_ext else 1.0,
         "top3_share": sum(n for _, n in per_ip.most_common(3)) / len(found) if found else 0.0,
@@ -90,10 +106,10 @@ def summarize(observations: list[Observation], extender: str) -> dict:
     }
 
 
-def compare(summary: dict) -> list[dict]:
-    """One row per threshold: the measured value, the accepted range and whether it fits (a missing value does not)."""
+def compare(summary: dict, thresholds: dict | None = None) -> list[dict]:
+    """One row per threshold (those of the specification sheet unless others are given): the measured value, the accepted range and whether it fits (a missing value does not)."""
     rows = []
-    for name, (low, high) in THRESHOLDS.items():
+    for name, (low, high) in (thresholds or THRESHOLDS).items():
         value = summary.get(name)
         rows.append({"name": name, "value": value, "low": low, "high": high, "ok": value is not None and low <= value <= high})
     return rows

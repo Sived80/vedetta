@@ -1,5 +1,8 @@
 """The scenarios: what happens to the cards of Vedetta when the virtual phones do the things that produce doubles or wrong names. Each scenario builds its own
 network and a fresh Vedetta, drives the phones, and returns what the cards say; the expectations are in the docstrings and judged by run_scenarios.py."""
+import random
+
+from tools.lansim import phases
 from tools.lansim.lan import Lan
 from tools.lansim.vedetta_proc import VedettaProcess
 
@@ -32,7 +35,7 @@ def s4_extender_holds(code_dir: str) -> dict:
         vedetta.wait_cycles(SETTLE + 1)
         before = _phone_cards(vedetta)
         for held in (True, False, True, False, True, False):
-            lan.hold("c1", address, held)
+            lan.hold("c1", address, "ext" if held else None)
             vedetta.wait_cycles(1)
         vedetta.wait_cycles(SETTLE)
         return {"before": before, "after": _phone_cards(vedetta), "cards_total": len(vedetta.cards())}
@@ -54,4 +57,100 @@ def s5_inherited_name(code_dir: str) -> dict:
         return {"before": before, "after": _phone_cards(vedetta)}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name}
+def s10_two_extenders(code_dir: str, cycles: int = 24, seed: int = 1, dense: bool = False) -> dict:
+    """Three phones walk around a house with two extenders and the router's own Wi-Fi in the middle (extender 1 - router - extender 2, the extenders far from each other, at the same distance from
+    the router): they are held now by one extender, now by the other, now by nobody (on the router's Wi-Fi). Still one card per phone, the same names, no card for the extenders' MACs on the
+    phones' addresses, and the cards of the two extenders keep their own addresses. `dense`: very short stretches and more direct hand-offs, so that a short run sees many changes."""
+    roam = dict(claim_median=2, away_median=3, handoff_prob=0.3) if dense else {}
+    # each phone has its own host name: two phones with the same name that are never apart for long are taken for one by the rule that joins the cards of a phone (the overlap limit is 30 minutes,
+    # and a compressed run lasts a few)
+    names = (("c1", "android", ANDROID_MAC, 20, "android-model-1"), ("c2", "ios", IOS_MAC, 21, None), ("c3", "android", "c6:00:00:00:00:23", 22, "android-model-3"))
+    with Lan(2) as lan, VedettaProcess(code_dir) as vedetta:
+        walks, holder = {}, {}
+        for i, (name, kind, mac, number, hostname) in enumerate(names):
+            address = lan.add_client(name, mac, number)
+            lan.announce(name, kind, mac, address, hostname)
+            walks[name] = (address, phases.roam_schedule(random.Random(seed * 100 + i), cycles, **roam))
+            holder[name] = None
+        vedetta.add_found()
+        vedetta.wait_cycles(SETTLE + 1)
+        before = _phone_cards(vedetta)
+        for cycle in range(cycles):
+            for name, (address, walk) in walks.items():
+                if walk[cycle] != holder[name]:
+                    holder[name] = walk[cycle]
+                    lan.hold(name, address, holder[name])
+            vedetta.wait_cycles(1)
+        vedetta.wait_cycles(SETTLE)
+        return {"before": before, "after": _phone_cards(vedetta), "cards_total": len(vedetta.cards()),
+                "handoffs": sum(a in ("ext", "ext2") and b in ("ext", "ext2") and a != b for _, walk in walks.values() for a, b in zip(walk, walk[1:])),
+                "holds": {name: sum(1 for a, b in zip(walk, walk[1:]) if a != b) for name, (_, walk) in walks.items()}}
+
+
+LAPTOP_MAC, CONSOLE_MAC = "3c:00:00:00:00:31", "70:00:00:00:00:32"       # real (not private) MACs: the judgement of "two devices behind a card" is silent for private ones
+
+
+def _card_at(vedetta: VedettaProcess, address: str) -> list[dict]:
+    """The cards at an address, with the notes the card shows about another device behind it."""
+    return [{"name": c.get("name"), "name_source": c.get("name_source"), "online": c.get("online"), "brand": c.get("brand"), "type": c.get("type"),
+             "notes": {a.get("key"): a.get("value") for a in c.get("attrs") or [] if a.get("key", "").startswith("other_device")}}
+            for c in vedetta.cards() if c.get("ip") == address]
+
+
+def s11_console_takes_address(code_dir: str) -> dict:
+    """A laptop that the user named by hand leaves; a games console takes its address (the router hands it out again). The report of a user: the console showed up as the laptop
+    whenever it was on. What does the card say, and does the console get a card of its own?"""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address = lan.add_client("c1", LAPTOP_MAC, 20)
+        lan.announce("c1", "windows", LAPTOP_MAC, address)
+        vedetta.add_found()
+        vedetta.wait_cycles(SETTLE + 1)
+        vedetta.rename(next(c["id"] for c in vedetta.cards() if c.get("ip") == address), "Portatile")
+        vedetta.wait_cycles(1)
+        before = _card_at(vedetta, address)
+        lan.link("c1", False)
+        vedetta.wait_cycles(SETTLE)
+        lan.add_client("c2", CONSOLE_MAC, 20)
+        lan.announce("c2", "console", CONSOLE_MAC, address)
+        vedetta.wait_cycles(SETTLE + 3)
+        return {"before": before, "after": _card_at(vedetta, address), "cards_total": len(vedetta.cards())}
+
+
+CAMERA_MAC = "5a:00:00:00:00:41"
+
+
+def _found(output: str, address: str) -> bool:
+    return any(line.split("	")[0] == address for line in output.splitlines())
+
+
+def s12_camera_ignores_broadcast(code_dir: str) -> dict:
+    """A camera that answers a direct ARP request but not a broadcast one (a report of a user: the camera is reachable, but absent from the search). First: does Vedetta's search find it,
+    and what does Vedetta learn about it passively (its DHCP request)? Then every technique that was discussed, one by one, from the machine of Vedetta: which of them sees the camera, with and
+    without knowing its MAC beforehand."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        phone = lan.add_client("c1", ANDROID_MAC, 20)
+        camera = lan.add_camera("cam", CAMERA_MAC, 30)
+        lan.announce("c1", "android", ANDROID_MAC, phone)
+        lan.announce("cam", "camera", CAMERA_MAC, camera)
+        found = [h["ip"] for h in vedetta.add_found()]
+        vedetta.wait_cycles(1)
+        scan = ["arp-scan", "-I", "e0", "-q", "--plain", "--retry=2", "--timeout=100"]
+        lan.probe("ip", "neigh", "flush", "all")
+        techniques = {
+            "vedetta quick search (broadcast ARP): control phone found": phone in found,
+            "vedetta quick search (broadcast ARP): camera found": camera in found,
+            "arp-scan broadcast": _found(lan.probe_output(*scan, camera), camera),
+            "arp-scan direct, MAC known (--destaddr)": _found(lan.probe_output(*scan, "--destaddr=" + CAMERA_MAC, camera), camera),
+            "ping, nothing known (the kernel asks by broadcast)": lan.probe("ping", "-c", "2", "-W", "1", camera),
+            "nmap ping (ARP, broadcast)": "Host is up" in lan.probe_output("nmap", "-sn", "-n", camera),
+        }
+        lan.probe("ip", "neigh", "replace", camera, "lladdr", CAMERA_MAC, "dev", "e0", "nud", "stale")
+        techniques["ping with a stale entry (the kernel re-asks directly)"] = lan.probe("ping", "-c", "2", "-W", "1", camera)
+        lan.probe("ip", "neigh", "flush", "all")
+        lan.probe("ip", "neigh", "replace", camera, "lladdr", CAMERA_MAC, "dev", "e0", "nud", "permanent")
+        techniques["ping with a fixed neighbour entry (MAC known)"] = lan.probe("ping", "-c", "2", "-W", "1", camera)
+        techniques["nmap ping with a fixed neighbour entry"] = "Host is up" in lan.probe_output("nmap", "-sn", "-n", camera)
+        return {"vedetta_hosts_found": found, "techniques": techniques}
+
+
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S12": s12_camera_ignores_broadcast, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

@@ -28,12 +28,36 @@ def claim_schedule(rng: random.Random, cycles: int, claim_median: float = CLAIM_
     return schedule[:cycles]
 
 
-def run_lengths(schedule: list[bool]) -> list[tuple[bool, int]]:
+def run_lengths(schedule: list) -> list[tuple]:
     """[(state, how many cycles in a row)] for a schedule."""
-    runs: list[tuple[bool, int]] = []
+    runs: list[tuple] = []
     for state in schedule:
         if runs and runs[-1][0] == state:
             runs[-1] = (state, runs[-1][1] + 1)
         else:
             runs.append((state, 1))
     return runs
+
+
+HANDOFF_PROB = 0.1     # after a stretch held by an extender: the phone goes straight to the other extender (a sticky roam that skips the router) instead of passing through the router's own Wi-Fi first
+
+
+def _next_state(rng: random.Random, state: str | None, extenders: tuple[str, ...], handoff_prob: float) -> str | None:
+    """The geography is extender 1 - router - extender 2, the router in the middle with its own Wi-Fi (there the phone answers for itself): from answering itself the phone is taken by
+    either extender, equally likely (same distance); from an extender it goes back through the router's Wi-Fi, and only rarely straight to the other extender."""
+    if state is None:
+        return rng.choice(extenders)
+    others = [e for e in extenders if e != state]
+    return rng.choice(others) if others and rng.random() < handoff_prob else None
+
+
+def roam_schedule(rng: random.Random, cycles: int, extenders: tuple[str, ...] = ("ext", "ext2"), handoff_prob: float = HANDOFF_PROB,
+                  claim_median: float = CLAIM_MEDIAN, away_median: float = AWAY_MEDIAN, claim_sigma: float = CLAIM_SIGMA, away_sigma: float = AWAY_SIGMA) -> list[str | None]:
+    """The holder of the phone in each of `cycles` cycles: None (the phone is on the router's Wi-Fi, in the middle, and answers itself) or the name of the extender that answers for it, one at a
+    time (the extenders are far from each other), starting on the router's Wi-Fi."""
+    schedule, state = [], None
+    while len(schedule) < cycles:
+        median, sigma = (away_median, away_sigma) if state is None else (claim_median, claim_sigma)
+        schedule.extend([state] * _duration(rng, median, sigma))
+        state = _next_state(rng, state, extenders, handoff_prob)
+    return schedule[:cycles]

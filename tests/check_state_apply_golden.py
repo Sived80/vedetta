@@ -51,7 +51,7 @@ def tracker_value(device_id):
 
 
 latency.tracker.value = tracker_value
-devices_config.update_auto_name = lambda device_id, name, source, force=False: LOG.append(["update_auto_name", device_id, name, source, force])
+devices_config.update_auto_name = lambda device_id, name, source, force=False, mac=None: LOG.append(["update_auto_name", device_id, name, source, force])
 
 
 def make_result(device_id, online=None):

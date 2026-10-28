@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 
 from ..ha import ha_registry
+from . import dhcp
 from .probe_record import Facts, Product
 from ..i18n import t_or as i18n_t_or
 from ..recognition import naming, name_family
@@ -68,13 +69,25 @@ def choose_automatic_name(f: Facts, names: NameState, family: str | None = None)
         _name_from_candidates(f, names, candidates)
 
 
+def _name_moved(f: Facts, family: str | None) -> bool:
+    """The MAC that announced the card's name ran the other phone system than the MAC behind the card now (both fingerprints known)."""
+    mac = f.device.get("name_mac")
+    return bool(mac) and name_family.system_changed(dhcp.fingerprint_family(mac), family)
+
+
+def _is_automatic(f: Facts) -> bool:
+    return f.device.get("name_source") in naming.PRIORITY and f.device.get("name_source") not in ("ha", "ha_user")
+
+
 def _drop_contradicted_name(f: Facts, names: NameState, candidates: list, family: str | None) -> bool:
-    """The automatic name of the card says another system than the phone behind it (an iPhone called "Pixel 7"): the best candidate that does not
-    contradict it replaces the name for good, and without one the name is not shown (the card falls back to brand and type). Names chosen by hand or taken from Home Assistant are never judged."""
-    source = f.device.get("name_source")
-    if source not in naming.PRIORITY or source in ("ha", "ha_user") or not name_family.contradicts(names.base_name, family):
+    """The automatic name of the card does not describe the phone behind it: it says another brand ("Pixel 7" on an iPhone), or the MAC that announced it ran the other phone system
+    (a generic name, "S23-di-...", carries no brand). The best candidate that does not contradict it replaces the name for good, and without one the name is not shown (the card falls
+    back to brand and type). Names chosen by hand or taken from Home Assistant are never judged."""
+    moved = _is_automatic(f) and _name_moved(f, family)
+    if not (moved or (_is_automatic(f) and name_family.contradicts(names.base_name, family))):
         return False
-    found, src = naming.pick([c for c in candidates if not name_family.contradicts(c[1], family)])
+    stale = names.base_name if moved else None
+    found, src = naming.pick([c for c in candidates if not name_family.contradicts(c[1], family) and not name_family.same_name(c[1], stale)])
     names.base_name = found
     names.auto_name = (found, src, True) if found else None
     return True

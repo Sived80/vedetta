@@ -6,7 +6,7 @@ import time
 from .formatters import update_generic_titles
 from .storage import devices_config, newdevices, settings
 from .scan import latency, presence, probe, touch_policy
-from . import maclayer, state_support, state_cycle
+from . import maclayer, name_origin, state_support, state_cycle
 from .cyclestats import CycleStats
 from .identity_upkeep import IdentityUpkeep
 from .arpview import ArpView
@@ -257,7 +257,8 @@ class DeviceState(IdentityUpkeep):
         device_id = result["id"]
         auto = result.pop("auto_name", None)
         if auto:
-            devices_config.update_auto_name(device_id, auto[0], auto[1], force=len(auto) > 2 and bool(auto[2]))
+            devices_config.update_auto_name(device_id, auto[0], auto[1], force=len(auto) > 2 and bool(auto[2]), mac=result.get("mac"))
+        name_origin.remember(config, result.get("mac"))
         previous = self.devices.get(device_id)
         now = time.time()
         if result.get("mac"):

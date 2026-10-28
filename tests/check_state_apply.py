@@ -20,7 +20,8 @@ tmp = Path(tempfile.mkdtemp())
 H = History(tmp / "vedetta.db")
 state_mod.history = H
 named = []
-devices_config.update_auto_name = lambda device_id, name, source, force=False: named.append((device_id, name, source, force))
+named_macs = []      # the MAC behind the card when the name was found (kept as the origin of the name)
+devices_config.update_auto_name = lambda device_id, name, source, force=False, mac=None: (named.append((device_id, name, source, force)), named_macs.append(mac))
 
 
 def run(coro):
@@ -153,6 +154,7 @@ async def limits():
     s._apply(CONFIG, mk(True, auto_name=("iPad-1", "dhcp")), CURRENT)
     s._apply({**CONFIG, "id": "d1"}, mk(True, auto_name=("iPad-2", "mdns", True)), CURRENT)
     assert named == [("d1", "iPad-1", "dhcp", False), ("d1", "iPad-2", "mdns", True)], named
+    assert named_macs == ["aa:bb:cc:dd:ee:01", "aa:bb:cc:dd:ee:01"], named_macs
     # an offline first result with a mac: the mac is remembered but the "shadow" work is only for online devices
     s = fresh()
     s._apply(CONFIG, mk(False, mac="aa:bb:cc:dd:ee:09"), CURRENT)

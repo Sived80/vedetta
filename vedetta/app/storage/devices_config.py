@@ -226,13 +226,28 @@ def swap_ips(id_a: str, id_b: str) -> bool:
 
 
 @_locked
-def update_auto_name(device_id: str, name: str, source: str, force: bool = False) -> bool:
+def update_auto_name(device_id: str, name: str, source: str, force: bool = False, mac: str | None = None) -> bool:
     """Replace an automatic name with a better one (see naming.is_better); the
-    check is redone here on the file, so as not to override a rename made in the meantime."""
+    check is redone here on the file, so as not to override a rename made in the meantime.
+    `mac` is the MAC behind the card when the name was found: it is kept as `name_mac` when the phone itself announced the name (see name_family)."""
     def change(d: dict) -> bool | None:
         if (not force and not naming.is_better(d, source, name)) or d.get("name") == name or d.get("name_source") == "user":
             return False
         d["name"], d["name_source"] = name, source
+        if mac and source in naming.ANNOUNCED_SOURCES:
+            d["name_mac"] = mac.lower()
+        else:
+            d.pop("name_mac", None)
+    return _edit_card(device_id, change) is not None
+
+
+@_locked
+def set_name_mac(device_id: str, mac: str) -> bool:
+    """The MAC that announces the automatic name of the card (kept apart from the name: it changes only when another MAC announces the same name)."""
+    def change(d: dict) -> bool | None:
+        if d.get("name_source") == "user" or d.get("name_mac") == mac.lower():
+            return False
+        d["name_mac"] = mac.lower()
     return _edit_card(device_id, change) is not None
 
 

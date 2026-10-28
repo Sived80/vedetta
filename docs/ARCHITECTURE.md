@@ -19,7 +19,7 @@ A module may import from its own layer or from a lower one, never from a higher 
 - **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
-- **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
+- **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
 - **layer 6**: `ingress`, `routes/`
 - **layer 7**: `main`
@@ -79,6 +79,7 @@ The functions that were restructured have a reference test that was generated fr
 | `maclayer.py` | The single MAC layer, phase 1: what the network says about which MAC answers at which address, as plain observations. |
 | `main.py` | Entry point of the service: creates the FastAPI app, starts and stops the background work in the lifespan, and mounts the routes that live in routes/. |
 | `maintenance.py` | Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not for a long time, and refreshes the table of manufacturer prefixes. |
+| `name_origin.py` | Which MAC announced the name of a card: noted whenever the MAC behind the card says the very name the card carries (the rule is in recognition/name_family.py). |
 | `netutil.py` | Network helpers: the local network of the host (get_local_network: subnet and own address, on the interface chosen in iface) and filter_local_ips, which keeps only the addresses that belong to that network. |
 | `newdevicewatch.py` | Watch for MACs never seen on the network: compares what ARP and DHCP show with the known ones and warns once for each new one. |
 | `paths.py` | Data paths and environment parameters: a single source of truth. |

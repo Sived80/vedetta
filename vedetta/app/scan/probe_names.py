@@ -2,10 +2,10 @@
 from dataclasses import dataclass
 
 from ..ha import ha_registry
-from . import dhcp
+from . import dhcp, mdns_listener
 from .probe_record import Facts, Product
 from ..i18n import t_or as i18n_t_or
-from ..recognition import naming, name_owner
+from ..recognition import naming, name_owner, same_device
 from ..recognition import roles
 from ..formatters import truncate_name
 from .. import i18n
@@ -69,13 +69,23 @@ def choose_automatic_name(f: Facts, names: NameState) -> None:
         _name_from_candidates(f, names, candidates)
 
 
+def _name_profile(mac: str) -> dict:
+    """What the listening has heard from one MAC, as a profile for the shared judgement (recognition/same_device.py): its DHCP fingerprint and the names it announced."""
+    entry = dhcp.seen.get(mac) or {}
+    host = entry.get("hostname")
+    return same_device.profile(mac, fingerprint=same_device.fingerprint(entry), dhcp_name=None if (not host or naming.is_placeholder(host)) else host.lower(),
+                               mdns_name=((mdns_listener.by_mac.get(mac) or {}).get("name") or "").lower() or None)
+
+
 def _name_moved(f: Facts) -> bool:
-    """The name of the card was announced by another device than the one behind it now: the two MACs differ, both sent a DHCP fingerprint and the two fingerprints differ.
-    A MAC that answers for several addresses (a repeater lending its own) identifies nobody, and the same MAC changing its own fingerprint is still the same device."""
+    """The name of the card was announced by another device than the one behind it now: the shared judgement (policy `name`) says "different" for the MAC that announced it and the MAC behind
+    the card. The same MAC changing its own fingerprint is still the same device, so it is not judged."""
     old, now = (f.device.get("name_mac") or "").lower(), (f.identity_mac or "").lower()
-    if not old or old == now or now in (f.device.get("mac_shared") or ()):
+    if not old or old == now:
         return False
-    return name_owner.different_device(dhcp.seen.get(old), dhcp.seen.get(now))
+    shared = {m.lower() for m in (f.device.get("mac_shared") or ())}
+    verdict = same_device.judge(_name_profile(old), _name_profile(now), shared, role_b=same_device.is_network(roles.roles_for(f.ip)), policy=same_device.NAME)
+    return verdict["verdict"] == "different"
 
 
 def _is_automatic(f: Facts) -> bool:

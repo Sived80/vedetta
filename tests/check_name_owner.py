@@ -27,20 +27,7 @@ FP_C = {"prl": "1,15,3,6", "vendor_class": "Kind-C 5.0"}
 MAC_A, MAC_B, MAC_C, NOW = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "3c:00:00:00:00:31", "9a:00:00:00:00:01"
 dhcp.seen[MAC_A], dhcp.seen[MAC_B], dhcp.seen[MAC_C] = dict(FP_A, hostname="name-a"), dict(FP_B), dict(FP_C, hostname="name-c")
 
-# --- 1. what a MAC says about the device itself
-check("fingerprint: list and class", name_owner.fingerprint(FP_A), ("1,3,6,15,26", "kind-a-1"))
-check("fingerprint: only the list", name_owner.fingerprint(FP_B), ("1,121,3,6,15", ""))
-check("fingerprint: the class is read without case or spaces", name_owner.fingerprint({"prl": "1,3", "vendor_class": "  Kind-A-1 "}), ("1,3", "kind-a-1"))
-check("fingerprint: nothing sent", name_owner.fingerprint({"hostname": "x"}), None)
-check("fingerprint: no entry", name_owner.fingerprint(None), None)
-check("different: two fingerprints", name_owner.different_device(FP_A, FP_B), True)
-check("different: the order of the list counts", name_owner.different_device({"prl": "1,3,6"}, {"prl": "3,1,6"}), True)
-check("different: the same fingerprint", name_owner.different_device(FP_A, dict(FP_A, hostname="other")), False)
-check("different: the same class in another case", name_owner.different_device({"prl": "1", "vendor_class": "A B"}, {"prl": "1", "vendor_class": "a b"}), False)
-check("different: one is not known", name_owner.different_device(FP_A, None), False)
-check("different: the other is not known", name_owner.different_device({}, FP_B), False)
-
-# --- 2. the origin of a name
+# --- 1. the origin of a name
 auto = {"name": "name-a", "name_source": "dhcp"}
 check("the MAC that announces the name is remembered", name_owner.origin_mac(auto, MAC_A.upper(), ["Name-A"]), MAC_A)
 check("another name announced: nothing to remember", name_owner.origin_mac(auto, MAC_A, [None, "other"]), None)
@@ -51,7 +38,7 @@ check("a name from Home Assistant has no origin", name_owner.origin_mac({**auto,
 check("no MAC, no origin", name_owner.origin_mac(auto, None, ["name-a"]), None)
 
 
-# --- 3. the choice of the name on a card
+# --- 2. the choice of the name on a card
 def names_of(device, dhcp_name=None, mdns_name=None, mac=NOW):
     f = Facts.__new__(Facts)
     f.device, f.ip, f.dhcp_name = device, "10.0.0.8", dhcp_name
@@ -94,7 +81,7 @@ dhcp.seen[NOW] = dict(FP_C)
 n = names_of(card)
 check("any other pair of different fingerprints is judged the same way", (n.base_name, n.auto_name), (None, None))
 
-# --- 4. the card file keeps the origin of the name
+# --- 3. the card file keeps the origin of the name
 devices_config.add_devices([{"ip": "10.9.0.20", "name": "name-a", "name_source": "dhcp"}])
 card_id = devices_config.load_devices()[0]["id"]
 devices_config.set_name_mac(card_id, MAC_A.upper())

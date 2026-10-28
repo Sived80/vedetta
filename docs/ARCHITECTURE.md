@@ -157,6 +157,7 @@ The functions that were restructured have a reference test that was generated fr
 | `recognition/naming.py` | Device names. |
 | `recognition/oui_update.py` | Update of the MAC prefix database from the public IEEE registries (MA-L 24 bit, MA-M 28 bit, MA-S 36 bit and the old IABs, 36 bit). |
 | `recognition/roles.py` | Who does what on the network: gateway, DHCP server, DNS server, router, access point, Wi-Fi repeater, and which clients go through a repeater. |
+| `recognition/same_device.py` | The one judgement of "are these two MACs the same device?". |
 | `recognition/signatures.py` | Catalog of declarative product signatures (app/data/signatures.json). |
 | `recognition/twins.py` | Twin cards: cards that look the same (same name, brand and type), like five Shelly called by their model. |
 | `recognition/vendor_lookup.py` | Who made a network card, from its MAC address: the IEEE registry (a copy downloaded into the data folder wins over the one shipped with the app), private (random) addresses, and the brand and vendor resolution that the device cards use. |

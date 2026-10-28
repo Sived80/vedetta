@@ -5,7 +5,7 @@ from ..ha import ha_registry
 from . import dhcp
 from .probe_record import Facts, Product
 from ..i18n import t_or as i18n_t_or
-from ..recognition import naming, name_family
+from ..recognition import naming, name_owner
 from ..recognition import roles
 from ..formatters import truncate_name
 from .. import i18n
@@ -54,11 +54,11 @@ class NameState:
     generated: bool = False              # built by the app (brand + type...): must not count as a hint for the type
 
 
-def choose_automatic_name(f: Facts, names: NameState, family: str | None = None) -> None:
+def choose_automatic_name(f: Facts, names: NameState) -> None:
     """Which automatic name the device gets: an upgrade of the one it has, else the best candidate when it needs a name.
-    `family` is the system of the MAC now behind the card (DHCP fingerprint): an automatic name that it contradicts is dropped first."""
+    A name that another device announced (the address passed to it) is dropped first."""
     candidates = _name_candidates(f)
-    if _drop_contradicted_name(f, names, candidates, family):
+    if _drop_stale_name(f, names, candidates):
         return
     # A name found automatically earlier is replaced as soon as a better one is available (same ranking as when it was chosen)
     upgrade = None if (not names.base_name or names.base_name == f.ip or names.placeholder) else naming.upgrade(
@@ -69,25 +69,25 @@ def choose_automatic_name(f: Facts, names: NameState, family: str | None = None)
         _name_from_candidates(f, names, candidates)
 
 
-def _name_moved(f: Facts, family: str | None) -> bool:
-    """The MAC that announced the card's name ran the other phone system than the MAC behind the card now (both fingerprints known)."""
-    mac = f.device.get("name_mac")
-    return bool(mac) and name_family.system_changed(dhcp.fingerprint_family(mac), family)
+def _name_moved(f: Facts) -> bool:
+    """The name of the card was announced by another device than the one behind it now: the two MACs differ, both sent a DHCP fingerprint and the two fingerprints differ.
+    A MAC that answers for several addresses (a repeater lending its own) identifies nobody, and the same MAC changing its own fingerprint is still the same device."""
+    old, now = (f.device.get("name_mac") or "").lower(), (f.identity_mac or "").lower()
+    if not old or old == now or now in (f.device.get("mac_shared") or ()):
+        return False
+    return name_owner.different_device(dhcp.seen.get(old), dhcp.seen.get(now))
 
 
 def _is_automatic(f: Facts) -> bool:
     return f.device.get("name_source") in naming.PRIORITY and f.device.get("name_source") not in ("ha", "ha_user")
 
 
-def _drop_contradicted_name(f: Facts, names: NameState, candidates: list, family: str | None) -> bool:
-    """The automatic name of the card does not describe the phone behind it: it says another brand ("Pixel 7" on an iPhone), or the MAC that announced it ran the other phone system
-    (a generic name, "S23-di-...", carries no brand). The best candidate that does not contradict it replaces the name for good, and without one the name is not shown (the card falls
-    back to brand and type). Names chosen by hand or taken from Home Assistant are never judged."""
-    moved = _is_automatic(f) and _name_moved(f, family)
-    if not (moved or (_is_automatic(f) and name_family.contradicts(names.base_name, family))):
+def _drop_stale_name(f: Facts, names: NameState, candidates: list) -> bool:
+    """The automatic name of the card was announced by another device than the one behind it now: the best candidate that is not that name replaces it for good, and without one the name is
+    not shown (the card falls back to brand and type). Names chosen by hand or taken from Home Assistant are never judged."""
+    if not (_is_automatic(f) and _name_moved(f)):
         return False
-    stale = names.base_name if moved else None
-    found, src = naming.pick([c for c in candidates if not name_family.contradicts(c[1], family) and not name_family.same_name(c[1], stale)])
+    found, src = naming.pick([c for c in candidates if not name_owner.same_name(c[1], names.base_name)])
     names.base_name = found
     names.auto_name = (found, src, True) if found else None
     return True

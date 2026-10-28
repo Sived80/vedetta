@@ -34,6 +34,21 @@ def owners(last_macs: dict[str, str]) -> dict[str, str]:
     return {key: card_id for key, card_id in seen.items() if key not in shared}
 
 
+def shared_macs(last_macs: dict[str, str]) -> set[str]:
+    """The MACs that are the last MAC of two or more cards: a repeater lending its own MAC to the devices behind it. They identify nobody."""
+    count: dict[str, int] = {}
+    for mac in last_macs.values():
+        key = mac_key(mac)
+        if key:
+            count[key] = count.get(key, 0) + 1
+    return {key for key, n in count.items() if n >= 2}
+
+
+def mac_view(last_macs: dict[str, str]) -> dict:
+    """What a probe is told about the MACs of the other cards: which MAC belongs to exactly one card, and which ones several cards share."""
+    return {"mac_owner": owners(last_macs), "mac_shared": shared_macs(last_macs)}
+
+
 async def complete_with_arp(result: dict, device: dict, ip: str, arp_task) -> dict:
     """The adapter's result completed by the ARP view: an answer at the address makes the device online (and gives its MAC), unless the MAC that answers is positively another card's."""
     if arp_task is None:

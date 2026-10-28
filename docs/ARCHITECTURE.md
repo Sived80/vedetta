@@ -79,7 +79,7 @@ The functions that were restructured have a reference test that was generated fr
 | `maclayer.py` | The single MAC layer, phase 1: what the network says about which MAC answers at which address, as plain observations. |
 | `main.py` | Entry point of the service: creates the FastAPI app, starts and stops the background work in the lifespan, and mounts the routes that live in routes/. |
 | `maintenance.py` | Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not for a long time, and refreshes the table of manufacturer prefixes. |
-| `name_origin.py` | Which MAC announced the name of a card: noted whenever the MAC behind the card says the very name the card carries (the rule is in recognition/name_family.py). |
+| `name_origin.py` | Which MAC announced the name of a card: noted whenever the MAC behind the card says the very name the card carries (the rule is in recognition/name_owner.py). |
 | `netutil.py` | Network helpers: the local network of the host (get_local_network: subnet and own address, on the interface chosen in iface) and filter_local_ips, which keeps only the addresses that belong to that network. |
 | `newdevicewatch.py` | Watch for MACs never seen on the network: compares what ARP and DHCP show with the known ones and warns once for each new one. |
 | `paths.py` | Data paths and environment parameters: a single source of truth. |
@@ -153,7 +153,7 @@ The functions that were restructured have a reference test that was generated fr
 | `recognition/brands.py` | Device brands. |
 | `recognition/evidence.py` | Evidence card: for a device, what decided its name, brand and group, how sure the app is (0-100) and which other hypotheses it rejected. |
 | `recognition/identity.py` | Identity of a device in a single place: product brand, "mobile" and battery. |
-| `recognition/name_family.py` | Does the automatic name of a card agree with the system of the phone behind it? |
+| `recognition/name_owner.py` | Who announced the automatic name of a card, and does that name still describe the device behind the card? |
 | `recognition/naming.py` | Device names. |
 | `recognition/oui_update.py` | Update of the MAC prefix database from the public IEEE registries (MA-L 24 bit, MA-M 28 bit, MA-S 36 bit and the old IABs, 36 bit). |
 | `recognition/roles.py` | Who does what on the network: gateway, DHCP server, DNS server, router, access point, Wi-Fi repeater, and which clients go through a repeater. |

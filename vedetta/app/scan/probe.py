@@ -33,7 +33,7 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     base_name = device.get("name") or result.get("name")
     placeholder, ha_stale = _stale_name(f, base_name)
     names = NameState(base_name, placeholder, ha_stale)
-    choose_automatic_name(f, names, dhcp.fingerprint_family(f.identity_mac))
+    choose_automatic_name(f, names)
     prefer_home_assistant_name(f, names)
     brand_stage = _probe_device_brand(f, names.display_name)
     assessment, is_mobile = _probe_device_mobile(f, names.display_name, brand_stage)

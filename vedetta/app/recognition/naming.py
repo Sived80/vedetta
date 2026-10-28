@@ -16,7 +16,7 @@ from . import brands
 # "onvif": name declared via ONVIF (often generic, e.g. "IPCAM"), hence last.
 # "tls": host name in the device's certificate (local network names only, see cn_host).
 # "weak": system placeholder name ("Android_MGDZ1OUL"): better than the IP, worse than any other.
-ANNOUNCED_SOURCES = ("dhcp", "mdns")       # the sources in which the phone itself says its name: the card then remembers which MAC said it (name_mac)
+ANNOUNCED_SOURCES = ("dhcp", "mdns")       # the sources in which the device itself says its name: the card then remembers which MAC said it (name_mac)
 PRIORITY = {"adapter": 90, "mdns": 70, "upnp": 65, "dhcp": 55, "netbios": 45, "nmap": 40, "tls": 38, "onvif": 35, "web": 30,
             "ha": 68, "ha_user": 95, "weak": 20}
 

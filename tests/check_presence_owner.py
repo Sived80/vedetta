@@ -27,6 +27,11 @@ assert not presence.answered_by_other_card(phone, "10.0.0.116", lent, owner)
 # the map of owners: one card per MAC, a MAC claimed by two cards (or by none) is left out
 assert presence.owners({"a": "AA:BB:CC:00:00:01", "b": "aa:bb:cc:00:00:02", "c": None}) == {"aa:bb:cc:00:00:01": "a", "aa:bb:cc:00:00:02": "b"}
 assert presence.owners({"a": "AA:BB:CC:00:00:01", "b": "aa:bb:cc:00:00:01"}) == {}
+# the MACs shared by several cards (a repeater lending its own): they identify nobody, and a probe is told about them together with the owners
+assert presence.shared_macs({"a": "AA:BB:CC:00:00:01", "b": "aa:bb:cc:00:00:01", "c": "aa:bb:cc:00:00:02", "d": None, "e": ""}) == {"aa:bb:cc:00:00:01"}
+assert presence.shared_macs({"a": "AA:BB:CC:00:00:01", "b": "aa:bb:cc:00:00:02"}) == set()
+assert presence.shared_macs({}) == set()
+assert presence.mac_view({"a": "AA:BB:CC:00:00:01", "b": "aa:bb:cc:00:00:01", "c": "aa:bb:cc:00:00:02"}) == {"mac_owner": {"aa:bb:cc:00:00:02": "c"}, "mac_shared": {"aa:bb:cc:00:00:01"}}
 # the step of the probe: the ARP answer completes the result, unless it is another card's
 import asyncio  # noqa: E402
 

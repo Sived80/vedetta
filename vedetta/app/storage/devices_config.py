@@ -229,7 +229,7 @@ def swap_ips(id_a: str, id_b: str) -> bool:
 def update_auto_name(device_id: str, name: str, source: str, force: bool = False, mac: str | None = None) -> bool:
     """Replace an automatic name with a better one (see naming.is_better); the
     check is redone here on the file, so as not to override a rename made in the meantime.
-    `mac` is the MAC behind the card when the name was found: it is kept as `name_mac` when the phone itself announced the name (see name_family)."""
+    `mac` is the MAC behind the card when the name was found: it is kept as `name_mac` when the device itself announced the name (see name_owner)."""
     def change(d: dict) -> bool | None:
         if (not force and not naming.is_better(d, source, name)) or d.get("name") == name or d.get("name_source") == "user":
             return False

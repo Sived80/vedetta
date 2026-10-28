@@ -3,7 +3,7 @@ network and a fresh Vedetta, drives the phones, and returns what the cards say; 
 import random
 
 from tools.lansim import phases
-from tools.lansim.lan import Lan
+from tools.lansim.lan import SUBNET, Lan
 from tools.lansim.vedetta_proc import VedettaProcess
 
 ANDROID_MAC, IOS_MAC, IOS_MAC_2 = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "5a:00:00:00:00:24"
@@ -83,6 +83,8 @@ def s10_two_extenders(code_dir: str, cycles: int = 24, seed: int = 1, dense: boo
             vedetta.wait_cycles(1)
         vedetta.wait_cycles(SETTLE)
         return {"before": before, "after": _phone_cards(vedetta), "cards_total": len(vedetta.cards()),
+                "phones_all": [{"ip": c.get("ip"), "name": c.get("name"), "name_source": c.get("name_source"), "type": c.get("type"), "brand": c.get("brand"), "mobile": c.get("is_mobile"), "online": c.get("online")}
+                               for c in vedetta.cards() if (c.get("ip") or "").rsplit(".", 1)[-1] in ("20", "21", "22")],
                 "handoffs": sum(a in ("ext", "ext2") and b in ("ext", "ext2") and a != b for _, walk in walks.values() for a, b in zip(walk, walk[1:])),
                 "holds": {name: sum(1 for a, b in zip(walk, walk[1:]) if a != b) for name, (_, walk) in walks.items()}}
 
@@ -97,23 +99,82 @@ def _card_at(vedetta: VedettaProcess, address: str) -> list[dict]:
             for c in vedetta.cards() if c.get("ip") == address]
 
 
-def s11_console_takes_address(code_dir: str) -> dict:
-    """A laptop that the user named by hand leaves; a games console takes its address (the router hands it out again). The report of a user: the console showed up as the laptop
-    whenever it was on. What does the card say, and does the console get a card of its own?"""
+LAPTOP_RETURN_ADDRESS = 31
+
+
+def _console_takes_address(code_dir: str, user_named: bool, laptop_returns: bool) -> dict:
+    """A laptop leaves its address and a games console takes it (the router hands it out again). The laptop's card is named by the user (`user_named`) or keeps the name the laptop announced;
+    the laptop then comes back (`laptop_returns`) at another address. What does each card say at each step, and does anyone get a card of their own?"""
     with Lan() as lan, VedettaProcess(code_dir) as vedetta:
         address = lan.add_client("c1", LAPTOP_MAC, 20)
         lan.announce("c1", "windows", LAPTOP_MAC, address)
         vedetta.add_found()
         vedetta.wait_cycles(SETTLE + 1)
-        vedetta.rename(next(c["id"] for c in vedetta.cards() if c.get("ip") == address), "Portatile")
-        vedetta.wait_cycles(1)
+        if user_named:
+            vedetta.rename(next(c["id"] for c in vedetta.cards() if c.get("ip") == address), "Portatile")
+            vedetta.wait_cycles(1)
         before = _card_at(vedetta, address)
         lan.link("c1", False)
         vedetta.wait_cycles(SETTLE)
         lan.add_client("c2", CONSOLE_MAC, 20)
         lan.announce("c2", "console", CONSOLE_MAC, address)
         vedetta.wait_cycles(SETTLE + 3)
-        return {"before": before, "after": _card_at(vedetta, address), "cards_total": len(vedetta.cards())}
+        result = {"before": before, "console_on": _card_at(vedetta, address), "cards_total": len(vedetta.cards())}
+        if laptop_returns:
+            new_address = "%s.%d" % (SUBNET, LAPTOP_RETURN_ADDRESS)
+            lan.move("c1", address, new_address)
+            lan.link("c1", True)
+            lan.announce("c1", "windows", LAPTOP_MAC, new_address)
+            vedetta.add_found()
+            vedetta.wait_cycles(SETTLE + 2)
+            result["laptop_back"] = {"at_old_address": _card_at(vedetta, address), "at_new_address": _card_at(vedetta, new_address), "cards_total": len(vedetta.cards())}
+        return result
+
+
+def s11_console_takes_address(code_dir: str) -> dict:
+    """The laptop is named by the user and does not come back (a report of a user: the console showed up as the laptop whenever it was on)."""
+    return _console_takes_address(code_dir, user_named=True, laptop_returns=False)
+
+
+def s11b_laptop_comes_back(code_dir: str) -> dict:
+    """As S11, and the laptop comes back at another address: does the card follow it, does the console keep a card of its own?"""
+    return _console_takes_address(code_dir, user_named=True, laptop_returns=True)
+
+
+def s11c_automatic_name(code_dir: str) -> dict:
+    """As S11, but the laptop's card keeps the name the laptop announced (nobody named it): the console must not carry on with it."""
+    return _console_takes_address(code_dir, user_named=False, laptop_returns=False)
+
+
+# Any device can take the address of any other: every ordered pair of different kinds (the fingerprints of tools/lansim/fingerprints.py), plus a control of two devices of the SAME kind.
+PAIRS = (("android", "ios"), ("ios", "android"), ("windows", "console"), ("console", "camera"), ("camera", "windows"), ("android", "windows"), ("android", "android"))
+
+
+def _pair(code_dir: str, first: str, second: str) -> dict:
+    """The first device announces its own host name, leaves; the second one (another MAC, its own host name) takes the address. What name does the card carry?"""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address = lan.add_client("c1", "3c:00:00:00:00:51", 20)
+        lan.announce("c1", first, "3c:00:00:00:00:51", address, "first-" + first)
+        vedetta.add_found()
+        vedetta.wait_cycles(SETTLE + 1)
+        before = [c["name"] for c in _card_at(vedetta, address)]
+        lan.link("c1", False)
+        vedetta.wait_cycles(SETTLE)
+        lan.add_client("c2", "70:00:00:00:00:52", 20)
+        lan.announce("c2", second, "70:00:00:00:00:52", address, "second-" + second)
+        vedetta.wait_cycles(SETTLE + 3)
+        after = [c["name"] for c in _card_at(vedetta, address)]
+        return {"before": before, "after": after, "cards_total": len(vedetta.cards())}
+
+
+def s13_any_pair(code_dir: str) -> dict:
+    """Any device can take the address of any other: after the change the card must carry the name of the device that is there now (not the one announced by the one that left), for every pair of
+    different kinds. For two devices of the same kind the two fingerprints are the same, so the rule cannot tell them apart: a known limit, measured here."""
+    results = {}
+    for first, second in PAIRS:
+        results["%s -> %s" % (first, second)] = outcome = _pair(code_dir, first, second)
+        print("RESULT %s -> %s: before %s, after %s" % (first, second, outcome["before"], outcome["after"]), flush=True)
+    return results
 
 
 CAMERA_MAC = "5a:00:00:00:00:41"
@@ -153,4 +214,4 @@ def s12_camera_ignores_broadcast(code_dir: str) -> dict:
         return {"vedetta_hosts_found": found, "techniques": techniques}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S12": s12_camera_ignores_broadcast, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

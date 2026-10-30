@@ -6,15 +6,15 @@ Vedetta scans the network it is on. A device on another network (a VLAN for smar
 
 ## What it does
 
-Menu → **Networks seen by Home Assistant**. Turn the function on, press **Read now**, tick the devices you want and press **Adopt**. An adopted device becomes a card like the others: a tile in the group of its type, and the same device card with its history, its name, brand and type rows and its *Other attributes*.
+Menu → **Networks seen by Home Assistant**. Turn the function on (it reads once by itself; **Read now** reads again), tick the devices you want and press **Adopt**. An adopted device becomes a card like the others: a tile in the group of its type, and the same device card with its history, its name, brand and type rows and its *Other attributes*. The history starts when you adopt the device: Vedetta had no earlier readings.
 
-What a card of this kind does **not** have, because Vedetta never talks to the device: ports, response time, uptime, the analysis state, *Search in depth*, *Share with HA* and the report flag. Its online or offline state is what Home Assistant says, with the delay of its integration (usually a few minutes).
+What a card of this kind does **not** have, because Vedetta never talks to the device: ports, response time, uptime, the analysis state, *Search in depth*, *Share with HA* and the report flag. Its online or offline state is what Home Assistant says, with the delay of its integration (the UniFi integration, for example, waits 300 seconds by default before it calls a client away).
 
 ## What is read, and what is not
 
 The function is **off by default** and only reads while it is on.
 
-- Home Assistant is asked for its states. Of them, only the **device trackers whose source is a router** are kept (UniFi, FRITZ!Box, MikroTik, a network scanner such as `nmap_tracker`…), and of each only **five facts**: IP address, MAC address, host name, the name Home Assistant shows, and whether it is at home or away.
+- Home Assistant is asked for its states and for the registry of its entities (to leave out the trackers Vedetta itself publishes). Of the states, only the **device trackers whose source is a router** are kept (UniFi, FRITZ!Box, MikroTik, a network scanner such as `nmap_tracker`…), and of each only **five facts**: IP address, MAC address, host name, the name Home Assistant shows, and whether it is at home or away.
 - Phones with a location, people, zones and anything else are dropped on the spot: nothing of them is kept, shown or written in the log.
 - The trackers Vedetta itself publishes by MQTT are left out, so its own devices never come back as new ones.
 - A device Vedetta already has (same MAC or same address) is not offered again.
@@ -24,7 +24,7 @@ What you adopt is kept in `passive_devices.json` in the app's data folder, **nev
 
 ## Names, types and brands
 
-These cards are sure about what Home Assistant tells: a name set in your router or in the integration is shown as it is, with 100% in the three rows. If it is wrong, correct it at the source, or change it in Vedetta: the pencil (name, brand) and the arrow (type) work as on any card, and *Customize card* in the three-dots menu shows them. The type is guessed from the name and the manufacturer in the MAC, like for any card, and you can choose another.
+These cards are sure about what Home Assistant tells: a name set in your router or in the integration is shown as it is, with 100% in the three rows. If it is wrong, correct it at the source, or change it in Vedetta: the pencil (name, brand) and the arrow (type) work as on any card, and *Customize card* in the three-dots menu shows them. The type is guessed from the name and the manufacturer in the MAC, like for any card. Without probing the device there is less to go on, so many cards stay in *Other* until you choose a type.
 
 *Ignore device* in the three-dots menu takes the card off the page. It is offered again in the list as long as Home Assistant sees it.
 
@@ -36,8 +36,8 @@ After **Adopt** the panel closes by itself; reopen it from the menu. The cross i
 
 ## Good to know
 
-- **It needs a router integration in Home Assistant** that tracks the clients (the *Track network devices* option in UniFi, for example), and the clients you want must be tracked there. Vedetta cannot see a device Home Assistant does not.
-- **Presence is slower than a probe.** Integrations hold a client "at home" for a while after it leaves (the *consider home* time), so a card of this kind turns offline later than a scanned one. For the same reason the network health check does not use these cards.
+- **It needs a router integration in Home Assistant** that tracks the clients (in UniFi, the option *Track network clients*, with *Include wired network clients* and the SSID filter deciding which ones), and the clients you want must be tracked there. Vedetta cannot see a device Home Assistant does not.
+- **Presence is slower than a probe.** Integrations hold a client "at home" for a while after it leaves (the *consider home* time), so a card of this kind turns offline later than a scanned one. The network health check does not look at these cards: it works on the devices Vedetta probes.
 - **"Unavailable" is not "away".** When the integration is reloaded or the controller restarts, Home Assistant reports its clients as unavailable: the cards keep their last known state.
 - **MQTT.** These cards are not published to Home Assistant: Home Assistant already has them.
 - **Several networks with the same addresses** (two networks both using `192.168.1.x`) are not told apart: the MAC identifies the device.

@@ -3,9 +3,9 @@
 ## 0.10.0 · Ponte
 **Ponte** is Italian for *bridge*: Home Assistant and Vedetta, and the networks Vedetta cannot reach on its own.
 - **Devices on other networks.** If the integration of your router in Home Assistant tracks the devices of a network Vedetta does not scan (a VLAN for smart-home devices, a guest network), Vedetta can now show them: menu → *Networks seen by Home Assistant*. It is off until you turn it on, it reads only what Home Assistant already knows (address, MAC, name, connected or away) and it never probes these devices. The ones you adopt get a card like the others, in the group of their type, and their name, type and brand can be changed.
-- **Fewer wrong names on phone cards.** A card no longer keeps a name that another phone announced when the two swapped an address, and a generic phone name is dropped when the system of the phone behind it says otherwise.
-- **A clearer message after *Share with HA*.** It says what happened, and no success message appears when the save failed.
-- **A quicker export.** The plain export no longer waits for the size estimate, and the estimate is asked again when it fails.
+- **Fewer wrong names on cards.** A card no longer keeps an automatic name that was announced by another device: when the device behind the card sends a different DHCP fingerprint from the one that announced the name (a device that takes an address another one had), the name stops applying. Names you chose, or that come from Home Assistant, are never touched.
+- **The right message after *Share with HA*.** It used to say *Removed* when a device was added and the reverse, and a failed save showed the error and the success message together.
+- **A quicker plain export.** The *Export (plain)* button no longer waits for the size estimate, and the estimate is asked again, up to three times, when it fails.
 
 **Thank you** to everyone who shared an export: real networks made this release possible.
 

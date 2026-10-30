@@ -10,7 +10,7 @@ What is built, release by release, and what is planned.
 
 | Version | Date | What came with it |
 |---|---|---|
-| **0.10.0 · Ponte** | Oct | Devices on other networks, seen through Home Assistant and never probed · fewer wrong names on phone cards · a clearer message after sharing with Home Assistant · a quicker export |
+| **0.10.0 · Ponte** | Oct | Devices on other networks, seen through Home Assistant and never probed · fewer wrong names on cards · the right message after sharing with Home Assistant · a quicker plain export |
 | **0.9.0 · Sintonia** | 26 Oct | German (first translation) · a card no longer stays online on someone else's address · a steadier Network card and no scroll bars drawn · gentler scans of slow devices and fewer false port alerts · a first network health check, quiet and visible only in the debug mode |
 | **0.8.0 · Vetrina** | 18 Oct | The Network card redrawn in the Home Assistant style · devices found open inside it · a tidier device card · groups that fold · a red dot when an update is ready · three switches for what reaches the Internet · a simpler Configuration tab |
 | **0.7.1 · Calibro** | 16 Oct | Aligned buttons on the card of the devices found · a diagnostic bundle with the state of the analysis · safer notes and reports · an IP address sensor for shared devices |

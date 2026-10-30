@@ -89,6 +89,14 @@ const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel
   await wait(60);
   check(!q("#card-nets").hidden && !!q("#nets-switch") && q("#nets-switch").getAttribute("aria-checked") === "false", "the entry opens the panel with the switch off");
   check(qa("#card-nets .rv-note li").length === 4 && !q("#nets-read"), "the four rules of privacy are written, there is no reading button while it is off");
+  check(!!q("#nets-close") && q("#nets-close").getAttribute("aria-label") !== "", "there is a close button in the header, an icon with its name for screen readers");
+  await click("#nets-close");
+  await wait(500);
+  check(q("#card-nets").hidden && !calls.some((c) => c.url === "/api/ha/networks/enabled"), "closing leaves the panel shut and does not turn the function on");
+  await click("#btn-menu");
+  await click("[data-nets]");
+  await wait(60);
+  check(!q("#card-nets").hidden && q("#nets-switch").getAttribute("aria-checked") === "false", "it opens again from the menu, still off");
   await click("#nets-switch");
   await wait(120);
   check(calls.some((c) => c.url === "/api/ha/networks/enabled" && c.body.enabled === true) && calls.some((c) => c.url === "/api/ha/networks/read"), "turning it on asks the server, and reads for the first time");

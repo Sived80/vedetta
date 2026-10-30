@@ -68,6 +68,8 @@ export function renderNets() {
   netsEl.innerHTML = '<div class="card-header"><span class="ch-ic ok">' + icon("lan") + '</span><div class="ch-text"><div class="ch-title small">' + esc(t("js.ha.nets.title")) +
     '</div><div class="ch-sub">' + esc(t("js.ha.nets.sub")) + "</div></div>" +
     (info.available ? '<button type="button" class="rv-switch' + (info.enabled ? " on" : "") + '" id="nets-switch" role="switch" aria-checked="' + info.enabled + '" aria-label="' + esc(t("js.ha.nets.switch")) + '"></button>' : "") +
+    // The way out, as in the panel of the devices found: a plain icon button, the word only in the tooltip and for screen readers.
+    '<button type="button" class="btn text rp nd-sym rv-close" id="nets-close" title="' + esc(t("js.ha.new.close")) + '" aria-label="' + esc(t("js.ha.new.close")) + '">' + icon("close") + "</button>" +
     "</div>" + intro + netsBody(info);
 }
 function netsAsk(path, body) {
@@ -108,6 +110,7 @@ export function closeNets() {
 }
 function netsFail() { snack(t("js.ha.nets.failed"), { kind: "error" }); netsBusy = ""; renderNets(); }
 netsEl.addEventListener("click", function (e) {
+  if (e.target.closest("#nets-close")) { closeNets(); return; }
   if (e.target.closest("#nets-switch")) {
     const turnOn = !netsInfo.enabled;
     netsAsk("/api/ha/networks/enabled", { enabled: turnOn }).then(function (info) {

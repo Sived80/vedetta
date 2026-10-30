@@ -185,5 +185,7 @@
   "identity_shift.reason.group": "erkannter Typ",
   "identity_shift.reason.dhcp_name": "DHCP-Name",
   "identity_shift.reason.mdns_name": "Bonjour-Name",
-  "identity_shift.reason.ha_model": "Modell in Home Assistant"
+  "identity_shift.reason.ha_model": "Modell in Home Assistant",
+  "extra.seen_by": "Gesehen über",
+  "extra.seen_by_ha": "Home Assistant (Vedetta prüft es nicht)"
 }

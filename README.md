@@ -113,6 +113,7 @@ Vedetta speaks **English, Italian, Czech and German** (thanks to the community f
 | [How Vedetta works](docs/HOW_IT_WORKS.md) | What it is, features, search methods |
 | [Recognition](docs/RECOGNITION.md) | Sources, weights, certainty bars, phones |
 | [Home Assistant](docs/HOME_ASSISTANT.md) · [MQTT](docs/MQTT.md) | The two directions of the integration, MQTT setup |
+| [Networks seen by Home Assistant](docs/HA_NETWORKS.md) | Showing the devices of other networks (VLANs) through your router integration, without probing them |
 | [Privacy and safety](docs/PRIVACY.md) | What stays local, exports, reporting a mistake |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | The first 24 hours, common problems |
 | [Roadmap](docs/ROADMAP.md) | What is done, with date and version, and what is planned |

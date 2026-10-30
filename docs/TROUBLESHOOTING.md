@@ -25,3 +25,4 @@ Why a device may look wrong in the first hours, and what to try when something d
 | The page opens but no devices appear | Open the app's **Log** tab. If you have several network cards, set the `interface` option (for example `enp0s18`). |
 | An iPhone is called *Apple mobile* | Phones with a private Wi-Fi address announce nothing. Set the name once by hand and it stays. |
 | After an update something looks old | Press <kbd>Ctrl</kbd> + <kbd>F5</kbd> in the browser. |
+| *Networks seen by Home Assistant* shows no devices | Your router integration in Home Assistant must track the clients, and they must not be in Vedetta already. See [Networks seen by Home Assistant](HA_NETWORKS.md#if-it-does-not-work). |

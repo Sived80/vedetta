@@ -32,7 +32,7 @@ These cards are sure about what Home Assistant tells: a name set in your router 
 
 Clients are grouped by network, in the order Home Assistant lists them, with the addresses ascending inside each one; the ones without an address come last. The network is the `/24` of the address: the VLAN itself is not part of what Home Assistant gives. On the page, a card sits among the others of its group, in address order.
 
-After **Adopt** the panel closes by itself; reopen it from the menu. The number next to the menu entry is how many clients can still be adopted.
+After **Adopt** the panel closes by itself; reopen it from the menu. The cross in its header closes it at any time without turning anything on. The number next to the menu entry is how many clients can still be adopted.
 
 ## Good to know
 

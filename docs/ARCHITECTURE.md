@@ -276,7 +276,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/ignored.js` | 342 | ignored devices |
 | `js/live.js` | 256 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 185 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-attrs.js` | 186 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 313 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
@@ -302,5 +302,5 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
-| `css/80-more-info.css` | 287 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/80-more-info.css` | 288 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 

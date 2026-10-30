@@ -164,9 +164,10 @@ function portCategory(p) {
 export function miActions(d) {
   const el = $("mi-actions");
   if (!el) return;
-  // A device that only Home Assistant sees has nothing to share, flag or search: no actions (it is not probed, so there is nothing to ask of it).
-  if (d && d.passive) { el.innerHTML = ""; el.hidden = true; return; }
-  el.hidden = false;
+  // A device that only Home Assistant sees has nothing to share, flag or search: no buttons (it is not probed, so there is nothing to ask of it). The bar stays, empty,
+  // so the card has the size of every other card.
+  el.classList.toggle("mi-actions-empty", !!(d && d.passive));
+  if (d && d.passive) { el.innerHTML = ""; return; }
   let html = "";
   // Sharing with Home Assistant (MQTT): the button is always there, and disabled while the link with MQTT is not active (no broker, publishing off: the summary says it in S.mqtt.active), with no message.
   // Shared = HA sees the device as a sub-device of "Vedetta"; "Remove" takes it out of HA.

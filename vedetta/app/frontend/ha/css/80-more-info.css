@@ -131,6 +131,7 @@
   .card-menu .menu-check { margin-left: auto; display: flex; visibility: hidden; color: var(--primary-color); }
   .card-menu .menu-item[aria-checked="true"] .menu-check { visibility: visible; }
   /* The flag of the report has the height of the buttons next to it (34 px) and a 20 px icon, instead of the 48 px of the generic small icon button. */
+  #more .mi-actions.mi-actions-empty { min-height: 63px; box-sizing: border-box; }      /* no buttons (a device only Home Assistant sees): the bar keeps the height it has with them */
   #more .mi-actions .mi-flag { width: 34px; height: 34px; }
   #more .mi-actions .mi-flag .mdi { width: 20px; height: 20px; }
   /* Rename next to the name in the More info dialog. */

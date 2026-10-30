@@ -123,6 +123,21 @@ const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel
   sources[sources.length - 1].emit("passive", { type: "passive" });
   await wait(400);
   check(calls.filter((c) => c.url.startsWith("/api/ha/devices")).length >= 2, "a passive event makes the page read the devices again");
+  // the card of an adopted device: no button under it, but the bar keeps the card the size of the others
+  const first = data.devices.devices[0];
+  const passive = Object.assign({}, first, { id: "ha-02005e100021", name: "Front camera", passive: true, ip: "198.51.100.21", mac: "02:00:5E:10:00:21", ports: [], latency_ms: null, url: null, ha_share: false, focus: false });
+  data.devices.devices.push(passive);
+  sources[sources.length - 1].emit("passive", { type: "passive" });
+  await wait(500);
+  const tile = q('.tile[data-id="ha-02005e100021"]');
+  check(!!tile, "the adopted device has a tile on the page");
+  await click(tile);
+  await wait(200);
+  const bar = q("#more .mi-actions");
+  check(!!bar && !bar.hidden && bar.classList.contains("mi-actions-empty") && bar.querySelectorAll("button, a").length === 0, "its card has no button under it, the bar stays so the card keeps its size");
+  await click("#more [data-act='close']");
+  const normal = q('.tile:not([data-id="ha-02005e100021"])');
+  if (normal) { await click(normal); await wait(200); const nb = q("#more .mi-actions"); check(!!nb && !nb.classList.contains("mi-actions-empty") && nb.querySelectorAll("button").length >= 1, "the card of a device Vedetta checks keeps its buttons"); await click("#more [data-act='close']"); }
   check(errors.length === 0, "no error in the page" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

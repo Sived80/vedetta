@@ -1,8 +1,7 @@
 import { api, esc, icon, t } from "./core.js";
-import { DEBUG } from "./debug.js";
 
-// ------------------------------------------------- an optional extra of the export for the developer (debug mode only)
-// Only in the debug mode, only for the developer export, only while the server says the survey is on (info.survey). A check button: it asks the server whether Home Assistant
+// ------------------------------------------------- an optional extra of the export for the developer
+// Only for the developer export, only while the server says the survey is on (info.survey). A check button: it asks the server whether Home Assistant
 // has network trackers; found = green with the number, nothing found or Home Assistant not readable = back to the default and the step-by-step guide opens, with a first line that
 // says the normal export works without this option. The state lives in X.vlan (X is the state of the export window, kept in export.js).
 var VLAN_T = "js.ha.export.vlan.";
@@ -11,7 +10,7 @@ function vlanTHas(key) { return t(VLAN_T + key) !== VLAN_T + key; }       // t()
 var VLAN_GUIDE_STEPS = 5;
 
 export function vlanInit() { return { state: "idle", n: 0, pop: false, guide: false, why: null }; }
-export function vlanAvailable(X) { return !!(DEBUG && X.dest === "dev" && X.info && X.info.survey); }
+export function vlanAvailable(X) { return !!(X.dest === "dev" && X.info && X.info.survey); }
 export function vlanWanted(X) { return vlanAvailable(X) && X.vlan.state === "ok"; }
 
 function vlanButton(v) {

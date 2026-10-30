@@ -1,5 +1,5 @@
-/* An optional extra of the export for the developer, debug mode only (xv-*): a check button in its own advanced section, a small panel with what Home Assistant needs, and a step-by-step guide.
-   Shown only in the debug mode (export-vlan.js). Colours: only the Home Assistant theme (primary blue, success green, neutral greys); every text pair was measured on both themes. */
+/* An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant needs, and a step-by-step guide.
+   Drawn by export-vlan.js. Colours: only the Home Assistant theme (primary blue, success green, neutral greys); every text pair was measured on both themes. */
 
 @layer overrides {
   #exportdlg .mi { position: relative; }

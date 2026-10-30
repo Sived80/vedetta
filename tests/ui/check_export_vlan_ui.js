@@ -3,7 +3,7 @@
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_export_vlan_ui.js [it|en]
 const { openPage } = require("./_export_page.js");
 const lang = process.argv[2] || "it";
-const k = openPage(lang, true);
+const k = openPage(lang, false);      // the debug mode is not needed any more: the option is there for anyone while the server offers it
 const { check, click, q, qa, wait, text } = k;
 
 (async () => {
@@ -11,7 +11,7 @@ const { check, click, q, qa, wait, text } = k;
   await k.openWindow();
   check(!q(".xv-adv"), "scelta di «per chi» ancora aperta: l'opzione non c'e'");
   await click("[data-xp='dest:dev']");
-  check(!!q(".xv-adv") && q(".xv-advh").textContent.includes(text("adv_title")) && q(".xv-advh").textContent.includes(text("adv_text")), "per lo sviluppatore, con il debug: sezione «opzione avanzata» con la frase che dice per chi e'");
+  check(!!q(".xv-adv") && q(".xv-advh").textContent.includes(text("adv_title")) && q(".xv-advh").textContent.includes(text("adv_text")), "per lo sviluppatore, senza bisogno del debug: sezione «opzione avanzata» con la frase che dice per chi e'");
   const btn = () => q(".xv-chk");
   check(btn().tagName === "BUTTON" && btn().getAttribute("data-state") === "idle" && btn().getAttribute("aria-pressed") === "false" && btn().textContent.includes(text("btn_idle")) && btn().textContent.includes(text("btn_idle_sub")), "pulsante di partenza: predefinito, non premuto, con la scritta e la riga che dice cosa fa");
   check(!!btn().closest(".mi-body") && !q(".mi-actions .xv-chk"), "il pulsante sta sotto le scelte normali, non tra Annulla ed Esporta");

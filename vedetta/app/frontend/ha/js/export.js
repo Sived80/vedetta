@@ -197,7 +197,7 @@ function xpPoll() {
 function xpGo() {
   const body = { dest: X.dest };
   if (X.all) body.all = true; else { body.from_day = X.from - 1; body.to_day = X.to; }
-  if (vlanWanted(X)) body.survey = true;                       // the network option, only when its button is green (debug mode)
+  if (vlanWanted(X)) body.survey = true;                       // the network option, only when its button is green
   const mine = X;
   mine.stage = "run"; mine.snap = { steps: [], status: "running", items: [], items_total: 0 }; mine.decided = null; mine.saved = false;
   xpRender();

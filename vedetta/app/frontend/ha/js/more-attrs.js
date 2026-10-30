@@ -53,7 +53,7 @@ export function miAttrs(d) {
   function row(label, value, extra, fixed, cls) { (fixed ? fixedRows : rows).push({ label: label, html: value, extra: extra || "", cls: cls || "" }); }
   row(t("js.ha.attr.name"), evRowCells("name", t("js.ha.attr.name")), '<button type="button" class="icon-btn small touch rp mi-ed" data-act="rename" title="' + esc(t("js.ha.act.rename")) +
     '" aria-label="' + esc(t("js.ha.act.rename")) + '">' + icon("pencil") + "</button>", true, "ev-attr");
-  row(t("js.ha.attr.ip"), esc(d.ip + (d.port && d.port !== 80 ? ":" + d.port : "")),
+  if (d.ip) row(t("js.ha.attr.ip"), esc(d.ip + (d.port && d.port !== 80 ? ":" + d.port : "")),
     d.url && canOpen(d) ? '<a class="icon-btn small touch rp" href="' + esc(d.url) + '" target="_blank" rel="noopener" title="' + esc(t("js.ha.act.open")) +
       '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</a>" : "", true);
   if (d.mac) row(t("js.ha.attr.mac"), '<span class="mono">' + esc(d.mac) + "</span>",
@@ -164,6 +164,9 @@ function portCategory(p) {
 export function miActions(d) {
   const el = $("mi-actions");
   if (!el) return;
+  // A device that only Home Assistant sees has nothing to share, flag or search: no actions (it is not probed, so there is nothing to ask of it).
+  if (d && d.passive) { el.innerHTML = ""; el.hidden = true; return; }
+  el.hidden = false;
   let html = "";
   // Sharing with Home Assistant (MQTT): the button is always there, and disabled while the link with MQTT is not active (no broker, publishing off: the summary says it in S.mqtt.active), with no message.
   // Shared = HA sees the device as a sub-device of "Vedetta"; "Remove" takes it out of HA.

@@ -1,0 +1,37 @@
+/* Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided block, not a card;
+   its rows are the .nd-* rows of the panel of the devices found, with a tick box in front. */
+@layer overrides {
+  #card-nets { border-top: 1px solid var(--divider-color); border-bottom: 1px solid var(--divider-color); padding: 12px 0 0; overflow: clip; }
+  #card-nets[hidden] { display: none; }
+  #card-nets .card-header { display: flex; align-items: center; gap: 8px 12px; padding: 0 0 8px; min-height: 0; }
+  #card-nets .card-header .ch-text { flex: 1 1 140px; min-width: 0; }
+  #card-network #card-nets .card-header .ch-title { font-size: var(--ha-font-size-m, 14px); line-height: 20px; font-weight: var(--ha-font-weight-medium, 500); }
+  #card-network #card-nets .card-header .ch-sub { font-size: var(--ha-font-size-s, 12px); line-height: 16px; margin-top: 2px; color: var(--secondary-text-color); }
+  #card-network #card-nets .ch-ic { width: 36px; height: 36px; margin: 0; color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  #card-network #card-nets .ch-ic .mdi { width: 20px; height: 20px; }
+  /* the switch: the same size as the toggles of Home Assistant */
+  #card-nets .rv-switch { position: relative; flex: none; width: 40px; height: 22px; padding: 0; border: 0; border-radius: 11px; cursor: pointer;
+    background: color-mix(in srgb, var(--secondary-text-color) 45%, transparent); transition: background-color 0.15s; }
+  #card-nets .rv-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 0.15s; }
+  #card-nets .rv-switch.on { background: var(--primary-color); }
+  #card-nets .rv-switch.on::after { left: 21px; }
+  #card-nets .rv-note { margin: 0; padding: 0 0 10px; color: var(--secondary-text-color); font-size: var(--ha-font-size-s, 12px); line-height: 16px; }
+  #card-nets .rv-note li { list-style: disc; margin: 0 0 2px 18px; }
+  #card-nets .rv-empty { padding: 4px 0 12px; color: var(--secondary-text-color); font-size: var(--ha-font-size-s, 12px); line-height: 16px; }
+  #card-nets .rv-bar { display: flex; align-items: center; gap: 8px; padding: 10px 0 12px; border-top: 1px solid var(--divider-color); }
+  #card-nets .rv-bar > span { font-size: var(--ha-font-size-s, 12px); color: var(--secondary-text-color); }
+  #card-nets .sp { flex: 1; }
+  #card-nets .rv-net { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; padding: 8px 0 4px; border-top: 1px solid var(--divider-color); font-size: var(--ha-font-size-s, 12px); color: var(--secondary-text-color); }
+  #card-nets .rv-net b { font-size: var(--ha-font-size-m, 14px); font-weight: var(--ha-font-weight-medium, 500); color: var(--primary-text-color); }
+  #card-nets .rv-net > span:not(.sp) { flex-basis: 100%; order: 3; }
+  #card-nets .rv-all { height: 34px; padding: 0 14px; }
+  #card-nets .rv-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 0; box-sizing: border-box; }
+  #card-nets .rv-row input { flex: none; width: 18px; height: 18px; accent-color: var(--primary-color); }
+  #card-nets .rv-ic { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 16%, transparent); }
+  #card-nets .rv-ic.off { color: var(--disabled-text-color); background: color-mix(in srgb, var(--secondary-text-color) 14%, transparent); }
+  #card-nets .rv-ic .mdi { width: 20px; height: 20px; }
+  #card-nets .nd-text { flex: 1 1 130px; min-width: 0; }
+  #card-nets .nd-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #card-nets .nd-sub { font-size: 12px; color: var(--secondary-text-color); overflow-wrap: anywhere; }
+}

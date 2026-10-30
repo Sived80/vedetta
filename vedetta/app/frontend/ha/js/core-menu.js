@@ -7,6 +7,7 @@ import { ignoredCount, openIgnored, refreshIgnored } from "./ignored.js";
 import { openFlows } from "./flows.js";
 import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
+import { netsCount, openNets } from "./ha-networks.js";
 
 // ----------------------------------------------------------------- guided typing
 // Fields that ask for an address help the typing: in a MAC the colons appear by themselves (and the letters become capitals); in an IP address
@@ -173,6 +174,11 @@ function ignoredCountHtml() {
   const n = ignoredCount();
   return n > 0 ? ' <span class="menu-count">' + n + "</span>" : "";
 }
+// The number of clients Home Assistant sees that can be adopted, after the name of the entry, only when there are some.
+function netsCountHtml() {
+  const n = netsCount();
+  return n > 0 ? ' <span class="menu-count">' + n + "</span>" : "";
+}
 function buildMenu() {
   let html = starEntry() + langGroup();
   const theme = ROOT.getAttribute("data-theme") || "auto";
@@ -196,6 +202,7 @@ function buildMenu() {
   html += menuGroup(t("js.ha.menu.speed"), pills) +
     '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>";
   html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-nets="1"><span class="menu-lbl">' + esc(t("js.ha.nets.menu")) + netsCountHtml() + "</span>" + icon("lan") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1"><span class="menu-lbl">' + esc(t("js.ha.menu.ignored")) + ignoredCountHtml() + "</span>" + icon("eye-off") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
@@ -249,6 +256,7 @@ menuEl.addEventListener("click", function (e) {
       window.VEDETTA_LANG_AUTO ? "auto" : LANG, pickLang);
     return;
   }
+  if (e.target.closest("[data-nets]")) { toggleMenu(false); openNets(); return; }
   if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   const item = e.target.closest(".menu-item");

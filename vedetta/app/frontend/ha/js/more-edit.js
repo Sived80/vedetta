@@ -11,10 +11,11 @@ export function renderRename(d) {
   dlg.innerHTML = '<div class="mi">' + miHeader(null, t("js.ha.rename.title"), true) +
     '<form class="mi-body" id="rename-form" autocomplete="off">' +
     '<label class="field"><input id="rn-name" type="text" maxlength="80" required placeholder=" " value="' + esc(d.name) + '"><span class="field-label">' + esc(t("js.ha.rename.name")) + "</span></label>" +
-    '<div class="field-group"><div class="field-caption">' + esc(t("js.ha.rename.mobile")) + '</div><div class="seg wide" role="radiogroup" id="rn-mode">' +
+    // "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its own row.
+    (d.passive ? "" : '<div class="field-group"><div class="field-caption">' + esc(t("js.ha.rename.mobile")) + '</div><div class="seg wide" role="radiogroup" id="rn-mode">' +
     ["auto", "yes", "no"].map(function (m) {
       return '<button type="button" role="radio" class="rp" data-mode="' + m + '" aria-checked="' + (m === mode) + '" aria-pressed="' + (m === mode) + '">' + esc(t("js.ha.rename.mode_" + m)) + "</button>";
-    }).join("") + '</div><div class="field-hint">' + esc(t("js.ha.rename.mobile_hint")) + "</div></div>" +
+    }).join("") + '</div><div class="field-hint">' + esc(t("js.ha.rename.mobile_hint")) + "</div></div>") +
     '<div class="mi-actions"><button type="button" class="btn text rp" data-act="back">' + esc(t("js.ha.cancel")) + '</button>' +
     '<button type="submit" class="btn filled rp">' + esc(t("js.ha.save")) + "</button></div></form></div>";
   const input = $("rn-name");

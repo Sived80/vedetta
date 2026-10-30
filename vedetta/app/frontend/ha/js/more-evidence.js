@@ -33,6 +33,7 @@ export function evRowCells(key, label) {
 // rejected hypotheses, each with its points (the type) and a short note.
 function evText(x, key) {
   const e = x[key], out = { certainty: e.certainty, line: "", clues: [], rej: [] };
+  if (e.basis === "ha_source") { out.line = t("js.ha.ev.from_ha"); return out; }       // a device Home Assistant sees: what Home Assistant says is the answer
   if (key === "group") {
     if (e.basis === "scored") out.clues = (e.clues || []).map(function (c) { return { name: evClue(c.source), pts: c.points }; });
     else out.line = e.basis === "manual" ? t("js.ha.ev.g.manual") : e.basis === "mobile" ? t("js.ha.ev.g.mobile", { reason: evKey("js.ha.ev.reason.", e.reason) }) : t("js.ha.ev.g." + e.basis);

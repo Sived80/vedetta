@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from .storage import devices_config, journal
 from .storage.history import history
-from .ha import analysis_view, health_view, ha_registry, ha_tz, ha_update
+from .ha import analysis_view, health_view, ha_registry, ha_tz, ha_update, passive_service
 from .scan import mdns_listener, dhcp, host_load, internet, scanner
 from . import external, i18n, lifecycle, paths
 from .state_support import _process_info
@@ -22,7 +22,7 @@ from .assets import static_version
 from .frontend_serving import mount_frontend
 from .routes import flows as routes_flows
 from .routes.bodies import json_dict
-from .routes import brands as routes_brands, export_routes as routes_export, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt
+from .routes import brands as routes_brands, export_routes as routes_export, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt, passive_routes as routes_passive
 from .ha.mqtt_ha import service as mqtt_service
 from .state import state
 from .sse import SSE_HEADERS, _sse  # noqa: F401
@@ -46,6 +46,7 @@ async def lifespan(_: FastAPI):
     nightly = asyncio.create_task(nightly_loop())
     dhcp_transport = await dhcp.start()
     ha_registry.start()  # Home Assistant registry (read-only; empty outside HA)
+    passive_service.start(on_change=state.emit_event)  # the clients Home Assistant sees on other networks (off until the user turns it on)
     ha_update.start()  # is there a newer version of this add-on? (asks the Supervisor for its own card; nothing outside HA)
     mdns_listener.start(state, lent_counts=history.mac_ip_counts)  # Bonjour names: memory and continuous listening
     await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
@@ -60,6 +61,7 @@ async def lifespan(_: FastAPI):
         dhcp_transport.close()
     nightly.cancel()
     await ha_registry.stop()
+    await passive_service.stop()
     await ha_update.stop()
     await mdns_listener.stop()
     await analysis_view.stop()
@@ -78,6 +80,7 @@ app.include_router(routes_flows.router)
 app.include_router(routes_ha.router)
 app.include_router(routes_export.router)
 app.include_router(routes_mqtt.router)
+app.include_router(routes_passive.router)
 app.include_router(routes_scan_routes.router)
 app.include_router(routes_device_routes.router)
 app.include_router(routes_settings_routes.router)

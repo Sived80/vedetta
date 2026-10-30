@@ -185,5 +185,7 @@
   "identity_shift.reason.group": "tipo riconosciuto",
   "identity_shift.reason.dhcp_name": "nome DHCP",
   "identity_shift.reason.mdns_name": "nome Bonjour",
-  "identity_shift.reason.ha_model": "modello in Home Assistant"
+  "identity_shift.reason.ha_model": "modello in Home Assistant",
+  "extra.seen_by": "Visto tramite",
+  "extra.seen_by_ha": "Home Assistant (non controllato da Vedetta)"
 }

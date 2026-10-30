@@ -15,9 +15,9 @@ from fastapi.templating import Jinja2Templates
 
 
 from .. import applog, external, i18n
-from ..ha import analysis_view, ha_data, ha_update, health_view
+from ..ha import analysis_view, ha_data, ha_update, health_view, passive_view
 from ..ha.device_debug import device_debug
-from ..storage import health_hidden, journal, starhint
+from ..storage import health_hidden, journal, passive_store, starhint
 from ..scan import latency
 from ..recognition import oui_update, roles
 from ..storage.history import history
@@ -74,7 +74,8 @@ async def api_ha_devices(request: Request):
     /api/ha/events?rev=<rev> stream sends only what changes after this list.
     ready=false until the first check cycle is finished."""
     i18n.use_request(request)
-    return {"rev": state.rev, "ready": state.ready.is_set(), "devices": ha_data.compact_all(state.sorted_devices()), "analysis": analysis_view.snapshot()}
+    seen = passive_view.compact_all(await asyncio.to_thread(passive_store.snapshot))      # the devices Home Assistant sees: cards like the others, apart from what cannot be known without probing them
+    return {"rev": state.rev, "ready": state.ready.is_set(), "devices": ha_data.compact_all(state.sorted_devices()) + seen, "analysis": analysis_view.snapshot()}
 
 
 @router.get("/api/ha/devices/{device_id}/debug")
@@ -90,6 +91,12 @@ async def api_ha_device_debug(device_id: str):
 @router.get("/api/ha/devices/{device_id}/evidence")
 async def api_ha_device_evidence(device_id: str):
     """Evidence card of the device sheet: what decided name, brand and group, how sure the app is and what it rejected."""
+    mac = passive_store.mac_of(device_id)
+    if mac:     # a device Home Assistant sees: nothing was worked out, everything is what Home Assistant says (or the user chose)
+        item = (await asyncio.to_thread(passive_store.snapshot))["adopted"].get(mac)
+        if item is None:
+            raise HTTPException(404, "Dispositivo non trovato")
+        return passive_view.evidence(item)
     out = device_debug(device_id)
     if out is None:
         raise HTTPException(404, "Dispositivo non trovato")
@@ -221,7 +228,8 @@ async def api_ha_history_all(hours: int = 24):
     """Online/offline segments of all devices in a single call
     (for the mini bar of each tile)."""
     hours = _hours(hours)
-    windows = await asyncio.to_thread(_windows, list(state.devices), hours)
+    adopted = [passive_store.id_of(m) for m in (await asyncio.to_thread(passive_store.snapshot))["adopted"]]
+    windows = await asyncio.to_thread(_windows, list(state.devices) + adopted, hours)
     return {"hours": hours, "devices": windows}
 
 
@@ -230,11 +238,16 @@ def _windows(device_ids: list[str], hours: int) -> dict[str, dict]:
     return {i: ha_data.slim_history(history.presence_segments(i, now - hours * 3600, now)) for i in device_ids}
 
 
+def _is_adopted(device_id: str) -> bool:
+    mac = passive_store.mac_of(device_id)
+    return bool(mac) and mac in passive_store.snapshot()["adopted"]
+
+
 @router.get("/api/ha/history/{device_id}")
 async def api_ha_history(device_id: str, request: Request, hours: int = 24):
     """Segments of one device (same format as history.presence_segments)."""
     i18n.use_request(request)
-    if device_id not in state.devices:
+    if device_id not in state.devices and not _is_adopted(device_id):
         raise HTTPException(404, i18n.t("ha.error.not_found"))
     hours = _hours(hours)
     now = time.time()

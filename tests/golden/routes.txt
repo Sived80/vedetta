@@ -1,4 +1,5 @@
 ['DELETE'] /api/brands/rules/{rule_id}
+['DELETE'] /api/devices/ha-{mac}
 ['DELETE'] /api/devices/{device_id}
 ['DELETE'] /api/export/jobs/{job_id}
 ['DELETE'] /api/ignored/{item_id}
@@ -21,6 +22,7 @@
 ['GET'] /api/ha/history
 ['GET'] /api/ha/history/{device_id}
 ['GET'] /api/ha/logbook
+['GET'] /api/ha/networks
 ['GET'] /api/ha/registry/status
 ['GET'] /api/ha/summary
 ['GET'] /api/ignored
@@ -36,6 +38,8 @@
 ['POST'] /api/brands/rules
 ['POST'] /api/brands/update
 ['POST'] /api/devices/add
+['POST'] /api/devices/ha-{mac}/override
+['POST'] /api/devices/ha-{mac}/rename
 ['POST'] /api/devices/rescan
 ['POST'] /api/devices/{device_id}/override
 ['POST'] /api/devices/{device_id}/rename
@@ -48,6 +52,9 @@
 ['POST'] /api/flows
 ['POST'] /api/flows/reset
 ['POST'] /api/ha/health/hidden
+['POST'] /api/ha/networks/adopt
+['POST'] /api/ha/networks/enabled
+['POST'] /api/ha/networks/read
 ['POST'] /api/ha/star
 ['POST'] /api/ignored
 ['POST'] /api/ignored/forget

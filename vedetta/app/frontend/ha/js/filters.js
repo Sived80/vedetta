@@ -3,6 +3,7 @@ import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
 import { mountHealth } from "./health-card.js";
 import { newEl, renderNew } from "./new-devices.js";
+import { netsEl } from "./ha-networks.js";
 import { schedule } from "./live.js";
 import { bindGauge, gaugeHTML, paintCycle, paintGauge, paintNewDot } from "./net-gauge.js";
 import { logoHTML, movingIcon } from "./net-icons.js";
@@ -77,6 +78,7 @@ export function buildNetwork() {
     '<div class="brands" id="brands"></div></div>';
   // The devices to add open between the badges and the brands (the panel survives the rebuild of the card).
   netEl.querySelector(".card-content").insertBefore(newEl, $("brands"));
+  netEl.querySelector(".card-content").appendChild(netsEl);                    // the networks seen by Home Assistant (menu entry) open at the foot of the card
   // Search, real-time status and settings live inside this card: the already created
   // nodes (with their handlers) are moved here from the hidden container.
   const tools = $("card-tools");

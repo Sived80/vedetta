@@ -38,7 +38,7 @@ The language is not an option: the page follows Home Assistant (`en`, `it`, `cs`
 | Permission | What it is for |
 |---|---|
 | Host network (`host_network`) and `NET_ADMIN`/`NET_RAW` | `arp-scan`, `nmap`, ping, SSDP/mDNS and passive DHCP listening (UDP port 67). Local requests only, never towards the Internet (except the three `internet_*` functions, which can be switched off). |
-| `homeassistant_api` | **Read-only** access to the Home Assistant registries (devices, entities, areas, integrations) to give devices a name, brand, model, area and category. It writes nothing and calls no services. It can be turned off in the search methods ("Home Assistant data" step). |
+| `homeassistant_api` | **Read-only** access to the Home Assistant registries (devices, entities, areas, integrations) to give devices a name, brand, model, area and category. It writes nothing and calls no services. It can be turned off in the search methods ("Home Assistant data" step). The optional function [Networks seen by Home Assistant](https://github.com/Sived80/vedetta/blob/main/docs/HA_NETWORKS.md) also reads the states of the device trackers of a router integration (five facts each, nothing else); it is off until you turn it on. |
 | MQTT service (`mqtt:want`) | Publishes to Home Assistant only what you choose to share. |
 | Ingress | The interface only accepts connections from the Supervisor. |
 

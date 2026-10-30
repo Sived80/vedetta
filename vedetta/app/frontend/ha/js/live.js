@@ -4,6 +4,7 @@ import { setStarBadge, setUpdateDot } from "./core-menu.js";
 import { buildNetwork, netEl, networkBuilt, refreshDone, updateNetwork, updateScan } from "./filters.js";
 import { emptyState, flash, groupsEl, layout, prepare, rebuildList, reconcile, updateTile } from "./tile.js";
 import { newEl, renderNew } from "./new-devices.js";
+import { netsChanged, netsRefresh } from "./ha-networks.js";
 import { fetchHist, fetchLog, fetchLogSoon, histPush } from "./log.js";
 import { closeMore, miHero } from "./more-info.js";
 import { miAttrs } from "./more-attrs.js";
@@ -145,6 +146,8 @@ export function connect() {
   on("alert", onAlert);
   on("new_devices", onNewDevices);
   on("analysis", onAnalysis);
+  // The clients Home Assistant sees (adopted or to adopt) changed: the cards come again with the devices.
+  on("passive", function () { netsChanged(); });
   // The link with the MQTT broker (configured? connected?): the Home Assistant tile follows it as it changes, without waiting for a full reload.
   on("mqtt", function (ev) { S.mqtt = { active: !!ev.active, connected: !!ev.connected }; S.dirty.net = true; schedule(); });
   on("roles", function (ev) {
@@ -212,6 +215,7 @@ export function load(opts) {
     const nd = sum.new_devices || {};
     S.newDevices = { count: nd.count || 0, devices: nd.devices || [], init: false };
     S.loaded = true;
+    netsRefresh();      // the number next to the menu entry of the networks Home Assistant sees
     netEl.hidden = false;
     if (!(opts.silent && networkBuilt())) buildNetwork();
     renderNew();

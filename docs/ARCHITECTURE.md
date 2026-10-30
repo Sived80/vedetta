@@ -125,6 +125,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/device_debug.py` | What debug mode shows for a device: the clues that decided its group, the candidates for its name, brand, mobile score, DHCP, roles, scan data and the registry/mDNS memory. |
 | `ha/ha_data.py` | Data for the Home Assistant-style dashboard (/ha): inferred device type, compact format for the UI, summary, event log. |
 | `ha/ha_registry.py` | Home Assistant registry as a source of name, brand, model and area of the network devices. |
+| `ha/ha_trackers.py` | The clients that a router integration of Home Assistant tracks on the network (UniFi, FRITZ!, MikroTik, nmap...), read from the states of Home Assistant. |
 | `ha/ha_type_evidence.py` | ha_type_evidence: moved out of ha_data.py (see tools/split_module.py). |
 | `ha/ha_type_text.py` | ha_type_text: moved out of ha_type_evidence.py (see tools/split_module.py). |
 | `ha/ha_tz.py` | Time zone (and language) of Home Assistant. |
@@ -135,6 +136,8 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/mqtt_config.py` | mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py). |
 | `ha/mqtt_ha.py` | Publishes Vedetta's state over MQTT using Home Assistant's "device" discovery (homeassistant/device/<id>/config). |
 | `ha/mqtt_payloads.py` | mqtt_payloads: moved out of mqtt_ha.py (see tools/split_module.py). |
+| `ha/passive_service.py` | Reads the devices that Home Assistant sees (ha_trackers) while the function is on, keeps them (passive_store) and writes their presence into the history. |
+| `ha/passive_view.py` | What the page shows of the devices that Home Assistant sees ("passive" devices): the cards in the same compact format as the devices Vedetta scans, and the list of the ones that can be adopted. |
 
 ### health/
 
@@ -174,6 +177,7 @@ The functions that were restructured have a reference test that was generated fr
 | `routes/ha.py` | Home Assistant-style dashboard (/ha) and its JSON APIs (/api/ha/*). |
 | `routes/ignored.py` | API of the ignored devices. |
 | `routes/mqtt.py` | Status and configuration API for MQTT publishing (GET/POST /api/mqtt). |
+| `routes/passive_routes.py` | Routes of the devices that Home Assistant sees ("Networks seen by Home Assistant"): the switch, the reading, the list to choose from, the adoption, and the changes to an adopted device. |
 | `routes/scan_routes.py` | scan_routes: moved out of main.py (see tools/split_module.py). |
 | `routes/settings_routes.py` | settings_routes: moved out of main.py (see tools/split_module.py). |
 
@@ -236,6 +240,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/journal.py` | Event log beyond online/offline, for the level-based Log of /ha. |
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
+| `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |
 | `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values). |
 | `storage/starhint.py` | The one-time invitation to star the project on GitHub (config/star_hint.json). |
 | `storage/userlang.py` | The language each Home Assistant user chose in the menu (config/user_lang.json). |
@@ -254,25 +259,26 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | part | lines | what it is for |
 |---|---|---|
 | `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 310 | guided typing |
+| `js/core-menu.js` | 318 | guided typing |
 | `js/core-ui.js` | 199 | state |
 | `js/core.js` | 225 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer (debug mode only) |
 | `js/export.js` | 264 | export for analysis |
-| `js/filters.js` | 243 | filters |
+| `js/filters.js` | 245 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
+| `js/ha-networks.js` | 150 | networks seen by Home Assistant |
 | `js/health-card.js` | 276 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/health-sim.js` | 48 | network health: made-up findings, debug mode only |
 | `js/ignored.js` | 342 | ignored devices |
-| `js/live.js` | 252 | update |
+| `js/live.js` | 256 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 182 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
-| `js/more-edit.js` | 312 | Flag the device for the report: its card, history and this note go in the export for analysis. |
-| `js/more-evidence.js` | 146 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
+| `js/more-attrs.js` | 185 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-edit.js` | 313 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
+| `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
 | `js/more-info.js` | 95 | "More info" dialog |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
@@ -293,6 +299,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/42-health.css` | 104 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
 | `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
+| `css/62-ha-networks.css` | 37 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 287 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |

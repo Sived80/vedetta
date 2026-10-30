@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.0 · Ponte
+**Ponte** is Italian for *bridge*: Home Assistant and Vedetta, and the networks Vedetta cannot reach on its own.
+- **Devices on other networks.** If the integration of your router in Home Assistant tracks the devices of a network Vedetta does not scan (a VLAN for smart-home devices, a guest network), Vedetta can now show them: menu → *Networks seen by Home Assistant*. It is off until you turn it on, it reads only what Home Assistant already knows (address, MAC, name, connected or away) and it never probes these devices. The ones you adopt get a card like the others, in the group of their type, and their name, type and brand can be changed.
+- **Fewer wrong names on phone cards.** A card no longer keeps a name that another phone announced when the two swapped an address, and a generic phone name is dropped when the system of the phone behind it says otherwise.
+- **A clearer message after *Share with HA*.** It says what happened, and no success message appears when the save failed.
+- **A quicker export.** The plain export no longer waits for the size estimate, and the estimate is asked again when it fails.
+
+**Thank you** to everyone who shared an export: real networks made this release possible.
+
 ## 0.9.0 · Sintonia
 **Sintonia** is Italian for *tuning*, being in tune: one more language, cards that stay true to their devices, a steadier page and a quiet check of how your network is doing.
 - **German.** Vedetta now speaks German too: the whole page, the Configuration tab and the documentation line. It is a first translation and has not been read by a native speaker yet: corrections are welcome.

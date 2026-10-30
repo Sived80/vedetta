@@ -97,7 +97,7 @@ Vedetta is free and open source, and it stays that way. If it saved you time, yo
 
 ## Also inside
 
-📱 Sleeping phones remembered · 📊 Presence and latency history · 🔭 Three search levels, you choose the risk · 🏠 Home Assistant and optional MQTT
+📱 Sleeping phones remembered · 📊 Presence and latency history · 🔭 Three search levels, you choose the risk · 🏠 Home Assistant and optional MQTT · 🌐 [Devices on other networks](docs/HA_NETWORKS.md), seen through Home Assistant
 
 All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
 

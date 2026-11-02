@@ -17,6 +17,21 @@ _task: asyncio.Task | None = None
 _on_change = None
 _last_online: dict[str, bool] = {}     # the presence last written to the history, by device id: only a change is written
 _lock = asyncio.Lock()
+REPEAT_S = 3600
+_said: tuple = (None, 0.0)              # what the log said last about the readings, and when
+
+
+def worth_saying(what: tuple, now: float, said: tuple) -> bool:
+    """True when the log should tell this reading: what it found changed, or an hour went by since it was last told (pure). The same line every minute was 85% of the log on a
+    real network and pushed the useful lines out of it."""
+    return what != said[0] or now - said[1] >= REPEAT_S
+
+
+def _say(what: tuple, now: float, line: str, *args) -> None:
+    global _said
+    if worth_saying(what, now, _said):
+        logger.info(line, *args)
+        _said = (what, now)
 
 
 def presence_changes(adopted: dict, last: dict) -> list[tuple]:
@@ -48,12 +63,12 @@ async def read_now() -> dict:
             error = None
         except Exception as exc:   # Home Assistant down, no permission, a token missing outside HA: told in the panel, never an error for the user
             rows, error = [], f"{type(exc).__name__}: {exc}"[:200]
-            logger.info("Dispositivi visti da Home Assistant non letti (%s)", error)
+            _say(("error", error), ts, "Dispositivi visti da Home Assistant non letti (%s)", error)
         await asyncio.to_thread(passive_store.record_read, rows, ts, error)
         data = await asyncio.to_thread(passive_store.snapshot)
         if error is None:
             await asyncio.to_thread(_write_presence, data, ts)
-            logger.info("Dispositivi visti da Home Assistant: %d letti, %d adottati", len(rows), len(data["adopted"]))
+            _say(("read", len(rows), len(data["adopted"])), ts, "Dispositivi visti da Home Assistant: %d letti, %d adottati", len(rows), len(data["adopted"]))
         if _on_change:
             _on_change({"type": "passive"})
         return data

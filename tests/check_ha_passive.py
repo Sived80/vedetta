@@ -227,6 +227,15 @@ finally:
     socket.socket.connect, socket.create_connection, socket.getaddrinfo, socket.socket.sendto = real
 check(ok_path, "reading, store, card and presence work with every socket forbidden")
 check(events == [{"type": "passive"}] * 2, "every reading tells the open pages")
+
+# ---- the log: a reading is said when what it found changes, or once an hour; the same line every minute was 85% of the log on a real network (02/11) and pushed out the rest
+said = (None, 0.0)
+check(passive_service.worth_saying(("read", 94, 52), 100.0, said), "the first reading is said")
+said = (("read", 94, 52), 100.0)
+check(not passive_service.worth_saying(("read", 94, 52), 160.0, said) and not passive_service.worth_saying(("read", 94, 52), 3600.0, said), "the same numbers a minute later, or within the hour: nothing")
+check(passive_service.worth_saying(("read", 94, 53), 160.0, said), "one more adopted: said at once")
+check(passive_service.worth_saying(("read", 94, 52), 100.0 + passive_service.REPEAT_S, said), "an hour later: said again, so a quiet log still shows the function runs")
+check(passive_service.worth_saying(("error", "TimeoutError: x"), 160.0, said) and not passive_service.worth_saying(("error", "TimeoutError: x"), 220.0, (("error", "TimeoutError: x"), 160.0)), "an error is said once, not every minute")
 seg = H.presence_segments(passive_store.id_of("02:00:5e:10:00:21"), 0, 1e12)
 check(bool(seg.get("segments")) and seg["segments"][-1]["online"] is True, "the presence of an adopted device is written to the history")
 before = len(H.presence_segments(passive_store.id_of("02:00:5e:10:00:21"), 0, 1e12)["segments"])

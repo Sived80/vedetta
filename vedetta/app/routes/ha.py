@@ -133,7 +133,7 @@ async def api_ha_summary(request: Request):
         state.sorted_devices(), state.poll_info(), state.activity_info(), new_devices, state.rev,
     )
     from ..ha.mqtt_ha import version
-    return {**summary, "roles": roles.snapshot(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
+    return {**summary, "roles": roles.page_view(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
             "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info)}
 
 

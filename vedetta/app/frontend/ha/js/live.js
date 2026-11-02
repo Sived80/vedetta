@@ -154,7 +154,7 @@ export function connect() {
     // UPnP roles, names and types decide category, icon and name: if they change the groups are redone.
     function sig(r) { return JSON.stringify([r.by_ip || {}, r.names || {}, r.types || {}]); }
     const changed = sig(ev) !== sig(S.roles);
-    S.roles = { by_ip: ev.by_ip || {}, via: ev.via || {}, names: ev.names || {}, types: ev.types || {}, dhcp: ev.dhcp || [], internet: ev.internet || null };
+    S.roles = { by_ip: ev.by_ip || {}, via: ev.via || {}, names: ev.names || {}, types: ev.types || {}, dhcp: ev.dhcp || [], internet: ev.internet || null, network: ev.network || null };
     S.tiles.forEach(function (el, id) { updateTile(id); });
     // The role also decides the category (e.g. gateway -> network equipment): the
     // devices are reloaded to redo the groups.

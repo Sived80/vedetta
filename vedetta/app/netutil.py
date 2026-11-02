@@ -9,9 +9,12 @@ from fastapi import HTTPException
 from .applog import logger
 from .iface import lan_iface
 
+last_network: str | None = None     # the network of the last reading ("10.20.0.0/22"), None before the first one: what the page shows as the size of the LAN
+
 
 async def get_local_network() -> tuple[str, str]:
-    """Returns (CIDR subnet, the container's own IP)."""
+    """Returns (CIDR subnet, the container's own IP), and keeps the subnet in last_network."""
+    global last_network
     proc = await asyncio.create_subprocess_exec(
         "ip", "-o", "-4", "addr", "show", lan_iface(),
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
@@ -22,7 +25,8 @@ async def get_local_network() -> tuple[str, str]:
         logger.error("Impossibile determinare la subnet locale, output 'ip addr': %r", out.decode())
         raise HTTPException(500, "Impossibile determinare la subnet locale")
     iface = ipaddress.ip_interface(match.group(1))
-    return str(iface.network), str(iface.ip)
+    last_network = str(iface.network)
+    return last_network, str(iface.ip)
 
 
 async def filter_local_ips(ips: list[str]) -> list[str]:

@@ -52,14 +52,15 @@ assert "192.168" not in raw and "aa:bb" not in raw
 
 # --- the view writes after each judgment (shadow included) through a function that is handed in
 saved = []
-engine = Engine([dict(matrix.load()[0], status="shadow")])
+h20 = dict(matrix.load()[0], status="shadow")
+engine = Engine([h20])
 signals = {"conflicts": {"192.168.1.20": ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02"]}}
 hv.judge_once(engine, signals, NOW, record=lambda **kw: saved.append(kw))
 assert [(s["rule"], s["state"], s["shadow"]) for s in saved] == [("H20", "tentative", True)], saved
 hv.judge_once(engine, signals, NOW + 120, record=lambda **kw: saved.append(kw))
 assert saved[-1]["state"] == "active" and saved[-1]["hits"] == 2, saved[-1]
 saved.clear()
-for step in range(1, 4):
+for step in range(1, h20["params"]["clear_cycles"] + 1):
     hv.judge_once(engine, {"conflicts": {}}, NOW + 240 + step, record=lambda **kw: saved.append(kw))
 assert saved and saved[-1]["state"] == "closed", "the closing is written too: %s" % saved
 assert all("192.168" not in json.dumps(s) for s in saved)

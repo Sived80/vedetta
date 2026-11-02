@@ -1,4 +1,5 @@
-// The network health screen of the Network card (js/health-card.js, health-model.js): dormant, it exists only while the debug mode is on; four tiles; a tile opens the big one with its findings; a row opens
+// The network health screen of the Network card (js/health-card.js, health-model.js): there for everyone since 0.11.0 with the findings of the rules that are shown, the ones in shadow too while the
+// debug mode is on (?shadow=1); four tiles; a tile opens the big one with its findings; a row opens
 // the detail (who: name and IP; what; when; what to do); the X on the left goes back one step; the eye hides a finding (and the choice is kept); a device opens its card; no MAC is shown unless a device has no card.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_health_ui.js [it|en]
 const fs = require("fs");
@@ -100,11 +101,12 @@ async function openHealth(p) {
 }
 
 (async () => {
-  // --- without the debug mode: nothing exists and nothing is asked
+  // --- without the debug mode (everyone): the screen is there, and it asks only for the rules that are shown
+  const asked = (p) => p.calls.filter((u) => u.startsWith("/api/ha/health") && !u.startsWith("/api/ha/health/hidden"));
   let p = boot(false, running(FINDINGS));
   await wait(1500);
-  check(!p.q(".hs-stack") && !p.q(".hs-dots"), "senza debug la scheda non ha la schermata «Salute»");
-  check(!p.calls.some((u) => u.startsWith("/api/ha/health")), "senza debug non si chiede nulla a /api/ha/health");
+  check(!!p.q(".hs-stack") && !p.q(".hs-dots"), "senza debug la scheda ha la schermata «Salute» (0.11.0: il dottore e' per tutti)");
+  check(asked(p).length > 0 && asked(p).every((u) => !u.includes("shadow")), "senza debug si chiedono solo i rilievi delle regole mostrate: " + asked(p).join(" "));
   check(p.errors.length === 0, "senza debug, nessun errore" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- the judge is off on the server: no screen even in the debug mode
@@ -130,6 +132,7 @@ async function openHealth(p) {
   await wait(1500);
   const { q, qa, click, text } = p;
   check(!!q(".hs-stack") && !q(".hs-dots"), "col debug la scheda ha lo strato della salute e nessun puntino");
+  check(asked(p).length > 0 && asked(p).every((u) => u.includes("shadow=1")), "col debug si chiedono anche i rilievi in ombra (?shadow=1)");
   check(TITLE.test(text("#rot .t-l")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
   check(!!q("#rot .hs-go") && text("#rot .hs-go").includes(tx("js.ha.health.card.open")), "la tile ha il tasto «Apri» ben visibile");
   const heldOn = text("#rot .t-l");
@@ -222,13 +225,13 @@ async function openHealth(p) {
   check(qa(".hs-dev").length === 6, "sei dispositivi: l'elenco ha sei righe che scorrono dentro la scheda");
   await click(".hs-pane.detail .hs-d-head [data-act='back']"); await click(".hs-pane.detail .hs-d-head [data-act='close']");
 
-  // --- the debug mode off: the screens go and the network screen is as before
-  p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, bubbles: true }));
-  await wait(200);
-  check(!q(".hs-stack") && !q(".hs-dots") && q("#card-network .card-content > #badges") && q("#card-network .card-content > .hero-row #gauge") && q("#card-network .card-content > #search-row"), "spento il debug, la scheda torna com'era (badge, cerchio e ricerca al loro posto)");
+  // --- the debug mode off: the screen stays and asks again, without the shadow; on again: with it
   p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, bubbles: true }));
   await wait(600);
-  check(!!q(".hs-stack"), "riacceso il debug, la schermata torna");
+  check(!!q(".hs-stack") && !asked(p).slice(-1)[0].includes("shadow") && q("#card-network .card-content #badges") && q("#card-network .card-content #gauge") && q("#card-network .card-content #search-row"), "spento il debug, la schermata resta e chiede di nuovo, senza l'ombra; badge, cerchio e ricerca ci sono");
+  p.doc.dispatchEvent(new p.win.KeyboardEvent("keydown", { key: "D", ctrlKey: true, shiftKey: true, bubbles: true }));
+  await wait(600);
+  check(!!q(".hs-stack") && asked(p).slice(-1)[0].includes("shadow=1"), "riacceso il debug, si chiede di nuovo con l'ombra");
   check(p.errors.length === 0, "nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- a choice that was made before is still there at the next visit

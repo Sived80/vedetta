@@ -104,9 +104,10 @@ async def api_ha_device_evidence(device_id: str):
 
 
 @router.get("/api/ha/health")
-async def api_ha_health():
-    """The network-health findings with who, what and when, shadow included. Only the page's debug mode asks for it; the judge runs in shadow in any case."""
-    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page), "report": await asyncio.to_thread(health_view.report), "hidden": await asyncio.to_thread(health_hidden.load)}
+async def api_ha_health(shadow: bool = False):
+    """The network-health findings with who, what and when, of the rules that are shown; with ?shadow=1 (the page's debug mode) the ones in shadow too."""
+    return {"running": health_view.running(), "findings": await asyncio.to_thread(health_view.page, shadow=shadow), "report": await asyncio.to_thread(health_view.report, shadow=shadow),
+            "hidden": await asyncio.to_thread(health_hidden.load)}
 
 
 @router.post("/api/ha/health/hidden")

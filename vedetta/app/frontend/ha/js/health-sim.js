@@ -8,6 +8,7 @@ export const SIM_SCENARIOS = ["off", "calm", "one", "all", "grave", "many"];
 export function simPreview() { return window.VEDETTA_PREVIEW === "health"; }
 export function simScenario() {
   if (simPreview()) return "all";
+  if (!document.documentElement.hasAttribute("data-debug")) return "off";        // a tool of the debug mode: without it the page shows the real findings
   try { const v = localStorage.getItem(SIM_KEY); return SIM_SCENARIOS.indexOf(v) > 0 ? v : "off"; } catch (e) { return "off"; }
 }
 export function simOn() { return simScenario() !== "off"; }

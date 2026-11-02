@@ -48,7 +48,8 @@ mixed = dict(together, late=[NOW - 300], later=[NOW - 100])
 assert detectors.simultaneous_drop(sig(mixed, devices=20), TOGETHER)[0].data["ids"] == ["d0", "d1", "d2", "d3", "d4", "d5"]
 # four is not enough, and neither is a crowd that is a small part of a big network
 assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(4)}, devices=20), TOGETHER) == []
-assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(6)}, devices=60), TOGETHER) == [], "6 of 60 is 10%: below the share"
+assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(5)}, devices=60), TOGETHER) == [], "5 of 60 is 8%: below the share"
+assert detectors.simultaneous_drop(sig({"d%d" % i: [NOW - 1800] for i in range(6)}, devices=60), TOGETHER) != [], "6 of 60 is 10%: a switch or an access point that goes down takes a share like this"
 # drops spread over the hour are not together; old ones are not looked at
 spread = {"d%d" % i: [NOW - 3000 + i * 600] for i in range(6)}
 assert detectors.simultaneous_drop(sig(spread), TOGETHER) == []
@@ -85,8 +86,17 @@ assert detectors.step_change(lat(series(0.5, 8.0, minutes_last=3)), STEP) == [],
 assert detectors.step_change({"now": NOW, "latency": {"gateway": 5}}, STEP) == [] and detectors.step_change({"now": NOW}, STEP) == [] and detectors.step_change({}, STEP) == []
 assert detectors.step_change({"now": NOW, "latency": {"gateway": [(NOW, None)] * 100}}, STEP) == [], "samples without a value are left out"
 
-# --- both rows are in the matrix, in shadow, with a checked source
+# --- phones are left out (signals["mobile"]): on every real network the drops that looked like restarts were phones whose Wi-Fi sleeps at a nearly regular pace
+assert detectors.periodic_dropout(dict(sig({"phone": regular}), mobile={"phone"}), PERIODIC) == [], "a phone that sleeps is not a device that restarts"
+assert [e.subject for e in detectors.periodic_dropout(dict(sig({"phone": regular, "cam": regular}), mobile={"phone"}), PERIODIC)] == ["cam"]
+phones = {"p%d" % i: [NOW - 1800 + i * 10] for i in range(6)}
+assert detectors.simultaneous_drop(dict(sig(phones), mobile=set(phones)), TOGETHER) == [], "phones that drop together are not a common cause"
+fixed = {"d%d" % i: [NOW - 1800 + i * 10] for i in range(5)}
+found = detectors.simultaneous_drop(dict(sig({**phones, **fixed}, devices=20), mobile=set(phones)), TOGETHER)
+assert len(found) == 1 and found[0].data["ids"] == sorted(fixed) and found[0].data["devices"] == 5, found
+
+# --- the three rows are in the matrix, shown (0.11.0), with a checked source
 for rid in ("H05", "H06", "H07"):
-    assert ROWS[rid]["status"] == "shadow" and ROWS[rid]["family"] in detectors.FAMILIES
+    assert ROWS[rid]["status"] == "active" and ROWS[rid]["family"] in detectors.FAMILIES
 
 print("check_health_detectors OK")

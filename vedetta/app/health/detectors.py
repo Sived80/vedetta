@@ -17,11 +17,13 @@ def conflict(signals: dict, params: dict) -> list[Evidence]:
     return [Evidence("lan", {"ips": len(conflicts), "macs": sum(len(macs) for macs in conflicts.values())})]
 
 
-def _recent(drops, now: float, window_s: float) -> dict[str, list[float]]:
-    """The drops of each device inside the window that ends now; {} if the signal is not a dict of lists."""
+def _recent(signals: dict, now: float, window_s: float) -> dict[str, list[float]]:
+    """The drops of each fixed device inside the window that ends now; {} if the signal is not a dict of lists. Phones (signals["mobile"]) are left out: their Wi-Fi sleeps and wakes at a
+    nearly regular pace, and on the real networks every drop that looked like a restart, and most of the ones that came together, were phones."""
+    drops, mobile = signals.get("drops"), signals.get("mobile") or ()
     if not isinstance(drops, dict):
         return {}
-    return {device: [t for t in times if now - window_s <= t <= now] for device, times in drops.items()}
+    return {device: [t for t in times if now - window_s <= t <= now] for device, times in drops.items() if device not in mobile}
 
 
 def periodic_dropout(signals: dict, params: dict) -> list[Evidence]:
@@ -30,7 +32,7 @@ def periodic_dropout(signals: dict, params: dict) -> list[Evidence]:
     if not isinstance(now, (int, float)):
         return []
     found = []
-    for device, times in _recent(signals.get("drops"), now, params["window_s"]).items():
+    for device, times in _recent(signals, now, params["window_s"]).items():
         if len(times) < params["min_drops"]:
             continue
         gaps = [b - a for a, b in zip(times, times[1:])]
@@ -42,12 +44,13 @@ def periodic_dropout(signals: dict, params: dict) -> list[Evidence]:
 
 
 def simultaneous_drop(signals: dict, params: dict) -> list[Evidence]:
-    """Many devices that drop in the same short stretch of time (a common cause): at least min_devices, and at least min_fraction of the devices that are known, inside one bin of bin_s seconds, within the last window_s."""
+    """Many fixed devices that drop in the same short stretch of time (a common cause): at least min_devices, and at least min_fraction of the fixed devices that are known (signals["devices"]), inside one bin of
+    bin_s seconds, within the last window_s."""
     now, devices = signals.get("now"), signals.get("devices")
     if not isinstance(now, (int, float)) or not isinstance(devices, int) or devices < 1:
         return []
     bins: dict[int, set] = {}
-    for device, times in _recent(signals.get("drops"), now, params["window_s"]).items():
+    for device, times in _recent(signals, now, params["window_s"]).items():
         for t in times:
             bins.setdefault(int(t // params["bin_s"]), set()).add(device)
     group = max(bins.values(), key=len, default=set())

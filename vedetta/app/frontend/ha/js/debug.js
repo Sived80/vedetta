@@ -23,7 +23,7 @@ function setDebug(on) {
   ROOT.toggleAttribute("data-debug", DEBUG);
   try { localStorage.setItem("vedetta-debug", DEBUG ? "1" : "0"); } catch (e) { /* ignore */ }
   showDebugBadge();
-  mountHealth();                                       // the network health screen exists only while the debug mode is on
+  mountHealth();                                       // the network health asks again: with the findings in shadow, or without them
   snack(t(DEBUG ? "js.ha.debug.on" : "js.ha.debug.off"), { kind: DEBUG ? "warning" : "success", ms: 3500 });
   S.tiles.forEach(function (el, id) { updateTile(id); });
   const od = S.open && S.devices.get(S.open);

@@ -96,7 +96,7 @@ export function buildNetwork() {
     if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
   });
   mountTile();
-  mountHealth();                                       // only in the debug mode: a second screen with the network health
+  mountHealth();                                       // a second screen with the network health
   // Brands: the list opens on hover (CSS) and, on touch screens, with a tap on the block (.expanded).
   $("brands").addEventListener("click", function () { this.classList.toggle("expanded"); });
 }

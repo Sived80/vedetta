@@ -5,7 +5,7 @@ import { openMore } from "./more-info.js";
 import { simAnswer, simNext, simOn, simPreview, simScenario } from "./health-sim.js";
 
 // ------------------------------------------------------------ network health: the "Health" screen of the Network card
-// Dormant: it exists only while the debug mode is on (three taps on the title). The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
+// For everyone since 0.11.0, with the findings of the rules that are shown; while the debug mode is on (three taps on the title) the ones in shadow too, and the made-up scenarios. The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
 // all is well); a tile of the four opens, from its own place, the big tile with its findings; a row opens the detail of one finding: who (name and IP), what, when, what to do. The data comes from /api/ha/health, the judge runs on the server in any case.
 var HC_POLL_MS = 30000, HC_HIDDEN_KEY = "vedetta-health-hidden";
 var HC_LEVEL_ICON = { bad: "alert-circle", warn: "alert", ok: "check-circle" };
@@ -28,7 +28,7 @@ function hcMigrateHidden() {
 }
 // "Coming soon": only in the preview of the public demo, in text and shape, never by colour alone.
 function hcSoon() { return simPreview() ? '<span class="hs-soon">' + esc(t("js.ha.health.soon")) + "</span>" : ""; }
-function hcDebugOn() { return ROOT.hasAttribute("data-debug") || simPreview(); }
+function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
 function hcModel() { return healthTiles(HC.findings, HC.hidden); }
 function hcTile(key) { return hcModel().filter(function (x) { return x.key === key; })[0]; }
 function hcFind(tile, id) { return tile.finds.concat(tile.hid).filter(function (f) { return f.id === id; })[0]; }
@@ -243,6 +243,7 @@ function hcRemove() {
 function hcPaintSim() {
   const b = HC.screen && HC.screen.querySelector(".hs-sim"), on = simOn();
   if (!b) return;
+  b.hidden = !hcDebugOn();
   b.classList.toggle("on", on);
   b.textContent = on ? t("js.ha.health.sim.on", { name: t("js.ha.health.sim." + simScenario()) }) : t("js.ha.health.sim.off");
 }
@@ -251,12 +252,13 @@ function hcSimStep() {
 }
 function hcRepaint() {
   if (!HC.stack) return;
+  hcPaintSim();
   hcPaintTiles();
   if (hcAt() === "2") hcPaintDetail();
 }
+// The findings of the rules that are shown; in the debug mode the ones in shadow too (?shadow=1).
 function hcRefresh() {
-  if (!hcDebugOn()) return;
-  (simOn() ? Promise.resolve(simAnswer()) : api("/api/ha/health")).then(function (x) {
+  (simOn() ? Promise.resolve(simAnswer()) : api("/api/ha/health" + (hcDebugOn() ? "?shadow=1" : ""))).then(function (x) {
     HC.running = !!(x && x.running); HC.findings = (x && x.findings) || []; HC.report = (x && x.report) || null;
     if (!simOn()) HC.hidden = (x && x.hidden) || [];
     if (!HC.running) { hcRemove(); return; }
@@ -266,10 +268,9 @@ function hcRefresh() {
   }).catch(function () { /* the next round asks again */ });
 }
 
-// Called after the card is built and when the debug mode is turned on or off.
+// Called after the card is built and when the debug mode is turned on or off (the findings in shadow come and go with it).
 export function mountHealth() {
   if (HC.stack && !document.contains(HC.stack)) HC.stack = HC.screen = HC.tilesEl = HC.detail = HC.rot = null;        // the card was rebuilt: the old screens went with it
-  if (!hcDebugOn()) { hcRemove(); clearInterval(HC.timer); HC.timer = 0; return; }
   if (HC.running && !HC.stack) hcBuild();
   hcRefresh();
   if (!HC.timer) HC.timer = setInterval(function () { if (!document.hidden) hcRefresh(); }, HC_POLL_MS);

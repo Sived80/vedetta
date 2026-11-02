@@ -40,8 +40,15 @@ assert len(snap) == 1 and snap[0]["rule"] == "H20" and snap[0]["subject"] == "la
 assert "192.168" not in repr(snap) and "aa:bb" not in repr(snap) and "192.168" not in repr(hv.summary(shown))
 
 # --- the drops come from the presence history of the last day
-read = hv.read_signals(NOW, presence=lambda since: [("a", True, since + 10), ("a", False, since + 20), ("b", True, since + 30)], latency=lambda now: {"gateway": [(NOW - 60, 0.5)]})
-assert read["now"] == NOW and read["drops"] == {"a": [NOW - hv.SIGNAL_WINDOW_S + 20]} and read["devices"] == 2, read
+read = hv.read_signals(NOW, presence=lambda since: [("a", True, since + 10), ("a", False, since + 20), ("b", True, since + 30)], latency=lambda now: {"gateway": [(NOW - 60, 0.5)]}, cards=lambda: [{"id": "a"}, {"id": "b"}])
+assert read["now"] == NOW and read["drops"] == {"a": [NOW - hv.SIGNAL_WINDOW_S + 20]} and read["devices"] == 2 and read["mobile"] == set(), read
+
+# --- phones are named (the rules on drops leave them out) and not counted among the devices; a fixed device that is online now counts even without an event in the day
+cards = [{"id": "a", "is_mobile": True, "online": True}, {"id": "b", "online": False}, {"id": "c", "online": True}, {"id": "d", "online": False}]
+read = hv.read_signals(NOW, presence=lambda since: [("a", True, since + 10), ("a", False, since + 20), ("b", True, since + 30)], latency=lambda now: {}, cards=lambda: cards)
+assert read["mobile"] == {"a"} and read["devices"] == 2, read
+gone = hv.read_signals(NOW, presence=lambda since: [("x", True, since + 10), ("x", False, since + 20)], latency=lambda now: {}, cards=lambda: [{"id": "b", "online": True}])
+assert gone["drops"] == {} and gone["devices"] == 1, "the history of a device without a card any more (deleted, or merged into another) is not judged: the page could not even name it"
 
 # --- the latency of the gateway: the device is the one that has the address of the default route; no route or no such device, nothing
 got = hv.gateway_latency(NOW, gateway=lambda: "10.0.0.1", devices=lambda: [{"id": "x", "ip": "10.0.0.9"}, {"id": "gw", "ip": "10.0.0.1"}], points=lambda device, a, b: [(a, 0.5), (b, 0.6)] if device == "gw" else [])
@@ -58,16 +65,23 @@ read["conflicts"]["10.0.0.5"].append("m3")
 assert hv.scanner.arp_conflicts["10.0.0.5"] == ["m1", "m2"], "the signals are a copy"
 hv.scanner.arp_conflicts.clear()
 
-# --- the page: every active finding, the ones in shadow included (the page that asks is the debug one), with the names and addresses resolved from the cards
+# --- the page: every active finding of the rules that are shown, the ones in shadow too when the debug mode asks (shadow=True), with the names and addresses resolved from the cards
 hv.scanner.arp_conflicts["10.0.0.5"] = ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02"]
 cards = [{"id": "a", "name": "Stampante", "ip": "10.0.0.5", "mac": "AA:BB:CC:00:00:01"}]
 sh = Engine([dict(ROW, status="shadow")])
 hv.judge_once(sh, CONFLICT, 0)
 hv.judge_once(sh, CONFLICT, 10)
-got = hv.page(sh, devices=lambda: cards, gateway=lambda: None)
+assert hv.page(sh, devices=lambda: cards, gateway=lambda: None) == [], "without the debug mode a rule in shadow shows nothing"
+got = hv.page(sh, devices=lambda: cards, gateway=lambda: None, shadow=True)
 assert len(got) == 1 and got[0]["id"] == "H20:10.0.0.5" and got[0]["shadow"] is True and got[0]["tile"] == "addr", got
 assert got[0]["devs"][0] == {"id": "a", "name": "Stampante", "ip": "10.0.0.5"} and got[0]["devs"][1]["mac"] == "aa:bb:cc:00:00:02", got[0]["devs"]
 assert hv.page(None) == [] and hv.snapshot(sh) == [], "no engine, nothing; and the snapshot of the event still hides the shadow"
+shown = Engine([dict(ROW, status="active")])
+hv.judge_once(shown, CONFLICT, 0)
+hv.judge_once(shown, CONFLICT, 10)
+assert [f["id"] for f in hv.page(shown, devices=lambda: cards, gateway=lambda: None)] == ["H20:10.0.0.5"], "a rule that is shown reaches everyone"
+log = [{"rule": "H20", "last_seen": 300, "shadow": True}, {"rule": "H05", "last_seen": 200, "shadow": False}]
+assert hv.report(400, past=lambda since: log)["last_problem"] == {"rule": "H05", "end": 200} and hv.report(400, past=lambda since: log, shadow=True)["last_problem"]["rule"] == "H20",     "the last problem of the report is one of a rule that is shown, unless the debug mode asks"
 hv.scanner.arp_conflicts.clear()
 
 # --- the report of a quiet network: when the judge looked last and the last problem of the log (the one that ended most recently), none if the log is empty

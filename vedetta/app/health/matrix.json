@@ -51,7 +51,7 @@
     "message_key": "health.h05",
     "remedy_key": "health.h05.remedy",
     "detectability": "D1",
-    "status": "shadow",
+    "status": "active",
     "since": "next",
     "existence": {
       "grade": "B",
@@ -90,7 +90,7 @@
       "window_s": 3600,
       "bin_s": 120,
       "min_devices": 5,
-      "min_fraction": 0.25
+      "min_fraction": 0.1
     },
     "signals": [
       "PRES"
@@ -101,7 +101,7 @@
     "message_key": "health.h06",
     "remedy_key": "health.h06.remedy",
     "detectability": "D1",
-    "status": "shadow",
+    "status": "active",
     "since": "next",
     "existence": {
       "grade": "B",
@@ -154,7 +154,7 @@
     "message_key": "health.h07",
     "remedy_key": "health.h07.remedy",
     "detectability": "D1",
-    "status": "shadow",
+    "status": "active",
     "since": "next",
     "existence": {
       "grade": "B",

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0 · Polso
+**Polso** is Italian for *pulse*: Vedetta now takes the pulse of your network, for everyone.
+- **The network doctor.** A new tile of the Network card, *Network health*, opens a screen with four checks: two devices on the same address, a device that restarts again and again, many devices that drop together (a switch, an access point, the power), and a gateway that suddenly answers slower. Each finding says who, what, since when and what to do. Phones are left out of the checks on drops: their Wi-Fi sleeps on purpose. It only reads what Vedetta already measures and sends nothing to your devices.
+- **Networks wider than a /24.** On a /22 or wider, the gateway tile shows the real subnet and counts every device in it, and the devices Home Assistant sees on that network are one network, not one per /24.
+
+**Thank you** to everyone who shared an export, and to the people who reported the /24 in Discussion #15.
+
 ## 0.10.0 · Ponte
 **Ponte** is Italian for *bridge*: Home Assistant and Vedetta, and the networks Vedetta cannot reach on its own.
 - **Devices on other networks.** If the integration of your router in Home Assistant tracks the devices of a network Vedetta does not scan (a VLAN for smart-home devices, a guest network), Vedetta can now show them: menu → *Networks seen by Home Assistant*. It is off until you turn it on, it reads only what Home Assistant already knows (address, MAC, name, connected or away) and it never probes these devices. The ones you adopt get a card like the others, in the group of their type, and their name, type and brand can be changed.

@@ -117,6 +117,7 @@ Vedetta speaks **English, Italian, Czech and German** (thanks to the community f
 | [Privacy and safety](docs/PRIVACY.md) | What stays local, exports, reporting a mistake |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | The first 24 hours, common problems |
 | [Roadmap](docs/ROADMAP.md) | What is done, with date and version, and what is planned |
+| [How Vedetta is tested](docs/TESTING.md) | Real exports replayed, a virtual LAN, the numbers of the last release |
 | [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
 | [Changelog](vedetta/CHANGELOG.md) | Every version |
 

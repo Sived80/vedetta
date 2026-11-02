@@ -1,6 +1,7 @@
 """The scenarios: what happens to the cards of Vedetta when the virtual phones do the things that produce doubles or wrong names. Each scenario builds its own
 network and a fresh Vedetta, drives the phones, and returns what the cards say; the expectations are in the docstrings and judged by run_scenarios.py."""
 import random
+import sys
 
 from tools.lansim import phases
 from tools.lansim.lan import SUBNET, Lan
@@ -178,6 +179,7 @@ def s13_any_pair(code_dir: str) -> dict:
 
 
 CAMERA_MAC = "5a:00:00:00:00:41"
+RELAY_MAC = "c6:00:00:00:00:52"
 
 
 def _found(output: str, address: str) -> bool:
@@ -214,4 +216,48 @@ def s12_camera_ignores_broadcast(code_dir: str) -> dict:
         return {"vedetta_hosts_found": found, "techniques": techniques}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+SHARED_GAPS = [3, 4, 3, 3, 4, 3, 4, 3, 3, 4, 3, 3, 4]   # the judgments in a row the second device was quiet on a real network (01/11 export)
+
+
+def s14_shared_address(code_dir: str) -> dict:
+    """A camera and a relay on the same address; the relay does not answer every scan (it leaves for 3 or 4 judgments at a time, as on a real network), then is given another address. Each
+    judgment runs the real arp-scan of Vedetta and its own parsing, and hands the conflicts to the judge of the rule H20 as it ships and as it was in 0.10.0 (clear_cycles 3). Expected: the rule as
+    it ships opens one finding and keeps it across the gaps, and closes it once the relay is gone for good; the old one closes and opens again at every gap."""
+    sys.path.insert(0, code_dir)
+    from app.health import engine, matrix
+    from app.scan import scan_arp
+    shipped = next(r for r in matrix.load() if r["id"] == "H20")
+    judges = {"shipped": engine.Engine([shipped]), "0.10.0": engine.Engine([dict(shipped, params={"min_cycles": 2, "clear_cycles": 3})])}
+    changes: dict[str, list[str]] = {k: [] for k in judges}
+    seen = []
+    with Lan() as lan:
+        lan.add_client("cam", CAMERA_MAC, 52)
+        lan.add_client("relay", RELAY_MAC, 52)
+        now = 0
+
+        def judge() -> None:
+            nonlocal now
+            scan_arp.parse_arp_scan(lan.probe_output("arp-scan", "-I", "e0", "-x", "--localnet"))
+            seen.append(len(scan_arp.arp_conflicts))
+            for key, judge_ in judges.items():
+                changes[key] += [c.change for c in judge_.judge({"conflicts": dict(scan_arp.arp_conflicts)}, now)]
+            now += 120
+
+        for gap in SHARED_GAPS:
+            lan.link("relay", True)
+            for _ in range(5):
+                judge()
+            lan.link("relay", False)
+            for _ in range(gap):
+                judge()
+        lan.link("relay", True)
+        judge()
+        open_before_fix = {k: [f.state for f in j.findings()] for k, j in judges.items()}
+        lan.link("relay", False)
+        for _ in range(shipped["params"]["clear_cycles"]):
+            judge()
+    return {"conflict_seen_in_scans": "%d of %d" % (sum(1 for n in seen if n), len(seen)), "changes": changes, "open_before_fix": open_before_fix,
+            "open_after_fix": {k: [f.state for f in j.findings()] for k, j in judges.items()}}
+
+
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S14": s14_shared_address, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

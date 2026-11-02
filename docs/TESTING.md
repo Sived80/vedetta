@@ -4,15 +4,16 @@ Vedetta looks at your home network, so a mistake is a wrong name on a card, or w
 
 [← Back to the README](../README.md)
 
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-numbers-dark.svg"><img src="images/testing-numbers-light.svg" alt="300+ automatic tests, 40 real exports, 4 home networks, 14 network scenarios" width="100%"></picture>
+
 ## The way of a change
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-pipeline-dark.svg"><img src="images/testing-pipeline-light.svg" alt="The way of a change: test first, 300+ tests, real networks, virtual LAN, CI, debug at home, release" width="100%"></picture>
 
-- **Test first:** every fix starts as a test that fails.
-- **300+ automatic tests** on every change (`python tools/gate.py`).
-- **Real networks:** exports shared by users are replayed, old code against new. None is kept in the repository.
-- **Virtual LAN:** a small network of routers, phones and plugs with the real Vedetta inside (`tools/lansim`), for what is hard to catch at home.
-- **CI on Linux**, then a **debug copy** of Vedetta at home before the release.
+
+### The virtual LAN, by problem
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-scenarios-dark.svg"><img src="images/testing-scenarios-light.svg" alt="Scenarios of the virtual LAN: doubled phone cards 5, names taken from another device 4, a camera hidden from the scan 1, the network doctor 4" width="100%"></picture>
 
 ## An example: the network doctor of 0.11.0
 

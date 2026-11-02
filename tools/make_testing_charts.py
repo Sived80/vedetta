@@ -22,6 +22,10 @@ DETECTION = [("H06", "6 devices drop together", 2, "1-2 min"), ("H07", "Gateway 
 # The way of a change: (label, icon of the app's own set). Blue from light to dark, one hue: the steps go one way, towards the release.
 STEPS = [("Test first", "pencil"), ("300+ tests", "check"), ("Real networks", "history"), ("Virtual LAN", "lan"), ("CI", "server"), ("Debug at home", "home"), ("Release", "star")]
 RAMP = {"light": ["#5598e7", "#3987e5", "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281"], "dark": ["#104281", "#184f95", "#1c5cab", "#256abf", "#2a78d6", "#3987e5", "#5598e7"]}
+# The headline numbers (rounded down): tests of tools/gate.py, different exports by content, home networks, scenarios of tools/lansim/scenarios.py.
+NUMBERS = [("300+", "automatic tests"), ("40", "real exports"), ("4", "home networks"), ("14", "network scenarios")]
+# The scenarios of the virtual LAN by the problem they reproduce (tools/lansim/scenarios.py): (label, icon, how many).
+SCENARIOS = [("Doubled phone cards", "cellphone", 5), ("Names taken from another device", "pencil", 4), ("A camera hidden from the scan", "cctv", 1), ("The network doctor", "wifi-arrow-up-down", 4)]
 ICONS = Path(__file__).resolve().parent.parent / "vedetta" / "app" / "static" / "ha" / "icons.js"
 
 
@@ -95,10 +99,33 @@ def pipeline(t: dict, theme: str) -> str:
     return svg(w, cy + r + 44, t, body, "The way of a change: test first, 300+ tests, real networks, virtual LAN, CI, debug at home, release")
 
 
+def numbers(t: dict, theme: str) -> str:
+    w, cols = 980, len(NUMBERS)
+    cell = (w - 48) / cols
+    body = ""
+    for i, (value, label) in enumerate(NUMBERS):
+        cx = 24 + cell * i + cell / 2
+        body += text(cx, 70, value, RAMP[theme][-2 if theme == "light" else -1], 46, "middle", 700) + text(cx, 100, label, t["ink2"], 14, "middle")
+    return svg(w, 124, t, body, ", ".join(f"{v} {l}" for v, l in NUMBERS))
+
+
+def scenarios(t: dict, theme: str) -> str:
+    w, left, top, row = 760, 330, 24, 52
+    most = max(n for _l, _i, n in SCENARIOS)
+    scale = (w - left - 70) / most
+    body = ""
+    for i, (label, icon, n) in enumerate(SCENARIOS):
+        y = top + i * row
+        body += f"<circle cx='42' cy='{y + 16}' r='16' fill='{t['after']}'/><path d='{icon_path(icon)}' fill='#ffffff' transform='translate(32,{y + 6}) scale({20 / 24})'/>"
+        body += text(70, y + 21, label, t["ink"], 14) + bar(left, y + 6, n * scale, 20, t["after"]) + text(left + n * scale + 8, y + 21, n, t["ink"], 14, weight=600)
+    return svg(w, top + row * len(SCENARIOS) + 4, t, body, "Scenarios of the virtual LAN by problem: " + ", ".join(f"{l} {n}" for l, _i, n in SCENARIOS))
+
+
 def main() -> None:
-    for name, draw in (("testing-before-after", before_after), ("testing-detection", detection), ("testing-pipeline", pipeline)):
+    themed = (pipeline, numbers, scenarios)          # the ones that take the theme too (the ramp of the blue)
+    for name, draw in (("testing-before-after", before_after), ("testing-detection", detection), ("testing-pipeline", pipeline), ("testing-numbers", numbers), ("testing-scenarios", scenarios)):
         for theme, colours in THEMES.items():
-            (OUT / f"{name}-{theme}.svg").write_text(draw(colours, theme) if draw is pipeline else draw(colours), encoding="utf-8")
+            (OUT / f"{name}-{theme}.svg").write_text(draw(colours, theme) if draw in themed else draw(colours), encoding="utf-8")
             print("written", f"docs/images/{name}-{theme}.svg")
 
 

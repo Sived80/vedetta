@@ -1,11 +1,11 @@
-import { $, REDUCED, ago, api, esc, icon, t } from "./core.js";
+import { $, REDUCED, ago, api, esc, icon, subnetOf, t } from "./core.js";
 import { S } from "./core-ui.js";
 import { deepOneBusy } from "./deep.js";
 
 // ------------------------------------------------------------ rotating tile of the Network card
 // One tile that shows, in turn, a datum of the network: LAN latency, gateway, recognised devices, Home Assistant link.
 // A tile with no data to show is left out. It turns by itself, stops under the pointer, and a click goes to the next one.
-var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8, SUBNET_HOSTS = 254;
+var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8;
 var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
 var shown = 0, hold = false, timer = 0;
 // One more tile that another part of the page offers (the network health, only in the debug mode): `extra()` returns {id, tip, html, open(el), attention} or null. A tile with `open` does that only when
@@ -95,11 +95,11 @@ function latencyTile(gw) {
 }
 
 function gatewayTile(gw) {
-  const m = gw && /^(\d+\.\d+\.\d+)\.\d+$/.exec(gw.ip || "");
-  if (!m) return null;
-  const used = S.list.filter(function (d) { return d.ip && d.ip.indexOf(m[1] + ".") === 0; }).length, free = Math.max(0, SUBNET_HOSTS - used);
-  const subnet = m[1] + ".0/24";
-  const pct = Math.max(0, Math.min(100, used / SUBNET_HOSTS * 100)).toFixed(1);
+  const net = gw && subnetOf(S.roles && S.roles.network, gw.ip);       // the real network of the LAN, a /22 too (Discussion #15)
+  if (!net) return null;
+  const used = S.list.filter(function (d) { return net.has(d.ip); }).length, free = Math.max(0, net.hosts - used);
+  const subnet = net.label;
+  const pct = Math.max(0, Math.min(100, used / net.hosts * 100)).toFixed(1);
   const foot = '<div class="bar-leg"><span><b>' + used + '</b> ' + esc(t("js.ha.tile.used")) + '</span><span>' + esc(t("js.ha.tile.free", { n: free })) + '</span></div>' +
     '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
   return {

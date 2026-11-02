@@ -7,7 +7,7 @@ import time
 
 from fastapi import APIRouter, HTTPException, Request
 
-from .. import i18n
+from .. import i18n, netutil
 from ..ha import ha_data, ha_registry, passive_service, passive_view
 from ..state import state
 from ..storage import passive_store
@@ -27,7 +27,7 @@ def _known() -> tuple[set, set]:
 def payload(data: dict) -> dict:
     macs, ips = _known()
     return {"enabled": bool(data["enabled"]), "available": bool(ha_registry.token()), "read_at": data["read_at"], "error": data["error"],
-            "adopted": len(data["adopted"]), "candidates": passive_view.candidates(data, macs, ips)}
+            "adopted": len(data["adopted"]), "candidates": passive_view.candidates(data, macs, ips, netutil.last_network)}
 
 
 @router.get("/api/ha/networks")

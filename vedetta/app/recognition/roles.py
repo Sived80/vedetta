@@ -19,6 +19,7 @@ import ipaddress
 import re
 import time
 
+from .. import netutil
 from ..scan import dhcp, discovery, touch_policy
 from ..applog import logger
 from .identity import default_gateway
@@ -166,8 +167,13 @@ def snapshot() -> dict:
             "internet": _rt.internet["data"], "types": _rt.roles.get("types") or {}}
 
 
+def page_view() -> dict:
+    """What the page gets (summary and event): the snapshot and the local network, from which the gateway tile takes its size (it may be wider than a /24). The export keeps the snapshot only."""
+    return {**snapshot(), "network": netutil.last_network}
+
+
 def event() -> dict:
-    return {"type": "roles", **snapshot()}
+    return {"type": "roles", **page_view()}
 
 
 def roles_for(ip: str | None) -> list[str]:
@@ -242,9 +248,8 @@ def _untouchable_ips() -> frozenset:
 
 async def _start_discovery_jobs(state):
     own_ip = None            # set below on some paths only
-    from ..netutil import get_local_network  # late import: avoids cycles at import time
     try:
-        _, own_ip = await get_local_network()
+        _, own_ip = await netutil.get_local_network()
     except Exception:
         own_ip = None
     upnp_job = discovery.ssdp_devices(own_ip, skip=_untouchable_ips())

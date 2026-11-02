@@ -158,6 +158,19 @@ export function ipKey(ip) {
   const p = String(ip || "").split(".");
   return ((+p[0] || 0) * 16777216) + ((+p[1] || 0) * 65536) + ((+p[2] || 0) * 256) + (+p[3] || 0);
 }
+const IPV4 = /^\d+\.\d+\.\d+\.\d+$/;
+// The local network around the gateway `gwIp`: the one the server read ("10.20.0.0/22", it may be wider than a /24) or, without it (an older server, a reading that failed), the /24 of the
+// gateway as before; also when the network read does not hold the gateway. Its label, how many addresses a device can take, and whether an address is inside it. null without a gateway address.
+function block(ip, bits) {
+  const size = Math.pow(2, 32 - bits), base = Math.floor(ipKey(ip) / size) * size;
+  const label = [16777216, 65536, 256, 1].map(function (d) { return Math.floor(base / d) % 256; }).join(".") + "/" + bits;
+  return { label: label, hosts: size - 2, has: function (other) { return IPV4.test(other || "") && Math.floor(ipKey(other) / size) * size === base; } };
+}
+export function subnetOf(cidr, gwIp) {
+  if (!IPV4.test(gwIp || "")) return null;
+  const m = /^(\d+\.\d+\.\d+\.\d+)\/(\d+)$/.exec(cidr || ""), read = m && +m[2] >= 8 && +m[2] <= 30 ? block(m[1], +m[2]) : null;
+  return read && read.has(gwIp) ? read : block(gwIp, 24);
+}
 // The short words of the state of analysis of a card (info = S.analysis[id]), or "" when it is identified.
 export function analysisText(info) { return info ? t("js.ha.an.short." + info.state) : ""; }
 export function stateText(d) {

@@ -187,6 +187,13 @@ check(macs == ["02:00:5e:10:00:21", "02:00:5e:10:00:31", "02:00:5e:10:00:71"], "
 check([r["net"] for r in offer][:2] == ["198.51.100.0/24"] * 2 and offer[-1]["net"] is None and not any(r["same_net"] for r in offer), "each client says its network, and that it is not one where Vedetta has devices")
 check(passive_view.candidates(data, set(), {"198.51.100.200"})[0]["same_net"] is True, "a client on a network where Vedetta already has a device is said to be on it")
 
+# ---- a local network wider than a /24 (Discussion #15): its clients are one network, not one per /24; an address outside it keeps its /24, as without the local network
+check(passive_view._net("198.51.101.7", "198.51.100.0/22") == "198.51.100.0/22" and passive_view._net("198.51.100.9", "198.51.100.0/22") == "198.51.100.0/22", "two /24 of a /22 are the same network")
+check(passive_view._net("192.0.2.5", "198.51.100.0/22") == "192.0.2.0/24" and passive_view._net("198.51.101.7", None) == "198.51.101.0/24", "outside the local network, or without it, the /24 of the address")
+check(passive_view._net("198.51.101.7", "not a network") == "198.51.101.0/24" and passive_view._net(None, "198.51.100.0/22") is None, "a local network that cannot be read changes nothing; no address, no network")
+wide = passive_view.candidates(data, set(), {"198.51.103.200"}, local="198.51.100.0/22")
+check([r["net"] for r in wide][:2] == ["198.51.100.0/22"] * 2 and all(r["same_net"] for r in wide[:2]), "on a /22 a device of Vedetta on another /24 of it puts the clients on its network")
+
 # ---- no probe: every socket forbidden, the whole path still works
 def forbidden(*a, **k):
     raise AssertionError("a socket was used")

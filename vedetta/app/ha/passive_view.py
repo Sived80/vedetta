@@ -2,6 +2,7 @@
 
 Pure (they take what passive_store keeps): no network, no disk. A passive device has no ports, no response time and no analysis: those fields are empty, and `passive` tells the page which parts of the
 card to leave out. Name, type and brand come from Home Assistant, unless the user chose them: then the choice wins."""
+import contextlib
 import ipaddress
 
 from .. import i18n
@@ -69,17 +70,17 @@ def ip_key(ip: str | None) -> int:
         return 1 << 40
 
 
-def candidates(data: dict, known_macs: set, known_ips: set) -> list[dict]:
+def candidates(data: dict, known_macs: set, known_ips: set, local: str | None = None) -> list[dict]:
     """The clients Home Assistant sees that can be adopted: not adopted yet, and not a device Vedetta already has (by MAC or by address).
-    Each row says whether it is on a network where Vedetta has devices (`same_net`), so the page can name the ones that are not."""
-    own = {_net(ip) for ip in known_ips} - {None}
+    Each row says whether it is on a network where Vedetta has devices (`same_net`), so the page can name the ones that are not. `local`: the network Vedetta is on (see _net)."""
+    own = {_net(ip, local) for ip in known_ips} - {None}
     out = []
     for mac, row in data["candidates"].items():
         if mac in data["adopted"] or mac.upper() in known_macs or (row.get("ip") and row["ip"] in known_ips):
             continue
-        out.append({**row, "id": passive_store.id_of(mac), "net": _net(row.get("ip")), "same_net": _net(row.get("ip")) in own,
+        out.append({**row, "id": passive_store.id_of(mac), "net": _net(row.get("ip"), local), "same_net": _net(row.get("ip"), local) in own,
                     "type": _guess_type(mac, row)})
-    return sorted(out, key=lambda r: (_net_order(data, r), ip_key(r["ip"]), r["mac"]))
+    return sorted(out, key=lambda r: (_net_order(data, r, local), ip_key(r["ip"]), r["mac"]))
 
 
 def _guess_type(mac: str, row: dict) -> str:
@@ -96,19 +97,31 @@ def evidence(item: dict) -> dict:
             for key, field in (("name", "name"), ("brand", "brand"), ("group", "type"))}
 
 
-def _net(ip: str | None) -> str | None:
-    """The /24 of an address ("192.0.2.0/24"): the network the client is on, as far as the address says (the VLAN itself is not in the data)."""
+def _net(ip: str | None, local: str | None = None) -> str | None:
+    """The network the client is on, as far as the address says: the local network of Vedetta when the address is inside it ("10.20.0.0/22", it may be wider than a /24),
+    otherwise the /24 of the address ("192.0.2.0/24": the size of a VLAN is not in the data)."""
     try:
-        return str(ipaddress.ip_network(ip + "/24", strict=False)) if ip else None
+        address = ipaddress.ip_address(ip) if ip else None
     except ValueError:
         return None
+    network = _network(local)
+    if address is None:
+        return None
+    return str(network if network and address in network else ipaddress.ip_network(ip + "/24", strict=False))
 
 
-def _net_order(data: dict, row: dict) -> int:
+def _network(local: str | None) -> ipaddress.IPv4Network | ipaddress.IPv6Network | None:
+    """The local network as netutil read it, None when there is none or it cannot be read."""
+    with contextlib.suppress(ValueError, TypeError):
+        return ipaddress.ip_network(local, strict=False)
+    return None
+
+
+def _net_order(data: dict, row: dict, local: str | None = None) -> int:
     """The networks in the order Home Assistant lists them (the first client of each decides), the ones without an address last."""
     order: list = []
     for r in data["candidates"].values():
-        n = _net(r.get("ip"))
+        n = _net(r.get("ip"), local)
         if n and n not in order:
             order.append(n)
     return order.index(row["net"]) if row["net"] in order else len(order)

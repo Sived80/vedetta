@@ -1,6 +1,7 @@
 """Draws the pictures of docs/TESTING.md as SVG, a light and a dark one each (the page picks the one of the reader's theme): the way a change goes, the findings of the network
 doctor on real exports before and after 0.11.0, and how soon a fault added to real history is raised. The numbers are written here; where they come from is said next to each.
     python tools/make_testing_charts.py          Output: docs/images/testing-*.svg"""
+import re
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -18,7 +19,15 @@ EXPORTS = 28
 BEFORE_AFTER = [("H05", "Restarts that repeat", 27, 1), ("H06", "Devices that drop together", 5, 0), ("H07", "A slower gateway", 0, 0)]
 # A fault added to the real history of 3 networks: minutes until the finding is raised (the slowest of the three) - tools/replay_health_engine.py --inject.
 DETECTION = [("H06", "6 devices drop together", 2, "1-2 min"), ("H07", "Gateway answers 3 ms slower", 13, "10-13 min"), ("H05", "A device restarts every 10 min", 44, "43-44 min")]
-STEPS = ["Test written first", "326 automatic tests", "Real exports replayed", "Virtual LAN", "CI on Linux", "Debug app at home", "Release"]
+# The way of a change: (label, icon of the app's own set). Blue from light to dark, one hue: the steps go one way, towards the release.
+STEPS = [("Test first", "pencil"), ("300+ tests", "check"), ("Real networks", "history"), ("Virtual LAN", "lan"), ("CI", "server"), ("Debug at home", "home"), ("Release", "star")]
+RAMP = {"light": ["#5598e7", "#3987e5", "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281"], "dark": ["#104281", "#184f95", "#1c5cab", "#256abf", "#2a78d6", "#3987e5", "#5598e7"]}
+ICONS = Path(__file__).resolve().parent.parent / "vedetta" / "app" / "static" / "ha" / "icons.js"
+
+
+def icon_path(name: str) -> str:
+    """The path of an icon of the app (Material Design Icons, viewBox 24 x 24)."""
+    return re.search(r'"%s":\s*"([^"]+)"' % re.escape(name), ICONS.read_text(encoding="utf-8")).group(1)
 
 
 def svg(w: int, h: int, t: dict, body: str, title: str) -> str:
@@ -73,29 +82,23 @@ def detection(t: dict) -> str:
     return svg(w, y + 22, t, body, "How soon the network doctor raises a fault added to real history")
 
 
-def pipeline(t: dict) -> str:
-    w, box_w, gap, top = 980, 120, 18, 64
-    body = text(24, 34, "The way of a change", t["ink"], 18, weight=600)
-    x = 24
-    for i, step in enumerate(STEPS):
-        words = step.split(" ")
-        half = (len(words) + 1) // 2
-        lines = [" ".join(words[:half]), " ".join(words[half:])] if len(step) > 14 else [step]
-        body += f"<rect x='{x}' y='{top}' width='{box_w}' height='64' rx='10' fill='{t['box']}' stroke='{t['after'] if i == len(STEPS) - 1 else t['grid']}'/>"
-        for k, line in enumerate(lines):
-            body += text(x + box_w / 2, top + 37 - 9 * (len(lines) - 1) + 18 * k, line, t["ink"], 13, "middle")
-        if i < len(STEPS) - 1:
-            ax = x + box_w + 3
-            body += f"<path d='M{ax},{top + 32} h{gap - 8} m-5,-5 l5,5 l-5,5' fill='none' stroke='{t['ink2']}' stroke-width='2'/>"
-        x += box_w + gap
-    body += text(24, top + 96, "A step that fails sends the change back to the start.", t["ink2"], 13)
-    return svg(x - gap + 24, top + 112, t, body, "The way of a change: from the test written first to the release")
+def pipeline(t: dict, theme: str) -> str:
+    w, step, r, cy = 980, 136, 30, 54
+    x0 = (w - step * (len(STEPS) - 1)) / 2
+    ramp = RAMP[theme]
+    body = f"<line x1='{x0}' y1='{cy}' x2='{x0 + step * (len(STEPS) - 1)}' y2='{cy}' stroke='{t['grid']}' stroke-width='4' stroke-linecap='round'/>"
+    for i, (label, icon) in enumerate(STEPS):
+        cx = x0 + i * step
+        body += f"<circle cx='{cx}' cy='{cy}' r='{r + 5}' fill='{t['bg']}'/><circle cx='{cx}' cy='{cy}' r='{r}' fill='{ramp[i]}'/>"
+        body += f"<path d='{icon_path(icon)}' fill='#ffffff' transform='translate({cx - 14},{cy - 14}) scale({28 / 24})'/>"
+        body += text(cx, cy + r + 26, label, t["ink"], 14, "middle", 600 if i == len(STEPS) - 1 else 400)
+    return svg(w, cy + r + 44, t, body, "The way of a change: test first, 300+ tests, real networks, virtual LAN, CI, debug at home, release")
 
 
 def main() -> None:
     for name, draw in (("testing-before-after", before_after), ("testing-detection", detection), ("testing-pipeline", pipeline)):
         for theme, colours in THEMES.items():
-            (OUT / f"{name}-{theme}.svg").write_text(draw(colours), encoding="utf-8")
+            (OUT / f"{name}-{theme}.svg").write_text(draw(colours, theme) if draw is pipeline else draw(colours), encoding="utf-8")
             print("written", f"docs/images/{name}-{theme}.svg")
 
 

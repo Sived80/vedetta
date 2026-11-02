@@ -1,7 +1,11 @@
 """The scenarios: what happens to the cards of Vedetta when the virtual phones do the things that produce doubles or wrong names. Each scenario builds its own
 network and a fresh Vedetta, drives the phones, and returns what the cards say; the expectations are in the docstrings and judged by run_scenarios.py."""
+import os
 import random
+import sqlite3
+import subprocess
 import sys
+import time
 
 from tools.lansim import phases
 from tools.lansim.lan import SUBNET, Lan
@@ -219,7 +223,7 @@ def s12_camera_ignores_broadcast(code_dir: str) -> dict:
 SHARED_GAPS = [3, 4, 3, 3, 4, 3, 4, 3, 3, 4, 3, 3, 4]   # the judgments in a row the second device was quiet on a real network (01/11 export)
 
 
-def s14_shared_address(code_dir: str) -> dict:
+def s14_shared_address(code_dir: str, seed: int = 0) -> dict:
     """A camera and a relay on the same address; the relay does not answer every scan (it leaves for 3 or 4 judgments at a time, as on a real network), then is given another address. Each
     judgment runs the real arp-scan of Vedetta and its own parsing, and hands the conflicts to the judge of the rule H20 as it ships and as it was in 0.10.0 (clear_cycles 3). Expected: the rule as
     it ships opens one finding and keeps it across the gaps, and closes it once the relay is gone for good; the old one closes and opens again at every gap."""
@@ -243,7 +247,9 @@ def s14_shared_address(code_dir: str) -> dict:
                 changes[key] += [c.change for c in judge_.judge({"conflicts": dict(scan_arp.arp_conflicts)}, now)]
             now += 120
 
-        for gap in SHARED_GAPS:
+        rng = random.Random(seed)
+        gaps = SHARED_GAPS if not seed else [rng.randint(2, 5) for _ in SHARED_GAPS]     # a campaign varies the gaps (always shorter than the closing of H20)
+        for gap in gaps:
             lan.link("relay", True)
             for _ in range(5):
                 judge()
@@ -260,4 +266,101 @@ def s14_shared_address(code_dir: str) -> dict:
             "open_after_fix": {k: [f.state for f in j.findings()] for k, j in judges.items()}}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S14": s14_shared_address, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+PLUG_MACS = ["34:94:54:00:00:%02x" % (0x60 + i) for i in range(8)]       # fixed devices (made-up addresses in a plug maker's block); the phones have private MACs
+PHONE_MACS = ["c6:00:00:00:00:%02x" % (0x70 + i) for i in range(3)]
+
+
+def _history(vedetta: VedettaProcess, gateway_ip: str | None = None) -> tuple[list[tuple], list[tuple], set, dict]:
+    """What Vedetta recorded: its presence events (device, mac, online, ts), the latency of the card at `gateway_ip`, the phones, and the card id of each address."""
+    cards = vedetta.cards()
+    by_ip = {c.get("ip"): c["id"] for c in cards}
+    db = sqlite3.connect("file:%s?mode=ro" % os.path.join(vedetta.data, "vedetta.db"), uri=True)
+    events = [(d, None, o, ts) for d, o, ts in db.execute("SELECT device_id, online, ts FROM presence_events ORDER BY ts, id")]
+    latency = db.execute("SELECT ts, ms FROM latency WHERE device_id = ? ORDER BY ts", (by_ip.get(gateway_ip),)).fetchall() if gateway_ip else []
+    return events, latency, {c["id"] for c in cards if c.get("is_mobile")}, by_ip
+
+
+def _judged(code_dir: str, vedetta: VedettaProcess, since: float, gateway_ip: str | None = None) -> dict:
+    """The history of this run judged by the rules on drops and latency as they ship, one judgment every two minutes as in the app (tools/replay_health_engine.py)."""
+    sys.path.insert(0, code_dir)
+    from tools import replay_health_engine
+    events, latency, mobile, by_ip = _history(vedetta, gateway_ip)
+    names = {v: k for k, v in by_ip.items()}
+    got = replay_health_engine.replay(events, latency, mobile, start=since, end=time.time())
+    return {rule: {"raised": [names.get(s, s) for _t, s in r["raised"]], "changes": dict(r["changes"])} for rule, r in got.items()}
+
+
+def _fixed_and_phones(lan: Lan, vedetta: VedettaProcess, plugs: int, phones: int) -> tuple[list[str], list[str]]:
+    """Plugs (fixed devices) at .40 on and Android phones at .60 on, found and added as a user would, and Vedetta told to call a device offline after two missed checks."""
+    plug_names = ["plug%d" % i for i in range(plugs)]
+    phone_names = ["ph%d" % i for i in range(phones)]
+    for i, name in enumerate(plug_names):
+        lan.add_client(name, PLUG_MACS[i], 40 + i)
+    for i, name in enumerate(phone_names):
+        address = lan.add_client(name, PHONE_MACS[i], 60 + i)
+        lan.announce(name, "android", PHONE_MACS[i], address)
+    vedetta.post("/api/settings", {"miss_limit": 2})
+    vedetta.add_found()
+    vedetta.wait_cycles(SETTLE + 1)
+    return plug_names, phone_names
+
+
+def s15_drop_together(code_dir: str) -> dict:
+    """Six plugs and three phones go off together for 90 seconds (a switch or an access point that restarts); later three plugs and the three phones do. Expected: H06 raised once, for the six
+    plugs (the phones are left out); the second time (three fixed devices) nothing."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        plugs, phones = _fixed_and_phones(lan, vedetta, 6, 3)
+        since = time.time()
+        for group in (plugs + phones, plugs[:3] + phones):
+            for name in group:
+                lan.link(name, False)
+            time.sleep(90)
+            for name in group:
+                lan.link(name, True)
+            time.sleep(420)          # the bins of the first fault are left behind before the second one
+        return {"phones_marked": sum(1 for c in vedetta.cards() if c.get("is_mobile")), "judged": _judged(code_dir, vedetta, since)}
+
+
+def s16_restart_every_150s(code_dir: str) -> dict:
+    """A plug and a phone both drop for 60 seconds every 150 seconds, six times (a plug that restarts; a phone whose Wi-Fi sleeps). Expected: H05 raised for the plug, never for the phone."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        plugs, phones = _fixed_and_phones(lan, vedetta, 2, 1)
+        since = time.time()
+        for _ in range(6):
+            lan.link(plugs[0], False)
+            lan.link(phones[0], False)
+            time.sleep(60)
+            lan.link(plugs[0], True)
+            lan.link(phones[0], True)
+            time.sleep(90)
+        vedetta.wait_cycles(2)
+        return {"phones_marked": sum(1 for c in vedetta.cards() if c.get("is_mobile")), "judged": _judged(code_dir, vedetta, since)}
+
+
+def _median(values: list) -> float | None:
+    values = sorted(v for v in values if v is not None)
+    return values[len(values) // 2] if values else None
+
+
+def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 900) -> dict:
+    """The router (the default route of Vedetta's machine) answers in a fraction of a millisecond, then 5 ms later for a quarter of an hour (tc netem on its interface). Expected: H07 raised for the
+    gateway during the slow stretch and not before, then closed. Vedetta keeps one latency sample a minute and H07 wants 60 of them before it judges: the quiet stretch lasts 70 minutes
+    (with 25 minutes, the first run, it rightly said nothing)."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        lan.probe("ip", "route", "replace", "default", "via", SUBNET + ".1")
+        _fixed_and_phones(lan, vedetta, 1, 0)
+        since = time.time()
+        time.sleep(baseline_s)
+        slow_at = time.time()
+        subprocess.run(["ip", "netns", "exec", "ls-router", "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", "5ms"], check=True)
+        time.sleep(slow_s)
+        subprocess.run(["ip", "netns", "exec", "ls-router", "tc", "qdisc", "del", "dev", "e0", "root"], check=False)
+        back_at = time.time()
+        time.sleep(600)
+        latency = _history(vedetta, SUBNET + ".1")[1]
+        return {"latency_ms_median": {"before": _median([ms for ts, ms in latency if ts < slow_at]), "slow": _median([ms for ts, ms in latency if slow_at + 60 <= ts < back_at]),
+                                      "after": _median([ms for ts, ms in latency if ts > back_at + 60])},
+                "samples": len(latency), "slow_from_s": round(slow_at - since), "slow_until_s": round(back_at - since), "judged": _judged(code_dir, vedetta, since, SUBNET + ".1")}
+
+
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S14": s14_shared_address, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

@@ -22,8 +22,8 @@ DETECTION = [("H06", "6 devices drop together", 2, "1-2 min"), ("H07", "Gateway 
 # The way of a change: (label, icon of the app's own set). Blue from light to dark, one hue: the steps go one way, towards the release.
 STEPS = [("Test first", "pencil"), ("300+ tests", "check"), ("Real networks", "history"), ("Virtual LAN", "lan"), ("CI", "server"), ("Debug at home", "home"), ("Release", "star")]
 RAMP = {"light": ["#5598e7", "#3987e5", "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281"], "dark": ["#104281", "#184f95", "#1c5cab", "#256abf", "#2a78d6", "#3987e5", "#5598e7"]}
-# The headline numbers (rounded down): tests of tools/gate.py, different exports by content, home networks, scenarios of tools/lansim/scenarios.py.
-NUMBERS = [("300+", "automatic tests"), ("40", "real exports"), ("4", "home networks"), ("14", "network scenarios")]
+# The headline numbers (rounded down): tests of tools/gate.py, hours of presence history in the exports (different by content) and device cards of the largest export of each network, scenarios of tools/lansim/scenarios.py.
+NUMBERS = [("300+", "automatic tests"), ("4,000+", "hours of real home networks"), ("150+", "real devices"), ("14", "network scenarios")]
 # The scenarios of the virtual LAN by the problem they reproduce (tools/lansim/scenarios.py): (label, icon, how many).
 SCENARIOS = [("Doubled phone cards", "cellphone", 5), ("Names taken from another device", "pencil", 4), ("A camera hidden from the scan", "cctv", 1), ("The network doctor", "wifi-arrow-up-down", 4)]
 ICONS = Path(__file__).resolve().parent.parent / "vedetta" / "app" / "static" / "ha" / "icons.js"

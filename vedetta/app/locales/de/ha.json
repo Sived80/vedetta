@@ -635,7 +635,6 @@
   "js.ha.health.sim.all": "alle vier Arten",
   "js.ha.health.sim.grave": "schwerwiegend",
   "js.ha.health.sim.many": "viele Geräte",
-  "js.ha.health.soon": "Demnächst",
   "js.ha.nets.menu": "Von Home Assistant gesehene Netzwerke",
   "js.ha.nets.title": "Von Home Assistant gesehene Netzwerke",
   "js.ha.nets.sub": "Geräte, die Home Assistant über den Router sieht, auch in anderen Netzwerken",

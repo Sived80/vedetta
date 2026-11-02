@@ -4,7 +4,7 @@
 const SIM_KEY = "vedetta-health-sim";
 export const SIM_SCENARIOS = ["off", "calm", "one", "all", "grave", "many"];
 
-// The preview of the public demo (the page sets window.VEDETTA_PREVIEW = "health"): the feature is shown with all four kinds of finding and no way to change them, marked "coming soon".
+// The preview of the public demo (the page sets window.VEDETTA_PREVIEW = "health"): the feature is shown with all four kinds of finding and no way to change them (the demo has no network to judge).
 export function simPreview() { return window.VEDETTA_PREVIEW === "health"; }
 export function simScenario() {
   if (simPreview()) return "all";

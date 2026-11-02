@@ -635,7 +635,6 @@
   "js.ha.health.sim.all": "all four kinds",
   "js.ha.health.sim.grave": "serious",
   "js.ha.health.sim.many": "many devices",
-  "js.ha.health.soon": "Coming soon",
   "js.ha.export.vlan.adv_title": "Advanced option",
   "js.ha.export.vlan.adv_text": "Only for people with several networks (VLANs). The normal export does not need it: leave it as it is.",
   "js.ha.export.vlan.btn_idle": "Include VLAN data",

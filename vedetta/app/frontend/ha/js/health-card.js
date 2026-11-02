@@ -26,8 +26,6 @@ function hcMigrateHidden() {
   if (!old.length || simOn()) return;
   hcSendHidden(old, []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
 }
-// "Coming soon": only in the preview of the public demo, in text and shape, never by colour alone.
-function hcSoon() { return simPreview() ? '<span class="hs-soon">' + esc(t("js.ha.health.soon")) + "</span>" : ""; }
 function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
 function hcModel() { return healthTiles(HC.findings, HC.hidden); }
 function hcTile(key) { return hcModel().filter(function (x) { return x.key === key; })[0]; }
@@ -76,7 +74,7 @@ function hcCarouselTile() {
   return {
     id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
     html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</span>" +
-      '</div><div class="t-mid">' + hcSoon() + '<div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
+      '</div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
   };
 }
 
@@ -214,7 +212,7 @@ function hcBuild() {
   HC.stack = stack; HC.screen = hcDiv("hs-pane health"); HC.tilesEl = hcDiv("hs-tiles"); HC.detail = hcDiv("hs-pane detail");
   stack.setAttribute("data-at", "0");
   HC.screen.setAttribute("role", "region"); HC.screen.setAttribute("aria-label", t("js.ha.health.title"));
-  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + '</span>' + (simPreview() ? hcSoon() : '<button type="button" class="hs-sim" data-act="sim"></button>') + "</div>";
+  HC.screen.innerHTML = '<div class="hs-d-head"><button type="button" class="hs-x hs-lx" data-act="exit" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><span class="t-l hs-ttl">' + esc(t("js.ha.health.title")) + '</span>' + (simPreview() ? "" : '<button type="button" class="hs-sim" data-act="sim"></button>') + "</div>";
   HC.screen.appendChild(HC.tilesEl);
   HC.detail.setAttribute("role", "region"); HC.detail.setAttribute("aria-label", t("js.ha.health.detail"));
   hero.parentNode.insertBefore(stack, hero);

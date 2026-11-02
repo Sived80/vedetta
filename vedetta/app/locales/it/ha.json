@@ -635,7 +635,6 @@
   "js.ha.health.sim.all": "tutti e quattro",
   "js.ha.health.sim.grave": "grave",
   "js.ha.health.sim.many": "molti dispositivi",
-  "js.ha.health.soon": "In arrivo",
   "js.ha.export.vlan.adv_title": "Opzione avanzata",
   "js.ha.export.vlan.adv_text": "Solo per chi ha più reti (VLAN). Per l'export normale non serve: lascia com'è.",
   "js.ha.export.vlan.btn_idle": "Includi i dati delle VLAN",

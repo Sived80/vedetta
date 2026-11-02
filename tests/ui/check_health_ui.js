@@ -240,14 +240,13 @@ async function openHealth(p) {
   await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0/1,0", "il nascosto di una visita precedente resta nascosto: i numeri sono 1,1,0/1,0");
 
-  // --- the preview of the public demo: no debug mode, the feature shown with made-up findings and marked "coming soon", nothing asked of the server
+  // --- the preview of the public demo: no debug mode, the feature shown with made-up findings (the demo has no network), no "coming soon" since 0.11.0, nothing asked of the server
   p = boot(false, running([]), null, null, true);
   await wait(1500);
   check(!p.doc.documentElement.hasAttribute("data-debug") && !!p.q(".hs-stack") && !p.calls.some((u) => u.includes("/api/ha/health")), "anteprima: senza debug la schermata c'e' e non chiede nulla al server");
   await openHealth(p);
-  check(p.text("#rot .hs-soon") === tx("js.ha.health.soon") && TITLE.test(p.text("#rot .t-l")) && p.text("#rot .t-l") !== tx("js.ha.health.sim.tile"), "anteprima: la tile dice «in arrivo» e porta il suo nome");
-  check(p.qa(".hs-tile").length === 4 && p.text(".hs-pane.health .hs-soon") === tx("js.ha.health.soon") && !p.q(".hs-sim"), "anteprima: quattro tile, «in arrivo» nella testata, nessun pulsante per cambiare scenario");
-  check(p.text("#rot .t-mid .hs-soon") === tx("js.ha.health.soon") && !p.q("#rot .t-head .hs-soon"), "anteprima: «in arrivo» sta sopra le caselle, non nel titolo dove verrebbe tagliato");
+  check(!p.q(".hs-soon") && TITLE.test(p.text("#rot .t-l")) && p.text("#rot .t-l") !== tx("js.ha.health.sim.tile"), "anteprima: la tile porta il suo nome e non dice piu' «in arrivo»");
+  check(p.qa(".hs-tile").length === 4 && !p.q(".hs-sim"), "anteprima: quattro tile, nessun pulsante per cambiare scenario");
   check(p.errors.length === 0, "anteprima: nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
   // --- made-up findings (debug only): the button of the head steps through the scenarios, nothing goes to the server

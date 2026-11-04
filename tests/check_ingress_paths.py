@@ -142,7 +142,7 @@ assert asyncio.run(call("192.168.1.9")) == 200 and seen["base"] == ""
 os.environ["VEDETTA_INGRESS_ONLY"] = "1"
 assert asyncio.run(call("192.168.1.9")) == 403
 assert asyncio.run(call("172.30.32.2")) == 200
-assert asyncio.run(call("127.0.0.1")) == 200
+assert asyncio.run(call("127.0.0.1")) == 403 and asyncio.run(call("::1")) == 403    # another app on the host network
 del os.environ["VEDETTA_INGRESS_ONLY"]
 assert asyncio.run(call("192.168.1.9")) == 200
 assert template_context(types.SimpleNamespace(state=types.SimpleNamespace(base="/x"))) == {"base": "/x"}

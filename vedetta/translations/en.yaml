@@ -17,6 +17,9 @@ configuration:
   internet_mac_database:
     name: "Internet · MAC makers"
     description: "Downloads the IEEE list every 30 days. Off: uses the bundled one."
+  night_hour:
+    name: "Night maintenance · Hour"
+    description: "Hour (0-23, Home Assistant time) of the nightly deep search and clean-up. Empty = 3."
   mqtt_host:
     name: "MQTT · Address"
     description: "Your own broker. Empty = Home Assistant MQTT service."

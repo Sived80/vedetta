@@ -6,13 +6,13 @@ URLs must be prefixed. The prefix arrives in X-Ingress-Path (or in
 VEDETTA_BASE_PATH); absent = empty string and nothing changes compared to the LXC.
 
 VEDETTA_INGRESS_ONLY=1 (off by default): 403 for anyone not coming from the Supervisor
-(172.30.32.2) or from localhost."""
+(172.30.32.2). Not even localhost: with host_network another app on the host would reach the API."""
 import os
 
 from .paths import env_base_path, normalize_base
 
 SUPERVISOR_IP = "172.30.32.2"
-_ALLOWED_PEERS = {SUPERVISOR_IP, "127.0.0.1", "::1"}
+_ALLOWED_PEERS = {SUPERVISOR_IP}
 
 
 def ingress_only() -> bool:

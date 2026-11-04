@@ -21,6 +21,11 @@ if bashio::config.has_value 'internet_path_target'; then
     export VEDETTA_INTERNET_PATH_TARGET="$(bashio::config 'internet_path_target')"
 fi
 
+# The hour of the nightly maintenance (app/maintenance.py reads it; empty = 03:00).
+if bashio::config.has_value 'night_hour'; then
+    export VEDETTA_NIGHT_HOUR="$(bashio::config 'night_hour')"
+fi
+
 # MQTT: manual options win over the service ones.
 if bashio::config.has_value 'mqtt_host'; then
     export VEDETTA_MQTT_HOST="$(bashio::config 'mqtt_host')"

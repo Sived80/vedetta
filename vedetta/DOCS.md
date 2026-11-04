@@ -29,6 +29,7 @@ Nothing about your devices leaves your network. Three optional checks that reach
   - Public IP: at start and every 6 hours, one DNS query to a public resolver asks for your public IP address.
   - Path: a traceroute to a public address (`internet_path_target`, empty = `1.1.1.1`) tells a direct connection from a double NAT.
   - Manufacturers: when the list is more than 30 days old, it is downloaded from the public IEEE registries.
+- `night_hour`: the hour (0-23, Home Assistant time) of the nightly maintenance: deep search of the devices not checked for a week, clean-up of the history, list of manufacturers. Empty = `3`.
 - `mqtt_host`, `mqtt_port`, `mqtt_username`, `mqtt_password`: manual MQTT broker. When empty, the Home Assistant MQTT service (Mosquitto app) is used, if present.
 
 The language is not an option: the page follows Home Assistant (`en`, `it`, `cs` or `de`), and each person can pick theirs in the menu (⋮).

@@ -5,8 +5,10 @@
 - **The network doctor.** A new tile of the Network card, *Network health*, opens a screen with four checks: two devices on the same address, a device that restarts again and again, many devices that drop together (a switch, an access point, the power), and a gateway that suddenly answers slower. Each finding says who, what, since when and what to do. Phones are left out of the checks on drops: their Wi-Fi sleeps on purpose. It only reads what Vedetta already measures and sends nothing to your devices.
 - **Networks wider than a /24.** On a /22 or wider, the gateway tile shows the real subnet and counts every device in it, and the devices Home Assistant sees on that network are one network, not one per /24.
 - **A quieter log.** With *Networks seen by Home Assistant* on, the reading is written in the log when something changes, not every minute.
+- **Pick the hour of the nightly maintenance.** A new option, *Night maintenance · Hour*, moves it away from 03:00, for example when backups run at the same time.
+- **Only Home Assistant can open the app.** Requests from the host itself are refused too: with the host network, another app could otherwise reach Vedetta without signing in.
 
-**Thank you** to everyone who shared an export, and to the people who reported the /24 in Discussion #15.
+**Thank you** to everyone who shared an export, to the people who reported the /24 in Discussion #15, to the people on Reddit who reviewed the code, and to whoever asked for the night hour in Discussion #18.
 
 ## 0.10.0 · Ponte
 **Ponte** is Italian for *bridge*: Home Assistant and Vedetta, and the networks Vedetta cannot reach on its own.

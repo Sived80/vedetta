@@ -24,6 +24,13 @@ ha_tz._state["zone"] = ZoneInfo("Pacific/Auckland")            # UTC+13 in Octob
 moment = datetime(2026, 10, 6, 14, 0, tzinfo=timezone.utc)      # 03:00 there
 assert maintenance.is_night(moment.astimezone(ha_tz.zone())) and not maintenance.is_night(moment)
 assert not maintenance.is_night(datetime(2026, 10, 6, 3, 0, tzinfo=timezone.utc).astimezone(ha_tz.zone()))
+# the night_hour option moves it (Discussion #18); a value that is not an hour leaves 03:00
+for raw, hour in (("1", 1), ("23", 23), ("0", 0), ("24", 3), ("-1", 3), ("x", 3), ("", 3)):
+    os.environ["VEDETTA_NIGHT_HOUR"] = raw
+    assert maintenance.night_hour() == hour, (raw, maintenance.night_hour())
+os.environ["VEDETTA_NIGHT_HOUR"] = "1"
+assert maintenance.is_night(datetime(2026, 10, 6, 1, 30)) and not maintenance.is_night(datetime(2026, 10, 6, 3, 0))
+del os.environ["VEDETTA_NIGHT_HOUR"]
 # the log shows the same zone
 assert applog._display_time(moment.timestamp()).endswith("03:00:00"), applog._display_time(moment.timestamp())
 ha_tz._state["zone"] = ZoneInfo("Europe/Rome")

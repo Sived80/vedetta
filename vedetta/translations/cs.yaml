@@ -17,6 +17,9 @@ configuration:
   internet_mac_database:
     name: "Internet · Výrobci MAC"
     description: "Stáhne seznam IEEE každých 30 dní. Vypnuto: použije přiložený."
+  night_hour:
+    name: "Noční údržba · Hodina"
+    description: "Hodina (0-23, čas Home Assistantu) noční hloubkové kontroly a úklidu. Prázdné = 3."
   mqtt_host:
     name: "MQTT · Adresa"
     description: "Vlastní broker. Prázdné = služba MQTT v Home Assistantu."

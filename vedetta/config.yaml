@@ -33,6 +33,7 @@ options:
   internet_public_ip: true
   internet_path: true
   internet_mac_database: true
+  night_hour: 3
 schema:
   log_level: list(debug|info|warning|error)
   interface: str?
@@ -40,6 +41,7 @@ schema:
   internet_path: bool
   internet_path_target: str?
   internet_mac_database: bool
+  night_hour: int(0,23)?
   mqtt_host: str?
   mqtt_port: port?
   mqtt_username: str?

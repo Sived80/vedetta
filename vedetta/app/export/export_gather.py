@@ -76,7 +76,7 @@ def _fill_manifest_header(p):
         pending = sum(1 for d in devices_config.load_devices() if not maintenance.last_deep_attempt(d))
     except Exception:
         pending = None
-    m["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
+    m["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.night_hour()}
     m["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
     try:
         st = mqtt_ha.service.status()

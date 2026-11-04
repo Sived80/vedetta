@@ -1,6 +1,7 @@
 """Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not
 for a long time, and refreshes the table of manufacturer prefixes. nightly_loop is the background task, run_nightly is one pass."""
 import asyncio
+import os
 import time
 from datetime import datetime
 
@@ -13,7 +14,13 @@ from .netutil import filter_local_ips
 from .scan.rescan import rescan_device
 from .recognition import oui_update
 
-NIGHT_HOUR = 3    # local time of Home Assistant (ha_tz)
+NIGHT_HOUR = 3    # local time of Home Assistant (ha_tz), unless the night_hour option says another
+
+
+def night_hour() -> int:
+    """The hour of the nightly maintenance: the night_hour option (0-23), else NIGHT_HOUR."""
+    raw = os.environ.get("VEDETTA_NIGHT_HOUR", "").strip()
+    return int(raw) if raw.isdigit() and int(raw) < 24 else NIGHT_HOUR
 STALE_DAYS = 7
 
 
@@ -70,7 +77,7 @@ async def _update_mac_prefixes() -> None:
 
 
 def is_night(now: datetime) -> bool:
-    return now.hour == NIGHT_HOUR
+    return now.hour == night_hour()
 
 
 async def nightly_loop() -> None:

@@ -17,6 +17,9 @@ configuration:
   internet_mac_database:
     name: "Internet · Produttori MAC"
     description: "Scarica l'elenco IEEE ogni 30 giorni. Spento: usa quello incluso."
+  night_hour:
+    name: "Manutenzione notturna · Ora"
+    description: "Ora (0-23, ora di Home Assistant) della ricerca approfondita e della pulizia notturna. Vuoto = 3."
   mqtt_host:
     name: "MQTT · Indirizzo"
     description: "Tuo broker. Vuoto = servizio MQTT di Home Assistant."

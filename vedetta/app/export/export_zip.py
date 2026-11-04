@@ -240,7 +240,7 @@ def _never_analysed():
 def _describe_service(manifest: dict, pending) -> None:
     """Facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
     whether it came from Home Assistant, and how many devices never had a deep search."""
-    manifest["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.NIGHT_HOUR}
+    manifest["time"] = {"utc_offset": ha_tz.now().strftime("%z"), "from_home_assistant": ha_tz._state["zone"] is not None, "night_hour": maintenance.night_hour()}
     manifest["deep_search"] = {"never_analysed": pending, "devices": len(state.devices)}
     try:
         manifest["service"] = state.diagnostics()      # sizes, times and counts of the service: no address, no name

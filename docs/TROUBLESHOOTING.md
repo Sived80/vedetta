@@ -9,7 +9,7 @@ Why a device may look wrong in the first hours, and what to try when something d
 > - phones sleep and answer only when they wake up, and so do many smart devices;
 > - names, models and services are *announced* by the devices now and then (Bonjour, DHCP): Vedetta remembers them as they arrive;
 > - who comes and goes (the presence history) is what tells a phone with a changing MAC address from a fixed device;
-> - the **deep search** (the badge on the arrow next to *Scan the network* says how many devices still need it) also runs by itself every night at 03:00.
+> - the **deep search** (the badge on the arrow next to *Scan the network* says how many devices still need it) also runs by itself every night at 03:00 (another hour with the `night_hour` option).
 >
 > So please **leave it installed, running and with the machine switched on for at least 24 hours (48 is better)** before you decide a device is wrong or open an issue, and press the deep search once.
 >

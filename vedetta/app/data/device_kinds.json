@@ -414,7 +414,7 @@
   },
   {
    "id": "camera",
-   "group": "media",
+   "group": "camera",
    "icon": "cctv",
    "words": [
     "ip camera",
@@ -450,7 +450,7 @@
   },
   {
    "id": "nvr",
-   "group": "media",
+   "group": "camera",
    "icon": "monitor-eye",
    "words": [
     "videoregistratore",
@@ -468,7 +468,7 @@
   },
   {
    "id": "webcam",
-   "group": "media",
+   "group": "camera",
    "icon": "webcam",
    "words": [
     "webcam"
@@ -480,7 +480,7 @@
   },
   {
    "id": "wificam",
-   "group": "media",
+   "group": "camera",
    "icon": "camera-wireless",
    "words": [
     "wireless camera",

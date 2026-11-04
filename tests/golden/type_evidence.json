@@ -33,7 +33,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -101,6 +101,12 @@
 },
 {
 "family": "words",
+"group": "camera",
+"pts": 8,
+"source": "parola nel testo"
+},
+{
+"family": "words",
 "group": "router",
 "pts": 8,
 "source": "parola: accesspoint"
@@ -140,7 +146,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -164,7 +170,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -182,7 +188,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -200,7 +206,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -227,13 +233,13 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -251,13 +257,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -281,7 +287,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -444,13 +450,13 @@
 "ev": [
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -520,7 +526,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -604,7 +610,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -640,7 +646,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -678,13 +684,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -842,13 +848,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -884,7 +890,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 },
@@ -908,7 +914,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -1094,13 +1100,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -1124,7 +1130,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -1142,7 +1148,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -1160,7 +1166,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -1364,7 +1370,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -1511,7 +1517,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -1573,7 +1579,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -2011,7 +2017,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -2647,7 +2653,7 @@
 "ev": [
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -2672,7 +2678,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -2932,7 +2938,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -2944,7 +2950,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -2956,7 +2962,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -2980,7 +2986,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -3115,7 +3121,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -3184,7 +3190,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -3423,7 +3429,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -3441,7 +3447,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -3462,7 +3468,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -3492,7 +3498,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -3518,7 +3524,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -3530,13 +3536,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -3577,7 +3583,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -3589,7 +3595,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -3673,7 +3679,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -3770,7 +3776,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -3788,7 +3794,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -3800,7 +3806,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -3818,7 +3824,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -3864,13 +3870,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -3901,7 +3907,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -4062,7 +4068,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4161,7 +4167,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4267,7 +4273,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4478,7 +4484,7 @@
 "ev": [
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -4490,7 +4496,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -4565,7 +4571,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -4589,7 +4595,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -4613,7 +4619,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -4679,7 +4685,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -4724,7 +4730,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4823,7 +4829,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4942,7 +4948,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -4966,13 +4972,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5010,7 +5016,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -5028,13 +5034,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5052,7 +5058,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -5092,7 +5098,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -5281,7 +5287,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -5299,7 +5305,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5417,13 +5423,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5455,7 +5461,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -5491,7 +5497,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -5547,7 +5553,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5654,7 +5660,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -5771,7 +5777,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -5783,7 +5789,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -5871,7 +5877,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -5977,13 +5983,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -6007,7 +6013,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -6025,7 +6031,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -6091,7 +6097,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -6103,7 +6109,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -6121,7 +6127,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -6133,7 +6139,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -6234,7 +6240,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -6252,7 +6258,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -6300,7 +6306,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -6312,7 +6318,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -6511,7 +6517,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -6541,7 +6547,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 },
@@ -6584,7 +6590,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -7069,7 +7075,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -7105,7 +7111,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -7230,7 +7236,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -7302,7 +7308,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -7331,7 +7337,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -7367,7 +7373,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -7448,7 +7454,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -7537,13 +7543,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -7555,7 +7561,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -7664,7 +7670,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -7776,7 +7782,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -7819,7 +7825,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -7832,6 +7838,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -7887,7 +7899,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 },
@@ -7943,7 +7955,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -7955,7 +7967,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -8066,7 +8078,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -8203,7 +8215,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 }
@@ -8246,7 +8258,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -8307,7 +8319,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -8337,7 +8349,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -8358,13 +8370,13 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -8376,7 +8388,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -8473,7 +8485,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -8485,13 +8497,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -8548,19 +8560,19 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -8584,7 +8596,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -8596,7 +8608,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -8616,25 +8628,25 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -8772,7 +8784,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 },
@@ -8979,7 +8991,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -9003,7 +9015,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -9093,7 +9105,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -9414,19 +9426,19 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -9444,7 +9456,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -9462,7 +9474,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -9564,7 +9576,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -9583,6 +9595,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -9725,9 +9743,9 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
-"source": "entita HA camera,media_player"
+"source": "entita HA camera"
 },
 {
 "family": "words",
@@ -9769,7 +9787,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -9799,7 +9817,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -9838,7 +9856,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -9898,7 +9916,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -9970,7 +9988,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -9988,7 +10006,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -10097,13 +10115,13 @@
 "ev": [
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -10153,7 +10171,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -10221,7 +10239,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -10340,13 +10358,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -10365,6 +10383,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -10406,7 +10430,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -10523,7 +10547,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -10575,25 +10599,25 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -10605,7 +10629,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -10656,7 +10680,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -10680,7 +10704,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -10924,7 +10948,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -10942,7 +10966,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -10954,7 +10978,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -11024,7 +11048,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -11049,6 +11073,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -11140,7 +11170,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -11152,13 +11182,19 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
 "group": "media",
+"pts": 8,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -11176,7 +11212,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -11248,7 +11284,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -11304,7 +11340,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -11343,13 +11379,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -11379,7 +11415,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -11452,13 +11488,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -11514,7 +11550,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -11526,7 +11562,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -11538,7 +11574,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -11569,7 +11605,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -11601,7 +11637,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -11730,7 +11766,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -11748,7 +11784,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -12139,7 +12175,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -12181,7 +12217,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -12225,7 +12261,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -12414,7 +12450,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -12496,7 +12532,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -12547,7 +12583,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -12680,7 +12716,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -12704,7 +12740,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -12730,6 +12766,12 @@
 "family": "words",
 "group": "media",
 "pts": 8,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
+"pts": 2,
 "source": "parola nel testo"
 },
 {
@@ -12928,7 +12970,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -12996,7 +13038,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -13032,7 +13074,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -13158,7 +13200,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -13188,7 +13230,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -13222,7 +13264,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -13240,7 +13282,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -13303,7 +13345,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -13315,7 +13357,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -13347,7 +13389,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -13520,7 +13562,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -13612,7 +13654,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -13706,7 +13748,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -13748,7 +13790,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -13800,7 +13842,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -14062,7 +14104,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -14105,7 +14147,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -14129,7 +14171,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14284,7 +14326,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -14308,7 +14350,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14333,7 +14375,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -14345,13 +14387,19 @@
 },
 {
 "family": "words",
+"group": "camera",
+"pts": 8,
+"source": "parola nel testo"
+},
+{
+"family": "words",
 "group": "server",
 "pts": 3,
 "source": "parola: raspberrypi"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -14396,13 +14444,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14500,7 +14548,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -14512,7 +14560,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14644,7 +14692,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -14772,7 +14820,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -14790,7 +14838,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -14809,6 +14857,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14833,7 +14887,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -14877,13 +14931,13 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -14901,13 +14955,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -14930,7 +14984,7 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
 "source": "entita HA camera"
 },
@@ -14974,13 +15028,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -15059,7 +15113,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -15089,7 +15143,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -15321,7 +15375,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -15357,7 +15411,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -15725,7 +15779,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -15775,13 +15829,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -15793,7 +15847,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -15819,13 +15873,13 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -15837,7 +15891,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -15855,7 +15909,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -15901,7 +15955,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -16156,7 +16210,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -16174,7 +16228,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -16233,7 +16287,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -16245,7 +16299,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -16282,7 +16336,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -16382,19 +16436,25 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -16445,13 +16505,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -16463,7 +16523,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -16487,7 +16547,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -16561,9 +16621,9 @@
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
-"source": "entita HA camera,media_player"
+"source": "entita HA camera"
 },
 {
 "family": "upnp:InternetGatewayDevice",
@@ -16606,7 +16666,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -16636,7 +16696,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -16732,7 +16792,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -16756,7 +16816,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -16856,13 +16916,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -16892,7 +16952,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -16931,13 +16991,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -16973,7 +17033,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -17027,7 +17087,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -17251,7 +17311,7 @@
 },
 {
 "family": "model",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "modello dichiarato"
 },
@@ -17295,7 +17355,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -17307,7 +17367,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -17484,7 +17544,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -17602,7 +17662,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -17689,7 +17749,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -17912,7 +17972,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -17987,7 +18047,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -18005,7 +18065,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -18307,7 +18367,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -18511,7 +18571,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -18633,7 +18693,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -18657,7 +18717,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -18819,7 +18879,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -18837,7 +18897,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -19033,7 +19093,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -19081,7 +19141,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -19121,7 +19181,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -19294,7 +19354,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -19485,7 +19545,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -19561,7 +19621,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -19585,13 +19645,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -19609,7 +19669,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -19649,13 +19709,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -19673,7 +19733,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -19822,7 +19882,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -19846,7 +19906,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -19879,13 +19939,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -19929,13 +19989,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -19953,7 +20013,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20077,13 +20137,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20296,13 +20356,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20458,19 +20518,19 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -20482,7 +20542,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20625,7 +20685,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20662,13 +20722,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -20680,7 +20740,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -20767,13 +20827,13 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -20785,7 +20845,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -20804,7 +20864,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -20858,7 +20918,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -21016,7 +21076,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -21052,7 +21112,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -21245,7 +21305,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -21263,15 +21323,15 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
 {
 "family": "ha_entities",
-"group": "media",
+"group": "camera",
 "pts": 4,
-"source": "entita HA camera,media_player"
+"source": "entita HA camera"
 },
 {
 "family": "upnp:Printer",
@@ -21294,7 +21354,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -21377,7 +21437,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -21431,7 +21491,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -21470,7 +21530,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -21494,13 +21554,13 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -21668,7 +21728,7 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -21699,7 +21759,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -21729,7 +21789,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -21820,7 +21880,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -21838,7 +21898,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22021,13 +22081,13 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -22039,7 +22099,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -22158,7 +22218,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22176,7 +22236,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "parola nel testo"
 },
@@ -22220,7 +22280,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22245,6 +22305,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22276,7 +22342,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -22306,7 +22372,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -22342,7 +22408,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22360,7 +22426,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22421,7 +22487,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22490,7 +22556,7 @@
 },
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -22538,7 +22604,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 },
@@ -22566,7 +22632,7 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
@@ -22692,13 +22758,13 @@
 "ev": [
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22711,6 +22777,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22747,13 +22819,13 @@
 },
 {
 "family": "rtsp",
-"group": "media",
+"group": "camera",
 "pts": 6,
 "source": "RTSP"
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22766,6 +22838,12 @@
 {
 "family": "words",
 "group": "media",
+"pts": 2,
+"source": "parola nel testo"
+},
+{
+"family": "words",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22797,7 +22875,7 @@
 "ev": [
 {
 "family": "onvif",
-"group": "media",
+"group": "camera",
 "pts": 8,
 "source": "ONVIF"
 },
@@ -22833,7 +22911,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 3,
 "source": "parola: camera"
 }
@@ -22922,7 +23000,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -22940,7 +23018,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },
@@ -22977,7 +23055,7 @@
 },
 {
 "family": "port:554",
-"group": "media",
+"group": "camera",
 "pts": 1,
 "source": "porta 554"
 },
@@ -23007,7 +23085,7 @@
 },
 {
 "family": "words",
-"group": "media",
+"group": "camera",
 "pts": 2,
 "source": "parola nel testo"
 },

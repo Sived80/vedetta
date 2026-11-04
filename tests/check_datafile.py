@@ -118,7 +118,7 @@ ha_type_evidence._api_types.cache_clear()
 ha_type_evidence._platform_adapters.cache_clear()
 # the keywords of the types: the real table has the seven groups, a lost table has none (no word recognises anything) and says so once
 from app.ha import ha_type_text  # noqa: E402
-assert list(ha_type_text.rules()) == ["iot", "printer", "media", "audio", "router", "pc", "server"], list(ha_type_text.rules())
+assert list(ha_type_text.rules()) == ["iot", "printer", "media", "camera", "audio", "router", "pc", "server"], list(ha_type_text.rules())
 assert "epson" in ha_type_text.rules()["printer"]["subs"] and "server" in ha_type_text.rules()["server"]["toks"] and "stampante" not in ha_type_text.rules()["printer"]["subs"]
 datafile.DATA_DIR = Path(tempfile.mkdtemp())
 ha_type_text.rules.cache_clear()

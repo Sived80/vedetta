@@ -10,8 +10,12 @@
    "toks": ["canon", "jetdirect"]
   },
   "media": {
-   "subs": ["bravia", "chromecast", "smarttv", "appletv", "apple tv", "firetv", "fire tv", "android tv", "roku", "webos", "tizen", "hisense", "vizio", "ipcam", "webcam", "cctv", "doorbell", "onvif", "networkvideotransmitter"],
-   "toks": ["rtsp", "televisore"]
+   "subs": ["bravia", "chromecast", "smarttv", "appletv", "apple tv", "firetv", "fire tv", "android tv", "roku", "webos", "tizen", "hisense", "vizio"],
+   "toks": ["televisore"]
+  },
+  "camera": {
+   "subs": ["ipcam", "webcam", "cctv", "doorbell", "onvif", "networkvideotransmitter"],
+   "toks": ["rtsp"]
   },
   "audio": {
    "subs": ["speaker", "sonos", "homepod", "echo dot", "google home", "nest mini", "nest audio", "denon", "marantz", "harman", "audio", "yamaha"],

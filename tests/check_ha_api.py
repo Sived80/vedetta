@@ -56,8 +56,8 @@ cases = [
     (dev(name="Bravia"), None, "media"),
     # NVRs and cameras: real test data (RTSP open, ONVIF declared); "webserver" is not a server.
     (dev(name="192.168.50.190", vendor="Milesight", extra={"http_server": "webserver", "title": "Login"},
-         scanned_ports=[port(80, "80 · http"), port(554, "554 · rtsp")]), None, "media"),
-    (dev(name="192.168.50.199", extra={"onvif_name": "IPCAM", "rtsp_server": "Hipcam RealServer/V1.0"}), None, "media"),
+         scanned_ports=[port(80, "80 · http"), port(554, "554 · rtsp")]), None, "camera"),
+    (dev(name="192.168.50.199", extra={"onvif_name": "IPCAM", "rtsp_server": "Hipcam RealServer/V1.0"}), None, "camera"),
     (dev(name="Cucina", vendor="Sonos"), None, "audio"),
     (dev(name="Gateway casa"), None, "router"),
     (dev(name="FRITZ!Box 7590"), None, "router"),

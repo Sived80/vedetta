@@ -28,21 +28,24 @@ idx = ha_registry.build_index(
     [], [{"entry_id": "E1", "domain": "mikrotik_router", "title": "T"}])
 assert idx["by_mac"]["08:3a:f2:00:00:05"]["entity_domains"] == ["device_tracker", "switch"]
 other = {"id": "e", "ip": "10.0.0.3", "name": "Cam", "extra": {}, "ha_registry": card(["onvif"], ["camera"])}
-assert ha_data.type_scores(other).get("media", 0) >= ha_data.W_DECLARED, ha_data.type_scores(other)
+assert ha_data.type_scores(other).get("camera", 0) >= ha_data.W_DECLARED, ha_data.type_scores(other)
 tracked = dict(other, ha_registry=card(["onvif"], ["device_tracker"]))
-assert ha_data.type_scores(tracked).get("media", 0) < ha_data.W_DECLARED, ha_data.type_scores(tracked)   # any integration, any group
+assert ha_data.type_scores(tracked).get("camera", 0) < ha_data.W_DECLARED, ha_data.type_scores(tracked)   # any integration, any group
 # Integration not in the table: what HA does with the device still says something
 unknown_iot = {"id": "f", "ip": "10.0.0.4", "name": "AC", "extra": {}, "ha_registry": card(["some_new_integration"], ["device_tracker", "climate", "sensor"])}
 assert ha_data.infer_type(unknown_iot) == "iot", ha_data.type_scores(unknown_iot)
 unknown_player = {"id": "g", "ip": "10.0.0.5", "name": "Box", "extra": {}, "ha_registry": card(["some_new_integration"], ["media_player"])}
 assert ha_data.infer_type(unknown_player) == "media", ha_data.type_scores(unknown_player)
+# a camera with a speaker has a player too (UniFi Protect, a real export): it stays a camera, not a tie that ends in "Other devices"
+speaker_cam = {"id": "j", "ip": "10.0.0.8", "name": "G4", "extra": {}, "ha_registry": card(["some_new_integration"], ["camera", "media_player"])}
+assert ha_data.infer_type(speaker_cam) == "camera", ha_data.type_scores(speaker_cam)
 unknown_tracker = {"id": "h", "ip": "10.0.0.6", "name": "Box", "extra": {}, "ha_registry": card(["some_new_integration"], ["device_tracker"])}
 assert ha_data.infer_type(unknown_tracker) == "generic", ha_data.type_scores(unknown_tracker)
 
 # A declared model beats the banner of a port (real case: two cameras read as routers because of a wrong banner on a HomeKit port)
 cam = {"id": "i", "ip": "10.0.0.7", "name": "Camera-1", "brand": "Lumi United", "extra": {"mdns_model": "lumi.camera.acn007", "mdns_services": "_hap._tcp"},
        "scanned_ports": [{"label": "49152 · IKEA Tradfri zigbee controller httpd", "confirmed": False}]}
-assert ha_data.infer_type(cam) == "media", ha_data.type_scores(cam)
+assert ha_data.infer_type(cam) == "camera", ha_data.type_scores(cam)
 room = {"id": "j", "ip": "10.0.0.8", "name": "Camera da letto", "extra": {}}                  # the room is not a camera
 assert ha_data.infer_type(room) != "media", ha_data.type_scores(room)
 speaker = {"id": "k", "ip": "10.0.0.9", "name": "Box", "extra": {"mdns_model": "HomePod"}, "scanned_ports": [{"label": "7000 · rtsp", "confirmed": False}]}

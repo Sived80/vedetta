@@ -1,0 +1,41 @@
+name: CodeQL
+
+# GitHub's code analysis (SAST): it looks for security mistakes in the Python and JavaScript of the app, on every change
+# that reaches main or a ci/ branch, and every week. Findings go to the Security tab of the repository.
+
+on:
+  push:
+    branches:
+      - main
+      - ci/**
+  schedule:
+    - cron: "41 3 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262    # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@9418214df1f2c4b8128c770156c409013b07d6b9    # v3.39.3
+        with:
+          languages: ${{ matrix.language }}
+          config: |
+            paths:
+              - vedetta/app
+            paths-ignore:
+              - "**/node_modules"
+      - uses: github/codeql-action/analyze@9418214df1f2c4b8128c770156c409013b07d6b9    # v3.39.3
+        with:
+          category: /language:${{ matrix.language }}

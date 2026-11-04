@@ -1,0 +1,21 @@
+# Dependabot opens a pull request when something Vedetta depends on has a new version: the GitHub actions (pinned by
+# commit), the Python packages of the app, the packages of the page tests and the base image of the Dockerfile.
+# Nothing is merged by itself: every update goes through the tests like any other change.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /vedetta
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /tests/ui
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directory: /vedetta
+    schedule:
+      interval: monthly

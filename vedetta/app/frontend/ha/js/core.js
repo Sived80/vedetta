@@ -38,7 +38,7 @@ export let REDUCED = false;
   });
   try { window.parent.postMessage({ type: "home-assistant/subscribe-properties" }, "*"); } catch (err) { /* ignore */ }
 })();
-export const TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "generic"];
+export const TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
 export const POLL_WATCHDOG_MS = 90000;
 
 // ---------------------------------------------------------------- language

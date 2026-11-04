@@ -83,6 +83,7 @@ check(client.post("/api/devices/ha-02005e100021/override", json={"brand": "Acme"
 card = next(d for d in client.get("/api/ha/devices").json()["devices"] if d["id"] == "ha-02005e100021")
 check((card["name"], card["brand"], card["type"], card["ha_share"], card["focus"]) == ("Front door", "Acme", "media", False, False), "what the user chose is on the card; sharing and the flag are ignored")
 check(client.post("/api/devices/ha-02005e100021/override", json={"type": "toaster"}).status_code == 400, "an unknown type is refused")
+check(client.post("/api/devices/ha-02005e100021/override", json={"type": "camera"}).status_code == 200, "a camera seen by Home Assistant can be a camera (issue #21)")
 check(client.post("/api/devices/ha-02005e100031/rename", json={"name": "x"}).status_code == 404, "a device that is not adopted is not found")
 check(client.post("/api/devices/ha-02005e100021/override", json={"brand": None, "type": None}).status_code == 200, "empty goes back to Home Assistant")
 check(not (tmp / "devices.yaml").exists(), "none of this touched devices.yaml")

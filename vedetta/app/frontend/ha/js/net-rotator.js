@@ -129,7 +129,7 @@ function internetTile() {
   }
   if (!net) return null;
   const hops = (net.hops || []).length, reachable = ipOn ? !!net.public_ip : hops > 0;
-  const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : "js.ha.tile.net_direct");
+  const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : net.maybe_double_nat ? "js.ha.tile.net_maybe_double" : "js.ha.tile.net_direct");
   const pct = pathOn ? Math.max(0, Math.min(100, hops / 5 * 100)).toFixed(1) : "0";
   const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + '</span><span>' + esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })) + '</span></div>' +
     '<div class="pbar"><i style="width:' + pct + '%"></i></div>';

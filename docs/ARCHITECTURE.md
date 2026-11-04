@@ -220,6 +220,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/scan_web.py` | scan_web: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scanner.py` | Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define, so callers and tests keep writing scanner.name. |
 | `scan/touch_policy.py` | The touch policy: how much a device is contacted. |
+| `scan/upnp_wan.py` | The address of the router on its internet side, asked to the router itself over UPnP (IGD): the only sure way to tell a double NAT. |
 | `scan/wol.py` | Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC = 102 bytes) sent as a UDP broadcast. |
 | `scan/work_time.py` | work_time: how long a deep search of one device really worked. |
 
@@ -276,7 +277,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/ignored.js` | 342 | ignored devices |
 | `js/live.js` | 256 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 186 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-attrs.js` | 188 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 313 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |

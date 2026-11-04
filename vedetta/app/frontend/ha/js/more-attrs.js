@@ -78,7 +78,9 @@ export function miAttrs(d) {
   if (net && rr && rr.gateway) {
     var np = [];
     if (net.public_ip) np.push(t("js.ha.net.public", { ip: net.public_ip }));
-    np.push(net.cgnat ? t("js.ha.net.cgnat") : net.double_nat ? t("js.ha.net.double", { ips: (net.private_hops || []).join(" \u2192 ") }) : t("js.ha.net.direct"));
+    const ips = (net.private_hops || []).join(" \u2192 ");
+    np.push(net.cgnat ? t("js.ha.net.cgnat") : net.double_nat ? t("js.ha.net.double", { ips: ips }) :
+      net.maybe_double_nat ? t("js.ha.net.maybe_double", { ips: ips }) : t("js.ha.net.direct"));
     row(t("js.ha.attr.internet"), esc(np.join(" \u00b7 ")));
   }
   (S.roles.dhcp || []).filter(function (o) { return o.server === d.ip; }).forEach(function (o) {

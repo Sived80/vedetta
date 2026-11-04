@@ -5,7 +5,7 @@ from ..formatters import is_useless_title
 import re
 import ssl
 import contextlib
-from .scan_common import NO_REQUEST_PORTS, can_be_web
+from .scan_common import NO_REQUEST_PORTS, can_be_web, clean_text
 
 
 WEB_SERVICE_NAMES = {"http", "https", "http-alt", "http-proxy", "https-alt", "www", "sun-answerbook"}
@@ -100,11 +100,11 @@ def _describe_response(data: bytes, tls_subject: str | None, used_tls: bool) -> 
     title = re.search(rb"<title[^>]*>(.*?)</title>", body, re.IGNORECASE | re.DOTALL)
     status_line = re.match(rb"HTTP/[0-9.]+ (\d{3})", data)
     status = int(status_line.group(1)) if status_line else None
-    page_title = " ".join(title.group(1).decode("utf-8", "ignore").split())[:120] if title else None
+    page_title = clean_text(title.group(1).decode("utf-8", "ignore"), 120) if title else None
     return {
         "tls_subject": tls_subject,
         "size": len(data),
-        "server": server.group(1).decode("latin-1").strip()[:120] if server else None,
+        "server": clean_text(server.group(1).decode("latin-1"), 120) if server else None,
         "title": page_title,
         "status": status,
         "scheme": "https" if used_tls else "http",

@@ -165,7 +165,7 @@ async def _icmp_ms(ip: str, timeout: float) -> float | None:
     proc = None
     try:
         proc = await asyncio.create_subprocess_exec(
-            _PING, "-c", "1", "-W", str(max(1, int(round(timeout)))), ip,
+            _PING, "-c", "1", "-W", str(max(1, int(round(timeout)))), "--", ip,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
         )
         out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout + 0.5)
@@ -187,7 +187,7 @@ async def _arp_ms(ip: str, timeout: float = 3.0) -> float | None:
     proc = None
     try:
         proc = await asyncio.create_subprocess_exec(
-            _NMAP, "-sn", "-PR", "-n", "--max-retries", "1", "--host-timeout", "2s", ip,
+            _NMAP, "-sn", "-PR", "-n", "--max-retries", "1", "--host-timeout", "2s", "--", ip,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
         )
         out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)

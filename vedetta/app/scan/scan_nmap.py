@@ -1,7 +1,8 @@
 """scan_nmap: moved out of scanner.py (see tools/split_module.py)."""
 import xml.etree.ElementTree as ET
 import asyncio
-from .scan_common import NO_REQUEST_PORTS, is_no_talk_port, is_valid_ipv4, timed_out, version_exclusion
+import ipaddress
+from .scan_common import NO_REQUEST_PORTS, clean_text, is_no_talk_port, is_valid_ipv4, timed_out, version_exclusion
 from ..applog import logger
 from . import work_time
 from .scan_cert import parse_ssh_hostkey, parse_ssl_cert
@@ -148,8 +149,7 @@ async def _run_nmap(args: list[str], semaphore: asyncio.Semaphore | None = None)
         logger.info("Avviata: %s", label)
         t0 = time.monotonic()
         proc = await asyncio.create_subprocess_exec(
-            "nmap", *args, "-oX", "-",
-            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+            *nmap_command(args), stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
         )
         try:
             out = await _communicate_limited(proc, args)
@@ -173,6 +173,21 @@ async def _run_nmap(args: list[str], semaphore: asyncio.Semaphore | None = None)
             timed_out.discard(target)
             logger.info("Completata (%.1fs): %s", elapsed, label)
         return out.decode(errors="replace")
+
+
+def nmap_command(args: list[str]) -> list[str]:
+    """The command line: the target (always the last argument) goes after "--", so nothing that looks like an option can be read as one."""
+    if args and _is_target(args[-1]):
+        return ["nmap", *args[:-1], "-oX", "-", "--", args[-1]]
+    return ["nmap", *args, "-oX", "-"]
+
+
+def _is_target(value: str) -> bool:
+    try:
+        ipaddress.ip_network(value, strict=False)
+        return True
+    except ValueError:
+        return False
 
 
 def _hung(args: list[str], label: str, elapsed: float) -> str:
@@ -232,7 +247,7 @@ def _host_entry(host_el) -> dict | None:
     ports, http_title, tls_subject, tls_issuer, ssh_hostkey = _open_ports(host_el)
     return {
         "ip": ip, "mac": mac, **resolve_vendor_info(mac, vendor),
-        "hostname": hostname_el.get("name") if hostname_el is not None else None, "ports": ports,
+        "hostname": clean_text(hostname_el.get("name"), 255) if hostname_el is not None else None, "ports": ports,
         "http_title": http_title,
         **{k: v for k, v in (("tls_subject", tls_subject), ("tls_issuer", tls_issuer),
                              ("ssh_hostkey", ssh_hostkey)) if v},
@@ -284,8 +299,8 @@ def _port_entry(port_el, has_title: bool) -> dict:
     return {
         "port": int(port_el.get("portid")),
         "service": service.get("name") if service is not None else None,
-        "product": service.get("product") if service is not None else None,
-        "version": service.get("version") if service is not None else None,
+        "product": clean_text(service.get("product"), 120) if service is not None else None,
+        "version": clean_text(service.get("version"), 120) if service is not None else None,
         # "probed" = nmap really queried the service, "table" = it only
         # guessed from the conventional port number (less reliable).
         "confirmed": service is not None and service.get("method") == "probed",

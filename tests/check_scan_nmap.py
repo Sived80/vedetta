@@ -86,7 +86,7 @@ nm.time = FakeTime
 run = lambda c: asyncio.new_event_loop().run_until_complete(c)   # noqa: E731
 
 out = run(nm._run_nmap(["-p", "80", "10.0.0.5"]))
-assert launched[0] == ("nmap", "-p", "80", "10.0.0.5", "-oX", "-") and "<nmaprun>" in out
+assert launched[0] == ("nmap", "-p", "80", "-oX", "-", "--", "10.0.0.5") and "<nmaprun>" in out      # the target after "--": never read as an option
 
 # host-timeout: a scan that lasts about as long as the limit is remembered as incomplete, a quick one clears it
 nm.timed_out.clear()

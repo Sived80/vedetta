@@ -92,6 +92,10 @@ _IP_RE = re.compile(r"^(ip[-_ ]?)?\d{1,3}([.\-_]\d{1,3}){3}$", re.IGNORECASE)
 _MAC_RE = re.compile(r"^([0-9a-f]{2}[:\-]?){5}[0-9a-f]{2}$", re.IGNORECASE)
 _TOKEN_RE = re.compile(r"[^0-9A-Za-z]+")
 _GENERIC = {"localhost", "unknown", "unnamed", "default", "device", "host", "none", "null", "n/a", "-", "*"}
+# A name a device announces for a service, not for itself (an Echo announces "Spotify Connect"): not a device name.
+_GENERIC |= {"spotify connect"}
+# What mDNS adds when two devices announce the same name: "none-2" (host name), "Spotify Connect (2)", "Speaker #4".
+_CONFLICT_SUFFIX_RE = re.compile(r"(?:-\d{1,2}| \(\d{1,2}\)| #\d{1,2})$")
 
 
 _EMBEDDED_IP_RE = re.compile(r"[(\[]?\b\d{1,3}(?:\.\d{1,3}){3}\b[)\]]?")
@@ -115,7 +119,13 @@ def clean_name(raw: str | None) -> str | None:
     if any(_looks_generated(t) for t in _TOKEN_RE.split(name) if t):
         return None
     name = _host_part(name)
-    return None if (not name or name.lower() in _GENERIC or name.startswith("(") or bool(_IP_RE.match(name) or _MAC_RE.match(name))) else name
+    return None if (not name or _is_generic(name) or name.startswith("(") or bool(_IP_RE.match(name) or _MAC_RE.match(name))) else name
+
+
+def _is_generic(name: str) -> bool:
+    """A name that says nothing about the device, also with the number mDNS adds to it ("none-2")."""
+    low = name.lower()
+    return low in _GENERIC or _CONFLICT_SUFFIX_RE.sub("", low) in _GENERIC
 
 
 def _unescape(text: str) -> str:

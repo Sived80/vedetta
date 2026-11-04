@@ -11,6 +11,7 @@
   "journal.dhcp": "DHCP: server {server} přiděluje bránu {router} a DNS {dns}",
   "journal.internet_direct": "Přímé internetové připojení (bez dvojitého NAT)",
   "journal.internet_double": "Internetové připojení za dvojitým NAT",
+  "journal.internet_maybe_double": "Připojení k internetu přes dva soukromé routery: možná dvojitý NAT",
   "journal.internet_cgnat": "Internetové připojení přes CGNAT poskytovatele",
   "journal.roles": "Síťové role: {roles}; přes opakovač: {via}",
   "journal.unignored": "{name} již není ignorováno",

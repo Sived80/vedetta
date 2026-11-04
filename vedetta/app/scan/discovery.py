@@ -146,9 +146,9 @@ def parse_rtsp_response(text: str) -> dict | None:
         key, value = line.split(":", 1)
         key, value = key.strip().lower(), value.strip()
         if key == "server" and value:
-            out["rtsp_server"] = value[:120]
+            out["rtsp_server"] = scan_common.clean_text(value, 120)
         elif key == "public" and value:
-            out["rtsp_methods"] = value[:200]
+            out["rtsp_methods"] = scan_common.clean_text(value, 200)
     return out
 
 
@@ -206,7 +206,7 @@ def parse_description(xml_text: str) -> dict:
     for tag, key in (("friendlyName", "name"), ("manufacturer", "manufacturer"), ("modelName", "model")):
         m = re.search(r"<%s>([^<]*)</%s>" % (tag, tag), xml_text)
         if m and m.group(1).strip():
-            out[key] = m.group(1).strip()[:120]
+            out[key] = scan_common.clean_text(m.group(1), 120)
     return out
 
 

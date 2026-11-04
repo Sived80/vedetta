@@ -1,5 +1,6 @@
 """scan_common: moved out of scanner.py (see tools/split_module.py)."""
 import ipaddress
+import re
 from urllib.parse import urlsplit
 
 
@@ -95,6 +96,18 @@ def port_number(entry: dict) -> int | None:
     """The port number of a saved port entry (its label is "80 · http" or just "18555"); None if the label does not start with a number."""
     head = str(entry.get("label", "")).split(" ")[0]
     return int(head) if head.isdigit() else None
+
+
+# What a device sends is not trusted text: terminal escape sequences and control characters (NUL, C0, DEL, C1) are dropped,
+# line breaks and tabs become spaces, and the text is cut, before it reaches the recognition, the log or the page.
+_ESCAPES = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]|[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
+
+
+def clean_text(value, limit: int = 256) -> str | None:
+    """Text from the network, safe to keep: no control characters, one line, at most `limit` characters. None stays None."""
+    if value is None:
+        return None
+    return " ".join(_ESCAPES.sub("", str(value)).split())[:limit]
 
 
 def is_valid_ipv4(value: str) -> bool:

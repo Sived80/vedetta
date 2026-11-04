@@ -77,6 +77,7 @@ def record(ip: str, stype: str, instance: str, txt: str, now: float | None = Non
     global _dirty
     if not scan_common.is_valid_ipv4(ip):
         return
+    instance, txt = scan_common.clean_text(instance, 255) or "", scan_common.clean_text(txt, 2048) or ""
     now = time.time() if now is None else now
     score, name = score_name(stype, instance, txt)
     meta = mdns_parse.parse_mdns_txt(txt)

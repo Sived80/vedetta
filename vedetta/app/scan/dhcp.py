@@ -12,6 +12,7 @@ import time
 
 
 from ..paths import DATA_DIR as CONFIG_DIR
+from . import scan_common
 import contextlib
 
 logger = logging.getLogger("dashboard")
@@ -97,7 +98,7 @@ def _store_option(info: dict, code: int, value: bytes) -> None:
 
 
 def _text(value: bytes) -> str:
-    return value.decode("utf-8", "ignore").strip("\x00 ")
+    return scan_common.clean_text(value.decode("utf-8", "ignore"), 255)
 
 
 def _merge_entry(previous: dict, info: dict) -> dict:

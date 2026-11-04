@@ -33,6 +33,12 @@ assert tp.touch_level(card([PRINT], no_touch="off")) == tp.CALM          # the u
 assert tp.touch_level(card([WEB], no_touch="off")) == tp.NORMAL
 assert tp.touch_level(card([PRINT], slow=True, no_touch="on")) == tp.NONE
 assert tp.fragile_reasons(card([PRINT, WEB], slow=True)) == ["no_talk_port", "slow"] and tp.fragile_reasons(card([WEB])) == []
+# a camera is calm by default (issue #21): by the type the user chose, or by what it declared (RTSP, ONVIF); "don't touch" still wins
+cam = card([WEB])
+assert tp.touch_level(dict(cam, type="camera")) == tp.CALM and tp.fragile_reasons(dict(cam, type="camera")) == ["camera"]
+for clue in ({"rtsp_server": "Hipcam RealServer/V1.0"}, {"onvif_name": "IPCAM"}, {"wsd_types": "dn:NetworkVideoTransmitter"}):
+    assert tp.touch_level(dict(cam, scan_info={**cam["scan_info"], **clue})) == tp.CALM, clue
+assert tp.touch_level(dict(cam, type="camera", no_touch="on")) == tp.NONE and tp.touch_level(dict(cam, type="media")) == tp.NORMAL
 assert tp.may_touch(card([WEB])) and tp.may_touch(card([WEB], slow=True)) and not tp.may_touch(card([PRINT]))
 
 # calm: only the risky steps go

@@ -27,7 +27,13 @@ def _known() -> tuple[set, set]:
 def payload(data: dict) -> dict:
     macs, ips = _known()
     return {"enabled": bool(data["enabled"]), "available": bool(ha_registry.token()), "read_at": data["read_at"], "error": data["error"],
-            "adopted": len(data["adopted"]), "candidates": passive_view.candidates(data, macs, ips, netutil.last_network)}
+            "adopted": len(data["adopted"]), "adopted_list": _adopted_list(data), "candidates": passive_view.candidates(data, macs, ips, netutil.last_network)}
+
+
+def _adopted_list(data: dict) -> list[dict]:
+    """The adopted devices, for the list of the panel where they can be taken out: name, MAC, address, type, state."""
+    rows = [{k: c.get(k) for k in ("id", "name", "mac", "ip", "type", "online")} for c in passive_view.compact_all(data)]
+    return sorted(rows, key=lambda r: (passive_view.ip_key(r.get("ip")), str(r.get("mac"))))
 
 
 @router.get("/api/ha/networks")
@@ -65,6 +71,23 @@ async def api_networks_adopt(request: Request):
     if done:
         await passive_service.read_now()          # the presence of the new cards is written at once
     return {**payload(await asyncio.to_thread(passive_store.snapshot)), "done": len(done)}
+
+
+@router.post("/api/ha/networks/remove")
+async def api_networks_remove(request: Request):
+    """Takes adopted devices off the page ({"macs": [...]} or {"all": true}): they go back to the list as long as Home Assistant sees them."""
+    body = await json_dict(request)
+    data = await asyncio.to_thread(passive_store.snapshot)
+    if body.get("all") is True:
+        macs = list(data["adopted"])
+    elif isinstance(body.get("macs"), list) and all(isinstance(m, str) for m in body["macs"]):
+        macs = [ha_registry.norm_mac(m) for m in body["macs"] if ha_registry.norm_mac(m)]
+    else:
+        raise HTTPException(400, "macs must be a list, or all true")
+    done = await asyncio.to_thread(passive_store.forget_many, macs)
+    if done:
+        state.emit_event({"type": "passive"})      # the open pages read the devices again
+    return {**payload(await asyncio.to_thread(passive_store.snapshot)), "removed": len(done)}
 
 
 # ---- the changes of an adopted device: the same addresses as the other devices (/api/devices/ha-<mac>/...), taken before them ----

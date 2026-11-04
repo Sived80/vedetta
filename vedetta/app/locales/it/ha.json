@@ -719,7 +719,7 @@
   "js.ha.nets.title": "Reti viste da Home Assistant",
   "js.ha.nets.sub": "Dispositivi che Home Assistant vede tramite il router, anche su altre reti",
   "js.ha.nets.switch": "Attiva la funzione",
-  "js.ha.nets.n1": "Legge solo i dispositivi che il router segue: indirizzo, MAC, nome e se sono connessi o assenti.",
+  "js.ha.nets.n1": "Legge solo i dispositivi che il router segue: indirizzo, MAC, nome, se sono connessi o assenti e da quando.",
   "js.ha.nets.n2": "Non legge i telefoni con la posizione, le persone e il GPS.",
   "js.ha.nets.n3": "Non invia nulla a questi dispositivi: niente ping e niente scansione. Usa solo ciò che Home Assistant già sa.",
   "js.ha.nets.n4": "È spenta finché non la accendi. I dispositivi adottati sono salvati a parte, non tra quelli che Vedetta controlla.",
@@ -743,5 +743,11 @@
   "js.ha.nets.adopted_one": "{n} dispositivo adottato",
   "js.ha.nets.adopted_other": "{n} dispositivi adottati",
   "js.ha.nets.failed": "Operazione non riuscita. Riprova.",
+  "js.ha.nets.remove_them": "Rimuovili",
+  "js.ha.nets.off_keep": "Spenta. I {n} dispositivi adottati restano nella pagina.",
+  "js.ha.nets.removed": "{n} tolti dalla pagina",
+  "js.ha.nets.remove": "Rimuovi",
+  "js.ha.nets.to_remove": "{n} selezionati da togliere dalla pagina.",
+  "js.ha.nets.adopted_title": "Già adottati ({n})",
   "js.ha.ev.from_ha": "Dato fornito da Home Assistant tramite l'integrazione del router. Non è una stima di Vedetta."
 }

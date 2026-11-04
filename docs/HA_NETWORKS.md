@@ -14,10 +14,11 @@ What a card of this kind does **not** have, because Vedetta never talks to the d
 
 The function is **off by default** and only reads while it is on.
 
-- Home Assistant is asked for its states and for the registry of its entities (to leave out the trackers Vedetta itself publishes). Of the states, only the **device trackers whose source is a router** are kept (UniFi, FRITZ!Box, MikroTik, a network scanner such as `nmap_tracker`…), and of each only **five facts**: IP address, MAC address, host name, the name Home Assistant shows, and whether it is at home or away.
+- Home Assistant is asked for its states and for the registry of its entities (to leave out the trackers Vedetta itself publishes). Of the states, only the **device trackers whose source is a router** are kept (UniFi, FRITZ!Box, MikroTik, a network scanner such as `nmap_tracker`…), and of each only **six facts**: IP address, MAC address, host name, the name Home Assistant shows, whether it is at home or away, and since when (a tracker away for more than 30 days is an old one and is not offered).
 - Phones with a location, people, zones and anything else are dropped on the spot: nothing of them is kept, shown or written in the log.
 - The trackers Vedetta itself publishes by MQTT are left out, so its own devices never come back as new ones.
 - A device Vedetta already has (same MAC or same address) is not offered again.
+- Adopted devices are listed in the same panel and can be taken off the page there, one, several or all; turning the function off offers to take them all off.
 - Nothing is sent to any device: no ping, no port scan, no ARP. The only conversation is with Home Assistant, through the same read-only channel as the registry.
 
 What you adopt is kept in `passive_devices.json` in the app's data folder, **never** in `devices.yaml`, which is the list of what Vedetta checks. What you choose by hand (name, type, brand) is kept apart from what Home Assistant says, so a new reading never overwrites it.

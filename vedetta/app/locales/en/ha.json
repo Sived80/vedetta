@@ -719,7 +719,7 @@
   "js.ha.nets.title": "Networks seen by Home Assistant",
   "js.ha.nets.sub": "Devices Home Assistant sees through your router, also on other networks",
   "js.ha.nets.switch": "Turn the function on",
-  "js.ha.nets.n1": "Reads only the devices your router tracks: address, MAC, name and whether they are connected or away.",
+  "js.ha.nets.n1": "Reads only the devices your router tracks: address, MAC, name, whether they are connected or away, and since when.",
   "js.ha.nets.n2": "Does not read phones with a location, people or GPS.",
   "js.ha.nets.n3": "Sends nothing to these devices: no ping and no scan. It only uses what Home Assistant already knows.",
   "js.ha.nets.n4": "Off until you turn it on. Adopted devices are kept apart, not among the ones Vedetta checks.",
@@ -743,5 +743,11 @@
   "js.ha.nets.adopted_one": "{n} device adopted",
   "js.ha.nets.adopted_other": "{n} devices adopted",
   "js.ha.nets.failed": "That did not work. Try again.",
+  "js.ha.nets.remove_them": "Remove them",
+  "js.ha.nets.off_keep": "Off. The {n} adopted devices stay on the page.",
+  "js.ha.nets.removed": "{n} removed from the page",
+  "js.ha.nets.remove": "Remove",
+  "js.ha.nets.to_remove": "{n} selected to take off the page.",
+  "js.ha.nets.adopted_title": "Already adopted ({n})",
   "js.ha.ev.from_ha": "Data supplied by Home Assistant through the router integration. It is not an estimate by Vedetta."
 }

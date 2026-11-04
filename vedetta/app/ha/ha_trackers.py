@@ -1,17 +1,19 @@
 """The clients that a router integration of Home Assistant tracks on the network (UniFi, FRITZ!, MikroTik, nmap...), read from the states of Home Assistant.
 
 Read-ONLY and narrow by construction: of every state, only the device trackers whose source is "router" are kept, and of those only the address, the MAC, the host name,
-the name Home Assistant shows and whether the client is at home. A phone tracker (GPS, with coordinates), a person, a zone, anything else is dropped here and never stored or logged.
+the name Home Assistant shows, whether the client is at home and since when. A phone tracker (GPS, with coordinates), a person, a zone, anything else is dropped here and never stored or logged.
 The trackers that Vedetta itself publishes by MQTT (unique id "vedetta_*") are dropped too: they would be its own data coming back.
 
 The two functions that read are pure (they take what Home Assistant said): the part that talks to Home Assistant is `fetch`, the same Supervisor WebSocket as the registry."""
+from datetime import datetime
+
 from . import ha_registry
 
 SOURCE = "router"
 TRACKER_DOMAIN = "device_tracker."
 OWN_PREFIX = ha_registry.OWN_PREFIX
 # The only keys that leave this module, whatever the state carries.
-KEPT = ("mac", "ip", "host", "name", "online")
+KEPT = ("mac", "ip", "host", "name", "online", "since")
 
 
 def own_entity_ids(registry: list) -> set:
@@ -50,7 +52,16 @@ def _row(st: dict, own: set) -> dict | None:
     mac = ha_registry.norm_mac(attrs.get("mac"))
     if not mac:
         return None
-    return {"mac": mac, "ip": _ipv4(attrs.get("ip")), "host": _text(attrs.get("host_name")), "name": _text(attrs.get("friendly_name")), "online": _online(st.get("state"))}
+    return {"mac": mac, "ip": _ipv4(attrs.get("ip")), "host": _text(attrs.get("host_name")), "name": _text(attrs.get("friendly_name")), "online": _online(st.get("state")),
+            "since": _since(st.get("last_changed"))}
+
+
+def _since(value) -> float | None:
+    """When the state last changed (seconds), from the ISO time Home Assistant writes; None when it is missing or not a time."""
+    try:
+        return datetime.fromisoformat(str(value)).timestamp() if value else None
+    except ValueError:
+        return None
 
 
 def _is_router_client(entity: str, attrs: dict, own: set) -> bool:

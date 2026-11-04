@@ -128,6 +128,16 @@ def forget(mac: str) -> bool:
         return True
 
 
+def forget_many(macs: list[str]) -> list[str]:
+    """Takes several adopted devices out at once (Discussion #16: the ones learned by mistake, or all of them when the function goes off); returns those taken out."""
+    with _lock:
+        data = _load()
+        done = [m for m in dict.fromkeys(macs) if data["adopted"].pop(m, None) is not None]
+        if done:
+            _save()
+    return done
+
+
 def set_edit(mac: str, key: str, value) -> bool:
     """What the user chose by hand for an adopted device; an empty value goes back to what Home Assistant says. False when the device is not adopted."""
     if key not in EDIT_KEYS:

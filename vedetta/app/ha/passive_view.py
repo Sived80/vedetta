@@ -4,6 +4,7 @@ Pure (they take what passive_store keeps): no network, no disk. A passive device
 card to leave out. Name, type and brand come from Home Assistant, unless the user chose them: then the choice wins."""
 import contextlib
 import ipaddress
+import time
 
 from .. import i18n
 from ..recognition import brand_logo
@@ -70,13 +71,21 @@ def ip_key(ip: str | None) -> int:
         return 1 << 40
 
 
-def candidates(data: dict, known_macs: set, known_ips: set, local: str | None = None) -> list[dict]:
-    """The clients Home Assistant sees that can be adopted: not adopted yet, and not a device Vedetta already has (by MAC or by address).
+STALE_S = 30 * 86400      # a tracker away for longer than this is an old one (a device sold, a guest of last year): not offered (Discussion #16)
+
+
+def stale(row: dict, now: float) -> bool:
+    return row.get("online") is False and bool(row.get("since")) and now - row["since"] > STALE_S
+
+
+def candidates(data: dict, known_macs: set, known_ips: set, local: str | None = None, now: float | None = None) -> list[dict]:
+    """The clients Home Assistant sees that can be adopted: not adopted yet, not away for more than STALE_S, and not a device Vedetta already has (by MAC or by address).
     Each row says whether it is on a network where Vedetta has devices (`same_net`), so the page can name the ones that are not. `local`: the network Vedetta is on (see _net)."""
     own = {_net(ip, local) for ip in known_ips} - {None}
+    now = time.time() if now is None else now
     out = []
     for mac, row in data["candidates"].items():
-        if mac in data["adopted"] or mac.upper() in known_macs or (row.get("ip") and row["ip"] in known_ips):
+        if mac in data["adopted"] or mac.upper() in known_macs or (row.get("ip") and row["ip"] in known_ips) or stale(row, now):
             continue
         out.append({**row, "id": passive_store.id_of(mac), "net": _net(row.get("ip"), local), "same_net": _net(row.get("ip"), local) in own,
                     "type": _guess_type(mac, row)})

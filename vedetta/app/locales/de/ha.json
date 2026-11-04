@@ -643,7 +643,7 @@
   "js.ha.nets.title": "Von Home Assistant gesehene Netzwerke",
   "js.ha.nets.sub": "Geräte, die Home Assistant über den Router sieht, auch in anderen Netzwerken",
   "js.ha.nets.switch": "Funktion einschalten",
-  "js.ha.nets.n1": "Liest nur die Geräte, die der Router verfolgt: Adresse, MAC, Name und ob sie verbunden oder abwesend sind.",
+  "js.ha.nets.n1": "Liest nur die Geräte, die der Router verfolgt: Adresse, MAC, Name, ob sie verbunden oder abwesend sind und seit wann.",
   "js.ha.nets.n2": "Liest keine Smartphones mit Standort, keine Personen und kein GPS.",
   "js.ha.nets.n3": "Sendet nichts an diese Geräte: kein Ping und kein Scan. Es nutzt nur, was Home Assistant bereits weiß.",
   "js.ha.nets.n4": "Ist ausgeschaltet, bis du sie einschaltest. Übernommene Geräte werden getrennt gespeichert, nicht unter den Geräten, die Vedetta prüft.",
@@ -667,5 +667,11 @@
   "js.ha.nets.adopted_one": "{n} Gerät übernommen",
   "js.ha.nets.adopted_other": "{n} Geräte übernommen",
   "js.ha.nets.failed": "Das hat nicht geklappt. Versuche es noch einmal.",
+  "js.ha.nets.remove_them": "Entfernen",
+  "js.ha.nets.off_keep": "Aus. Die {n} übernommenen Geräte bleiben auf der Seite.",
+  "js.ha.nets.removed": "{n} von der Seite entfernt",
+  "js.ha.nets.remove": "Entfernen",
+  "js.ha.nets.to_remove": "{n} ausgewählt, um sie von der Seite zu entfernen.",
+  "js.ha.nets.adopted_title": "Bereits übernommen ({n})",
   "js.ha.ev.from_ha": "Von Home Assistant über die Router-Integration bereitgestellte Daten. Keine Schätzung von Vedetta."
 }

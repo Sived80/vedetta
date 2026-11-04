@@ -12,6 +12,7 @@ netsEl.className = "nd-panel";
 netsEl.hidden = true;
 var netsInfo = null;                        // the last answer of /api/ha/networks
 var netsSel = {};                           // MACs ticked in the list
+var netsDel = {};                           // MACs ticked among the adopted ones, to take out (Discussion #16)
 var netsBusy = "";                          // "read" while Home Assistant is asked, "adopt" while the adoption runs
 var netsLoadTimer = null;
 
@@ -45,7 +46,24 @@ function netsGroup(g) {
   return '<div class="rv-net"><b>' + esc(label) + '</b><span class="sp"></span><button type="button" class="btn text rp rv-all" data-nets-all="' + esc(g.net) + '">' + esc(t("js.ha.nets.select_all")) + "</button>" +
     "<span>" + esc(t("js.ha.nets.net_sum", { n: g.list.length, on: on }) + other) + "</span></div>" + g.list.map(netsRow).join("");
 }
+// The devices adopted before: they can be taken out here, also when the function is off (Discussion #16: old trackers learned by mistake).
+function netsAdopted(info) {
+  const list = info.adopted_list || [];
+  if (!list.length) return "";
+  const n = list.filter(function (c) { return netsDel[c.mac]; }).length;
+  return '<div class="rv-net"><b>' + esc(t("js.ha.nets.adopted_title", { n: list.length })) + '</b><span class="sp"></span><button type="button" class="btn text rp rv-all" data-nets-delall="1">' +
+    esc(t("js.ha.nets.select_all")) + "</button></div>" + list.map(function (c) {
+    const name = c.name || c.mac;
+    return '<div class="rv-row"><input type="checkbox" data-nets-d="' + esc(c.mac) + '"' + (netsDel[c.mac] ? " checked" : "") + ' aria-label="' + esc(name) + '">' +
+      '<span class="rv-ic' + (c.online === false ? " off" : "") + '">' + icon(typeIcon(c.type)) + '</span><div class="nd-text"><div class="nd-name">' + esc(name) +
+      '</div><div class="nd-sub">' + esc((c.ip || t("js.ha.nets.no_ip_row")) + " · " + c.mac + " · " + netsStateText(c)) + "</div></div></div>";
+  }).join("") + '<div class="rv-bar"><span>' + esc(t("js.ha.nets.to_remove", { n: n })) + '</span><span class="sp"></span><button type="button" class="btn text rp" id="nets-remove"' +
+    (n && !netsBusy ? "" : " disabled") + ">" + esc(t("js.ha.nets.remove")) + "</button></div>";
+}
 function netsBody(info) {
+  return netsFound(info) + netsAdopted(info);
+}
+function netsFound(info) {
   if (!info.enabled) return "";
   const read = info.read_at ? t("js.ha.nets.read_at", { time: netsClock(info.read_at), n: info.candidates.length }) : t("js.ha.nets.never");
   let html = '<div class="rv-bar top"><span>' + esc(info.error ? t("js.ha.nets.error") : read) + '</span><span class="sp"></span><button type="button" class="btn filled rp" id="nets-read"' +
@@ -88,6 +106,7 @@ export function openNets() {
   const opening = netsEl.hidden;
   netsEl.hidden = false;
   netsSel = {};
+  netsDel = {};
   netsBusy = "";
   (netsInfo ? Promise.resolve() : netsRefresh()).then(function () {
     renderNets();
@@ -109,12 +128,24 @@ export function closeNets() {
   netsEl.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: 420, easing: "ease-in" }).onfinish = done;
 }
 function netsFail() { snack(t("js.ha.nets.failed"), { kind: "error" }); netsBusy = ""; renderNets(); }
+function netsRemove(body) {
+  netsBusy = "remove"; renderNets();
+  netsAsk("/api/ha/networks/remove", body).then(function (info) {
+    netsDel = {};
+    netsBusy = "";
+    snack(t("js.ha.nets.removed", { n: info.removed }), { kind: "success", ms: 4000 });
+    renderNets();
+    netsChanged();
+  }).catch(netsFail);
+}
 netsEl.addEventListener("click", function (e) {
   if (e.target.closest("#nets-close")) { closeNets(); return; }
   if (e.target.closest("#nets-switch")) {
     const turnOn = !netsInfo.enabled;
     netsAsk("/api/ha/networks/enabled", { enabled: turnOn }).then(function (info) {
       renderNets();
+      // Off: the adopted cards stay (with their last state), and the user is offered to take them out at once
+      if (!turnOn && info.adopted) snack(t("js.ha.nets.off_keep", { n: info.adopted }), { ms: 9000, action: { text: t("js.ha.nets.remove_them"), fn: function () { netsRemove({ all: true }); } } });
       if (turnOn && !info.read_at) { netsBusy = "read"; renderNets(); netsAsk("/api/ha/networks/read").then(function () { netsBusy = ""; renderNets(); netsChanged(); }).catch(netsFail); }
       else netsChanged();
     }).catch(netsFail);
@@ -123,6 +154,16 @@ netsEl.addEventListener("click", function (e) {
   if (e.target.closest("#nets-read")) {
     netsBusy = "read"; renderNets();
     netsAsk("/api/ha/networks/read").then(function () { netsBusy = ""; renderNets(); netsChanged(); }).catch(netsFail);
+    return;
+  }
+  if (e.target.closest("[data-nets-delall]")) {
+    (netsInfo.adopted_list || []).forEach(function (c) { netsDel[c.mac] = true; });
+    renderNets();
+    return;
+  }
+  if (e.target.closest("#nets-remove")) {
+    const macs = Object.keys(netsDel).filter(function (m) { return netsDel[m]; });
+    if (macs.length) netsRemove({ macs: macs });
     return;
   }
   const all = e.target.closest("[data-nets-all]");
@@ -146,6 +187,8 @@ netsEl.addEventListener("click", function (e) {
   }
 });
 netsEl.addEventListener("change", function (e) {
+  const del = e.target.closest("[data-nets-d]");
+  if (del) { netsDel[del.dataset.netsD] = del.checked; renderNets(); return; }
   const box = e.target.closest("[data-nets-m]");
   if (!box) return;
   netsSel[box.dataset.netsM] = box.checked;

@@ -270,7 +270,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 245 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
-| `js/ha-networks.js` | 153 | networks seen by Home Assistant |
+| `js/ha-networks.js` | 196 | networks seen by Home Assistant |
 | `js/health-card.js` | 275 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/health-sim.js` | 49 | network health: made-up findings, debug mode only |

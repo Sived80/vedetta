@@ -54,7 +54,7 @@ def _platform_adapters() -> tuple:
 
 # Typical ports -> category (verified by nmap: W_SERVICE; number only: W_PORT_GUESS)
 _PORT_TYPE = {
-    554: "media", 1935: "media", 8008: "media", 8009: "media", 7000: "media", 8060: "media",
+    554: "camera", 1935: "media", 8008: "media", 8009: "media", 7000: "media", 8060: "media",
     631: "printer", 9100: "printer", 515: "printer",
     3389: "pc", 5900: "pc",
     22: "server", 8006: "server", 8123: "server", 2049: "server", 3306: "server", 5432: "server",
@@ -151,9 +151,9 @@ class _Clues:
         self.table_hits(upnp_types, _UPNP_TYPE, _FAMILY_UPNP, "upnp:", "UPnP ")
         self.api()
         if _declares_onvif(self.extra):
-            self.add("media", W_DECLARED, "onvif", "ONVIF")
+            self.add("camera", W_DECLARED, "onvif", "ONVIF")
         if self.extra.get("rtsp_server"):
-            self.add("media", 6, "rtsp", "RTSP")
+            self.add("camera", 6, "rtsp", "RTSP")
 
     def table_hits(self, items, table: dict, families: dict, prefix: str, label: str) -> None:
         """Reports every item found in the table of declared types, in order."""
@@ -213,14 +213,15 @@ class _Clues:
             self.kinds_out[entry["kind"]] = self.kinds_out.get(entry["kind"], 0) + W_DECLARED
 
     def unlisted_entities(self, ha_card: dict) -> None:
-        """The integration is not in the table (Daikin, Broadlink, Sonoff...): what Home Assistant does with the device still says something. A player or a camera is
-        media; switches, lights, climate, covers... say "smart device" (little, like any platform)."""
+        """The integration is not in the table (Daikin, Broadlink, Sonoff...): what Home Assistant does with the device still says something. A player is media,
+        a camera a camera (also when it has a speaker, so a player too); switches, lights, climate, covers... say "smart device" (little, like any platform)."""
         real_kinds = set(ha_card.get("entity_domains") or []) - {"device_tracker"}
         if not real_kinds or any(_ha_integrations().get(d) for d in (ha_card.get("domains") or [])):
             return
-        media = real_kinds & {"media_player", "camera"}
-        if media:
-            self.add("media", W_SERVICE, "ha_entities", "entita HA " + ",".join(sorted(media)))
+        # a camera with a speaker (UniFi Protect, doorbells) also has a player: the camera decides
+        kind = "camera" if "camera" in real_kinds else "media_player" if "media_player" in real_kinds else None
+        if kind:
+            self.add("camera" if kind == "camera" else "media", W_SERVICE, "ha_entities", "entita HA " + kind)
             return
         self.platform += 2
 

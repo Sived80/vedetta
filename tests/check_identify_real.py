@@ -28,7 +28,7 @@ CASES = [
     ("10.0.0.190", "1C:C3:16:00:00:AA", "10.0.0.190",
      {"http_title": "Login", "http_server": "webserver",
       "ports": [p("80 · http", cat="web"), p("554 · rtsp", cat="media"), p("4567 · tram"), p("8000 · http-alt", cat="web"),
-                p("34567 · dhanalakshmi")]}, "Milesight telecamera", "media"),
+                p("34567 · dhanalakshmi")]}, "Milesight telecamera", "camera"),
     ("10.0.0.201", "E0:D3:62:00:00:AC", "10.0.0.201",
      {"http_server": "pve-api-daemon/3.0", "http_title": "pve - Proxmox Virtual Environment",
       "tls_subject": "commonName=pve.local/organizationName=Proxmox Virtual Environment",
@@ -151,7 +151,7 @@ assert res["name"] == "Strip RGB"
 cam = {"name": "Camera giardino", "name_by_user": True, "manufacturer": "IPCAM", "model": "C6F0SoZ3", "area": "Giardino",
        "domains": ["onvif"], "entry_titles": [], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "00:AD:11:00:00:B1", cam)
-assert ha_data.infer_type(res) == "media" and ha_data.icon_for(res) == "cctv"
+assert ha_data.infer_type(res) == "camera" and ha_data.icon_for(res) == "cctv"
 # Zigbee gateway with Tasmota integration: the platform (Tasmota) does not decide, it stays "network device"
 zb = {"name": "Gateway Zigbee", "name_by_user": True, "manufacturer": "Tasmota", "model": "Sonoff ZbBridge", "area": "Corridoio",
       "domains": ["tasmota"], "entry_titles": [], "entity_names": []}

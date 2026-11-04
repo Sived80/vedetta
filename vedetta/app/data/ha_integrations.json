@@ -48,15 +48,15 @@
    "kind": "ups"
   },
   "onvif": {
-   "group": "media",
+   "group": "camera",
    "kind": "camera"
   },
   "generic_camera": {
-   "group": "media",
+   "group": "camera",
    "kind": "camera"
   },
   "reolink": {
-   "group": "media",
+   "group": "camera",
    "kind": "camera"
   },
   "braviatv": {

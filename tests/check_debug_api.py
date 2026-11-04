@@ -27,7 +27,7 @@ probe.ADAPTERS = {}
 cfg = devices_config.load_devices()[0]
 state.devices[did] = asyncio.run(probe.probe_device({**cfg, "last_mac": "1C:C3:16:00:00:AA"}))
 out = asyncio.run(routes_ha.api_ha_device_debug(did))
-assert out["type"]["chosen"] == "media" and "media" in out["type"]["scores"] and out["type"]["min_score"] == ha_data.MIN_TYPE_SCORE
+assert out["type"]["chosen"] == "camera" and "camera" in out["type"]["scores"] and out["type"]["min_score"] == ha_data.MIN_TYPE_SCORE
 assert out["brand"]["brand"] == "Milesight" and out["brand"]["evidence"] == "confirmed"
 assert out["name"]["shown"] == "Milesight telecamera" and out["name"]["placeholder"] is False
 assert any(c["source"] == "web" for c in out["name"]["candidates"]) or out["name"]["candidates"] == []

@@ -77,7 +77,7 @@ def _blob_port_labels(device: dict) -> tuple[list, set[int]]:
 
 # Words that mean the product only in the declared model: "camera" is also the room in Italian (a device called "Camera da letto"),
 # but in a model ("lumi.camera.acn007", "C200 Camera") it is the product.
-_MODEL_WORDS = {"media": {"camera", "cameras"}}
+_MODEL_WORDS = {"camera": {"camera", "cameras"}}
 
 
 def _model_text(device: dict) -> tuple[str, set[str]]:

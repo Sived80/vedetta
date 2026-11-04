@@ -22,9 +22,9 @@ cases = [
     ({"ip": "192.168.50.105", "name": "FRITZ!WLAN Repeater 310"}, "router"),   # declared repeater
     ({"ip": "192.168.50.113", "name": "SONY XR-55X92K", "extra": {"api_source": "cast"}}, "media"),
     ({"ip": "192.168.50.190", "name": "Milesight", "extra": {"http_server": "webserver"},
-      "scanned_ports": [port("80 · Boa httpd"), port("554 · rtsp"), port("8000 · http-alt", False)]}, "media"),
+      "scanned_ports": [port("80 · Boa httpd"), port("554 · rtsp"), port("8000 · http-alt", False)]}, "camera"),
     ({"ip": "192.168.50.199", "name": "IPCAM", "extra": {"onvif_name": "IPCAM", "rtsp_server": "Hipcam RealServer/V1.0"},
-      "scanned_ports": [port("80 · Mongoose httpd"), port("554 · Hipcam RealServer rtspd")]}, "media"),
+      "scanned_ports": [port("80 · Mongoose httpd"), port("554 · Hipcam RealServer rtspd")]}, "camera"),
     ({"ip": "192.168.50.103", "name": "Android", "extra": {"mdns_services": "_amzn-wplay._tcp"}}, "media"),
     ({"ip": "192.168.50.201", "name": "Proxmox", "brand": "Proxmox", "scanned_ports": [port("22 · ssh"), port("8006 · pve")]}, "server"),
     ({"ip": "192.168.50.87", "name": "Termostato", "extra": {"api_source": "tasmota"}}, "iot"),

@@ -7,16 +7,17 @@ import { netsEl } from "./ha-networks.js";
 import { schedule } from "./live.js";
 import { bindGauge, gaugeHTML, paintCycle, paintGauge, paintNewDot } from "./net-gauge.js";
 import { logoHTML, movingIcon } from "./net-icons.js";
-import { mountTile, paintTile, sampleCycle, tileHTMLShell } from "./net-rotator.js";
+import { mountTile, onSharedFilter, paintTile, sampleCycle, tileHTMLShell } from "./net-rotator.js";
 
 // ------------------------------------------------------------ filters
-// Chosen from the badges of the "Network" card (All, Online, Offline, Mobile) and from the segments of its circle (type).
+// Chosen from the badges of the "Network" card (All, Online, Offline, Mobile), from the segments of its circle (type) and from the MQTT tile (shared with Home Assistant).
 export function matches(d) {
   const f = S.filter;
   if (f.status === "online" && !d.online) return false;
   if (f.status === "offline" && d.online) return false;
   if (f.status === "mobile" && !d.is_mobile) return false;
   if (f.type && d.type !== f.type) return false;
+  if (f.shared && !d.ha_share) return false;
   if (f.q && d._hay.indexOf(f.q) < 0) return false;
   return true;
 }
@@ -30,7 +31,8 @@ function counts() {
   return c;
 }
 function setFilter(kind, value) {
-  if (kind === "status") S.filter.status = value;
+  if (kind === "status") { S.filter.status = value; if (value === "all") S.filter.shared = false; }      // "All" shows all again
+  else if (kind === "shared") S.filter.shared = !S.filter.shared;
   else S.filter.type = S.filter.type === value ? null : value;
   S.dirty.layout = true;
   S.dirty.net = true;
@@ -95,6 +97,7 @@ export function buildNetwork() {
     const b = e.target.closest(".badge");
     if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
   });
+  onSharedFilter(function () { setFilter("shared"); });
   mountTile();
   mountHealth();                                       // a second screen with the network health
   // Brands: the list opens on hover (CSS) and, on touch screens, with a tap on the block (.expanded).

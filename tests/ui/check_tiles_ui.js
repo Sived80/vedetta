@@ -154,6 +154,19 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(/Controlli spenti|Checks off/.test(it) && /Nessun controllo|No checks/.test(it) && !/203\.0\.113\.7/.test(it), "tutti e due i controlli spenti: «Controlli spenti», nessun indirizzo");
   const none = await text(labels.find((l) => /Permessi|Permissions/.test(l)));
   check((none.match(/Spento|Off(?![a-z])/g) || []).length === 3 && !/(Acceso|On)\b/.test(none.replace(/Permissions/, "")), "e la tile delle funzioni mostra le tre righe spente, nessuna accesa");
+  // Discussion #17 (at the end: it taps the carousel): the shared devices carry the sign of Home Assistant, and "Exposed N" filters them
+  link(true, true);
+  await wait(300);
+  const shown = () => qa(".tile").filter((el) => !el.hidden && el.offsetParent !== null || (!el.hidden && !el.closest("[hidden]"))).map((el) => el.dataset.id);
+  check(qa(".tile .tile-ha").filter((m) => !m.hidden).length === 2, "the two shared devices carry the sign of Home Assistant, the third does not");
+  const total = shown().length;
+  const tapExposed = async () => { await visit("MQTT"); const f = q("#rot [data-open]"); if (f) f.click(); await wait(300); return !!f; };
+  check(await tapExposed(), "«Exposed 2» can be tapped while the broker is connected");
+  const only = shown();
+  check(only.length === 2 && only.every((id) => data.devices.devices.find((d) => d.id === id).ha_share), "a tap on «Exposed 2» shows only the shared devices");
+  check(q("#rot .bar-leg.on") !== null, "and the tile says the filter is on");
+  await tapExposed();
+  check(shown().length === total && !q("#rot .bar-leg.on"), "another tap shows all again");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

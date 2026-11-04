@@ -30,7 +30,7 @@ function createTile(d, index) {
   el.style.animationDelay = Math.min(index || 0, 14) * 22 + "ms";
   el.innerHTML =
     '<span class="brand-big" aria-hidden="true" hidden><i></i></span>' +
-    '<span class="tile-icon"><span class="ic"></span><span class="ring"></span><span class="tile-flag" hidden>' + icon("flag") + "</span>" +
+    '<span class="tile-icon"><span class="ic"></span><span class="ring"></span><span class="tile-flag" hidden>' + icon("flag") + "</span>" + '<span class="tile-ha" role="img" hidden>' + icon("home-assistant") + "</span>" +
     '<span class="tile-mark tr" role="img" hidden></span><span class="tile-mark br" role="img" hidden></span></span>' +
     '<span class="tile-body"><span class="tile-name"></span><span class="tile-ip"></span><span class="tile-state"></span><span class="tile-sub"><span class="tile-sub-txt"></span><span class="tile-batt" role="img" style="display:inline-flex;vertical-align:-2px;margin-left:.35em;opacity:.65"></span></span></span>' +
     '<button type="button" class="icon-btn small tile-open touch rp" title="' + esc(t("js.ha.act.open")) + '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</button>" +
@@ -38,7 +38,7 @@ function createTile(d, index) {
     '<span class="hbar" role="img"></span>';
   el._r = {
     big: el.querySelector(".brand-big"), box: el.querySelector(".tile-icon"), ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
-    sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), flag: el.querySelector(".tile-flag"), markTR: el.querySelector(".tile-mark.tr"), markBR: el.querySelector(".tile-mark.br"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
+    sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), flag: el.querySelector(".tile-flag"), ha: el.querySelector(".tile-ha"), markTR: el.querySelector(".tile-mark.tr"), markBR: el.querySelector(".tile-mark.br"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
   };
   el._r.wake.title = t("js.ha.act.wake");
   el._r.wake.setAttribute("aria-label", t("js.ha.act.wake"));
@@ -104,6 +104,8 @@ export function updateTile(id) {
   r.flag.hidden = !d.focus;
   r.flag.title = d.focus ? t("js.ha.focus.edit") : "";
   el.classList.toggle("flagged", !!d.focus);
+  // a device shared with Home Assistant (MQTT): the sign of Home Assistant on the top left corner of its icon (Discussion #17)
+  if (r.ha.hidden === !!d.ha_share) { r.ha.hidden = !d.ha_share; if (d.ha_share) { r.ha.title = t("js.ha.share.mark"); r.ha.setAttribute("aria-label", t("js.ha.share.mark")); } }
   paintMarks(r, S.analysis[id]);
   const st = stateText(d), anText = analysisText(S.analysis[id]);
   if (r.state.textContent !== st) r.state.textContent = st;

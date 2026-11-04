@@ -12,7 +12,7 @@ export var S = {
   rev: 0,
   loaded: false,
   loadTries: 0,
-  filter: { q: (params.get("q") || "").toLowerCase(), status: "all", type: null },
+  filter: { q: (params.get("q") || "").toLowerCase(), status: "all", type: null, shared: false },
   poll: { known: false, interval: 30000, nextAt: 0 },
   activity: { search: false, rescanning: new Set() },
   dismissedNew: {},          // devices seen on the network that the user closed with "Cancel" (by MAC): the card does not come back for them

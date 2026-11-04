@@ -7,7 +7,7 @@
   <title>Vedetta</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 9 5 15 M12 9 19 15' stroke='%2303a9f4' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='6' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='5' cy='18' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='19' cy='18' r='3.2' fill='%2303a9f4'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="{{ base }}/static/ha/ha.css?v={{ static_version('ha/ha.css') }}">
-  <script>
+  <script nonce="{{ nonce }}">
     // Tema prima del primo disegno (niente lampo): vale il parametro ?theme=
     // gia' scritto dal server; senza parametro si usa l'ultima scelta fatta
     // dal menu, se c'e'.
@@ -75,10 +75,10 @@
 
   <noscript><p style="padding:16px;font-family:sans-serif">JavaScript is required.</p></noscript>
   {%- if base %}{# percorso base (ingress di HA): wrapper di fetch/EventSource, assente alla radice #}
-  <script>window.VEDETTA_BASE = {{ base|tojson }};</script>
+  <script nonce="{{ nonce }}">window.VEDETTA_BASE = {{ base|tojson }};</script>
   <script src="{{ base }}/static/js/base.js?v={{ static_version('js/base.js') }}"></script>
   {%- endif %}
-  <script>
+  <script nonce="{{ nonce }}">
     window.VEDETTA_LANG = {{ lang|tojson }};
     window.VEDETTA_LANG_AUTO = {{ (lang_auto|default(true))|tojson }};
     window.VEDETTA_I18N = {{ js_strings|tojson }};

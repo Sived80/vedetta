@@ -118,6 +118,7 @@ seen = {}
 
 async def inner(scope, receive, send):
     seen["base"] = scope["state"]["base"]
+    seen["nonce"] = scope["state"]["nonce"]
     await send({"type": "http.response.start", "status": 200, "headers": []})
     await send({"type": "http.response.body", "body": b"ok"})
 
@@ -133,6 +134,7 @@ async def call(client_ip, headers=()):
 
     scope = {"type": "http", "client": (client_ip, 1234), "headers": list(headers), "path": "/", "method": "GET"}
     await IngressMiddleware(inner)(scope, receive, send)
+    seen["headers"] = dict(sent[0].get("headers", []))
     return sent[0]["status"]
 
 
@@ -145,7 +147,15 @@ assert asyncio.run(call("172.30.32.2")) == 200
 assert asyncio.run(call("127.0.0.1")) == 403 and asyncio.run(call("::1")) == 403    # another app on the host network
 del os.environ["VEDETTA_INGRESS_ONLY"]
 assert asyncio.run(call("192.168.1.9")) == 200
-assert template_context(types.SimpleNamespace(state=types.SimpleNamespace(base="/x"))) == {"base": "/x"}
+assert template_context(types.SimpleNamespace(state=types.SimpleNamespace(base="/x", nonce="n1"))) == {"base": "/x", "nonce": "n1"}
+# the security headers: on every answer, with a Content-Security-Policy whose nonce is new at each page and is the one the template gets
+asyncio.run(call("192.168.1.9"))
+h, first = seen["headers"], seen["nonce"]
+assert h[b"x-content-type-options"] == b"nosniff" and h[b"x-frame-options"] == b"SAMEORIGIN", h
+policy = h[b"content-security-policy"].decode()
+assert "script-src 'self' 'nonce-%s'" % first in policy and "object-src 'none'" in policy and "'unsafe-eval'" not in policy, policy
+asyncio.run(call("192.168.1.9"))
+assert seen["nonce"] != first and len(first) >= 16
 print("ok: middleware ingress")
 
 # 6) data folder

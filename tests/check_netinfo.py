@@ -16,8 +16,19 @@ assert internet.parse_a_answer(bytes(resp), 0x2222) == "9.9.9.99"
 assert internet.parse_a_answer(bytes(resp), 0x1111) is None
 
 # Real path from 2026-10-04: router and immediately a public IP = direct exit.
-assert internet.classify(["192.168.50.1", "9.9.9.21", "10.40.85.77"]) == {"private_hops": ["192.168.50.1"], "double_nat": False, "cgnat": False}
-assert internet.classify(["192.168.50.1", "192.168.1.1", "9.9.9.21"])["double_nat"]
+assert internet.classify(["192.168.50.1", "9.9.9.21", "10.40.85.77"]) == {"private_hops": ["192.168.50.1"], "double_nat": False, "maybe_double_nat": False,
+                                                                           "cgnat": False, "wan_checked": False}
+# Two private hops alone are only "possible" (a router between VLANs gives them without NAT); the router's own WAN address decides.
+two = ["192.168.50.1", "192.168.1.1", "9.9.9.21"]
+r = internet.classify(two)
+assert not r["double_nat"] and r["maybe_double_nat"] and not r["wan_checked"], r
+r = internet.classify(two, "192.168.1.20")
+assert r["double_nat"] and not r["maybe_double_nat"] and r["wan_checked"], r
+r = internet.classify(two, "9.9.9.40")
+assert not r["double_nat"] and not r["maybe_double_nat"] and not r["cgnat"], r
+assert internet.classify(two, "100.70.3.4")["cgnat"] and not internet.classify(two, "100.70.3.4")["double_nat"]
+for odd in ("0.0.0.0", "nonsense", "", None, "fe80::1"):
+    assert internet.classify(two, odd)["maybe_double_nat"], odd
 assert internet.classify(["192.168.50.1", "100.70.0.1", "9.9.9.21"])["cgnat"]
 X = "<nmaprun><host><trace><hop ttl='2' ipaddr='9.9.9.21'/><hop ttl='1' ipaddr='192.168.50.1'/></trace></host></nmaprun>"
 assert internet.parse_trace(X) == ["192.168.50.1", "9.9.9.21"]

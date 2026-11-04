@@ -3,8 +3,10 @@
   public IP    standard DNS query to the OpenDNS resolver for myip.opendns.com: the
                answer is the address the query comes from (no web API)
   path         nmap traceroute (--traceroute) to 1.1.1.1: the first hops
-  double NAT   two or more hops with private IPs (RFC 1918) before the first public one:
-               there is another router (e.g. the provider's modem) in front of yours
+  double NAT   the router itself, asked over UPnP (upnp_wan.py), says its internet side has a private
+               address: there is another router (e.g. the provider's modem) in front of yours. Without
+               that answer, two or more private hops before the first public one only make it
+               "possible": a router inside the network (VLANs) gives two private hops without NAT
   CGNAT        a hop in 100.64.0.0/10 (RFC 6598) before the first public one: the
                provider shares the public IP among multiple customers"""
 import asyncio
@@ -15,6 +17,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from .. import external
+from . import upnp_wan
 from ..applog import logger
 
 OPENDNS = "208.67.222.222"
@@ -97,8 +100,9 @@ def parse_trace(xml_text: str) -> list[str]:
     return [ip for _, ip in sorted(hops) if ip]
 
 
-def classify(hops: list[str]) -> dict:
-    """Hops up to the first public one: how many are private, whether CGNAT is present."""
+def classify(hops: list[str], wan: str | None = None) -> dict:
+    """Hops up to the first public one: how many are private, whether CGNAT is present. `wan` = the internet-side address the
+    router declared over UPnP, when it answered: it decides the double NAT; without it two private hops are only "possible"."""
     private, cgnat = [], False
     for ip in hops:
         try:
@@ -112,7 +116,20 @@ def classify(hops: list[str]) -> dict:
             private.append(ip)
             continue
         break
-    return {"private_hops": private, "double_nat": len(private) >= 2, "cgnat": cgnat}
+    side = _wan_side(wan)
+    return {"private_hops": private, "double_nat": side == "private", "maybe_double_nat": side is None and len(private) >= 2,
+            "cgnat": cgnat or side == "cgnat", "wan_checked": side is not None}
+
+
+def _wan_side(wan: str | None) -> str | None:
+    """What the WAN address of the router says: "private", "cgnat", "public", or None when there is no usable answer."""
+    try:
+        addr = ipaddress.ip_address(wan or "")
+    except ValueError:
+        return None
+    if addr.version != 4 or addr.is_unspecified or addr.is_loopback:
+        return None
+    return "cgnat" if addr in _CGNAT else "private" if addr.is_private else "public"
 
 
 async def _nothing():
@@ -128,8 +145,24 @@ async def check() -> dict:
                   semaphore=_LIGHT_NMAP_SEMAPHORE) if want_path else _nothing(),
         public_ip() if want_ip else _nothing(), return_exceptions=True)
     hops = parse_trace(trace_xml) if isinstance(trace_xml, str) else []
-    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops), "ts": time.time(),
+    wan = await _router_wan(hops) if want_path else None
+    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops, wan), "ts": time.time(),
               "checks": {"public_ip": want_ip, "path": want_path}}
-    logger.info("Internet: IP pubblico %s, salti %s, doppio NAT %s, CGNAT %s", result["public_ip"] or "-",
-                " > ".join(result["hops"]) or "-", "si" if result["double_nat"] else "no", "si" if result["cgnat"] else "no")
+    _log(result)
     return result
+
+
+def _log(result: dict) -> None:
+    logger.info("Internet: IP pubblico %s, salti %s, doppio NAT %s, CGNAT %s", result["public_ip"] or "-", " > ".join(result["hops"]) or "-",
+                "si" if result["double_nat"] else "forse" if result["maybe_double_nat"] else "no", "si" if result["cgnat"] else "no")
+
+
+async def _router_wan(hops: list[str]) -> str | None:
+    """The WAN address declared by the first hop (the router), only when two private hops leave the double NAT open."""
+    if len(classify(hops)["private_hops"]) < 2:
+        return None
+    try:
+        return await upnp_wan.wan_address(hops[0])
+    except Exception as exc:  # noqa: BLE001  (the check of the way out must not fail for the router's UPnP)
+        logger.info("UPnP del router non letto (%r)", exc)
+        return None

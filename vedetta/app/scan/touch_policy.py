@@ -1,6 +1,7 @@
 """The touch policy: how much a device is contacted. Rule: never risk commanding a device.
   none   - only watching (ARP, announcements, presence). The user chose «don't touch», or the device has a printing or industrial control port open and the user did not say otherwise;
-  calm   - the device is slow: no risky step (all ports, service detection), everything else as the profile says;
+  calm   - the device is slow, or a camera (many handle extra connections poorly, issue #21): no risky step (all ports, service detection),
+           everything else as the profile says;
   normal - everything the profile says.
 This is also the pre-analysis of the fragile devices: it reads only what the saved scan already knows (the slow flag, the open ports) and sends nothing.
 The choice of the user is the field `no_touch` of the card: "on" (or true) = don't touch; "off" (or false) = the user took the automatic protection away (the device stays calm if it is fragile).
@@ -15,14 +16,23 @@ _ON, _OFF = (True, "on"), (False, "off")
 
 
 def fragile_reasons(device: dict) -> list[str]:
-    """Why a device is fragile, from the saved scan: an open printing or industrial control port, and the slow flag."""
+    """Why a device is fragile, from the saved scan: an open printing or industrial control port, the slow flag, a camera."""
     info = device.get("scan_info") or {}
     found = []
     if any(is_no_talk_port(p) for p in info.get("ports") or []):
         found.append("no_talk_port")
     if info.get("slow_scan"):
         found.append("slow")
+    if is_camera(device):
+        found.append("camera")
     return found
+
+
+def is_camera(device: dict) -> bool:
+    """A camera by the user's choice of type, or by what it declared to a past scan (an RTSP server, ONVIF)."""
+    info = device.get("scan_info") or {}
+    return (device.get("type") == "camera" or bool(info.get("rtsp_server") or info.get("onvif_name") or info.get("onvif_hardware"))
+            or "NetworkVideoTransmitter" in (info.get("wsd_types") or ""))
 
 
 def touch_level(device: dict) -> str:

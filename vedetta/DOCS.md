@@ -95,4 +95,5 @@ The group of a device is **not stored**: it is worked out again, every time it i
 - Devices with a private MAC address (iPhone/iPad) do not always announce their name: they stay "brand mobile"
   until a name arrives from Bonjour, DHCP, Home Assistant or your own choice.
 - A slow device (e.g. a console) is analysed with targeted ports first and, afterwards, in the background.
+- A camera (an RTSP server or ONVIF found, or the *Cameras* type chosen by hand) is analysed gently: no full port scan and no service detection, since many cameras handle extra connections poorly.
 - Deep searches use CPU: on small machines avoid running them together with heavy loads.

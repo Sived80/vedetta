@@ -72,6 +72,7 @@ assert "mobile" not in [d for d in devices_config.load_devices() if d["id"] == A
 # --- override: unknown id, invalid type, brand set and cleared, share with HA, focus with a limit
 assert post("/api/devices/nope/override", {"brand": "X"}).status_code == 404
 assert post(f"/api/devices/{A}/override", {"type": "spaceship"}).status_code == 400
+assert post(f"/api/devices/{A}/override", {"type": "camera"}).json() == {"ok": True}      # a type of its own for cameras (issue #21)
 assert post(f"/api/devices/{A}/override", {"brand": " Philips ", "type": "media"}).json() == {"ok": True}
 cfg = {d["id"]: d for d in devices_config.load_devices()}
 assert cfg[A]["brand_user"] == "Philips" and cfg[A]["type_user"] == "media"

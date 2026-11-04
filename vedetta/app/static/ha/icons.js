@@ -150,6 +150,7 @@
     audio: "speaker",
     iot: "chip",
     printer: "printer",
+    camera: "cctv",
     climate: "thermostat",
     appliance: "washing-machine",
     energy: "solar-power",

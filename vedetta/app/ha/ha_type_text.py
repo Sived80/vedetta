@@ -6,7 +6,7 @@ from .. import datafile
 
 
 # Order in which the UI shows the groups by type.
-TYPE_ORDER = ("router", "server", "pc", "phone", "media", "audio", "iot", "printer", "generic")
+TYPE_ORDER = ("router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic")
 
 
 # Climate, appliances, energy, security, openings and water are smart home devices: a single

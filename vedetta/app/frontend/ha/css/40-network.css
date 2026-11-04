@@ -266,6 +266,7 @@
   .c6 { --cc: var(--teal-color); }
   .c7 { --cc: var(--amber-color); }
   .c8 { --cc: var(--indigo-color); }
+  .c9 { --cc: var(--cyan-color, #00bcd4); }
   .c-other { --cc: #78909c; }
   .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
   .dot { background: var(--cc); }

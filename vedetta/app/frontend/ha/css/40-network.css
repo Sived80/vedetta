@@ -505,3 +505,7 @@
 
 /* Network card title: no text selection or tap highlight (long press). Unlayered, as it was. */
 #card-network .card-header .ch-title { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+
+  /* "Exposed N" of the MQTT tile is a filter: it says it can be tapped, and when it is on */
+  .bar-leg.t-filter { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+  .bar-leg.t-filter.on { color: var(--primary-color); font-weight: 600; text-decoration: none; }

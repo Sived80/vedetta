@@ -267,7 +267,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/deep.js` | 158 | deep search |
 | `js/export-vlan.js` | 107 | an optional extra of the export for the developer |
 | `js/export.js` | 264 | export for analysis |
-| `js/filters.js` | 245 | filters |
+| `js/filters.js` | 248 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
 | `js/ha-networks.js` | 196 | networks seen by Home Assistant |
@@ -284,11 +284,11 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-info.js` | 95 | "More info" dialog |
 | `js/net-gauge.js` | 106 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 284 | rotating tile of the Network card |
+| `js/net-rotator.js` | 290 | rotating tile of the Network card |
 | `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 331 | new devices |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
-| `js/tile.js` | 311 | tile |
+| `js/tile.js` | 313 | tile |
 | `js/update.js` | 34 | update available |
 | `css/10-base.css` | 169 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 181 | components |
@@ -296,9 +296,9 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/21-export-vlan.css` | 82 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 507 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 511 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/42-health.css` | 102 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
-| `css/50-tile.css` | 210 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
+| `css/50-tile.css` | 215 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |

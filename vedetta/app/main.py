@@ -73,7 +73,7 @@ async def lifespan(_: FastAPI):
     await lifecycle.stop(heartbeat, paths.data_path("run.json"))
 
 
-app = FastAPI(title="Vedetta", lifespan=lifespan)
+app = FastAPI(title="Vedetta", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)   # no automatic API pages: nobody needs them
 app.include_router(routes_brands.router)
 app.include_router(routes_ignored.router)
 app.include_router(routes_flows.router)

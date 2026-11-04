@@ -4,10 +4,6 @@
 ['DELETE'] /api/export/jobs/{job_id}
 ['DELETE'] /api/ignored/{item_id}
 ['DELETE'] /api/pause
-['GET', 'HEAD'] /docs
-['GET', 'HEAD'] /docs/oauth2-redirect
-['GET', 'HEAD'] /openapi.json
-['GET', 'HEAD'] /redoc
 ['GET'] /
 ['GET'] /api/brands
 ['GET'] /api/devices/{device_id}/presence

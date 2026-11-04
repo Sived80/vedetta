@@ -6,13 +6,24 @@ URLs must be prefixed. The prefix arrives in X-Ingress-Path (or in
 VEDETTA_BASE_PATH); absent = empty string and nothing changes compared to the LXC.
 
 VEDETTA_INGRESS_ONLY=1 (off by default): 403 for anyone not coming from the Supervisor
-(172.30.32.2). Not even localhost: with host_network another app on the host would reach the API."""
+(172.30.32.2). Not even localhost: with host_network another app on the host would reach the API.
+
+Every answer carries the security headers (SECURITY_HEADERS); the page gets a Content-Security-Policy with a new nonce at each
+request, so only its own three inline scripts run (template_context gives the nonce to the template)."""
 import os
+import secrets
 
 from .paths import env_base_path, normalize_base
 
 SUPERVISOR_IP = "172.30.32.2"
 _ALLOWED_PEERS = {SUPERVISOR_IP}
+SECURITY_HEADERS = [(b"x-content-type-options", b"nosniff"), (b"x-frame-options", b"SAMEORIGIN"), (b"referrer-policy", b"same-origin")]
+
+
+def csp(nonce: str) -> str:
+    """Scripts only from the app or with the nonce of this page; inline style attributes stay (the page sets widths and colours)."""
+    return ("default-src 'self'; script-src 'self' 'nonce-%s'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+            "connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'" % nonce)
 
 
 def ingress_only() -> bool:
@@ -48,10 +59,19 @@ class IngressMiddleware:
                     await send({"type": "websocket.close", "code": 1008})
                 return
         headers = dict(scope.get("headers", []))
-        scope.setdefault("state", {})["base"] = base_from_headers(headers)
-        await self.app(scope, receive, send)
+        nonce = secrets.token_urlsafe(16)
+        scope.setdefault("state", {}).update(base=base_from_headers(headers), nonce=nonce)
+        await self.app(scope, receive, _with_security_headers(send, nonce) if scope["type"] == "http" else send)
+
+
+def _with_security_headers(send, nonce: str):
+    async def wrapped(message) -> None:
+        if message["type"] == "http.response.start":
+            message = {**message, "headers": list(message.get("headers", [])) + SECURITY_HEADERS + [(b"content-security-policy", csp(nonce).encode())]}
+        await send(message)
+    return wrapped
 
 
 def template_context(request) -> dict:
     """Jinja2Templates context processor: `base` in every template."""
-    return {"base": getattr(request.state, "base", "")}
+    return {"base": getattr(request.state, "base", ""), "nonce": getattr(request.state, "nonce", "")}

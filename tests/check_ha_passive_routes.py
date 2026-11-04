@@ -93,5 +93,15 @@ r = client.get("/api/ha/networks").json()
 check([c["mac"] for c in r["candidates"]] == ["02:00:5e:10:00:21", "02:00:5e:10:00:31"], "a removed one is offered again while Home Assistant sees it")
 check(client.delete("/api/devices/ha-02005e100021").status_code == 404, "removing it twice is not found")
 
+# ---- taking several out at once (Discussion #16): by MAC, or all of them; the panel lists the adopted ones
+r = client.post("/api/ha/networks/adopt", json={"macs": ["02:00:5e:10:00:21", "02:00:5e:10:00:31"]}).json()
+check(r["adopted"] == 2 and [c["mac"] for c in r["adopted_list"]] == ["02:00:5E:10:00:21", "02:00:5E:10:00:31"], "the panel gets the adopted ones, by address")
+check(client.post("/api/ha/networks/remove", json={"macs": "x"}).status_code == 400, "remove wants a list, or all")
+r = client.post("/api/ha/networks/remove", json={"macs": ["02:00:5E:10:00:31", "02:00:5e:99:99:99"]}).json()
+check(r["removed"] == 1 and r["adopted"] == 1, "one taken out, an unknown MAC skipped")
+r = client.post("/api/ha/networks/remove", json={"all": True}).json()
+check(r["removed"] == 1 and r["adopted"] == 0 and r["adopted_list"] == [], "all taken out")
+check(not any(d["id"].startswith("ha-") for d in client.get("/api/ha/devices").json()["devices"]), "and the page has no card of them left")
+
 print("\nFAILED: %d" % failed if failed else "\nall ok")
 sys.exit(1 if failed else 0)

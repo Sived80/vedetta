@@ -61,7 +61,7 @@ OWN = ha_trackers.own_entity_ids([{"entity_id": "device_tracker.vedetta_own", "u
 # ---- reading: only the router trackers, only five facts
 rows = ha_trackers.extract(STATES, OWN)
 check([r["mac"] for r in rows] == ["02:00:5e:10:00:21", "02:00:5e:10:00:31", "02:00:5e:20:00:09", "02:00:5e:10:00:71", "02:00:5e:10:00:77"], "only the router trackers with a valid MAC, in the order Home Assistant lists them")
-check(all(set(r) == set(ha_trackers.KEPT) for r in rows), "every row has exactly the five kept facts")
+check(all(set(r) == set(ha_trackers.KEPT) for r in rows), "every row has exactly the six kept facts")
 check(OWN == {"device_tracker.vedetta_own"}, "the trackers Vedetta publishes itself are recognised by their unique id")
 check(not any(r["mac"] == "02:00:5e:aa:00:01" for r in rows), "the phone tracker (GPS) is not kept")
 dump = json.dumps(rows)
@@ -191,6 +191,14 @@ check(passive_view.candidates(data, set(), {"198.51.100.200"})[0]["same_net"] is
 check(passive_view._net("198.51.101.7", "198.51.100.0/22") == "198.51.100.0/22" and passive_view._net("198.51.100.9", "198.51.100.0/22") == "198.51.100.0/22", "two /24 of a /22 are the same network")
 check(passive_view._net("192.0.2.5", "198.51.100.0/22") == "192.0.2.0/24" and passive_view._net("198.51.101.7", None) == "198.51.101.0/24", "outside the local network, or without it, the /24 of the address")
 check(passive_view._net("198.51.101.7", "not a network") == "198.51.101.0/24" and passive_view._net(None, "198.51.100.0/22") is None, "a local network that cannot be read changes nothing; no address, no network")
+# ---- old trackers (Discussion #16): away for more than 30 days, not offered; away for less, or at home, or without a time, offered
+check(ha_trackers._since("2026-11-04T10:00:00+00:00") == 1793786400.0 and ha_trackers._since("nonsense") is None and ha_trackers._since(None) is None, "the time of the last change is read")
+now = 1800000000.0
+old = {"online": False, "since": now - 31 * 86400}
+check(passive_view.stale(old, now) and not passive_view.stale({**old, "since": now - 29 * 86400}, now), "away 31 days is old, 29 days is not")
+check(not passive_view.stale({**old, "online": True}, now) and not passive_view.stale({**old, "online": None}, now) and not passive_view.stale({**old, "since": None}, now), "at home, unknown, or no time: never old")
+aged = {**data, "candidates": {m: ({**r, "online": False, "since": now - 40 * 86400} if m.endswith("31") else r) for m, r in data["candidates"].items()}}
+check("02:00:5e:10:00:31" not in [r["mac"] for r in passive_view.candidates(aged, set(), set(), now=now)], "an old tracker is not in the list")
 wide = passive_view.candidates(data, set(), {"198.51.103.200"}, local="198.51.100.0/22")
 check([r["net"] for r in wide][:2] == ["198.51.100.0/22"] * 2 and all(r["same_net"] for r in wide[:2]), "on a /22 a device of Vedetta on another /24 of it puts the clients on its network")
 

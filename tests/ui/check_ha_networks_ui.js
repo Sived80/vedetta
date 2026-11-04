@@ -33,7 +33,7 @@ const CLIENTS = [
   { mac: "02:00:5e:20:00:09", ip: "192.168.40.9", host: "sensor-b", name: null, online: true, net: "192.168.40.0/24", same_net: false, type: "iot", id: "ha-02005e200009" },
   { mac: "02:00:5e:10:00:71", ip: null, host: "thermostat", name: null, online: null, net: null, same_net: false, type: "generic", id: "ha-02005e100071" },
 ];
-const server = { enabled: false, available: true, read_at: null, error: null, adopted: 0, candidates: [] };
+const server = { enabled: false, available: true, read_at: null, error: null, adopted: 0, adopted_list: [], candidates: [] };
 const dom = new JSDOM(html, {
   runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc, url: "http://localhost/ha?lang=" + lang,
   beforeParse(win) {
@@ -49,7 +49,13 @@ const dom = new JSDOM(html, {
       const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
       if (url === "/api/ha/networks/enabled") { server.enabled = body.enabled; return ok(server); }
       if (url === "/api/ha/networks/read") { server.read_at = 1700000000; server.candidates = CLIENTS.slice(); return ok(server); }
+      if (url === "/api/ha/networks/remove") {
+        const gone = server.adopted_list.filter((c) => body.all || body.macs.includes(c.mac));
+        server.adopted_list = server.adopted_list.filter((c) => !gone.includes(c)); server.adopted = server.adopted_list.length;
+        return ok(Object.assign({ removed: gone.length }, server));
+      }
       if (url === "/api/ha/networks/adopt") {
+        server.adopted_list = (server.adopted_list || []).concat(server.candidates.filter((c) => body.macs.includes(c.mac)).map((c) => ({ id: c.id, name: c.name, mac: c.mac.toUpperCase(), ip: c.ip, type: c.type, online: c.online })));
         server.candidates = server.candidates.filter((c) => !body.macs.includes(c.mac)); server.adopted += body.macs.length;
         return ok(Object.assign({ done: body.macs.length }, server));
       }
@@ -119,7 +125,7 @@ const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel
   check(!!count && count.textContent.trim() === "1", "the menu says how many clients are still to adopt");
   await click("[data-nets]");
   await wait(60);
-  check(!q("#card-nets").hidden && qa("#card-nets .rv-row").length === 1, "the panel opens again from the menu, with what is left");
+  check(!q("#card-nets").hidden && qa("#card-nets [data-nets-m]").length === 1 && qa("#card-nets [data-nets-d]").length === server.adopted_list.length, "the panel opens again from the menu, with what is left to adopt and the adopted ones apart");
   sources[sources.length - 1].emit("passive", { type: "passive" });
   await wait(400);
   check(calls.filter((c) => c.url.startsWith("/api/ha/devices")).length >= 2, "a passive event makes the page read the devices again");
@@ -138,6 +144,28 @@ const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel
   await click("#more [data-act='close']");
   const normal = q('.tile:not([data-id="ha-02005e100021"])');
   if (normal) { await click(normal); await wait(200); const nb = q("#more .mi-actions"); check(!!nb && !nb.classList.contains("mi-actions-empty") && nb.querySelectorAll("button").length >= 1, "the card of a device Vedetta checks keeps its buttons"); await click("#more [data-act='close']"); }
+  // ---- Discussion #16: the adopted ones can be taken out from the panel, and turning the function off offers to take them all out
+  await click("#btn-menu");
+  await click("[data-nets]");
+  await wait(150);
+  const adoptedRows = qa("#card-nets [data-nets-d]");
+  check(adoptedRows.length === server.adopted_list.length && adoptedRows.length > 0, "the panel lists the adopted devices");
+  check(q("#nets-remove") && q("#nets-remove").disabled, "«Remove» waits for a tick");
+  adoptedRows[0].checked = true; adoptedRows[0].dispatchEvent(new win.Event("change", { bubbles: true }));
+  await wait(30);
+  const before = server.adopted_list.length;
+  await click("#nets-remove");
+  await wait(100);
+  const rem = calls.filter((c) => c.url === "/api/ha/networks/remove")[0];
+  check(!!rem && rem.body.macs.length === 1 && server.adopted_list.length === before - 1, "«Remove» takes out the ticked one only");
+  if (server.adopted_list.length === 0) server.adopted_list.push({ id: "ha-02005e100099", name: "Old", mac: "02:00:5E:10:00:99", ip: null, type: "generic", online: false });
+  server.adopted = server.adopted_list.length;
+  await click("#nets-switch");
+  await wait(100);
+  const action = q(".snack .snack-action");
+  check(!!action, "turning it off with adopted devices offers to take them out");
+  if (action) { action.click(); await wait(100); }
+  check(calls.some((c) => c.url === "/api/ha/networks/remove" && c.body.all === true) && server.adopted_list.length === 0, "the offer takes them all out");
   check(errors.length === 0, "no error in the page" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
   process.exit(failed ? 1 : 0);

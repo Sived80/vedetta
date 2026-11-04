@@ -35,7 +35,7 @@ class IngressMiddleware:
         if scope["type"] not in ("http", "websocket"):
             await self.app(scope, receive, send)
             return
-        # /healthz stays reachable by the Supervisor (add-on watchdog): it reveals nothing.
+        # /healthz stays reachable by the watch loop of run.sh (from localhost): it reveals nothing.
         if ingress_only() and scope.get("path") != "/healthz":
             client = (scope.get("client") or ("",))[0]
             if client not in _ALLOWED_PEERS:

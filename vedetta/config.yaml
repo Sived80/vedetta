@@ -8,8 +8,7 @@ arch:
   - aarch64
 startup: application
 boot: auto
-# The Supervisor checks this address and restarts the app if it does not answer.
-watchdog: http://[HOST]:[PORT:8765]/healthz
+# No watchdog address: the port is chosen by the Supervisor (ingress_port 0), so run.sh asks /healthz itself and stops the app if it hangs.
 init: false
 # Read-only access to the Home Assistant registries, for the name, brand, model and area of devices.
 homeassistant_api: true
@@ -18,10 +17,10 @@ host_network: true
 privileged:
   - NET_ADMIN
   - NET_RAW
-# Web interface through ingress only (Home Assistant sidebar). With host_network the
-# port is on the host: 8765 was free on the tested installation.
+# Web interface through ingress only (Home Assistant sidebar). With host_network the port is on the host, where another app
+# may already use it (Discussion #20: 8765 was taken): 0 lets the Supervisor pick a free one, run.sh reads it.
 ingress: true
-ingress_port: 8765
+ingress_port: 0
 ingress_entry: ha
 ingress_stream: true
 panel_icon: mdi:radar

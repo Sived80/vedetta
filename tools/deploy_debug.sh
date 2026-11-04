@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installs (or updates) a SEPARATE copy of Vedetta on Home Assistant OS, for debugging: "Vedetta (debug)", slug local_vedetta_debug.
 # The copy on the host is replaced as a whole (a file removed in the repository must not stay there: the front-end parts are joined
-# by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (8766), no MQTT (nothing is published to Home Assistant),
+# by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (chosen by the Supervisor, like the real app), no MQTT (nothing is published to Home Assistant),
 # no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> [SKIP_TESTS=1] tools/deploy_debug.sh
 set -euo pipefail
 HOST="${VEDETTA_HA_HOST:?set VEDETTA_HA_HOST}"
@@ -21,8 +21,6 @@ sed -i \
   -e "s/^slug: vedetta$/slug: $SLUG/" \
   -e 's/^version: "\(.*\)"$/version: "\1-debug"/' \
   -e 's/^boot: auto$/boot: manual/' \
-  -e 's/\[PORT:8765\]/[PORT:8766]/' \
-  -e 's/^ingress_port: 8765$/ingress_port: 8766/' \
   -e 's/^panel_icon: .*/panel_icon: mdi:bug/' \
   -e "s/^panel_title: .*/panel_title: \"$PANEL_TITLE\"/" \
   -e '/^services:$/,/^  - mqtt:want$/d' \

@@ -43,6 +43,21 @@ else
     bashio::log.info "MQTT not configured: publishing to Home Assistant is off"
 fi
 
+# The Supervisor cannot watch a port it chose at random: the app is watched from here. Three /healthz in a row without an
+# answer (a hung service) stop it, and the Supervisor starts it again when its watchdog is on. /healthz answers on localhost.
+(
+    sleep 180
+    fails=0
+    while sleep 60; do
+        if curl -fs -m 10 "http://127.0.0.1:${VEDETTA_PORT}/healthz" > /dev/null; then fails=0; else fails=$((fails + 1)); fi
+        if [ "${fails}" -ge 3 ]; then
+            bashio::log.warning "Vedetta does not answer: stopped, to be started again"
+            kill "$$"
+            exit 0
+        fi
+    done
+) &
+
 cd /app
 bashio::log.info "Starting Vedetta on port ${VEDETTA_PORT}"
 exec /opt/venv/bin/python -m uvicorn app.main:app \

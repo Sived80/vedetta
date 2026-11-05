@@ -190,6 +190,14 @@ assert iface.parse_default_route("Iface\tDestination\n") is None
 iface.lan_iface.cache_clear()
 os.environ["VEDETTA_IFACE"] = "end0"
 assert iface.lan_iface() == "end0"
+for good in ("eth0", "enp0s31f6", "eth0.40", "br-lan", "wlan_1"):
+    assert iface.valid_name(good), good
+for bad in ("-iL", "--script=x", "../../etc", "..", "eth0 -x", "a/b", "eth0;id", "x" * 16, "", "eth0\n"):
+    assert not iface.valid_name(bad), bad
+for bad in ("--interface=x", "../../../etc"):          # a name that is not one: the interface of the default route, never the text
+    iface.lan_iface.cache_clear()
+    os.environ["VEDETTA_IFACE"] = bad
+    assert iface.lan_iface() != bad and iface.valid_name(iface.lan_iface()), bad
 del os.environ["VEDETTA_IFACE"]
 iface.lan_iface.cache_clear()
 assert iface.lan_iface()  # detected or eth0 fallback

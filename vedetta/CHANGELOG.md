@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.12.0 · Sigillo
+**Sigillo** is Italian for *seal*: the app now comes sealed from GitHub, and what you share with Home Assistant is easy to see and to tidy up.
+- **Signed images.** Home Assistant no longer builds the app on your machine from whatever the repository holds: it downloads an image that GitHub built from the release tag, with a signed record of where it came from. Anyone can check it: `gh attestation verify oci://ghcr.io/sived80/amd64-vedetta:0.12.0 -R Sived80/vedetta`. Installing and updating are quicker too.
+- **A Cameras group.** Cameras and video recorders (ONVIF, RTSP, Reolink and the cameras Home Assistant knows) have their own group and icon instead of sitting with the media players, and Vedetta handles them gently, like other fragile devices.
+- **No fixed port.** The app no longer takes port 8766 on the host, so it cannot clash with another app: Home Assistant picks a free one. If the app hangs, it stops itself, so the watchdog of Home Assistant can start it again.
+- **See what you share.** A device shared with Home Assistant carries the Home Assistant mark on its icon, and *Exposed MQTT N* on the MQTT tile is a filter: one tap shows only the shared devices.
+- **Tidy up the devices learned from Home Assistant.** *Networks seen by Home Assistant* lists the adopted devices with *Remove*, also when the function is off, and turning it off offers to remove them all. Trackers away for more than 30 days are no longer offered.
+- **Fewer false double NAT warnings.** Before saying *double NAT*, Vedetta asks the router (UPnP) for its public address; when it cannot tell, it says *maybe*.
+- **Fewer wrong names.** *Spotify Connect* and generic names with the number mDNS adds on a clash (*none-2*, *Spotify Connect (2)*) are no longer used as device names.
+- **Safer page.** Stricter browser rules on what the page may load and run, no API documentation pages, and text read from the network is cleaned of control characters before it is kept or shown.
+
+**Thank you** to the people who asked for the cameras (Discussion #21), the free port (Discussion #20), the clean-up of learned devices (Discussion #16) and a way to see what is shared (Discussion #17), and to everyone who reviewed the code on Reddit.
+
 ## 0.11.0 · Polso
 **Polso** is Italian for *pulse*: Vedetta now takes the pulse of your network, for everyone.
 - **The network doctor.** A new tile of the Network card, *Network health*, opens a screen with four checks: two devices on the same address, a device that restarts again and again, many devices that drop together (a switch, an access point, the power), and a gateway that suddenly answers slower. Each finding says who, what, since when and what to do. Phones are left out of the checks on drops: their Wi-Fi sleeps on purpose. It only reads what Vedetta already measures and sends nothing to your devices.

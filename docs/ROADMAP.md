@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.10.0 · Ponte**, released 30 October 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 0.12.0 · Sigillo**, released in November 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **0.12.0 · Sigillo** | Nov | Signed images built by GitHub, checkable by anyone · a Cameras group, handled gently · no fixed port · the devices shared with Home Assistant are visible, and the learned ones easy to remove · fewer false double NAT warnings and wrong names · a stricter page |
 | **0.11.0 · Polso** | 4 Nov | The network doctor for everyone: duplicate addresses, restarts that repeat, devices that drop together, a slower gateway · networks wider than a /24 shown as they are · the hour of the nightly maintenance is yours · only Home Assistant can open the app |
 | **0.10.0 · Ponte** | 30 Oct | Devices on other networks, seen through Home Assistant and never probed · fewer wrong names on cards · the right message after sharing with Home Assistant · a quicker plain export |
 | **0.9.0 · Sintonia** | 26 Oct | German (first translation) · a card no longer stays online on someone else's address · a steadier Network card and no scroll bars drawn · gentler scans of slow devices and fewer false port alerts · a first network health check, quiet and visible only in the debug mode |

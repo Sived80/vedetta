@@ -11,7 +11,7 @@
 - **Fewer wrong names.** *Spotify Connect* and generic names with the number mDNS adds on a clash (*none-2*, *Spotify Connect (2)*) are no longer used as device names.
 - **Safer page.** Stricter browser rules on what the page may load and run, no API documentation pages, and text read from the network is cleaned of control characters before it is kept or shown.
 
-**Thank you** to the people who asked for the cameras (Discussion #21), the free port (Discussion #20), the clean-up of learned devices (Discussion #16) and a way to see what is shared (Discussion #17), and to everyone who reviewed the code on Reddit.
+**Thank you** to everyone who shared an export, to the people who asked for the cameras (issue #21), the free port (Discussion #20), the clean-up of learned devices (Discussion #16) and a way to see what is shared (Discussion #17), and to everyone who reviewed the code on Reddit.
 
 ## 0.11.0 · Polso
 **Polso** is Italian for *pulse*: Vedetta now takes the pulse of your network, for everyone.

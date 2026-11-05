@@ -30,7 +30,7 @@ def bundle(name: str) -> str:
     if hit and hit[0] == key:
         return hit[1]
     text = "".join(p.read_text(encoding="utf-8") for p in files)
-    _cache[name] = (key, text, hashlib.sha1(text.encode("utf-8")).hexdigest()[:12])
+    _cache[name] = (key, text, hashlib.sha1(text.encode("utf-8"), usedforsecurity=False).hexdigest()[:12])
     return text
 
 
@@ -56,7 +56,7 @@ def js_version() -> str:
     hit = _cache.get("js")
     if hit and hit[0] == key:
         return hit[1]
-    digest = hashlib.sha1(b"".join(p.read_bytes() for p in files)).hexdigest()[:12]
+    digest = hashlib.sha1(b"".join(p.read_bytes() for p in files), usedforsecurity=False).hexdigest()[:12]
     _cache["js"] = (key, digest)
     return digest
 

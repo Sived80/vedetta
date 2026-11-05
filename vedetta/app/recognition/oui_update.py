@@ -96,8 +96,8 @@ def download(urls=None) -> list[str]:
     texts = []
     for url in urls or URLS:
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})  # noqa: S310  fixed https URLs of the IEEE
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:  # noqa: S310  fixed https URLs of the IEEE
                 raw = resp.read(MAX_BYTES + 1)
         except Exception as exc:  # network down, DNS, HTTP, timeout
             raise OuiUpdateError("network", f"{url}: {exc}") from exc

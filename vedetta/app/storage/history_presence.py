@@ -69,7 +69,7 @@ class PresenceMixin:
         marks = ",".join("?" * len(device_ids))
         with self._lock:
             rows = self._db.execute(
-                f"SELECT device_id, MIN(ts) AS ts FROM presence_events WHERE device_id IN ({marks}) GROUP BY device_id", device_ids).fetchall()
+                f"SELECT device_id, MIN(ts) AS ts FROM presence_events WHERE device_id IN ({marks}) GROUP BY device_id", device_ids).fetchall()  # noqa: S608  only the ? placeholders are formatted in
         return {r["device_id"]: r["ts"] for r in rows}
 
     def online_overlap(self, a: str, b: str, since: float, until: float) -> float:
@@ -81,7 +81,7 @@ class PresenceMixin:
         """The history of a card that is merged into another one goes with it (presence, scans, latency)."""
         with self._lock:
             for table in ("presence_events", "scans", "latency"):
-                self._db.execute(f"UPDATE {table} SET device_id = ? WHERE device_id = ?", (target, source))
+                self._db.execute(f"UPDATE {table} SET device_id = ? WHERE device_id = ?", (target, source))  # noqa: S608  table names from a fixed tuple
             self._db.commit()
 
     def presence_segments(self, device_id: str, since: float, until: float) -> dict:

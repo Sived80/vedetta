@@ -26,6 +26,10 @@ jobs:
         with:
           node-version: "22"
       - run: pip install -r vedetta/requirements.txt
+      - name: "Security check of the code (ruff, rules S, B and ASYNC: see ruff.toml)"
+        run: |
+          pip install --require-hashes -r tools/ci/requirements.txt
+          ruff check vedetta/app
       - run: npm ci
         working-directory: tests/ui
       - run: python tools/run_tests.py

@@ -76,7 +76,7 @@ async def pilot(ip: str) -> dict:
                                    semaphore=_LIGHT_NMAP_SEMAPHORE)
     elapsed = PILOT_TIMEOUT_S
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314  the XML of nmap, written by nmap itself
         fin = root.find("runstats/finished")
         if fin is not None and fin.get("elapsed"):
             elapsed = float(fin.get("elapsed"))
@@ -229,7 +229,7 @@ def _configured_host_timeout(args: list[str]) -> float | None:
 
 def _parse_hosts(xml_text: str) -> list[dict]:
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314  the XML of nmap, written by nmap itself
     except ET.ParseError:
         return []
     return [h for h in map(_host_entry, root.findall("host")) if h]

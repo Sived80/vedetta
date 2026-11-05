@@ -136,7 +136,7 @@ async def _broadcast_targets() -> list[str]:
     try:
         subnet, _ = await get_local_network()
         targets.append(str(ipaddress.ip_network(subnet).broadcast_address))
-    except Exception:
+    except Exception:  # noqa: S110  the plain broadcast address is still there
         pass
     return targets
 

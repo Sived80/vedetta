@@ -109,7 +109,7 @@ def _fix_databases(p: Prepared, flagged_db: dict, anon: anonymize.Anonymizer, se
             for tb, col, value in rows:
                 text, n, left = anon.repair(value)
                 if text != value:
-                    con.execute(f'UPDATE "{tb}" SET "{col}" = ? WHERE "{col}" = ?', (text, value))
+                    con.execute(f'UPDATE "{tb}" SET "{col}" = ? WHERE "{col}" = ?', (text, value))  # noqa: S608  table and column names from the database's own schema, values bound with ?
                     p.fixed += n
                 for kind, v in left:
                     _add_pending(p, seen, name, kind, v, f"{tb}.{col}")

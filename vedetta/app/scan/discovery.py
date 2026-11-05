@@ -36,10 +36,20 @@ _PROBE = (
 _ONVIF_SCOPE = re.compile(r"^onvif://www\.onvif\.org/(name|hardware|location|manufacturer|mfr|type|model)/(.+)$", re.IGNORECASE)
 
 
+def _has_dtd(data) -> bool:
+    """A document type declaration or an entity in the text (bytes or str; anything else is left to the parser, as before)."""
+    if isinstance(data, (bytes, bytearray)):
+        return b"<!DOCTYPE" in data or b"<!ENTITY" in data
+    return isinstance(data, str) and ("<!DOCTYPE" in data or "<!ENTITY" in data)
+
+
 def parse_probe_match(data: bytes) -> dict | None:
-    """Fields of a WS-Discovery ProbeMatch; None if it is not a valid ProbeMatch."""
+    """Fields of a WS-Discovery ProbeMatch; None if it is not a valid ProbeMatch. Any device can send it: a document with a DTD
+    (entities, the way of the "billion laughs") is refused before parsing, ElementTree never loads external ones."""
+    if _has_dtd(data):
+        return None
     try:
-        root = ET.fromstring(data)
+        root = ET.fromstring(data)  # noqa: S314  untrusted, but without a DTD (checked above) and with the expat of the image (>= 2.4 limits expansion)
     except ET.ParseError:
         return None
     found, texts = _scan_probe_match(root)
@@ -230,7 +240,7 @@ async def _describe_ssdp(client, ip, urls):
         try:
             resp = await client.get(url)
             info = parse_description(resp.text)
-        except Exception:
+        except Exception:  # noqa: S112  a datagram that is not a valid answer is skipped
             continue
         merged["types"] += [t for t in info.pop("types") if t not in merged["types"]]
         for k, v in info.items():

@@ -55,7 +55,7 @@ async def refresh() -> int:
 
 
 async def _loop() -> None:
-    while True:
+    while True:  # noqa: ASYNC110  a refresh every N seconds, not a wait for a condition
         await asyncio.sleep(await refresh())
 
 

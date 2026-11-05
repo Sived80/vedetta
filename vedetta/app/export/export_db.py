@@ -12,7 +12,7 @@ def text_columns(con):
 def distinct_texts(con):
     """(table, column, value) of every distinct text value in the database."""
     for table, column in text_columns(con):
-        for (value,) in con.execute(f"SELECT DISTINCT \"{column}\" FROM \"{table}\" WHERE typeof(\"{column}\") = 'text'"):
+        for (value,) in con.execute(f"SELECT DISTINCT \"{column}\" FROM \"{table}\" WHERE typeof(\"{column}\") = 'text'"):  # noqa: S608  table and column names from the database's own schema, values bound with ?
             yield table, column, value
 
 
@@ -20,6 +20,6 @@ def mask_text_columns(con, anon) -> None:
     """Every text value goes through the same replacement (the function is registered in the connection, so the database does it row by row), then the file is compacted."""
     con.create_function("anon", 1, lambda v: anon.text(v) if isinstance(v, str) else v)
     for table, column in text_columns(con):
-        con.execute(f"UPDATE \"{table}\" SET \"{column}\" = anon(\"{column}\") WHERE typeof(\"{column}\") = 'text'")
+        con.execute(f"UPDATE \"{table}\" SET \"{column}\" = anon(\"{column}\") WHERE typeof(\"{column}\") = 'text'")  # noqa: S608  table and column names from the database's own schema, values bound with ?
     con.commit()
     con.execute("VACUUM")

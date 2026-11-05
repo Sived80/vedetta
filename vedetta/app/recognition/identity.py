@@ -188,7 +188,7 @@ def _window_count(cache: dict, query: str, device_id: str, now: float | None) ->
         try:
             from ..storage.history import history  # late import: opens the database
             cache["data"] = getattr(history, query)(now - CHURN_WINDOW_DAYS * 86400)
-        except Exception:
+        except Exception:  # noqa: S110  keeps the last known value
             pass  # keep the last known value (or none)
         cache["ts"] = now
     return cache["data"].get(device_id, 0)

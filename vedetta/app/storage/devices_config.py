@@ -16,7 +16,7 @@ _LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
 
 def _read_yaml(text: str):
-    return yaml.load(text, Loader=_LOADER)
+    return yaml.load(text, Loader=_LOADER)  # noqa: S506  _LOADER is CSafeLoader or SafeLoader
 
 
 _LOCK = threading.RLock()   # one lock for every read - modify - write of devices.yaml: the file is replaced atomically but the SEQUENCE was not (two changes that read the same old file lost one)

@@ -21,6 +21,10 @@ assert r["location"] == "country/china" and r["xaddrs"] == ["http://192.168.50.1
 r = discovery.parse_probe_match(PM.replace(b"name/IPCAM", b"name/HIKVISION%20DS-2CD").replace(b"location/", b"mfr/Hikvision onvif://www.onvif.org/location/"))
 assert r["name"] == "HIKVISION DS-2CD" and r["manufacturer"] == "Hikvision", r
 assert discovery.parse_probe_match(b"<x/>") is None and discovery.parse_probe_match(b"not xml") is None
+# any device can send this XML: a document with a DTD is refused before parsing (entity expansion, "billion laughs")
+bomb = b'<?xml version="1.0"?><!DOCTYPE e [<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">]>' + PM.split(b"?>", 1)[-1]
+assert discovery.parse_probe_match(bomb) is None, "a ProbeMatch with a DTD is refused"
+assert discovery.parse_probe_match(PM) is not None, "the same ProbeMatch without the DTD is read"
 
 # RTSP OPTIONS.
 r = discovery.parse_rtsp_response("RTSP/1.0 200 OK\r\nCSeq: 1\r\nServer: Hipcam RealServer/V1.0\r\nPublic: OPTIONS, DESCRIBE\r\n\r\n")

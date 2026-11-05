@@ -100,7 +100,7 @@ def _period_db(path: Path, since: float, until: float) -> None:
                 pass                                              # a table an older database does not have
         run("DELETE FROM presence_events WHERE ts > ? OR (ts < ? AND id NOT IN (SELECT MAX(id) FROM presence_events WHERE ts < ? GROUP BY device_id))", until, since, since)
         for table in ("scans", "latency", "mac_takeover"):
-            run(f"DELETE FROM {table} WHERE ts < ? OR ts > ?", since, until)
+            run(f"DELETE FROM {table} WHERE ts < ? OR ts > ?", since, until)  # noqa: S608  table names from a fixed tuple
         run("DELETE FROM mac_memory WHERE last_seen < ? OR first_seen > ?", since, until)
         con.commit()
         con.execute("VACUUM")
@@ -149,7 +149,7 @@ def _add_database_row_sizes(db_path, add_, mid):
     try:
         con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
         for table, size in (("presence_events", 90), ("latency", 40), ("mac_takeover", 250)):
-            for (ts,) in _rows(con, f"SELECT ts FROM {table} WHERE ts >= ?", since):
+            for (ts,) in _rows(con, f"SELECT ts FROM {table} WHERE ts >= ?", since):  # noqa: S608  table names from a fixed tuple
                 add_(ts, size)
         for ts, n in _rows(con, "SELECT ts, length(result_json) FROM scans WHERE ts >= ?", since):
             add_(ts, int(n or 0) + 40)

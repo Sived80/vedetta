@@ -202,9 +202,9 @@ class _DnsReply(asyncio.DatagramProtocol):
 
 
 async def answers_dns(ip: str, timeout: float = 1.0) -> bool:
-    import random
+    import secrets
     loop = asyncio.get_running_loop()
-    qid = random.randint(1, 65535)
+    qid = secrets.randbelow(65535) + 1      # not guessable
     try:
         transport, proto = await loop.create_datagram_endpoint(lambda: _DnsReply(qid), remote_addr=(ip, 53))
     except OSError:

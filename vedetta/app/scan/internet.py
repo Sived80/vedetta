@@ -11,7 +11,7 @@
                provider shares the public IP among multiple customers"""
 import asyncio
 import ipaddress
-import random
+import secrets
 import struct
 import time
 import xml.etree.ElementTree as ET
@@ -71,7 +71,7 @@ class _Reply(asyncio.DatagramProtocol):
 
 async def public_ip(timeout: float = 3.0) -> str | None:
     loop = asyncio.get_running_loop()
-    qid = random.randint(1, 65535)
+    qid = secrets.randbelow(65535) + 1      # not guessable: a guessed id lets someone else answer in place of the resolver
     try:
         transport, proto = await loop.create_datagram_endpoint(_Reply, remote_addr=(OPENDNS, 53))
     except OSError:
@@ -88,7 +88,7 @@ async def public_ip(timeout: float = 3.0) -> str | None:
 
 def parse_trace(xml_text: str) -> list[str]:
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314  the XML of nmap, written by nmap itself
     except ET.ParseError:
         return []
     hops = []

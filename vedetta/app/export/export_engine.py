@@ -108,7 +108,7 @@ def _remove(p: Prepared, item: dict) -> None:
         tb, col = item["where"].split(".", 1)
         con = sqlite3.connect(entry[1])
         try:
-            con.execute(f'UPDATE "{tb}" SET "{col}" = replace("{col}", ?, ?) WHERE instr("{col}", ?) > 0', (value, REMOVED, value))
+            con.execute(f'UPDATE "{tb}" SET "{col}" = replace("{col}", ?, ?) WHERE instr("{col}", ?) > 0', (value, REMOVED, value))  # noqa: S608  table.column built by the export itself (export_mask), the person only picks keep/remove by number
             con.commit()
         finally:
             con.close()

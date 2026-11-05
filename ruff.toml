@@ -1,0 +1,13 @@
+# The security check of the code of the app (the CI runs it on vedetta/app and stops on any finding, see .github/workflows/tests.yml).
+# S = the rules of Bandit (subprocess, SQL, XML, YAML, hashes, random, bind), B = common bugs, ASYNC = blocking calls in async code.
+# A finding that is not a problem is marked on its line with "# noqa: <rule>  <why>", never switched off for the whole code.
+target-version = "py312"
+line-length = 200
+
+[lint]
+select = ["S", "B", "ASYNC"]
+ignore = [
+    "B904",   # raise without "from" inside except: only how the traceback reads, the app answers the same
+    "B905",   # zip() without strict=: the lengths are equal by construction where it is used
+    "ASYNC109",   # an async function with a timeout parameter: a style choice, the timeout is applied inside with wait_for
+]

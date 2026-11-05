@@ -37,7 +37,7 @@ async def _prescript_output(script_id: str, host_timeout: int, script_args: str 
         args += ["--script-args", script_args]
     xml_text = await _run_nmap(args + ["--host-timeout", f"{host_timeout}s", "127.0.0.1"], semaphore=_LIGHT_NMAP_SEMAPHORE)
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314  the XML of nmap, written by nmap itself
     except ET.ParseError:
         return None
     script_el = root.find(f"prescript/script[@id='{script_id}']")
@@ -167,7 +167,7 @@ def _parse_protocol_scripts(xml_text: str) -> dict:
     different structure from the one already handled in _parse_hosts() for port
     scripts like http-title."""
     try:
-        root = ET.fromstring(xml_text)
+        root = ET.fromstring(xml_text)  # noqa: S314  the XML of nmap, written by nmap itself
     except ET.ParseError:
         return {}
     host_el = root.find("host")

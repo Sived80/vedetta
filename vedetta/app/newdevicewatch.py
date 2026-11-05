@@ -40,7 +40,7 @@ class NewDeviceWatch:
             try:
                 _, self.own_ip = await netutil.get_local_network()
                 skip_ips = {self.own_ip}
-            except Exception:
+            except Exception:  # noqa: S110  the own address is asked again next cycle
                 pass
         return skip_ips
 

@@ -164,7 +164,7 @@ class MqttService:
                 if was_connected:
                     client.publish(STATUS_TOPIC, "offline", qos=1, retain=True).wait_for_publish(2)
                 client.disconnect()
-            except Exception:
+            except Exception:  # noqa: S110  closing: a broker already gone has nothing to say
                 pass
             client.loop_stop()
 

@@ -51,7 +51,7 @@ def parse(packet: bytes) -> tuple[str, dict] | None:
     # The address this client (chaddr, its own MAC even behind a repeater) says it uses: ciaddr when it already has one (renewal), else
     # the address it asks for in a REQUEST. A DISCOVER's option 50 is only a hint of the last address, so it is not taken as evidence.
     ciaddr = _dotted(packet[12:16])
-    if ciaddr != "0.0.0.0":
+    if ciaddr != "0.0.0.0":  # noqa: S104  DHCP requests are broadcasts: the listener must take every interface
         info["ip"], info["ip_from"] = ciaddr, "ciaddr"
     elif requested and msg_type == 3:
         info["ip"], info["ip_from"] = requested, "requested"
@@ -141,7 +141,7 @@ async def start() -> asyncio.BaseTransport | None:
     try:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        sock.bind(("0.0.0.0", 67))
+        sock.bind(("0.0.0.0", 67))  # noqa: S104  DHCP requests are broadcasts: the listener must take every interface
         sock.setblocking(False)
         transport, _ = await asyncio.get_running_loop().create_datagram_endpoint(_Listener, sock=sock)
     except OSError as exc:

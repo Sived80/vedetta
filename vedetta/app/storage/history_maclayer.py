@@ -58,7 +58,7 @@ class MacLayerMixin:
         try:
             self._db.execute("ALTER TABLE ip_flip ADD COLUMN gap REAL DEFAULT 0")
             self._db.commit()
-        except Exception:
+        except Exception:  # noqa: S110  the column is already there
             pass                                    # the column is already there
 
     @staticmethod
@@ -155,7 +155,7 @@ class MacLayerMixin:
 
         def spread(group: str, count: str) -> dict:
             rows = self._db.execute(
-                f"SELECT MIN(n, 4), COUNT(*) FROM (SELECT COUNT(DISTINCT {count}) AS n FROM ip_mac WHERE last_seen >= ? GROUP BY {group}) GROUP BY MIN(n, 4)", (since,)).fetchall()
+                f"SELECT MIN(n, 4), COUNT(*) FROM (SELECT COUNT(DISTINCT {count}) AS n FROM ip_mac WHERE last_seen >= ? GROUP BY {group}) GROUP BY MIN(n, 4)", (since,)).fetchall()  # noqa: S608  column names from the two fixed calls below
             return {("4+" if n == 4 else str(n)): c for n, c in rows}
 
         with self._lock:

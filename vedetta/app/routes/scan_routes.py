@@ -104,7 +104,7 @@ async def _finished(task):
         me = asyncio.current_task()
         if me is not None and getattr(me, "cancelling", lambda: 0)():
             raise  # the stream itself is being closed, not a cancelled search
-    except Exception:
+    except Exception:  # noqa: S110  the end of the stream of a search: nothing left to tell
         pass
     return _NO_RESULT
 

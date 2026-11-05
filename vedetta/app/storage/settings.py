@@ -58,7 +58,7 @@ def load() -> dict:
     except (OSError, ValueError):
         return result
     if isinstance(data, dict):
-        for key, default in DEFAULTS.items():
+        for key in DEFAULTS:
             if key in data and valid_value(key, data[key]):
                 result[key] = data[key]
     return result
@@ -117,7 +117,7 @@ def update(changes: dict) -> dict:
     """Applies only the known keys with the right type, saves, returns everything.
     ValueError if a known key has a value of the wrong type."""
     current = load()
-    for key, default in DEFAULTS.items():
+    for key in DEFAULTS:
         if key in changes:
             if not valid_value(key, changes[key]):
                 raise ValueError(key)

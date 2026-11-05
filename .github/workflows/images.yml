@@ -1,0 +1,85 @@
+name: Images
+
+# Every release tag (vX.Y.Z) builds the app once per architecture, on GitHub, from the tagged commit, and publishes it to
+# ghcr.io/sived80/{arch}-vedetta:X.Y.Z with a signed provenance attestation: anyone can check that an image was built here,
+# from that commit (gh attestation verify oci://ghcr.io/sived80/amd64-vedetta:X.Y.Z -R Sived80/vedetta).
+# Home Assistant downloads these images (the "image" key of vedetta/config.yaml) instead of building whatever main holds.
+# By hand (workflow_dispatch), or on a push to ci/images-test, it builds a test tag (VERSION-test) for the debug copy, never the release one.
+
+on:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - ci/images-test
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to build (a test tag, for example 0.11.1-test)"
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+          - arch: aarch64
+            platform: linux/arm64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version
+        id: v
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          version="$(cat vedetta/VERSION)"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            # the tag, VERSION and config.yaml must agree, or the image would carry a number Home Assistant does not expect
+            test "$GITHUB_REF_NAME" = "v$version"
+            grep -q "^version: \"$version\"$" vedetta/config.yaml
+            tag="$version"
+          else
+            tag="${INPUT_TAG:-$version-test}"
+            echo "$tag" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-[a-z0-9]+$' || { echo "a test tag looks like 0.11.1-test"; exit 1; }
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "name=ghcr.io/sived80/${{ matrix.arch }}-vedetta" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: vedetta
+          platforms: ${{ matrix.platform }}
+          push: true
+          provenance: false
+          tags: ${{ steps.v.outputs.name }}:${{ steps.v.outputs.tag }}
+          labels: |
+            io.hass.type=addon
+            io.hass.name=Vedetta
+            io.hass.arch=${{ matrix.arch }}
+            io.hass.version=${{ steps.v.outputs.tag }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.v.outputs.tag }}
+            org.opencontainers.image.licenses=MIT
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.v.outputs.name }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

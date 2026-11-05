@@ -1,4 +1,11 @@
 """KnownMixin: methods of History that belong together (moved out of history.py by tools/split_class.py)."""
+import time
+
+# A private MAC (made up by the device: guests, phones that rotate it) that has no card and has not answered for this long is forgotten
+# at night: otherwise every guest stays in known_macs for ever (the table is read every cycle). Seen again, it is a new device again.
+PRIVATE_MAC_FORGET_DAYS = 30
+# second hex digit of the MAC with the "locally administered" bit (0x02) on
+_PRIVATE_DIGITS = "('2', '3', '6', '7', 'A', 'B', 'E', 'F')"
 
 
 class KnownMixin:
@@ -24,6 +31,20 @@ class KnownMixin:
         with self._lock:
             self._db.execute("DELETE FROM known_macs WHERE mac = ?", (mac,))
             self._db.commit()
+
+    def known_prune(self, now: float | None = None) -> int:
+        """Forgets the private MACs nobody needs: no card (no presence event with that MAC), not ignored by the person, first seen
+        and last answering ARP (ip_mac) more than PRIVATE_MAC_FORGET_DAYS ago. A MAC of the manufacturer is never forgotten. Returns how many."""
+        cutoff = (time.time() if now is None else now) - PRIVATE_MAC_FORGET_DAYS * 86400
+        with self._lock:
+            cur = self._db.execute(
+                f"""DELETE FROM known_macs WHERE upper(substr(mac, 2, 1)) IN {_PRIVATE_DIGITS} AND status != 'ignored' AND first_seen < ?
+                   AND upper(mac) NOT IN (SELECT DISTINCT upper(mac) FROM presence_events WHERE mac IS NOT NULL)
+                   AND upper(mac) NOT IN (SELECT upper(mac) FROM ip_mac WHERE last_seen >= ?)""",
+                (cutoff, cutoff),
+            )
+            self._db.commit()
+            return cur.rowcount
 
     def known_ignore(self, macs: list[str] | None) -> None:
         """'new' -> 'ignored' for the given MACs, or for all of them if macs is None."""

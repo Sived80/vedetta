@@ -41,6 +41,9 @@ async def run_nightly() -> None:
 
     removed = await asyncio.to_thread(history.prune)
     logger.info("Manutenzione notturna completata (%d eventi vecchi rimossi dallo storico)", removed)
+    forgotten = await asyncio.to_thread(history.known_prune)
+    if forgotten:
+        logger.info("Manutenzione notturna: %d MAC privati senza scheda e assenti da 30 giorni dimenticati", forgotten)
 
     await _update_mac_prefixes()
 

@@ -3,6 +3,7 @@
 # The copy on the host is replaced as a whole (a file removed in the repository must not stay there: the front-end parts are joined
 # by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (chosen by the Supervisor, like the real app), no MQTT (nothing is published to Home Assistant),
 # no start at boot, no update from GitHub. Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> [SKIP_TESTS=1] tools/deploy_debug.sh
+# Built on the host from the working copy (the "image" line of config.yaml is dropped), unless
 # DEBUG_IMAGE_TAG=0.11.1-test: the copy downloads that image built by GitHub (.github/workflows/images.yml, by hand) instead of
 # being built on the host, to try the signed images before a release uses them.
 set -euo pipefail
@@ -26,6 +27,7 @@ sed -i \
   -e 's/^panel_icon: .*/panel_icon: mdi:bug/' \
   -e "s/^panel_title: .*/panel_title: \"$PANEL_TITLE\"/" \
   -e '/^services:$/,/^  - mqtt:want$/d' \
+  -e '/^image:/d' \
   "$STAGE/$SLUG/config.yaml"
 if [ -n "${DEBUG_IMAGE_TAG:-}" ]; then
   sed -i -e "s/^version: .*/version: \"$DEBUG_IMAGE_TAG\"/" -e '/^image:/d' -e "/^slug: /a image: ghcr.io/sived80/{arch}-vedetta" "$STAGE/$SLUG/config.yaml"

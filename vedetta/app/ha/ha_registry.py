@@ -16,6 +16,7 @@ from functools import lru_cache
 
 from .. import datafile, paths
 from ..applog import logger
+from ..atomic import write_atomic
 from ..recognition import naming
 from ..storage import settings
 import contextlib
@@ -177,9 +178,9 @@ async def refresh() -> bool:
         _state.update(by_mac=index["by_mac"], by_ip=index["by_ip"], at=time.time(), error=None,
                       counts={"devices": len(raw["devices"]), "matched_by_mac": len(index["by_mac"]),
                               "matched_by_ip": len(index["by_ip"]), "areas": len(raw["areas"])})
+        cache = {"at": _state["at"], "by_mac": index["by_mac"], "by_ip": index["by_ip"], "counts": _state["counts"]}
         with contextlib.suppress(OSError):
-            CACHE_PATH.write_text(json.dumps({"at": _state["at"], "by_mac": index["by_mac"], "by_ip": index["by_ip"], "counts": _state["counts"]},
-                                             ensure_ascii=False), encoding="utf-8")
+            write_atomic(CACHE_PATH, lambda f: json.dump(cache, f, ensure_ascii=False), ".ha-registry-", durable=False)   # a cache: rebuilt if lost
         logger.info("Registro di Home Assistant letto: %d dispositivi, %d con MAC, %d con IP", len(raw["devices"]), len(index["by_mac"]), len(index["by_ip"]))
         return True
     except Exception as exc:   # HA down, missing permission, network: never an error for the user

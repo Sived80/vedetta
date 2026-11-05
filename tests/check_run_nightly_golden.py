@@ -88,6 +88,11 @@ def fake_prune():
     return SET["pruned"]
 
 
+def fake_known_prune():
+    LOG.append(["known_prune"])
+    return SET["pruned"] // 3      # 0, 1 or 40 private MACs forgotten (no new random draw: the other cases stay as they were)
+
+
 def fake_auto_update_enabled():
     LOG.append(["auto_update_enabled"])
     if SET["oui_fails"] == 1:
@@ -115,7 +120,7 @@ maintenance.devices_config = types.SimpleNamespace(load_devices=fake_load_device
 maintenance.filter_local_ips = fake_filter_local_ips
 maintenance.pipeline = types.SimpleNamespace(prepare_batch=fake_prepare_batch)
 maintenance.rescan_device = fake_rescan_device
-maintenance.history = types.SimpleNamespace(prune=fake_prune)
+maintenance.history = types.SimpleNamespace(prune=fake_prune, known_prune=fake_known_prune)
 oui_update.auto_update_enabled = fake_auto_update_enabled
 oui_update.is_due = fake_is_due
 oui_update.update = fake_update

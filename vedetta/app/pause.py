@@ -5,6 +5,7 @@ import json
 import time
 
 from .applog import logger
+from .atomic import write_atomic
 from .storage import settings
 
 FOREVER = float("inf")
@@ -48,9 +49,8 @@ class Pause:
             if self.until is None:
                 path.unlink(missing_ok=True)
                 return
-            path.parent.mkdir(parents=True, exist_ok=True)
             until = "forever" if self.until == FOREVER else self.until
-            path.write_text(json.dumps({"until": until, "total": self.total}), encoding="utf-8")
+            write_atomic(path, lambda f: json.dump({"until": until, "total": self.total}, f), ".pause-")
         except OSError:
             logger.exception("Pausa non salvata su disco")
 

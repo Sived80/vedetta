@@ -5,6 +5,7 @@ import re
 import contextlib
 
 from ..scan_common import NO_TALK_PORTS
+from ...netutil import communicate_briefly
 
 MAC_RE = re.compile(r"([0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5})")
 
@@ -46,7 +47,7 @@ async def _get_mac(ip: str) -> str | None:
             "ip", "neigh", "show", ip,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
         )
-        out, _ = await proc.communicate()
+        out = await communicate_briefly(proc)
     except Exception:
         return None
     match = MAC_RE.search(out.decode())

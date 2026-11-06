@@ -2,10 +2,45 @@
 (SRV, TXT, A) of every instance that is announced. What differs is given by the caller: where a reading goes, how long the request of one instance may take, until when new types are accepted."""
 import asyncio
 import contextlib
+import re
 import time
 from typing import NamedTuple
 
+from ..applog import logger
 from . import mdns_parse
+
+try:        # zeroconf may be missing: then there is no browsing at all (see open)
+    from zeroconf import DNSOutgoing, DNSQuestion
+except ImportError:
+    DNSOutgoing = DNSQuestion = None
+
+_QUERY_FLAGS, _TYPE_PTR, _CLASS_IN = 0x0000, 12, 1          # a standard query, a PTR record, class IN (RFC 1035)
+# A DNS-SD service type: _name._tcp or _name._udp in .local. (RFC 6763 section 7; the name is a DNS label, longer than RFC 6335's 15 in the wild).
+_SERVICE_TYPE_RE = re.compile(r"_[A-Za-z0-9][A-Za-z0-9_-]{0,62}\._(?:tcp|udp)\.local\.")
+
+
+def valid_service_type(name) -> bool:
+    """True for a well formed service type ("_http._tcp.local."). What the network announces is data from outside: a malformed type ("local.", ".")
+    would make zeroconf raise inside the event loop."""
+    return isinstance(name, str) and _SERVICE_TYPE_RE.fullmatch(name) is not None
+
+
+class TypesQuestion:
+    """When to ask the network again for its service types. zeroconf asks only in its first ~14 s, so a type that appears later would never be
+    browsed: the question is repeated, at intervals that double up to one hour (RFC 6762 section 5.2)."""
+    FIRST_S = 60.0
+    MAX_S = 3600.0
+
+    def __init__(self, now: float) -> None:
+        self.gap = self.FIRST_S
+        self.next = now + self.FIRST_S
+
+    def due(self, now: float) -> bool:
+        return now >= self.next
+
+    def asked(self, now: float) -> None:
+        self.next = now + self.gap
+        self.gap = min(self.gap * 2, self.MAX_S)
 
 
 class _Zeroconf(NamedTuple):
@@ -39,12 +74,24 @@ class Browsing:
 
     def on_type(self, zeroconf, service_type, name, state_change) -> None:
         # for the meta-query `name` is the announced service type (e.g. _hap._tcp.local.)
-        if state_change is self.zc.removed or name in self.types:
+        if state_change is self.zc.removed or name in self.types or not valid_service_type(name):
             return
         if self._types_window is not None and time.monotonic() - self._t0 > self._types_window:
             return
         self.types.add(name)
         self.browsers.append(self.zc.browser(self.zc.azc.zeroconf, name, handlers=[self.on_instance]))
+
+    def ask_types(self) -> None:
+        """One multicast question for the service types (the meta-query of RFC 6763 section 9), through the zeroconf already open: the answers
+        reach the browser of the types started by start(). Never stops the caller."""
+        if DNSOutgoing is None:
+            return
+        try:
+            out = DNSOutgoing(_QUERY_FLAGS)
+            out.add_question(DNSQuestion(mdns_parse._MDNS_META_TYPE, _TYPE_PTR, _CLASS_IN))
+            self.zc.azc.zeroconf.async_send(out)
+        except Exception:
+            logger.debug("Domanda dei tipi mDNS non inviata", exc_info=True)
 
     def on_instance(self, zeroconf, service_type, name, state_change) -> None:
         if state_change is self.zc.removed:

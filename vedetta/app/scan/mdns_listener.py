@@ -16,7 +16,7 @@ import time
 from .. import paths
 from ..atomic import write_atomic
 from . import mdns_parse, scan_common
-from .mdns_browsing import Browsing
+from .mdns_browsing import Browsing, TypesQuestion
 from ..applog import logger
 from ..formatters import truncate_name
 import contextlib
@@ -184,8 +184,12 @@ async def _listen() -> None:
     try:
         browsing.start()
         logger.info("Ascolto mDNS continuo avviato")
+        question = TypesQuestion(time.monotonic())
         while True:
             await asyncio.sleep(60)
+            if question.due(time.monotonic()):      # the types that appeared after the start (zeroconf asks only at the start)
+                browsing.ask_types()
+                question.asked(time.monotonic())
             _housekeeping()
             if _dirty:
                 await asyncio.to_thread(_save)

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.13.0 · Ascolto
+**Ascolto** is Italian for *listening*: Vedetta listens better to the network and to what you reported.
+- **Devices that stay quiet to a broadcast count as present.** Some devices (an LG TV, for example) do not answer the broadcast ARP of a scan but have just talked to Home Assistant: Vedetta now counts them on every network, without sending anything more (issue #35).
+- **Ignored devices are left alone.** The check that looks for DNS servers on the network no longer asks the devices you ignored or marked as not to be touched (issue #21).
+- **No more borrowed brands.** Some integrations (FRITZ!, for example) give the same placeholder model to every client they see. That model and its maker are no longer shown as the product and brand of your devices (issue #36).
+- **Services announced later are seen.** Vedetta asks again for the mDNS service types, at intervals that grow from one minute to one hour, so a device that starts announcing after the app is up is no longer missed. Malformed service types sent by a device are left out instead of filling the log with errors.
+- **Clearer first steps.** With an empty list, the page now says what to do: *Scan the network*, then *Add all* or the + of each device (Discussions #19, #37).
+- **Tidier and safer inside.** Private MAC addresses with no card, gone for 30 days, are forgotten at night; the pause and the registry cache are saved whole; a stricter security check of the code runs at every change.
+
+**Thank you** to the people who opened issues #21, #35 and #36 and Discussions #19 and #37, and to everyone who shared an export.
+
 ## 0.12.0 · Sigillo
 **Sigillo** is Italian for *seal*: the app now comes sealed from GitHub, and what you share with Home Assistant is easy to see and to tidy up.
 - **Signed images.** Home Assistant no longer builds the app on your machine from whatever the repository holds: it downloads an image that GitHub built from the release tag, with a signed record of where it came from. Anyone can check it: `gh attestation verify oci://ghcr.io/sived80/amd64-vedetta:0.12.0 -R Sived80/vedetta`. Installing and updating are quicker too.

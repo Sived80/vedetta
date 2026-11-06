@@ -133,16 +133,22 @@ class ArpView:
         now = time.monotonic()
         known = await asyncio.to_thread(self._configured_ips)
         if not known or self.last_full is None or now - self.last_full >= FULL_SWEEP_S:
-            hosts = await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS)
+            hosts = await self._with_neighbours(await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS))
             self.mem = {h["ip"]: (time.time(), h) for h in hosts}
             self.last_full = now
             return {ip: h for ip, (_, h) in self.mem.items()}, self.whole_size()
-        hosts = await scanner.arp_scan(known, timeout=ARP_CYCLE_TIMEOUT_S, interval_ms=SWEEP_INTERVAL_MS)
+        hosts = await self._with_neighbours(await scanner.arp_scan(known, timeout=ARP_CYCLE_TIMEOUT_S, interval_ms=SWEEP_INTERVAL_MS))
         for ip in known:
             self.mem.pop(ip, None)                # whoever was asked and does not answer is gone from the view
         for h in hosts:
             self.mem[h["ip"]] = (time.time(), h)
         return {ip: h for ip, (_, h) in self.mem.items()}, len(known)
+
+    async def _with_neighbours(self, hosts: list[dict]) -> list[dict]:
+        """The hosts of arp-scan and the neighbours the system has just seen answer (`ip neigh`, REACHABLE) that arp-scan did not get: a device
+        that ignores broadcast ARP is still on the network (issue #35). The table is only read: no packet more."""
+        net = await self.network()
+        return scanner.with_neighbours(hosts, await scanner.neighbors(net[0] if net else None))
 
     async def _read_small(self) -> tuple[dict[str, dict], int]:
         """A network of normal size: the view and how many addresses were asked."""

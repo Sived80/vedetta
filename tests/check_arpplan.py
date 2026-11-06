@@ -176,7 +176,9 @@ async def fake_arp(targets=None, timeout=0, interval_ms=None):
 
 
 async def fake_neigh(net=None):
-    return [{"ip": "10.0.77.3", "mac": "AA:BB:CC:00:07:03", "vendor": None}]
+    """Like scanner.neighbors: only the neighbours inside the network asked (parse_neighbors filters by `net`)."""
+    host = {"ip": "10.0.77.3", "mac": "AA:BB:CC:00:07:03", "vendor": None}
+    return [host] if net is None or ipaddress.ip_address(host["ip"]) in ipaddress.ip_network(net, strict=False) else []
 
 
 H = History(tmp / "state.db")                 # a database of its own: nothing is left over from the checks above

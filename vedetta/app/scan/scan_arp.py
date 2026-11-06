@@ -61,6 +61,12 @@ async def neighbors(net: str | None = None) -> list[dict]:
     return parse_neighbors(out.decode(errors="replace"), net)
 
 
+def with_neighbours(hosts: list[dict], neighbours: list[dict]) -> list[dict]:
+    """The hosts of arp-scan followed by the neighbours it did not get (by address): what arp-scan said about an address wins (it has the vendor)."""
+    seen = {h["ip"] for h in hosts}
+    return hosts + [h for h in neighbours if h["ip"] not in seen]
+
+
 def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
     """The computer the app runs on: ARP never lists it (nobody asks itself
     "who has this IP?"), so it is added by hand with the MAC of its network interface."""

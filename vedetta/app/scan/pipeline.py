@@ -62,9 +62,10 @@ async def run_initial() -> list[dict]:
     t0 = time.monotonic()
     arp_hosts = await scanner.arp_scan()
     try:
-        _, own_ip = await get_local_network()
+        net, own_ip = await get_local_network()
     except Exception:
-        own_ip = None
+        net, own_ip = None, None
+    arp_hosts = scanner.with_neighbours(arp_hosts, await scanner.neighbors(net))   # a device silent to broadcast ARP that the system has just seen (issue #35)
     me = scanner.own_host(own_ip, arp_hosts)
     if me:
         arp_hosts.append(me)

@@ -24,7 +24,7 @@ from ..scan import dhcp, discovery, touch_policy
 from ..applog import logger
 from .identity import default_gateway
 from ..storage.newdevices import normalize_mac
-from ..storage import devices_config, journal
+from ..storage import blocklist, devices_config, journal
 import contextlib
 
 REFRESH_S = 600
@@ -326,11 +326,19 @@ async def _compute_roles_snapshot(upnp, arp, own_ip):
     now = time.time()
     servers = [ip for ip, ts in dhcp.servers.items() if now - ts <= DHCP_SERVER_MAX_AGE_S]
     gateway = default_gateway()
-    candidates = [ip for ip in arp if ip != own_ip] + ([gateway] if gateway else [])
+    candidates = _dns_askable(arp, own_ip) + ([gateway] if gateway else [])
     dns = await dns_servers(c for c in candidates if _is_ipv4(c))
     result = compute(gateway=gateway, dhcp_servers=servers, dns_servers=dns, upnp=upnp, arp=arp, offers=_rt.offers["list"])
     before, keys = snapshot(), ("by_ip", "via", "names", "dhcp", "types")
     return now, result, before, keys
+
+
+def _dns_askable(arp: dict, own_ip) -> list:
+    """The addresses the DNS role check may ask (issue #21): not this computer, not an ignored device, not a card that must not be touched
+    (touch_policy), as the SSDP search. The gateway is added by the caller in any case: it is the router."""
+    untouchable = _untouchable_ips()
+    return [ip for ip, h in arp.items() if ip != own_ip and ip not in untouchable
+            and not blocklist.matches(mac=(h or {}).get("mac"), ip=ip, name=(h or {}).get("hostname"))]
 
 
 def _is_ipv4(value: str) -> bool:

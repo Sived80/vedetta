@@ -161,7 +161,7 @@
   "js.ha.toast.ignore_failed": "Zařízení se nepodařilo ignorovat",
   "js.ha.toast.error": "Něco se pokazilo",
   "js.ha.empty.title": "Zatím žádná zařízení",
-  "js.ha.empty.text": "Prohledejte síť a najděte zařízení, poté je přidejte z klasického ovládacího panelu.",
+  "js.ha.empty.text": "Klepněte na „Prohledat síť“: nalezená zařízení se objeví na kartě nových zařízení. Pak klepněte na „Přidat vše“ nebo na + u každého z nich.",
   "js.ha.nomatch.title": "Žádná odpovídající zařízení",
   "js.ha.nomatch.text": "Zkuste jiné vyhledávání nebo vymažte filtry.",
   "js.ha.nomatch.clear": "Vymazat filtry",

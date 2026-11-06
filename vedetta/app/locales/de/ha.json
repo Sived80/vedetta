@@ -161,7 +161,7 @@
   "js.ha.toast.ignore_failed": "Das Gerät konnte nicht ignoriert werden",
   "js.ha.toast.error": "Etwas ist schiefgelaufen",
   "js.ha.empty.title": "Noch keine Geräte",
-  "js.ha.empty.text": "Durchsuche das Netzwerk, um Geräte zu finden, und füge sie dann über das klassische Dashboard hinzu.",
+  "js.ha.empty.text": "Tippe auf „Netzwerk durchsuchen“: Die gefundenen Geräte erscheinen in der Karte der neuen Geräte. Tippe dann auf „Alle hinzufügen“ oder auf das + bei jedem Gerät.",
   "js.ha.nomatch.title": "Keine passenden Geräte",
   "js.ha.nomatch.text": "Versuche eine andere Suche oder entferne die Filter.",
   "js.ha.nomatch.clear": "Filter entfernen",

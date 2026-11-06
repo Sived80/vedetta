@@ -161,7 +161,7 @@
   "js.ha.toast.ignore_failed": "Couldn't ignore the device",
   "js.ha.toast.error": "Something went wrong",
   "js.ha.empty.title": "No devices yet",
-  "js.ha.empty.text": "Scan the network to find devices, then add them from the classic dashboard.",
+  "js.ha.empty.text": "Tap “Scan network”: the devices found appear in the new devices card. Then tap “Add all”, or the + of each one.",
   "js.ha.nomatch.title": "No matching devices",
   "js.ha.nomatch.text": "Try a different search or clear the filters.",
   "js.ha.nomatch.clear": "Clear filters",

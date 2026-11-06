@@ -161,7 +161,7 @@
   "js.ha.toast.ignore_failed": "Impossibile ignorare il dispositivo",
   "js.ha.toast.error": "Qualcosa è andato storto",
   "js.ha.empty.title": "Ancora nessun dispositivo",
-  "js.ha.empty.text": "Scansiona la rete per trovare i dispositivi, poi aggiungili dalla dashboard classica.",
+  "js.ha.empty.text": "Tocca «Scansiona la rete»: i dispositivi trovati compaiono nel riquadro dei nuovi dispositivi. Poi tocca «Aggiungi tutti» o il + di ciascuno.",
   "js.ha.nomatch.title": "Nessun dispositivo corrisponde",
   "js.ha.nomatch.text": "Prova con un'altra ricerca o azzera i filtri.",
   "js.ha.nomatch.clear": "Azzera i filtri",

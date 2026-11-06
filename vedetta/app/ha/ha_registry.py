@@ -84,11 +84,12 @@ def build_index(devices: list, entities: list, areas: list, entries: list) -> di
     domain_of = {e.get("entry_id"): e.get("domain") for e in entries}
     title_of = {e.get("entry_id"): e.get("title") for e in entries}
     ent_by_dev = _entities_by_device(entities)
+    placeholders = _placeholder_models(devices, domain_of)
     out: dict = {}
     out_ip: dict = {}
     ip_count: dict = {}
     for dev in devices:
-        found = _indexed_card(dev, area_name, domain_of, title_of, ent_by_dev)
+        found = _indexed_card(dev, area_name, domain_of, title_of, ent_by_dev, placeholders)
         if found is None:
             continue
         card, macs, ip = found
@@ -103,6 +104,29 @@ def build_index(devices: list, entities: list, areas: list, entries: list) -> di
     return {"by_mac": out, "by_ip": out_ip}
 
 
+PLACEHOLDER_MIN = 3     # devices sharing the same model before it can count as an observer's placeholder
+
+
+def _placeholder_models(devices: list, domain_of: dict) -> set:
+    """(manufacturer, model) pairs that an observer integration gives to the clients it sees (e.g. "FRITZ!Box Tracked device" on every client of the
+    router, issue #36): the same model on PLACEHOLDER_MIN or more devices that only observer integrations know, whose network cards come from
+    different makers (MAC prefixes). A real product is made by one maker: three identical access points share the prefix and are not taken for
+    a placeholder. The firmware version does not decide: the router also reports the firmware of some of its clients."""
+    observers = observer_domains()
+    prefixes: dict = {}
+    for dev in devices:
+        if _known_only_to_observers(dev, domain_of, observers):
+            key = (dev.get("manufacturer"), dev.get("model"))
+            prefixes.setdefault(key, []).extend(m[:8] for m in _macs_of(dev)[:1])
+    return {key for key, seen in prefixes.items() if len(seen) >= PLACEHOLDER_MIN and len(set(seen)) > 1}
+
+
+def _known_only_to_observers(dev: dict, domain_of: dict, observers) -> bool:
+    """An enabled device with a model that only observer integrations know."""
+    domains = {domain_of.get(e) for e in dev.get("config_entries") or []}
+    return bool(dev.get("model")) and not dev.get("disabled_by") and bool(domains) and domains <= observers
+
+
 def _entities_by_device(entities: list) -> dict:
     by_dev: dict = {}
     for ent in entities:
@@ -111,10 +135,13 @@ def _entities_by_device(entities: list) -> dict:
     return by_dev
 
 
-def _indexed_card(dev: dict, area_name: dict, domain_of: dict, title_of: dict, ent_by_dev: dict):
-    """(card, MACs, configuration address) of a device worth indexing, or None: disabled, with neither a MAC nor an address, or made by Vedetta."""
+def _indexed_card(dev: dict, area_name: dict, domain_of: dict, title_of: dict, ent_by_dev: dict, placeholders: frozenset | set = frozenset()):
+    """(card, MACs, configuration address) of a device worth indexing, or None: disabled, with neither a MAC nor an address, or made by Vedetta.
+    A model in `placeholders` is the observer's, not the client's product, nor is its firmware a sign of the observer's own equipment (issue #36)."""
     if dev.get("disabled_by"):
         return None
+    if (dev.get("manufacturer"), dev.get("model")) in placeholders:
+        dev = {**dev, "model": None, "sw_version": None}
     macs, ip = _macs_of(dev), host_of(dev.get("configuration_url"))
     if not macs and not ip:
         return None

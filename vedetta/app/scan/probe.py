@@ -181,13 +181,28 @@ def _chosen_brand(ident, ha_card, device):
     """The brand declared by Home Assistant (integration) counts more than MAC, name and web page; not if it is only the chip maker ("Espressif")
     or if the device itself has already declared its brand. A manually chosen brand wins over any source and does not change with scans."""
     mfr = ((ha_card or {}).get("manufacturer") or "").strip()
-    if mfr and ident.get("brand_source") not in ("declared", "user") and brands.vendor_role(mfr) != "component":
+    if _ha_brand_usable(mfr, ident, ha_card):
         ident = {**ident, "brand": brands.known_brand(mfr) or mfr, "brand_source": "ha", "brand_confidence": "high",
                  "brand_evidence": "confirmed"}
     if (device.get("brand_user") or "").strip():
         ident = {**ident, "brand": device["brand_user"].strip(), "brand_source": "user",
                  "brand_confidence": "high", "brand_evidence": "confirmed"}
     return ident
+
+
+def _ha_brand_usable(mfr: str, ident: dict, ha_card) -> bool:
+    """The manufacturer Home Assistant gives may become the brand: there is one, the device has not declared its own and nobody chose one by hand,
+    it is not only the chip maker, and Home Assistant does not merely see the device through an observer (issue #36)."""
+    return bool(mfr) and ident.get("brand_source") not in ("declared", "user") and brands.vendor_role(mfr) != "component" and not _seen_only(ha_card)
+
+
+def _seen_only(ha_card: dict) -> bool:
+    """Home Assistant only SEES the device: a router or controller integration tracks it and no other integration owns it. The manufacturer it gives
+    is then the observer's, not the device's (issue #36)."""
+    observers = ha_registry.observer_domains()
+    domains = set(ha_card.get("domains") or [])
+    tracked = bool(ha_card.get("entity_domains")) and ha_registry.tracker_only(ha_card)      # a device_tracker and nothing else (a card with no entity says nothing)
+    return tracked or (bool(domains) and domains <= observers and ha_registry.observed_only(ha_card, observers))
 
 
 def _probe_device_mobile(f: Facts, display_name, brand_stage: Brand):

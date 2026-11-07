@@ -48,7 +48,7 @@ BATTERY. Attribute battery = yes | no | None (unknown) with battery_source:
 import time
 
 from . import brands
-from .. import procfs
+from ..networks.host_read import read_gateway as _read_gateway
 from ..scan import dhcp
 from .vendor_lookup import is_private_mac, lookup_vendor
 from .brands import normalize_brand
@@ -76,28 +76,6 @@ def default_gateway(route_path: str = "/proc/net/route") -> str | None:
     if is_system_path and gateway:
         _gateway_cache["value"] = gateway
     return gateway
-
-
-def _read_gateway(route_path: str) -> str | None:
-    """The gateway of the first default route of the file; None if there is none or the file cannot be read."""
-    try:
-        for cols in procfs.table(route_path):
-            if _is_default_route(cols):
-                return _gateway_text(cols[2])
-    except ValueError:         # a bad number (or a byte that is not ASCII) ends the reading with no answer
-        pass
-    return None
-
-
-def _is_default_route(cols: list[str]) -> bool:
-    """A line of /proc/net/route that is the default route and has the gateway flag (RTF_GATEWAY) set."""
-    return len(cols) > 2 and cols[1] == "00000000" and bool(int(cols[3], 16) & 2)
-
-
-def _gateway_text(hex_address: str) -> str:
-    """Dotted address from the little-endian hexadecimal field of /proc/net/route."""
-    raw = int(hex_address, 16).to_bytes(4, "little")
-    return ".".join(str(b) for b in raw)
 
 
 def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None = None, declared=(),

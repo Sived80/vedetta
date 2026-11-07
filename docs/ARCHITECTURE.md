@@ -152,7 +152,7 @@ The functions that were restructured have a reference test that was generated fr
 
 | module | what it is for |
 |---|---|
-| `networks/host_read.py` | The one reader of what the host says about its network: the default route and its gateway, from /proc/net/route. |
+| `networks/host_read.py` | The one reader of what the host says about its network: the default route and its gateway (/proc/net/route), the interfaces with their VLANs and addresses (/sys/class/net, /proc/net/vlan/config). |
 
 ### recognition/
 

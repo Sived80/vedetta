@@ -153,6 +153,8 @@ The functions that were restructured have a reference test that was generated fr
 | module | what it is for |
 |---|---|
 | `networks/host_read.py` | The one reader of what the host says about its network: the default route and its gateway (/proc/net/route), the interfaces with their VLANs and addresses (/sys/class/net, /proc/net/vlan/config). |
+| `networks/model.py` | A network Vedetta may look at, and the check of one written by the person: validate() gives a Network or refuses it with a code (Rejected), and never fixes a value silently. |
+| `networks/scope.py` | The one guard of the networks: to which confirmed network an address belongs, and which addresses of a list may be touched. |
 
 ### recognition/
 

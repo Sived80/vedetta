@@ -9,6 +9,8 @@ import os
 import re
 from functools import lru_cache
 
+from .networks.host_read import parse_default_route
+
 _NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,14}")
 
 
@@ -17,22 +19,6 @@ def valid_name(name: str) -> bool:
 
 _ROUTE_FILE = "/proc/net/route"
 FALLBACK = "eth0"
-
-
-def parse_default_route(text: str) -> str | None:
-    """Interface of the route with destination 0.0.0.0/0 and lowest metric."""
-    best: tuple[int, str] | None = None
-    for line in text.splitlines()[1:]:
-        f = line.split()
-        if len(f) < 8 or f[1] != "00000000" or f[7] != "00000000":
-            continue
-        try:
-            metric = int(f[6])
-        except ValueError:
-            metric = 0
-        if best is None or metric < best[0]:
-            best = (metric, f[0])
-    return best[1] if best else None
 
 
 @lru_cache(maxsize=1)

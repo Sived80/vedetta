@@ -102,10 +102,10 @@ assert count <= LATE_OK, "more imports inside functions than before (%d > %d): %
 ROOT_LAYER = {"paths": 0, "atomic": 0, "applog": 0, "netutil": 0, "iface": 0, "external": 0, "formatters": 0, "eventbus": 0, "assets": 0, "sse": 0, "cyclestats": 0, "procfs": 0, "datafile": 0,
               "i18n": 1, "frontend_serving": 1, "lifecycle": 1, "pause": 1, "macclassify": 1, "macidentity": 1, "maclayer": 1,
               "arpview": 4, "identity_upkeep": 4, "newdevicewatch": 4, "maintenance": 4, "state": 4, "name_origin": 4, "state_cycle": 4, "state_support": 4, "ingress": 6, "main": 7}
-PKG_LAYER = {"storage": 1, "topology": 2, "analysis": 2, "health": 2, "recognition": 2, "scan": 3, "ha": 4, "export": 5, "routes": 6}
+PKG_LAYER = {"storage": 1, "topology": 2, "analysis": 2, "health": 2, "recognition": 2, "scan": 3, "ha": 4, "export": 5, "routes": 6, "networks": 1}
 MOD_LAYER = {"ha.device_debug": 5, "ha.analysis_view": 5,
              # base modules: small, widely used, they import nothing above themselves (a stable foundation; they still live in the package they grew in)
-             "scan.scan_common": 0, "scan.touch_policy": 1,
+             "scan.scan_common": 0, "scan.touch_policy": 1, "networks.host_read": 0,
              "recognition.naming": 1, "recognition.vendor_lookup": 1, "recognition.brands": 1, "scan.flows": 1, "scan.dhcp": 1,
              "scan.mdns_listener": 1, "scan.mdns_parse": 1, "scan.mdns_browsing": 1, "scan.discovery": 1,
              # assembly modules: they put together a whole device record or a background job from all the sources

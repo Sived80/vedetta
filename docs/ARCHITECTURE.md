@@ -16,7 +16,7 @@ This page is written to be read in ten minutes. The index at the end is generate
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
 - **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `iface`, `netutil`, `paths`, `procfs`, `sse`
-- **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `pause`, `storage/`
+- **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `networks/`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
 - **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
@@ -147,6 +147,12 @@ The functions that were restructured have a reference test that was generated fr
 | `health/engine.py` | The judge: it runs the detector of every rule that is not a draft and keeps the findings. |
 | `health/matrix.py` | The matrix of the rules: loaded from matrix.json and checked in plain Python (no extra library). |
 | `health/signals.py` | Signals derived from the history, in one place so that the app and the replay of the exports see the same thing. |
+
+### networks/
+
+| module | what it is for |
+|---|---|
+| `networks/host_read.py` | The one reader of what the host says about its network: the default route of /proc/net/route. |
 
 ### recognition/
 

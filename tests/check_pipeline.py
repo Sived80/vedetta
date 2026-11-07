@@ -219,7 +219,7 @@ async def main():
     calls.clear()
 
     # initial: ARP only (IP and MAC), no name search (neither mDNS nor reverse names)
-    async def fake_arp():
+    async def fake_arp(targets=None, **kwargs):
         return [{"ip": IP, "mac": "AA:BB:CC:00:00:01", "vendor": None}]
     scanner.arp_scan = fake_arp
     settings.flows_reset()

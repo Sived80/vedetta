@@ -24,13 +24,15 @@ when the dependency is missing."""
 import asyncio
 import time
 
-from . import dhcp, flows, scanner
+from . import arpplan, dhcp, flows, scanner
 from ..recognition import naming
 from .adapters import shelly_gen1
 from ..applog import logger
 from ..formatters import truncate_name
 from ..netutil import get_local_network
 from ..recognition.vendor_lookup import resolve_vendor_info
+from ..storage import devices_config
+from ..storage.history import history
 from .pipeline_plan import Batch, NEEDS_PORTS, NMAP_PORT_STEPS, _log_skipped, _names_for, _wsd, active_steps, compose_nmap_args, prepare_batch, resolve_plan  # noqa: F401
 from .pipeline_probes import _EMPTY_HOST, _attach_adapter_result, _confirm_web_identity, _merge_mdns_and_upnp_info, _merge_onvif_rtsp_igmp_info, _plan_nmap_scan, _probe_shelly_adapter, _read_tls_ssh_and_local_api, _run_parallel_probes  # noqa: F401
 
@@ -54,17 +56,40 @@ def _dhcp_hostname(mac: str | None) -> str | None:
     return (dhcp.seen.get((mac or "").lower()) or {}).get("hostname")
 
 
+def _known_ips() -> list[str]:
+    """Addresses of the configured devices first, then of the known ones (thread)."""
+    ips = [c["ip"] for c in devices_config.load_devices() if c.get("ip")]
+    return ips + [r["ip"] for r in history.known_all().values() if r.get("ip")]
+
+
+async def _initial_targets(net: str | None, own_ip: str | None) -> list[str] | None:
+    """None: the whole network (a /24 or smaller, or unreadable), as always. A wider network is asked as the periodic check asks it (scan/arpplan.py):
+    with a mask of 255.0.0.0 the whole network is 16 million addresses, arp-scan would be killed after ARP_TIMEOUT_S and the search would fail.
+    The blocks are not marked as asked: that stays with the periodic check."""
+    if net is None:
+        return None
+    try:
+        known = await asyncio.to_thread(_known_ips)
+        blocks = await asyncio.to_thread(history.scan_blocks)
+        plan = arpplan.plan(net, own_ip, known, blocks)
+    except Exception:
+        logger.exception("Piano ARP della ricerca fallito: si chiede solo la rete attorno a questo computer")
+        plan = arpplan.own_block_only(own_ip)
+    return plan["targets"] if plan else None
+
+
 async def run_initial() -> list[dict]:
     """Host discovery: ARP only, hence IP and MAC (and the MAC vendor). No name
     search: the only name that gets through is the DHCP one already heard, kept as an internal
     hint for the analysis that starts on adding (it is not shown)."""
-    logger.info("Avviata: scansione ARP (tutta la LAN)")
     t0 = time.monotonic()
-    arp_hosts = await scanner.arp_scan()
     try:
         net, own_ip = await get_local_network()
     except Exception:
         net, own_ip = None, None
+    targets = await _initial_targets(net, own_ip)
+    logger.info("Avviata: scansione ARP (%s)", "tutta la LAN" if targets is None else "rete grande: %d blocchi e i dispositivi noti" % sum("/" in t for t in targets))
+    arp_hosts = await scanner.arp_scan(targets)
     arp_hosts = scanner.with_neighbours(arp_hosts, await scanner.neighbors(net))   # a device silent to broadcast ARP that the system has just seen (issue #35)
     me = scanner.own_host(own_ip, arp_hosts)
     if me:

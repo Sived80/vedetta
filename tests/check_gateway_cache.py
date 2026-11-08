@@ -1,8 +1,7 @@
-"""Characterization of how the gateway and the network interface are read today, before the work on more networks: both are read ONCE and kept for the whole run,
-so after a change of network (the field case of 05/11) the page keeps the old gateway until a restart. Asserts what the code does now - the planned fix (a reading
-with an expiry) will change this test on purpose, in the same commit:
-- default_gateway(): the first good reading of /proc/net/route is kept, a later change of the file is ignored; a reading with no gateway is not kept (the next one tries
-  again); another file (the export reads a copy) is never kept and never uses what is kept;
+"""How the gateway and the network interface are read. The gateway is kept for GATEWAY_TTL_S and then read again (K13: before, it was read ONCE for the
+whole run, so after a change of network - the field case of 05/11 - the page kept the old gateway until a restart):
+- default_gateway(): a good reading of /proc/net/route is kept for GATEWAY_TTL_S, then the file is read again and a new gateway is seen; a reading with no
+  gateway is not kept (the next one tries again); another file (the export reads a copy) is never kept and never uses what is kept;
 - lan_iface(): the interface of the default route with the lowest metric, kept after the first call; the option VEDETTA_IFACE wins when it is a valid name.
 Fake route files in a temporary folder.
     python tests/check_gateway_cache.py"""
@@ -40,9 +39,18 @@ assert identity.default_gateway() is None
 route_file.write_text(HEAD + LOCAL + route("lan9", GW_A))
 assert identity.default_gateway() == "10.0.0.1", "a reading with no gateway must not be kept"
 
-# 2) the first good reading is kept: a new network is not seen
+# 2) a good reading is kept for a while; after GATEWAY_TTL_S the new network is seen (K13)
+clock = [1000.0]
+identity._now = lambda: clock[0]
+identity._gateway_cache["value"] = identity._NO_GATEWAY
+assert identity.default_gateway() == "10.0.0.1"
 route_file.write_text(HEAD + route("lan9", GW_B))
-assert identity.default_gateway() == "10.0.0.1", "today the gateway is read once"
+clock[0] += identity.GATEWAY_TTL_S - 1
+assert identity.default_gateway() == "10.0.0.1", "kept within the expiry: the file is not read at every call"
+clock[0] += 2
+assert identity.default_gateway() == "192.168.50.1", "after the expiry the new gateway is seen"
+route_file.write_text(HEAD + route("lan9", GW_A))
+clock[0] += identity.GATEWAY_TTL_S + 1
 
 # 3) another file is read every time and does not touch what is kept
 other = TMP / "copy"

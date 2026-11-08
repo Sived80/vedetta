@@ -31,7 +31,7 @@ async def _local(ips):
     return list(ips)
 
 
-scan_routes.filter_local_ips = _local
+scan_routes.registry.allowed = _local
 
 
 TURNS = 40      # the loops of the event loop that one step of delay lasts

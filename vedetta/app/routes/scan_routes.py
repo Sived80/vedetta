@@ -5,7 +5,7 @@ from fastapi import Request
 from ..sse import SSE_HEADERS, _sse
 import asyncio
 from ..storage import blocklist, devices_config, journal, newdevices
-from ..netutil import filter_local_ips
+from ..networks import registry
 from ..applog import logger
 from ..scan import pipeline
 from .bodies import json_dict
@@ -61,7 +61,7 @@ async def api_scan_deep(request: Request):
     being analyzed in depth, so the pop-up can show the real progress
     instead of a blind wait."""
     body = await json_dict(request)
-    ips = await filter_local_ips([ip for ip in body.get("ips", []) if scanner.is_valid_ipv4(ip)])
+    ips = await registry.allowed([ip for ip in body.get("ips", []) if scanner.is_valid_ipv4(ip)])
     hints = body.get("hints") or {}
 
     # The jobs start here, not inside the generator: if the browser changes page

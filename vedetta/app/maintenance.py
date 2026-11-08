@@ -10,7 +10,7 @@ from .ha import ha_tz
 from .scan import pipeline, touch_policy
 from .applog import logger
 from .storage.history import history
-from .netutil import filter_local_ips
+from .networks import registry
 from .scan.rescan import rescan_device
 from .recognition import oui_update
 
@@ -55,7 +55,7 @@ async def _stale_local_devices() -> list[dict]:
         d for d in devices_config.load_devices()
         if last_deep_attempt(d) < cutoff
     ]
-    local = set(await filter_local_ips([d["ip"] for d in stale])) if stale else set()
+    local = set(await registry.allowed([d["ip"] for d in stale])) if stale else set()
     return [d for d in stale if d["ip"] in local]
 
 

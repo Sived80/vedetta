@@ -117,7 +117,7 @@ def fake_update():
 maintenance.time = FakeTime
 maintenance.logger = FakeLogger
 maintenance.devices_config = types.SimpleNamespace(load_devices=fake_load_devices)
-maintenance.filter_local_ips = fake_filter_local_ips
+maintenance.registry.allowed = fake_filter_local_ips
 maintenance.pipeline = types.SimpleNamespace(prepare_batch=fake_prepare_batch)
 maintenance.rescan_device = fake_rescan_device
 maintenance.history = types.SimpleNamespace(prune=fake_prune, known_prune=fake_known_prune)

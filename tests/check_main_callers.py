@@ -13,7 +13,7 @@ from app import arpview, netutil  # noqa: E402
 from app.newdevicewatch import NewDeviceWatch  # noqa: E402
 from app.recognition import roles  # noqa: E402
 from app.routes import device_routes  # noqa: E402
-from app.scan import pipeline, scanner  # noqa: E402
+from app.scan import discovery, pipeline, pipeline_plan, scanner  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -105,5 +105,18 @@ async def fake_neighbors(net=None):
 scanner.arp_scan, scanner.neighbors = fake_arp_scan, fake_neighbors
 asked_once_by("pipeline", pipeline.run_initial)
 assert NEIGH_FOR == [NET], NEIGH_FOR
+
+# pipeline_plan: our own address for the WS-Discovery search
+WSD_FOR: list = []
+
+
+async def fake_wsd(own_ip):
+    WSD_FOR.append(own_ip)
+    return {}
+
+
+discovery.wsd_scan = fake_wsd
+asked_once_by("pipeline_plan", pipeline_plan._wsd)
+assert WSD_FOR == [OWN], WSD_FOR
 
 print("check_main_callers: ok")

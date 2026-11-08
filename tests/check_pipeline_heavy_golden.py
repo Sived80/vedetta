@@ -55,7 +55,7 @@ def sync_recorder(name, key):
 
 scanner.resolve_names, scanner.mdns_scan, scanner.ssdp_scan, scanner.igmp_scan = (recorder("resolve_names", "names"), recorder("mdns_scan", "names"), recorder("ssdp_scan", "ssdp"), recorder("igmp_scan", "igmp"))
 discovery.wsd_scan = recorder("wsd_scan", "wsd")
-pipeline_plan.get_local_network = recorder("get_local_network", "net")
+pipeline_plan.registry.main = recorder("get_local_network", "net")
 pipeline_plan.settings.flows_load = lambda: {"deep": M["flow"], "quick": ["ports_fast"]}
 scanner._run_nmap = recorder("_run_nmap", "xml")
 scanner.protocol_scan = recorder("protocol_scan", "proto")

@@ -3,7 +3,7 @@ import asyncio
 from dataclasses import dataclass, field
 from . import discovery, flows, scanner
 from .scan_common import version_exclusion
-from ..netutil import get_local_network
+from ..networks import registry
 from ..applog import logger
 from ..storage import settings
 
@@ -141,7 +141,7 @@ async def _names_for(steps, ips: list[str]) -> dict[str, str]:
 
 async def _wsd() -> dict[str, dict]:
     try:
-        _, own_ip = await get_local_network()
+        _, own_ip = await registry.main()
     except Exception:
         own_ip = None
     return await discovery.wsd_scan(own_ip)

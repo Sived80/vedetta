@@ -40,7 +40,6 @@ async def fake_exec(*args, **kwargs):
 
 
 netutil.asyncio.create_subprocess_exec = fake_exec
-scan_arp.lan_iface = lambda: "lan9"
 netutil.lan_iface = lambda: "lan9"
 scan_arp.open = lambda *a, **k: io.StringIO("02:00:5e:00:00:02\n")
 

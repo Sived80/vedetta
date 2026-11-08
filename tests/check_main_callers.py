@@ -13,7 +13,7 @@ from app import arpview, netutil  # noqa: E402
 from app.newdevicewatch import NewDeviceWatch  # noqa: E402
 from app.recognition import roles  # noqa: E402
 from app.routes import device_routes  # noqa: E402
-from app.scan import discovery, pipeline, pipeline_plan, scanner  # noqa: E402
+from app.scan import discovery, pipeline, pipeline_plan, scan_arp, scanner  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -118,5 +118,44 @@ async def fake_wsd(own_ip):
 discovery.wsd_scan = fake_wsd
 asked_once_by("pipeline_plan", pipeline_plan._wsd)
 assert WSD_FOR == [OWN], WSD_FOR
+
+# scan_arp: the interface of arp-scan, of the neighbours and of our own MAC is the one of the main network (registry.main_interface)
+EXEC: list = []
+
+
+class QuietProc:
+    returncode = 0
+
+    async def communicate(self, data=None):
+        return b"", b""
+
+    def kill(self):
+        pass
+
+    async def wait(self):
+        return 0
+
+
+async def record_exec(*args, **kwargs):
+    EXEC.append(args)
+    return QuietProc()
+
+
+OPENED: list = []
+
+
+def record_open(path, *args, **kwargs):
+    OPENED.append(path)
+    raise OSError("not on this computer")
+
+
+scan_arp.asyncio.create_subprocess_exec = record_exec
+scan_arp.open = record_open
+asyncio.run(scan_arp.arp_scan())
+asyncio.run(scan_arp.neighbors(NET))
+scan_arp.own_host(OWN, [])
+assert "--interface=lan9" in EXEC[0], EXEC[0]
+assert EXEC[1][-2:] == ("dev", "lan9") or "lan9" in EXEC[1], EXEC[1]
+assert OPENED == ["/sys/class/net/lan9/address"], OPENED
 
 print("check_main_callers: ok")

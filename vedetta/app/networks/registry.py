@@ -19,6 +19,11 @@ async def main() -> tuple[str, str]:
     return await netutil.get_local_network()
 
 
+def main_interface() -> str:
+    """The interface of the main network: the one netutil.get_local_network reads (iface.lan_iface, through netutil so that both always agree)."""
+    return netutil.lan_iface()
+
+
 def main_network(cidr: str) -> Network:
     """The main network as a Network: confirmed, reached through the host's own interface. Not checked by model.validate: it is what the host
     says, a /8 included (how much of it is asked is decided by scan/arpplan.py, not here)."""

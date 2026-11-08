@@ -1,7 +1,7 @@
 """scan_arp: moved out of scanner.py (see tools/split_module.py)."""
 import asyncio
 from .scan_common import is_valid_ipv4
-from ..iface import lan_iface
+from ..networks import registry
 from .arpplan import parse_neighbors
 import contextlib
 
@@ -28,7 +28,7 @@ async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOU
 
     interval_ms: minimum pause between two packets (arp-scan --interval, milliseconds). Without it arp-scan sends about 500 packets a
     second, a burst that a weak Wi-Fi, a repeater or a mesh feels; with 20 ms the same sweep is spread over a few seconds."""
-    args = ["arp-scan", f"--interface={lan_iface()}", "-x"] + (["--file=-"] if targets else ["--localnet"])
+    args = ["arp-scan", f"--interface={registry.main_interface()}", "-x"] + (["--file=-"] if targets else ["--localnet"])
     if interval_ms:
         args.append(f"--interval={int(interval_ms)}")
     proc = await asyncio.create_subprocess_exec(
@@ -52,7 +52,7 @@ async def neighbors(net: str | None = None) -> list[dict]:
     """The neighbours the system has just seen answer (`ip neigh`): they cost no packet. [] if it cannot be read."""
     try:
         proc = await asyncio.create_subprocess_exec(
-            "ip", "-4", "-o", "neigh", "show", "dev", lan_iface(),
+            "ip", "-4", "-o", "neigh", "show", "dev", registry.main_interface(),
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
         )
         out, _ = await asyncio.wait_for(proc.communicate(), 10)
@@ -73,7 +73,7 @@ def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
     if not own_ip or any(h["ip"] == own_ip for h in arp_hosts):
         return None
     try:
-        with open(f"/sys/class/net/{lan_iface()}/address", encoding="ascii") as fh:
+        with open(f"/sys/class/net/{registry.main_interface()}/address", encoding="ascii") as fh:
             mac = fh.read().strip().upper()
     except OSError:
         return None

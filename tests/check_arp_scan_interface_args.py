@@ -41,7 +41,7 @@ def fake_exec(out: str):
     return run
 
 
-scan_arp.lan_iface = lambda: IFACE
+scan_arp.registry.main_interface = lambda: IFACE
 scan_protocols.lan_iface = lambda: IFACE
 scan_arp.asyncio.create_subprocess_exec = fake_exec("10.0.0.10\taa:bb:cc:00:00:0a\tMaker A\n")
 

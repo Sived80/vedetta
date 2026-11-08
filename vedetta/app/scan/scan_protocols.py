@@ -1,7 +1,7 @@
 """scan_protocols: moved out of scanner.py (see tools/split_module.py)."""
 import xml.etree.ElementTree as ET
 from .scan_nmap import _LIGHT_NMAP_SEMAPHORE, _run_nmap
-from ..iface import lan_iface
+from ..networks import registry
 import re
 from ..formatters import truncate_name
 
@@ -32,7 +32,7 @@ async def ssdp_scan(timeout: int = 6) -> dict[str, dict]:
 async def _prescript_output(script_id: str, host_timeout: int, script_args: str | None = None) -> str | None:
     """The output of an nmap "prerule" script (it runs once for the whole LAN; the target 127.0.0.1 is never scanned, it only gets nmap started), or None when
     nmap gave no usable XML or the script said nothing."""
-    args = ["-sn", "--script", script_id, "-e", lan_iface()]
+    args = ["-sn", "--script", script_id, "-e", registry.main_interface()]
     if script_args:
         args += ["--script-args", script_args]
     xml_text = await _run_nmap(args + ["--host-timeout", f"{host_timeout}s", "127.0.0.1"], semaphore=_LIGHT_NMAP_SEMAPHORE)

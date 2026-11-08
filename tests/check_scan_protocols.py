@@ -5,6 +5,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
+from app import netutil  # noqa: E402
 from app.scan import scan_protocols as sp  # noqa: E402
 
 UPNP = """
@@ -76,7 +77,7 @@ async def fake_nmap(args, semaphore=None):
 
 
 sp._run_nmap = fake_nmap
-sp.lan_iface = lambda: "eth9"
+netutil.lan_iface = lambda: "eth9"    # the interface of the main network (networks.registry.main_interface)
 run = lambda c: asyncio.new_event_loop().run_until_complete(c)   # noqa: E731
 
 

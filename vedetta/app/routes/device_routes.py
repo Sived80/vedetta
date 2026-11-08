@@ -6,7 +6,8 @@ from ..sse import SSE_HEADERS, _sse
 from fastapi.responses import StreamingResponse
 import asyncio
 from ..storage import blocklist, devices_config, journal
-from ..netutil import filter_local_ips, get_local_network
+from ..netutil import get_local_network
+from ..networks import registry
 from ..ha import ha_data
 from ..storage.history import history
 from .. import i18n
@@ -291,7 +292,7 @@ async def api_devices_rescan(request: Request):
 async def _local_devices_of(ids: set) -> list[dict]:
     """The chosen devices that are on the local network."""
     devices = [d for d in devices_config.load_devices() if d["id"] in ids]
-    local_ips = set(await filter_local_ips([d["ip"] for d in devices]))
+    local_ips = set(await registry.allowed([d["ip"] for d in devices]))
     return [d for d in devices if d["ip"] in local_ips]
 
 

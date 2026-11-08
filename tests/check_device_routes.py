@@ -123,7 +123,7 @@ async def only_local(ips):
     return [i for i in ips if i != "10.0.1.1"]
 
 
-device_routes.pipeline.prepare_batch, device_routes.rescan_device, device_routes.filter_local_ips = fake_batch, fake_rescan, only_local
+device_routes.pipeline.prepare_batch, device_routes.rescan_device, device_routes.registry.allowed = fake_batch, fake_rescan, only_local
 ids = [A, extra[1], extra[2]]
 ips = {d["id"]: d["ip"] for d in devices_config.load_devices()}
 txt = client.post("/api/devices/rescan", json={"ids": ids}).text

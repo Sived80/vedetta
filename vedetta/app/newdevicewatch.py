@@ -5,8 +5,8 @@ Sending the events and the alerts is left to the caller through two callbacks, s
 import asyncio
 from collections.abc import Callable
 
-from . import netutil
 from .applog import logger
+from .networks import registry
 from .scan import dhcp
 from .storage import blocklist, devices_config, newdevices, settings
 
@@ -38,7 +38,7 @@ class NewDeviceWatch:
         skip_ips = {self.own_ip} if self.own_ip else set()
         if self.own_ip is None:
             try:
-                _, self.own_ip = await netutil.get_local_network()
+                _, self.own_ip = await registry.main()
                 skip_ips = {self.own_ip}
             except Exception:  # noqa: S110  the own address is asked again next cycle
                 pass

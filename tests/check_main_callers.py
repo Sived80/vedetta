@@ -10,6 +10,7 @@ import tempfile
 os.environ["VEDETTA_DATA_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import arpview, netutil  # noqa: E402
+from app.newdevicewatch import NewDeviceWatch  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -50,5 +51,10 @@ def asked_once_by(label, fn):
 
 # arpview: the network of the continuous ARP view
 assert asked_once_by("arpview", arpview.ArpView(lambda *a: None).network) == (NET, OWN)
+
+# newdevicewatch: our own address, left out of the comparison of new devices
+watch = NewDeviceWatch.__new__(NewDeviceWatch)
+watch.own_ip = None
+assert asked_once_by("newdevicewatch", watch._skip_ips) == {OWN}
 
 print("check_main_callers: ok")

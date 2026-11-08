@@ -119,7 +119,7 @@ def emit_alert(message, key, **kwargs):
 dhcp_ns = types.SimpleNamespace(seen={})
 newdevicewatch.logger = FakeLogger
 newdevicewatch.devices_config = types.SimpleNamespace(load_devices=fake_load_devices)
-newdevicewatch.netutil = types.SimpleNamespace(get_local_network=fake_get_local_network)
+newdevicewatch.registry = types.SimpleNamespace(main=fake_get_local_network)
 newdevicewatch.dhcp = dhcp_ns
 newdevicewatch.blocklist = types.SimpleNamespace(matches=fake_matches)
 newdevicewatch.settings = types.SimpleNamespace(alerts_enabled=fake_alerts_enabled)

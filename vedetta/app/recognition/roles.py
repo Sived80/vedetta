@@ -22,6 +22,7 @@ import time
 from .. import netutil
 from ..scan import dhcp, discovery, touch_policy
 from ..applog import logger
+from ..networks import registry
 from .identity import default_gateway
 from ..storage.newdevices import normalize_mac
 from ..storage import blocklist, devices_config, journal
@@ -249,7 +250,7 @@ def _untouchable_ips() -> frozenset:
 async def _start_discovery_jobs(state):
     own_ip = None            # set below on some paths only
     try:
-        _, own_ip = await netutil.get_local_network()
+        _, own_ip = await registry.main()
     except Exception:
         own_ip = None
     upnp_job = discovery.ssdp_devices(own_ip, skip=_untouchable_ips())

@@ -11,6 +11,7 @@ os.environ["VEDETTA_DATA_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import arpview, netutil  # noqa: E402
 from app.newdevicewatch import NewDeviceWatch  # noqa: E402
+from app.recognition import roles  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -56,5 +57,31 @@ assert asked_once_by("arpview", arpview.ArpView(lambda *a: None).network) == (NE
 watch = NewDeviceWatch.__new__(NewDeviceWatch)
 watch.own_ip = None
 assert asked_once_by("newdevicewatch", watch._skip_ips) == {OWN}
+
+# roles: our own address, left out of the UPnP search
+SSDP_FOR: list = []
+
+
+async def fake_ssdp(own_ip, skip=frozenset()):
+    SSDP_FOR.append(own_ip)
+    return []
+
+
+async def fake_arp_snapshot():
+    return {}
+
+
+roles.discovery.ssdp_devices = fake_ssdp
+roles.devices_config.load_devices = lambda: []
+roles._rt.dhcp_discover = None
+
+
+async def discovery_jobs():
+    jobs, _, own_ip = await roles._start_discovery_jobs(type("S", (), {"arp_snapshot": staticmethod(fake_arp_snapshot)})())
+    await asyncio.gather(*jobs)
+    return own_ip
+
+
+assert asked_once_by("roles", discovery_jobs) == OWN and SSDP_FOR == [OWN], SSDP_FOR
 
 print("check_main_callers: ok")

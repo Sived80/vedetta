@@ -2,7 +2,8 @@
 1) differential: for every answer of `ip addr` (a /24, /27, /22, /16, /8, a /32, two addresses on the interface, a mask written oddly),
    registry.main() gives EXACTLY netutil.get_local_network(), and current().allowed gives EXACTLY netutil.filter_local_ips on 2000 addresses
    with a fixed seed; 2) when the host cannot be read both raise the same error; 3) the main network is confirmed, direct, first, never
-   checked by model.validate (a /8 stays a /8); 4) nothing is written to disk.
+   checked by model.validate (a /8 stays a /8); 4) nothing is written to disk; 5) registry.allowed against filter_local_ips: same list, same
+   warning in the log, same error on a value that is not an address, for every answer of 1).
 Fake `ip addr`; invented private addresses only (10.x and 192.168.50-99.x).
     python tests/check_networks_registry.py"""
 import asyncio
@@ -87,5 +88,41 @@ assert asyncio.run(registry.current()).network_of("10.200.1.5") == main, "the gu
 
 # 4) nothing on disk (the log of the app aside: the error of 2) is logged)
 assert [f for f in os.listdir(DATA) if f != "dashboard.log"] == [], os.listdir(DATA)
+
+# 5) allowed: the same answer, the same line in the log, the same error
+import logging  # noqa: E402
+
+from app.applog import logger  # noqa: E402
+
+LINES: list = []
+
+
+class Catch(logging.Handler):
+    def emit(self, record):
+        LINES.append((record.levelname, record.getMessage()))
+
+
+logger.addHandler(Catch())
+
+
+def outcome(call, ips):
+    LINES.clear()
+    try:
+        got = asyncio.run(call(ips))
+    except Exception as exc:
+        got = ("raised", type(exc))
+    return got, list(LINES)
+
+
+for text in CASES:
+    ANSWER["text"] = text
+    cidr = asyncio.run(netutil.get_local_network())[0]
+    inside = str(ipaddress.ip_network(cidr).network_address + 1)
+    for ips in (sample(cidr, 300), [], [inside], [inside, inside, "198.51.100.7", "fd00::5"], ["198.51.100.7"], [inside, "x"], [inside, "192.168.060.5"], [inside, None]):
+        old, new = outcome(netutil.filter_local_ips, ips), outcome(registry.allowed, ips)
+        assert new == old, (text, ips[:4], old, new)
+ANSWER["text"] = ""
+assert outcome(registry.allowed, ["10.0.0.1"]) == outcome(netutil.filter_local_ips, ["10.0.0.1"]), "the host cannot be read"
+assert outcome(registry.allowed, ["10.0.0.1"])[0][0] == "raised"
 
 print("check_networks_registry: ok")

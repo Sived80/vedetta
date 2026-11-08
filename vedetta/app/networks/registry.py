@@ -7,6 +7,7 @@ Not used by the app yet: the callers move here one at a time, each with a test t
 import ipaddress
 
 from .. import netutil
+from ..applog import logger
 from .model import Network
 from .scope import Scope
 
@@ -28,3 +29,16 @@ async def current() -> Scope:
     """The confirmed networks, the main one first. Today: the main one alone."""
     cidr, _ = await main()
     return Scope((main_network(cidr),))
+
+
+async def allowed(ips: list) -> list:
+    """The addresses of `ips` that belong to a confirmed network, in the order given: today exactly netutil.filter_local_ips, the warning in the
+    log included, and the same ValueError on a value that is not an address (its callers check first; tests/check_networks_registry.py)."""
+    scope = await current()
+    for ip in ips:
+        ipaddress.ip_address(ip)
+    kept = [ip for ip in ips if scope.network_of(ip) is not None]
+    rejected = [ip for ip in ips if scope.network_of(ip) is None]
+    if rejected:
+        logger.warning("Scansione rifiutata, IP fuori dalla rete locale %s: %s", scope.networks[0].cidr, ", ".join(rejected))
+    return kept

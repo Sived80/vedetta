@@ -132,18 +132,31 @@ class ArpView:
         of the ARP (what the last sweep found, updated by the devices asked since) and how many addresses were asked now."""
         now = time.monotonic()
         net = await self.network()
-        known = registry.arp_targets(await asyncio.to_thread(self._configured_ips), net[0]) if net else []   # never a card of another network (K10)
-        if not known or self.last_full is None or now - self.last_full >= FULL_SWEEP_S:
-            hosts = await self._with_neighbours(await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS))
-            self.mem = {h["ip"]: (time.time(), h) for h in hosts}
-            self.last_full = now
-            return {ip: h for ip, (_, h) in self.mem.items()}, self.whole_size()
+        configured = await asyncio.to_thread(self._configured_ips)
+        if not configured or self.last_full is None or now - self.last_full >= FULL_SWEEP_S:
+            await self._sweep(now)
+            return self._view(), self.whole_size()
+        known = registry.arp_targets(configured, net[0]) if net else []   # never a card of another network (K10)
+        if known:                # cards, but none on this network: nothing is asked until the next sweep (not the whole network at every check)
+            await self._ask_known(known)
+        return self._view(), len(known)
+
+    def _view(self) -> dict[str, dict]:
+        return {ip: h for ip, (_, h) in self.mem.items()}
+
+    async def _sweep(self, now: float) -> None:
+        """The whole network, paced: the view becomes what it found."""
+        hosts = await self._with_neighbours(await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS))
+        self.mem = {h["ip"]: (time.time(), h) for h in hosts}
+        self.last_full = now
+
+    async def _ask_known(self, known: list[str]) -> None:
+        """Only the configured devices of the network: whoever was asked and does not answer is gone from the view."""
         hosts = await self._with_neighbours(await scanner.arp_scan(known, timeout=ARP_CYCLE_TIMEOUT_S, interval_ms=SWEEP_INTERVAL_MS))
         for ip in known:
-            self.mem.pop(ip, None)                # whoever was asked and does not answer is gone from the view
+            self.mem.pop(ip, None)
         for h in hosts:
             self.mem[h["ip"]] = (time.time(), h)
-        return {ip: h for ip, (_, h) in self.mem.items()}, len(known)
 
     async def _with_neighbours(self, hosts: list[dict]) -> list[dict]:
         """The hosts of arp-scan and the neighbours the system has just seen answer (`ip neigh`, REACHABLE) that arp-scan did not get: a device

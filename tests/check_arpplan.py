@@ -247,6 +247,7 @@ async def late_arp(targets=None, timeout=0, interval_ms=None):
 
 
 scanner.arp_scan = fake_arp
+devices_config.load_devices = lambda: [{"id": "d9", "ip": "192.168.1.9"}]   # a card of this network: the check between sweeps asks it (K10)
 st3 = state_mod.DeviceState()
 run(st3._arp_by_ip(0))
 st3._view.cache = (st3._view.cache[0] - 100, {"192.168.1.9": {"ip": "192.168.1.9"}})

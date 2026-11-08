@@ -65,8 +65,10 @@ for _ in range(3):                                   # the checks between sweeps
 
 # no configured device in the network: the checks between sweeps ask nothing rather than the cards of other networks
 devices_config.load_devices = lambda: [{"id": "b", "ip": ROUTED}, {"id": "c", "ip": OLD}]
+ASKED.clear()
 st = state_mod.DeviceState()
-run(st._arp_by_ip(0))
-run(st._arp_by_ip(0))
+for _ in range(4):
+    run(st._arp_by_ip(0))
 assert all(ROUTED not in (a or []) and OLD not in (a or []) for a in ASKED), ASKED
+assert ASKED == [None], ("one sweep, then nothing until the next one: not the whole network at every check (simulator S30b, 08/11)", ASKED)
 print("check_no_arp_for_foreign_ips: ok")

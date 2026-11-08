@@ -133,7 +133,7 @@ def fake_load(configs_):
 
 
 device_routes.history = FakeHistory()
-device_routes.get_local_network, device_routes.registry.allowed, device_routes.rescan_device = fake_local_network, fake_filter_local_ips, fake_rescan_device
+device_routes.registry.main, device_routes.registry.allowed, device_routes.rescan_device = fake_local_network, fake_filter_local_ips, fake_rescan_device
 pipeline.prepare_batch = fake_prepare_batch
 wol.send = lambda mac, targets: (LOG.append(["wol.send", mac, list(targets)]), M["sent"])[1]
 blocklist.add_host = rec("blocklist.add_host")

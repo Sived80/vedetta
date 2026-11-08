@@ -23,7 +23,7 @@ async def fake_net():
 
 
 pipeline.run_initial = fake_run_initial
-device_routes.get_local_network = fake_net
+device_routes.registry.main = fake_net
 devices_config.load_devices = lambda: []
 newdevices.sync_present = lambda macs: None
 newdevices.list_new = lambda: []

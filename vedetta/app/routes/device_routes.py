@@ -6,7 +6,6 @@ from ..sse import SSE_HEADERS, _sse
 from fastapi.responses import StreamingResponse
 import asyncio
 from ..storage import blocklist, devices_config, journal
-from ..netutil import get_local_network
 from ..networks import registry
 from ..ha import ha_data
 from ..storage.history import history
@@ -135,7 +134,7 @@ async def _wake_mac(device_id: str, device: dict) -> str | None:
 async def _broadcast_targets() -> list[str]:
     targets = ["255.255.255.255"]
     try:
-        subnet, _ = await get_local_network()
+        subnet, _ = await registry.main()
         targets.append(str(ipaddress.ip_network(subnet).broadcast_address))
     except Exception:  # noqa: S110  the plain broadcast address is still there
         pass

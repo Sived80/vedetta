@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import arpview, netutil  # noqa: E402
 from app.newdevicewatch import NewDeviceWatch  # noqa: E402
 from app.recognition import roles  # noqa: E402
+from app.routes import device_routes  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -83,5 +84,8 @@ async def discovery_jobs():
 
 
 assert asked_once_by("roles", discovery_jobs) == OWN and SSDP_FOR == [OWN], SSDP_FOR
+
+# device_routes: the broadcast address of the network for Wake-on-LAN
+assert asked_once_by("device_routes", device_routes._broadcast_targets) == ["255.255.255.255", "192.168.50.255"]
 
 print("check_main_callers: ok")

@@ -29,6 +29,7 @@ from ..storage import blocklist, devices_config, journal
 import contextlib
 
 REFRESH_S = 600
+GATEWAY_CHECK_S = 30        # between two refreshes, how often a change of gateway is looked for (a refresh comes at once)
 DHCP_SERVER_MAX_AGE_S = 7 * 86400
 ROLE_ORDER = ("gateway", "dhcp", "dns", "router", "ap", "repeater")
 _REPEATER = re.compile(r"repeater|extender|range\s*ext|ripetitore|mesh\s*(point|node|satellite)", re.IGNORECASE)
@@ -381,6 +382,24 @@ def start(state, on_change=None, on_alert=None, dhcp_discover=None, internet_che
         _rt.task = asyncio.create_task(_loop(state))
 
 
+def _gateway_changed() -> bool:
+    """The host routes through a gateway that is not the one the roles show (a change of network)."""
+    now = default_gateway()
+    shown = next((ip for ip, r in _rt.roles["by_ip"].items() if (r or {}).get("gateway")), None)
+    return now is not None and now != shown
+
+
+async def _wait_next() -> None:
+    """Until the next refresh: REFRESH_S, or less when the gateway changed (looked at every GATEWAY_CHECK_S; reading it is cheap)."""
+    waited = 0
+    while waited < REFRESH_S:
+        await asyncio.sleep(GATEWAY_CHECK_S)
+        waited += GATEWAY_CHECK_S
+        if _gateway_changed():
+            logger.info("Gateway cambiato: ruoli di rete ricalcolati subito")
+            return
+
+
 async def _loop(state) -> None:
     await asyncio.sleep(20)  # after the first check cycle (ARP table ready)
     while True:
@@ -388,7 +407,7 @@ async def _loop(state) -> None:
             await refresh(state)
         except Exception:
             logger.exception("Calcolo dei ruoli di rete fallito")
-        await asyncio.sleep(REFRESH_S)
+        await _wait_next()
 
 
 async def stop() -> None:

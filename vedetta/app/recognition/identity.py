@@ -64,13 +64,14 @@ _CHURN_WEAK, _CHURN_STRONG = 6, 14
 
 _NO_GATEWAY = object()
 _gateway_cache: dict = {"value": _NO_GATEWAY, "ts": 0.0}
-GATEWAY_TTL_S = 300          # the gateway is read again after this long: a change of network is seen without a restart (K13); same as arpview.NET_TTL_S
+GATEWAY_TTL_S = 60           # the gateway is read again after this long: a change of network is seen without a restart (K13); reading it is one small file
 _now = time.monotonic
 
 
 def default_gateway(route_path: str = "/proc/net/route") -> str | None:
     """IP of the default gateway (from /proc/net/route, Linux); None if it cannot be read.
-    Kept for GATEWAY_TTL_S (it is asked for every card), then read again: after a change of network the new gateway is seen (K13)."""
+    Kept for GATEWAY_TTL_S (it is asked for every card), then read again: after a change of network the new gateway is seen (K13; the roles
+    look for a change every GATEWAY_CHECK_S and refresh at once)."""
     is_system_path = route_path == "/proc/net/route"
     if is_system_path and _gateway_cache["value"] is not _NO_GATEWAY and _now() - _gateway_cache["ts"] < GATEWAY_TTL_S:
         return _gateway_cache["value"]

@@ -8,10 +8,12 @@ import ipaddress
 
 from .. import netutil
 from ..applog import logger
+from . import host_read
 from .model import Network
 from .scope import Scope
 
 MAIN_ID = "main"
+ROUTE_FILE = "/proc/net/route"
 
 
 async def main() -> tuple[str, str]:
@@ -30,11 +32,42 @@ def main_network(cidr: str) -> Network:
     return Network(MAIN_ID, ipaddress.ip_network(cidr), frozenset({"direct"}), "full", "confirmed")
 
 
-def on_link(ip: str) -> bool:
-    """The address may be asked by ARP now, without reading the host: it is in the main network as last read (netutil.last_network,
-    refreshed by the continuous ARP view). False while the network is not known yet (K14)."""
-    cidr = netutil.last_network
-    return bool(cidr) and scope_of(cidr).arp_targets([ip]) == [ip]
+def _routes_now() -> list | None:
+    """The networks of the main interface as the kernel routes them now (None if the routes cannot be read)."""
+    return host_read.read_on_link(main_interface(), ROUTE_FILE)
+
+
+def _held(ip, nets: list) -> bool:
+    try:
+        address = ipaddress.IPv4Address(ip)
+    except (ValueError, TypeError):
+        return False
+    return any(address in n for n in nets)
+
+
+def arp_targets(ips, cidr: str) -> list:
+    """The addresses that may be asked by ARP, in the order given: those on the link of the main interface as the kernel routes it now; if
+    the routes cannot be read, those of the main network `cidr` (K10). Right after a change of network the old addresses are already out."""
+    nets = _routes_now()
+    if nets is None:
+        return scope_of(cidr).arp_targets(ips)
+    return [ip for ip in ips if _held(ip, nets)]
+
+
+def on_link(ip) -> bool:
+    """One address may be asked by ARP now (K14): as arp_targets, with the network last read (netutil.last_network) when the routes cannot be
+    read; False while nothing is known."""
+    nets = _routes_now()
+    if nets is None:
+        cidr = netutil.last_network
+        return bool(cidr) and scope_of(cidr).arp_targets([ip]) == [ip]
+    return _held(ip, nets)
+
+
+def still_routed(cidr: str) -> bool:
+    """The main network kept in memory is still a route of the main interface (True when the routes cannot be read: nothing to compare)."""
+    nets = _routes_now()
+    return nets is None or ipaddress.ip_network(cidr) in nets
 
 
 def scope_of(cidr: str) -> Scope:

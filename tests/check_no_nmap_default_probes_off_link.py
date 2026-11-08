@@ -14,6 +14,8 @@ import tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import netutil  # noqa: E402
 from app.scan import latency  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 table = os.path.join(tempfile.mkdtemp(), "arp")
 with open(table, "w", encoding="ascii") as f:

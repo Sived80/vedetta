@@ -15,6 +15,8 @@ from app.recognition import roles  # noqa: E402
 from app.routes import device_routes  # noqa: E402
 from app.scan import discovery, pipeline, pipeline_plan, scan_arp, scanner  # noqa: E402
 from app.networks import registry  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
 

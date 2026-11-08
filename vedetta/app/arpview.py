@@ -42,7 +42,7 @@ class ArpView:
     async def network(self) -> tuple[str, str] | None:
         """(network, own address) of the interface, read again every NET_TTL_S; None if it cannot be read."""
         now = time.monotonic()
-        if self.net is None or now - self.net[0] > NET_TTL_S:
+        if self.net is None or now - self.net[0] > NET_TTL_S or not registry.still_routed(self.net[1]):     # a change of network is seen at once
             try:
                 cidr, own = await registry.main()
                 self.net = (now, cidr, own)
@@ -132,7 +132,7 @@ class ArpView:
         of the ARP (what the last sweep found, updated by the devices asked since) and how many addresses were asked now."""
         now = time.monotonic()
         net = await self.network()
-        known = registry.scope_of(net[0]).arp_targets(await asyncio.to_thread(self._configured_ips)) if net else []   # never a card of another network (K10)
+        known = registry.arp_targets(await asyncio.to_thread(self._configured_ips), net[0]) if net else []   # never a card of another network (K10)
         if not known or self.last_full is None or now - self.last_full >= FULL_SWEEP_S:
             hosts = await self._with_neighbours(await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS))
             self.mem = {h["ip"]: (time.time(), h) for h in hosts}

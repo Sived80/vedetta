@@ -18,6 +18,8 @@ from app import state as state_mod  # noqa: E402
 from app.scan import scanner  # noqa: E402
 from app.storage import devices_config  # noqa: E402
 from app.storage.history import History  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 tmp = Path(tempfile.mkdtemp())
 state_mod.history = arpview.history = History(tmp / "vedetta.db")

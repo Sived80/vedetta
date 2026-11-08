@@ -37,6 +37,23 @@ def read_gateway(route_path: str) -> str | None:
     return None
 
 
+def read_on_link(iface: str, route_path: str) -> list | None:
+    """The networks reached on `iface` with no gateway (the routes of its own addresses), as the kernel has them now: they change the moment
+    an address changes. None if the file cannot be read."""
+    try:
+        rows = [line.split() for line in procfs.lines(route_path)]
+        if not rows:                 # not there or not readable (not Linux): nothing to say, not "no network"
+            return None
+        return [ipaddress.ip_network((_gateway_text(cols[1]), _gateway_text(cols[7])), strict=False) for cols in rows[1:] if _is_on_link_route(cols, iface)]
+    except ValueError:
+        return None
+
+
+def _is_on_link_route(cols: list[str], iface: str) -> bool:
+    """A line of /proc/net/route for `iface`, up (RTF_UP), with no gateway and not the default route."""
+    return len(cols) >= 8 and cols[0] == iface and cols[2] == "00000000" and cols[1] != "00000000" and bool(int(cols[3], 16) & 1)
+
+
 def _is_default_route(cols: list[str]) -> bool:
     """A line of /proc/net/route that is the default route and has the gateway flag (RTF_GATEWAY) set."""
     return len(cols) > 2 and cols[1] == "00000000" and bool(int(cols[3], 16) & 2)

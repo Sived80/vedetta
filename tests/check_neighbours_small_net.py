@@ -19,6 +19,8 @@ except Exception:
 from app import arpview, netutil  # noqa: E402
 from app.arpview import ArpView  # noqa: E402
 from app.scan import pipeline, scanner  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 NET, OWN = "10.0.0.0/24", "10.0.0.2"
 A = {"ip": "10.0.0.10", "mac": "AA:BB:CC:00:00:0A", "vendor": "Maker A"}

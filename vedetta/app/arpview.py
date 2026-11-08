@@ -10,8 +10,8 @@ import os
 import time
 from collections.abc import Callable
 
-from . import netutil
 from .applog import logger
+from .networks import registry
 from .scan import arpplan, scanner
 from .storage import devices_config
 from .storage.history import history
@@ -44,7 +44,7 @@ class ArpView:
         now = time.monotonic()
         if self.net is None or now - self.net[0] > NET_TTL_S:
             try:
-                cidr, own = await netutil.get_local_network()
+                cidr, own = await registry.main()
                 self.net = (now, cidr, own)
             except Exception:
                 if self.net is None:

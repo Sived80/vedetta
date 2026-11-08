@@ -16,7 +16,7 @@ except Exception:
     stub.logger = logging.getLogger("dashboard")
     sys.modules["app.applog"] = stub
 
-from app import arpview  # noqa: E402
+from app import arpview, netutil  # noqa: E402
 from app.arpview import ArpView  # noqa: E402
 from app.scan import pipeline, scanner  # noqa: E402
 
@@ -45,7 +45,7 @@ async def fake_network():
 scanner.arp_scan = fake_arp_scan
 scanner.neighbors = fake_neighbors
 pipeline.get_local_network = fake_network
-arpview.netutil.get_local_network = fake_network
+netutil.get_local_network = fake_network    # arpview asks networks.registry.main(), which reads it
 arpview.devices_config.load_devices = lambda: [{"ip": "10.0.0.10"}, {"ip": "10.0.0.11"}]
 
 

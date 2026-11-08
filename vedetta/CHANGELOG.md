@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.1 · Bussola
+**Bussola** is Italian for *compass*: Vedetta keeps its bearings when the network around it changes or reaches beyond it.
+- **Scan network works on large networks.** With a mask of 255.0.0.0 or a /16 the search asked millions of addresses and ended in an error after two minutes. It now asks the part of the network around Home Assistant, the known devices and one more block, like the regular check; a /24 is asked whole as before.
+- **No borrowed presence.** A card whose address is on another network (a device of a VLAN added by hand, a card left from an old network) is no longer asked by ARP. Some routers answer for those addresses with their own MAC: the card took the router's MAC and looked online even when the device was off.
+- **A change of network is followed at once.** After new addresses or a new router, the network and the gateway on the Network card are right within a minute, without a restart, and Vedetta stops sending checks to the old addresses straight away.
+- **Fewer packets.** The latency check of a device that does not answer ping uses an ARP request only on Home Assistant's own network; elsewhere nmap would have sent its default probes instead.
+
+**Thank you** to everyone who shared an export, and to the people following multi-network support in Discussion #14: this release is the first part of it.
+
 ## 0.13.0 · Ascolto
 **Ascolto** is Italian for *listening*: Vedetta listens better to the network and to what you reported.
 - **Devices that stay quiet to a broadcast count as present.** Some devices (an LG TV, for example) do not answer the broadcast ARP of a scan but have just talked to Home Assistant: Vedetta now counts them on every network, without sending anything more (issue #35).

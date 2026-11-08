@@ -13,6 +13,7 @@ from app import arpview, netutil  # noqa: E402
 from app.newdevicewatch import NewDeviceWatch  # noqa: E402
 from app.recognition import roles  # noqa: E402
 from app.routes import device_routes  # noqa: E402
+from app.scan import pipeline, scanner  # noqa: E402
 from app.networks import registry  # noqa: E402
 
 NET, OWN = "192.168.50.0/24", "192.168.50.7"
@@ -87,5 +88,22 @@ assert asked_once_by("roles", discovery_jobs) == OWN and SSDP_FOR == [OWN], SSDP
 
 # device_routes: the broadcast address of the network for Wake-on-LAN
 assert asked_once_by("device_routes", device_routes._broadcast_targets) == ["255.255.255.255", "192.168.50.255"]
+
+# pipeline: the first search (the network whose neighbours are added, issue #35)
+NEIGH_FOR: list = []
+
+
+async def fake_arp_scan(targets=None):
+    return []
+
+
+async def fake_neighbors(net=None):
+    NEIGH_FOR.append(net)
+    return []
+
+
+scanner.arp_scan, scanner.neighbors = fake_arp_scan, fake_neighbors
+asked_once_by("pipeline", pipeline.run_initial)
+assert NEIGH_FOR == [NET], NEIGH_FOR
 
 print("check_main_callers: ok")

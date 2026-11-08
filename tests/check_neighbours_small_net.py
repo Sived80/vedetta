@@ -44,8 +44,7 @@ async def fake_network():
 
 scanner.arp_scan = fake_arp_scan
 scanner.neighbors = fake_neighbors
-pipeline.get_local_network = fake_network
-netutil.get_local_network = fake_network    # arpview asks networks.registry.main(), which reads it
+netutil.get_local_network = fake_network    # the first search and arpview ask networks.registry.main(), which reads it
 arpview.devices_config.load_devices = lambda: [{"ip": "10.0.0.10"}, {"ip": "10.0.0.11"}]
 
 

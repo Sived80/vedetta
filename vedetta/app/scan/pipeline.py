@@ -29,7 +29,7 @@ from ..recognition import naming
 from .adapters import shelly_gen1
 from ..applog import logger
 from ..formatters import truncate_name
-from ..netutil import get_local_network
+from ..networks import registry
 from ..recognition.vendor_lookup import resolve_vendor_info
 from ..storage import devices_config
 from ..storage.history import history
@@ -84,7 +84,7 @@ async def run_initial() -> list[dict]:
     hint for the analysis that starts on adding (it is not shown)."""
     t0 = time.monotonic()
     try:
-        net, own_ip = await get_local_network()
+        net, own_ip = await registry.main()
     except Exception:
         net, own_ip = None, None
     targets = await _initial_targets(net, own_ip)

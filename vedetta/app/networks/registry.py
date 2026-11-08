@@ -30,10 +30,15 @@ def main_network(cidr: str) -> Network:
     return Network(MAIN_ID, ipaddress.ip_network(cidr), frozenset({"direct"}), "full", "confirmed")
 
 
+def scope_of(cidr: str) -> Scope:
+    """The confirmed networks when the main one is `cidr` (already read): today the main one alone."""
+    return Scope((main_network(cidr),))
+
+
 async def current() -> Scope:
     """The confirmed networks, the main one first. Today: the main one alone."""
     cidr, _ = await main()
-    return Scope((main_network(cidr),))
+    return scope_of(cidr)
 
 
 async def allowed(ips: list) -> list:

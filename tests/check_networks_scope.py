@@ -89,4 +89,11 @@ assert scope.allowed(sample) == truth, "against a truth written with text only"
 # 5) empty world
 assert Scope(()).allowed(sample) == [] and Scope(()).network_of("192.168.50.1") is None
 
+# arp_targets: only the networks reached through the host's own interface (K10); a routed one, a paused one, or no network: never asked by ARP
+direct = Network("main", ipaddress.ip_network("192.168.50.0/24"), frozenset({"direct"}), "full", "confirmed")
+routed = Network("r", ipaddress.ip_network("192.168.60.0/24"), frozenset({"routed"}), "full", "confirmed")
+paused = Network("p", ipaddress.ip_network("192.168.70.0/24"), frozenset({"direct"}), "full", "paused")
+asked = ["192.168.60.5", "192.168.50.9", "192.168.70.3", "198.51.100.1", "x", None, "192.168.50.2"]
+assert Scope((direct, routed, paused)).arp_targets(asked) == ["192.168.50.9", "192.168.50.2"]
+assert Scope((routed,)).arp_targets(asked) == [] and Scope(()).arp_targets(asked) == []
 print("check_networks_scope: ok")

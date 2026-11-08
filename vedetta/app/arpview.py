@@ -131,7 +131,8 @@ class ArpView:
         """A normal network: the whole network at most every FULL_SWEEP_S, the configured devices in the checks between. Returns the view
         of the ARP (what the last sweep found, updated by the devices asked since) and how many addresses were asked now."""
         now = time.monotonic()
-        known = await asyncio.to_thread(self._configured_ips)
+        net = await self.network()
+        known = registry.scope_of(net[0]).arp_targets(await asyncio.to_thread(self._configured_ips)) if net else []   # never a card of another network (K10)
         if not known or self.last_full is None or now - self.last_full >= FULL_SWEEP_S:
             hosts = await self._with_neighbours(await scanner.arp_scan(interval_ms=SWEEP_INTERVAL_MS))
             self.mem = {h["ip"]: (time.time(), h) for h in hosts}

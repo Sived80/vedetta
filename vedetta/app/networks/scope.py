@@ -25,3 +25,8 @@ class Scope:
     def allowed(self, ips) -> list:
         """The addresses that belong to a confirmed network, in the order given."""
         return [ip for ip in ips if self.network_of(ip) is not None]
+
+    def arp_targets(self, ips) -> list:
+        """The addresses that may be asked by ARP: those of a confirmed network reached through the host's own interface ("direct"), in the
+        order given. ARP never leaves the interface: for any other address the router may answer with its own MAC (proxy ARP, K10)."""
+        return [ip for ip in ips if (n := self.network_of(ip)) is not None and "direct" in n.via]

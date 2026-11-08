@@ -18,6 +18,7 @@ from collections import deque
 import contextlib
 
 from .. import procfs
+from ..networks import registry
 
 TIMEOUT = 1.0
 MAX_CONCURRENT = 12   # concurrent ping processes / connections
@@ -145,9 +146,11 @@ def parse_nmap_latency(text: str) -> float | None:
     return float(m.group(1)) * 1000.0 if m else None
 
 
-def arp_known(ip: str, table: str = ARP_TABLE) -> bool:
-    """True if the host has a complete entry in the ARP table: it answered recently, so it is on the network."""
-    return any(len(cols) >= 3 and cols[0] == ip and cols[2] == "0x2" for cols in procfs.table(table, errors="ignore"))
+def arp_known(ip: str, table: str = ARP_TABLE, iface: str | None = None) -> bool:
+    """True if the host has a complete entry in the ARP table: it answered recently, so it is on the network. With `iface`, only an entry
+    learned on that interface counts (the Device column)."""
+    return any(len(cols) >= 3 and cols[0] == ip and cols[2] == "0x2" and (iface is None or (len(cols) >= 6 and cols[5] == iface))
+               for cols in procfs.table(table, errors="ignore"))
 
 
 async def measure(ip: str, port: int = 80, timeout: float = TIMEOUT) -> float | None:
@@ -181,8 +184,9 @@ async def _icmp_ms(ip: str, timeout: float) -> float | None:
 async def _arp_ms(ip: str, timeout: float = 3.0) -> float | None:
     """Response time of a host that does not answer ping (a PC with the Windows firewall, a sleepy IoT device):
     an ARP request, which every host on the same network must answer. Only for hosts the ARP table already knows,
-    so a powered-off device does not cost a second timeout."""
-    if not _NMAP or not arp_known(ip):
+    so a powered-off device does not cost a second timeout. Only for an address of the network of the interface, learned on it: for any
+    other address nmap does not do ARP and sends its default probes instead (ICMP timestamp, SYN 443, ACK 80; K14)."""
+    if not _NMAP or not registry.on_link(ip) or not arp_known(ip, iface=registry.main_interface()):
         return None
     proc = None
     try:

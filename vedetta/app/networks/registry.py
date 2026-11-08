@@ -30,6 +30,13 @@ def main_network(cidr: str) -> Network:
     return Network(MAIN_ID, ipaddress.ip_network(cidr), frozenset({"direct"}), "full", "confirmed")
 
 
+def on_link(ip: str) -> bool:
+    """The address may be asked by ARP now, without reading the host: it is in the main network as last read (netutil.last_network,
+    refreshed by the continuous ARP view). False while the network is not known yet (K14)."""
+    cidr = netutil.last_network
+    return bool(cidr) and scope_of(cidr).arp_targets([ip]) == [ip]
+
+
 def scope_of(cidr: str) -> Scope:
     """The confirmed networks when the main one is `cidr` (already read): today the main one alone."""
     return Scope((main_network(cidr),))

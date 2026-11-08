@@ -1,4 +1,5 @@
 """ha_type_evidence: moved out of ha_data.py (see tools/split_module.py)."""
+import re
 from functools import lru_cache
 from typing import NamedTuple
 from .. import datafile
@@ -63,6 +64,18 @@ _PORT_TYPE = {
     502: "iot",   # Modbus TCP (inverters, meters, wall boxes): open port only, nothing is ever sent to it; weak, shared with controllers
     1400: "audio",
 }
+
+
+# SSH served by the server made for small embedded systems (access points, routers, switches, appliance firmware): the open port 22 says
+# nothing about "server" then (servers and PCs use OpenSSH). Generic: the SSH software as nmap names it, never a brand.
+_EMBEDDED_SSH = re.compile(r"\bdropbear\b", re.IGNORECASE)
+
+
+def _port_kind(port: int | None, label: str) -> str | None:
+    """The category an open port points to; SSH by Dropbear points to none."""
+    if port == 22 and _EMBEDDED_SSH.search(label):
+        return None
+    return _PORT_TYPE.get(port)
 
 
 # Ports shared by several categories (SMB: PC, NAS and routers with USB; FTP; DNS): little weight to all.
@@ -177,7 +190,7 @@ class _Clues:
         for p in self.device.get("scanned_ports") or []:
             m = _PORT_RE.match(p.get("label") or "")
             port = int(m.group(1)) if m else None
-            kind = _PORT_TYPE.get(port)
+            kind = _port_kind(port, p.get("label") or "")
             if kind:
                 fam = _FAMILY_PORT.get(port)
                 # the Cast port is in the Cast family (counts once with service and API); the others are "port" families

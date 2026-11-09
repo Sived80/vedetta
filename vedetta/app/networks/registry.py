@@ -114,14 +114,24 @@ def holds(network: Network, ip) -> bool:
 
 
 def mark_off_limits(devices: list) -> list:
-    """The cards of one cycle, those that may not be touched marked with touch_policy.OFF_LIMITS (never saved): an address in a paused network,
-    or outside every network and not admissible (public, loopback, a container's: K8, K9b). Nothing is marked while the main network has not
-    been read yet. A proposed network is touched as before (the grace period, K12)."""
+    """The cards of one cycle, marked (never saved): touch_policy.OFF_LIMITS for those that may not be touched, an address in a paused network,
+    or outside every network and not admissible (public, loopback, a container's: K8, K9b); touch_policy.NET_TOUCH with the most a confirmed
+    written network allows ("presence": the ping adapter only, K1). Nothing is marked while the main network has not been read yet. A proposed
+    network is touched as before (the grace period, K12)."""
     cidr = netutil.last_network
     if not cidr:
         return devices
     scope = scope_of(cidr)
-    return [{**d, "off_limits": True} if _off_limits(d.get("ip"), scope) else d for d in devices]
+    return [_marked(d, scope) for d in devices]
+
+
+def _marked(device: dict, scope: Scope) -> dict:
+    if _off_limits(device.get("ip"), scope):
+        return {**device, "off_limits": True}
+    network = scope.network_of(device.get("ip"))          # confirmed only: a proposed network is touched as before (K12)
+    if network is not None and network.id != MAIN_ID and network.touch != "full":
+        return {**device, "net_touch": network.touch}
+    return device
 
 
 def may_add(ip) -> bool:

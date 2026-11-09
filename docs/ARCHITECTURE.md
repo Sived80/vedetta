@@ -197,6 +197,7 @@ The functions that were restructured have a reference test that was generated fr
 | module | what it is for |
 |---|---|
 | `scan/adapters/generic.py` | Generic adapter: asks a device whether it answers on a TCP port, with no knowledge of any make. |
+| `scan/adapters/ping.py` | Ping adapter (K1): asks a device only whether it answers an ICMP echo. |
 | `scan/adapters/shelly_gen1.py` | Adapter for first-generation Shelly devices: reads /status and /settings over HTTP and returns what the device reports about itself. |
 | `scan/adapters/shelly_gen2.py` | Second-generation Shelly devices (RPC API): tells whether the device runs on a battery, from the "devicepower:0" component of Shelly.GetStatus. |
 | `scan/arpplan.py` | Which addresses the periodic check asks over ARP. |

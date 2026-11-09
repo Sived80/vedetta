@@ -12,6 +12,7 @@ from . import flows
 from .scan_common import is_no_talk_port
 
 NONE, CALM, NORMAL = "none", "calm", "normal"
+NET_TOUCH = "net_touch"        # set for one cycle by networks.registry.mark_off_limits, never saved: the most its network allows (K1)
 OFF_LIMITS = "off_limits"      # set for one cycle by networks.registry.mark_off_limits, never saved: the address may not be touched (K9b)
 _ON, _OFF = (True, "on"), (False, "off")
 
@@ -44,6 +45,11 @@ def touch_level(device: dict) -> str:
     if "no_talk_port" in reasons and choice not in _OFF:
         return NONE
     return CALM if reasons else NORMAL
+
+
+def adapter_of(device: dict) -> str:
+    """The adapter that asks the device: "ping" when its network allows only presence (NET_TOUCH set for the cycle), else its own."""
+    return "ping" if device.get(NET_TOUCH) == "presence" else device.get("adapter")
 
 
 def may_touch(device: dict) -> bool:

@@ -181,6 +181,11 @@ async def _icmp_ms(ip: str, timeout: float) -> float | None:
     return float(m.group(1)) if m else None
 
 
+async def icmp_ms(ip: str, timeout: float) -> float | None:
+    """One ICMP echo, its time in ms (None without answer or without `ping`): the ping adapter's question."""
+    return await _icmp_ms(ip, timeout) if _PING else None
+
+
 async def _arp_ms(ip: str, timeout: float = 3.0) -> float | None:
     """Response time of a host that does not answer ping (a PC with the Windows firewall, a sleepy IoT device):
     an ARP request, which every host on the same network must answer. Only for hosts the ARP table already knows,

@@ -1,6 +1,6 @@
 """Spy test (K9b): in the check cycle a card whose address may not be touched gets nothing: no adapter call, no response-time measure.
 A card with a public address, one in a paused network and one in a proposed network (the grace period: touched as before) next to a card of
-the main network. The cycle reads the cards, proposes the networks, marks the cards, and the adapter and the response-time measure see only
+the main network, and a card of a confirmed network behind the router (touch "presence"), asked only by ping (K1). The cycle reads the cards, proposes the networks, marks the cards, and the adapter and the response-time measure see only
 the cards that may be touched. Invented addresses only (192.168.50-99.x, documentation range).
     python tests/check_off_limits_not_probed.py"""
 import asyncio
@@ -19,10 +19,12 @@ registry.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "
 netutil.last_network = "192.168.50.0/24"
 MAIN = registry.main_network("192.168.50.0/24")
 network_store.add({"id": "old", "cidr": "192.168.70.0/24", "via": ["routed"], "state": "paused"}, MAIN)
+network_store.add({"id": "iot", "cidr": "192.168.80.0/24", "via": ["routed"], "state": "confirmed"}, MAIN)
 CARDS = [{"id": "main", "ip": "192.168.50.10", "adapter": "generic"}, {"id": "pub", "ip": "203.0.113.9", "adapter": "generic"},
-         {"id": "paused", "ip": "192.168.70.4", "adapter": "generic"}, {"id": "grace", "ip": "192.168.60.4", "adapter": "generic"}]
+         {"id": "paused", "ip": "192.168.70.4", "adapter": "generic"}, {"id": "grace", "ip": "192.168.60.4", "adapter": "generic"},
+         {"id": "iot", "ip": "192.168.80.4", "adapter": "shelly_gen1"}]
 devices_config.load_devices = lambda: [dict(c) for c in CARDS]
-ASKED, MEASURED = [], []
+ASKED, MEASURED, PINGED = [], [], []
 
 
 async def spy_adapter(ip, port):
@@ -39,7 +41,13 @@ async def no_arp(_max_age):
     return {}
 
 
-probe.ADAPTERS["generic"] = spy_adapter
+async def spy_ping(ip, port):
+    PINGED.append(ip)
+    return {"online": True, "mac": None}
+
+
+probe.ADAPTERS["generic"] = probe.ADAPTERS["shelly_gen1"] = spy_adapter
+probe.ADAPTERS["ping"] = spy_ping
 latency.measure_many = spy_measure
 st = state_mod.DeviceState()
 st._arp_by_ip = no_arp
@@ -47,7 +55,8 @@ st._apply = lambda *a, **k: None
 asyncio.new_event_loop().run_until_complete(state_cycle.poll_once(st))
 
 assert sorted(ASKED) == ["192.168.50.10", "192.168.60.4"], ASKED
-assert sorted(MEASURED) == ["192.168.50.10", "192.168.60.4"], MEASURED
-assert [str(n.cidr) for n in network_store.load(MAIN)] == ["192.168.70.0/24", "192.168.60.0/24"], "the card outside every network is proposed"
+assert PINGED == ["192.168.80.4"], ("a confirmed network behind the router with touch presence: the ping adapter only (K1)", PINGED)
+assert sorted(MEASURED) == ["192.168.50.10", "192.168.60.4", "192.168.80.4"], MEASURED
+assert [str(n.cidr) for n in network_store.load(MAIN)] == ["192.168.70.0/24", "192.168.80.0/24", "192.168.60.0/24"], "the card outside every network is proposed"
 assert "off_limits" not in str(devices_config.load_devices()), "the mark is never saved"
 print("check_off_limits_not_probed: ok")

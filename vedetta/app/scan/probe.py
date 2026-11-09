@@ -46,7 +46,7 @@ async def probe_device(device: dict, arp_task=None) -> dict:
 async def _probe_device_gather(device, arp_task):
     ip = device["ip"]
     port = device.get("port", 80)
-    adapter_fn = ADAPTERS.get(device["adapter"])
+    adapter_fn = ADAPTERS.get(touch_policy.adapter_of(device))
 
     result = {"online": False}
     if adapter_fn and touch_policy.may_touch(device):   # a device that must not be touched is not asked: ARP alone says if it is there

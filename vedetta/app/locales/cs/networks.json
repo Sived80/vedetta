@@ -1,0 +1,19 @@
+{
+  "networks.error.E_SHAPE": "Neplatná síť",
+  "networks.error.E_CIDR": "Zadejte síť jako 192.168.60.0/24",
+  "networks.error.E_NOT_IPV4": "Pouze sítě IPv4",
+  "networks.error.E_BAD_VIA": "Vyberte, jak je síť dostupná",
+  "networks.error.E_BAD_TOUCH": "Neplatná úroveň kontaktu",
+  "networks.error.E_BAD_STATE": "Neplatný stav",
+  "networks.error.E_BAD_ID": "Neplatný název sítě",
+  "networks.error.E_PUBLIC": "Pouze soukromé sítě (10.x, 172.16-31.x, 192.168.x)",
+  "networks.error.E_CONTAINER_NET": "Toto je síť kontejnerů Home Assistantu",
+  "networks.error.E_TOO_WIDE": "Síť je příliš velká",
+  "networks.error.E_TOO_NARROW": "Síť je příliš malá",
+  "networks.error.E_TOUCH_NEEDS_DIRECT": "Úplné hledání jen v síti, ke které je Home Assistant připojen",
+  "networks.error.E_TOO_MANY": "Příliš mnoho sítí",
+  "networks.error.E_DUP_ID": "Síť s tímto názvem již existuje",
+  "networks.error.E_OVERLAP": "Překrývá se s jinou sítí",
+  "networks.error.E_BAD_EXCLUDE": "Neplatné vyloučené adresy",
+  "networks.error.not_found": "Síť nenalezena"
+}

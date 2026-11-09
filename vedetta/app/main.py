@@ -23,6 +23,7 @@ from .frontend_serving import mount_frontend
 from .routes import flows as routes_flows
 from .routes.bodies import json_dict
 from .routes import brands as routes_brands, export_routes as routes_export, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt, passive_routes as routes_passive
+from .routes import network_routes as routes_network
 from .ha.mqtt_ha import service as mqtt_service
 from .state import state
 from .sse import SSE_HEADERS, _sse  # noqa: F401
@@ -84,6 +85,7 @@ app.include_router(routes_passive.router)
 app.include_router(routes_scan_routes.router)
 app.include_router(routes_device_routes.router)
 app.include_router(routes_settings_routes.router)
+app.include_router(routes_network.router)
 
 
 mount_frontend(app, BASE_DIR / "static")

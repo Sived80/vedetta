@@ -1,0 +1,19 @@
+{
+  "networks.error.E_SHAPE": "Rete non valida",
+  "networks.error.E_CIDR": "Scrivi la rete come 192.168.60.0/24",
+  "networks.error.E_NOT_IPV4": "Solo reti IPv4",
+  "networks.error.E_BAD_VIA": "Scegli come si raggiunge la rete",
+  "networks.error.E_BAD_TOUCH": "Livello di contatto non valido",
+  "networks.error.E_BAD_STATE": "Stato non valido",
+  "networks.error.E_BAD_ID": "Nome della rete non valido",
+  "networks.error.E_PUBLIC": "Solo reti private (10.x, 172.16-31.x, 192.168.x)",
+  "networks.error.E_CONTAINER_NET": "Questa è la rete dei container di Home Assistant",
+  "networks.error.E_TOO_WIDE": "Rete troppo ampia",
+  "networks.error.E_TOO_NARROW": "Rete troppo piccola",
+  "networks.error.E_TOUCH_NEEDS_DIRECT": "La ricerca completa solo su una rete a cui Home Assistant è collegato",
+  "networks.error.E_TOO_MANY": "Troppe reti",
+  "networks.error.E_DUP_ID": "Esiste già una rete con questo nome",
+  "networks.error.E_OVERLAP": "Si sovrappone a un'altra rete",
+  "networks.error.E_BAD_EXCLUDE": "Indirizzi esclusi non validi",
+  "networks.error.not_found": "Rete non trovata"
+}

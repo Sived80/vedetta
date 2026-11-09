@@ -153,6 +153,7 @@ The functions that were restructured have a reference test that was generated fr
 | module | what it is for |
 |---|---|
 | `networks/host_read.py` | The one reader of what the host says about its network: the default route and its gateway (/proc/net/route), the interfaces with their VLANs and addresses (/sys/class/net, /proc/net/vlan/config). |
+| `networks/legacy.py` | The cards that are already outside the main network (added by hand, or left from the network of before), and the addresses no card may have (K12). |
 | `networks/model.py` | A network Vedetta may look at, and the check of one written by the person: validate() gives a Network or refuses it with a code (Rejected), and never fixes a value silently. |
 | `networks/registry.py` | The networks Vedetta looks at now: the abstraction in front of the places that today ask the host for its network (netutil.get_local_network). |
 | `networks/scope.py` | The one guard of the networks: to which confirmed network an address belongs, and which addresses of a list may be touched. |
@@ -186,6 +187,7 @@ The functions that were restructured have a reference test that was generated fr
 | `routes/ha.py` | Home Assistant-style dashboard (/ha) and its JSON APIs (/api/ha/*). |
 | `routes/ignored.py` | API of the ignored devices. |
 | `routes/mqtt.py` | Status and configuration API for MQTT publishing (GET/POST /api/mqtt). |
+| `routes/network_routes.py` | The networks API, for the panel «Networks»: the main network (read from the host, never written) and the networks written by the person, with how many cards each holds; add, change (touch, state, excluded ranges) and remove. |
 | `routes/passive_routes.py` | Routes of the devices that Home Assistant sees ("Networks seen by Home Assistant"): the switch, the reading, the list to choose from, the adoption, and the changes to an adopted device. |
 | `routes/scan_routes.py` | scan_routes: moved out of main.py (see tools/split_module.py). |
 | `routes/settings_routes.py` | settings_routes: moved out of main.py (see tools/split_module.py). |
@@ -248,6 +250,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/history_presence.py` | PresenceMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/history_scans.py` | ScansMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/journal.py` | Event log beyond online/offline, for the level-based Log of /ha. |
+| `storage/network_store.py` | The networks written by the person, beyond the main one (networks.json): read, checked, changed under one lock and written atomically. |
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
 | `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |

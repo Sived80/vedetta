@@ -3,6 +3,7 @@
 ['DELETE'] /api/devices/{device_id}
 ['DELETE'] /api/export/jobs/{job_id}
 ['DELETE'] /api/ignored/{item_id}
+['DELETE'] /api/networks/{nid}
 ['DELETE'] /api/pause
 ['GET'] /
 ['GET'] /api/brands
@@ -23,6 +24,7 @@
 ['GET'] /api/ha/summary
 ['GET'] /api/ignored
 ['GET'] /api/mqtt
+['GET'] /api/networks
 ['GET'] /api/new-devices
 ['GET'] /api/new-devices/ignored
 ['GET'] /api/settings
@@ -58,6 +60,8 @@
 ['POST'] /api/ignored/hosts
 ['POST'] /api/lang/{code}
 ['POST'] /api/mqtt
+['POST'] /api/networks
+['POST'] /api/networks/{nid}
 ['POST'] /api/new-devices/ignore
 ['POST'] /api/new-devices/unignore
 ['POST'] /api/pause

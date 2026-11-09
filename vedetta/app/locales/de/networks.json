@@ -1,0 +1,19 @@
+{
+  "networks.error.E_SHAPE": "Ungültiges Netzwerk",
+  "networks.error.E_CIDR": "Netzwerk als 192.168.60.0/24 angeben",
+  "networks.error.E_NOT_IPV4": "Nur IPv4-Netzwerke",
+  "networks.error.E_BAD_VIA": "Wählen, wie das Netzwerk erreicht wird",
+  "networks.error.E_BAD_TOUCH": "Ungültige Kontaktstufe",
+  "networks.error.E_BAD_STATE": "Ungültiger Status",
+  "networks.error.E_BAD_ID": "Ungültiger Netzwerkname",
+  "networks.error.E_PUBLIC": "Nur private Netzwerke (10.x, 172.16-31.x, 192.168.x)",
+  "networks.error.E_CONTAINER_NET": "Das ist das Container-Netzwerk von Home Assistant",
+  "networks.error.E_TOO_WIDE": "Netzwerk zu groß",
+  "networks.error.E_TOO_NARROW": "Netzwerk zu klein",
+  "networks.error.E_TOUCH_NEEDS_DIRECT": "Vollständige Suche nur in einem Netzwerk, mit dem Home Assistant verbunden ist",
+  "networks.error.E_TOO_MANY": "Zu viele Netzwerke",
+  "networks.error.E_DUP_ID": "Ein Netzwerk mit diesem Namen existiert bereits",
+  "networks.error.E_OVERLAP": "Überschneidet sich mit einem anderen Netzwerk",
+  "networks.error.E_BAD_EXCLUDE": "Ungültige ausgeschlossene Adressen",
+  "networks.error.not_found": "Netzwerk nicht gefunden"
+}

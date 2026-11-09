@@ -6,6 +6,7 @@ import time
 from .applog import logger
 from .formatters import update_generic_titles
 from .scan import latency, presence, probe, touch_policy
+from .networks import registry
 from .storage import devices_config
 
 
@@ -16,6 +17,8 @@ def latency_targets(snapshot: list[dict]) -> list[tuple]:
 
 async def poll_once(state) -> None:
     snapshot = devices_config.load_devices()
+    registry.propose([d["ip"] for d in snapshot])
+    snapshot = registry.mark_off_limits(snapshot)
     update_generic_titles(snapshot)
     arp_task = asyncio.create_task(state._arp_by_ip(0))
     # Response time measured in parallel with the probes, in the same cycle.

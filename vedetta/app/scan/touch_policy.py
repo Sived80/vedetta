@@ -12,6 +12,7 @@ from . import flows
 from .scan_common import is_no_talk_port
 
 NONE, CALM, NORMAL = "none", "calm", "normal"
+OFF_LIMITS = "off_limits"      # set for one cycle by networks.registry.mark_off_limits, never saved: the address may not be touched (K9b)
 _ON, _OFF = (True, "on"), (False, "off")
 
 
@@ -37,7 +38,7 @@ def is_camera(device: dict) -> bool:
 
 def touch_level(device: dict) -> str:
     choice = device.get("no_touch")
-    if choice in _ON:
+    if choice in _ON or device.get(OFF_LIMITS):
         return NONE
     reasons = fragile_reasons(device)
     if "no_talk_port" in reasons and choice not in _OFF:

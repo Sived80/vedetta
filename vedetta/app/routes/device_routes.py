@@ -41,7 +41,7 @@ async def api_devices_add(request: Request):
 
 def _new_device_entry(c: dict) -> dict | None:
     """The entry to add for one candidate of the search: only the allowed fields, cleaned; None if its address is not valid."""
-    if not scanner.is_valid_ipv4(c.get("ip", "")):
+    if not scanner.is_valid_ipv4(c.get("ip", "")) or not registry.may_add(c["ip"]):    # never an address that may not be touched (K9a)
         return None
     entry = {"ip": c["ip"], "adapter": c.get("adapter") if c.get("adapter") in ("shelly_gen1", "generic") else "generic"}
     if c.get("name"):

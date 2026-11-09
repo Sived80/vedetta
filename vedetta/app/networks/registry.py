@@ -1,18 +1,19 @@
 """The networks Vedetta looks at now: the abstraction in front of the places that today ask the host for its network (netutil.get_local_network).
 
 The main network is derived from the host at every call (the interface chosen in iface, its address and mask): it is never written to disk and
-nobody can change it. Networks written by the person do not exist yet (they come with the panel, in their own store): today the world is the main
-network alone, so current() gives exactly what netutil.filter_local_ips allows (tests/check_networks_registry.py).
-Not used by the app yet: the callers move here one at a time, each with a test that the result does not change."""
+nobody can change it. The networks written by the person come from storage/network_store.py (networks.json) and follow it; with no file the
+world is the main network alone, and allowed() gives exactly what netutil.filter_local_ips allows (tests/check_networks_registry.py)."""
 import ipaddress
 
 from .. import netutil
 from ..applog import logger
-from . import host_read
-from .model import Network
+from ..storage import network_store
+from . import host_read, legacy
+from .model import Network, Rejected
 from .scope import Scope
 
 MAIN_ID = "main"
+_not_proposed: set = set()      # (proposal, main network) that did not fit, not tried again while the main network stays the same
 ROUTE_FILE = "/proc/net/route"
 
 
@@ -71,24 +72,82 @@ def still_routed(cidr: str) -> bool:
 
 
 def scope_of(cidr: str) -> Scope:
-    """The confirmed networks when the main one is `cidr` (already read): today the main one alone."""
-    return Scope((main_network(cidr),))
+    """The networks when the main one is `cidr` (already read): the main one first, then the written ones that fit next to it."""
+    main_net = main_network(cidr)
+    return Scope((main_net, *network_store.load(main_net)))
 
 
 async def current() -> Scope:
-    """The confirmed networks, the main one first. Today: the main one alone."""
+    """The networks, the main one first."""
     cidr, _ = await main()
     return scope_of(cidr)
 
 
 async def allowed(ips: list) -> list:
-    """The addresses of `ips` that belong to a confirmed network, in the order given: today exactly netutil.filter_local_ips, the warning in the
-    log included, and the same ValueError on a value that is not an address (its callers check first; tests/check_networks_registry.py)."""
+    """The addresses of `ips` that may be searched in depth, in the order given: those of a confirmed network whose devices may be touched
+    fully (the main one, or a written network reached through the host's own interface with touch "full"). With the main network alone:
+    exactly netutil.filter_local_ips, the warning in the log included, and the same ValueError on a value that is not an address (its callers
+    check first; tests/check_networks_registry.py)."""
     scope = await current()
     for ip in ips:
         ipaddress.ip_address(ip)
-    kept = [ip for ip in ips if scope.network_of(ip) is not None]
-    rejected = [ip for ip in ips if scope.network_of(ip) is None]
+    kept = scope.searchable(ips)
+    rejected = [ip for ip in ips if ip not in set(kept)]
     if rejected:
         logger.warning("Scansione rifiutata, IP fuori dalla rete locale %s: %s", scope.networks[0].cidr, ", ".join(rejected))
     return kept
+
+
+def _off_limits(ip, scope: Scope) -> bool:
+    network = scope.held_by(ip)
+    if network is not None:
+        return network.state == "paused"
+    return not legacy.admissible(ip)
+
+
+def holds(network: Network, ip) -> bool:
+    """The address is in the network (and not in one of its excluded ranges); False for a value that is not an IPv4 address."""
+    try:
+        return network.holds(ipaddress.IPv4Address(ip))
+    except (ValueError, TypeError):
+        return False
+
+
+def mark_off_limits(devices: list) -> list:
+    """The cards of one cycle, those that may not be touched marked with touch_policy.OFF_LIMITS (never saved): an address in a paused network,
+    or outside every network and not admissible (public, loopback, a container's: K8, K9b). Nothing is marked while the main network has not
+    been read yet. A proposed network is touched as before (the grace period, K12)."""
+    cidr = netutil.last_network
+    if not cidr:
+        return devices
+    scope = scope_of(cidr)
+    return [{**d, "off_limits": True} if _off_limits(d.get("ip"), scope) else d for d in devices]
+
+
+def may_add(ip) -> bool:
+    """A card with this address may be added (K9a): not in a paused network, and inside a network or admissible. True while the main network
+    has not been read yet (the add itself reads nothing)."""
+    cidr = netutil.last_network
+    return not cidr or not _off_limits(ip, scope_of(cidr))
+
+
+def propose(ips) -> list:
+    """Store a proposed network for every /24 of admissible addresses outside every network (K12); the networks stored. A proposal that does not
+    fit (overlap with the main network, too many networks) is not stored: its cards stay in no network and are touched as before."""
+    cidr = netutil.last_network
+    if not cidr:
+        return []
+    main_net = main_network(cidr)
+    stored = []
+    for candidate in legacy.proposals(ips, scope_of(cidr)):
+        if (candidate["cidr"], cidr) in _not_proposed:
+            continue
+        try:
+            stored.append(network_store.add(candidate, main_net))
+        except Rejected as exc:
+            _not_proposed.add((candidate["cidr"], cidr))          # said once in the log, not at every cycle
+            logger.info("Rete %s non proposta: %s", candidate["cidr"], exc.code)
+    if stored:
+        logger.info("Reti proposte per le schede fuori dalla rete principale: %s", ", ".join(str(n.cidr) for n in stored))
+    return stored
+

@@ -33,7 +33,8 @@ _GENERIC_TITLES = {"login", "log in", "sign in", "signin", "welcome", "index", "
                    "configuration", "setup", "main menu", "untitled", "document", "page", "it works", "test page"}
 _TITLE_NOISE = re.compile(r"not found|forbidden|unauthori[sz]ed|bad request|welcome to|index of|^\d{3}\b|error|default web|apache|nginx",
                           re.IGNORECASE)
-_TITLE_SUFFIX = re.compile(r"\s+(main menu|configuration|web ?(ui|interface|gui)|login|home|index|status|setup)$", re.IGNORECASE)
+# (?<!\s): the match starts only at the first space of a run, so a title of thousands of spaces costs one pass, not one per space (check_regex_time)
+_TITLE_SUFFIX = re.compile(r"(?<!\s)\s+(main menu|configuration|web ?(ui|interface|gui)|login|home|index|status|setup)$", re.IGNORECASE)
 
 
 _GENERIC_FIRST = {"login", "log", "sign", "signin", "welcome", "error", "index", "unauthorized", "forbidden", "requested", "authentication"}

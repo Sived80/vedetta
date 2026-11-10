@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 from tools.lansim import phases
-from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTER_MAC, SUBNET, Lan
+from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTER_MAC, SUBNET, Lan, _ns
 from tools.lansim.vedetta_proc import VedettaProcess
 
 ANDROID_MAC, IOS_MAC, IOS_MAC_2 = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "5a:00:00:00:00:24"
@@ -798,7 +798,7 @@ def s14b_slower_relay(code_dir: str, minutes: int = 30) -> dict:
     with Lan() as lan:
         lan.add_client("cam", CAMERA_MAC, 52)
         lan.add_client("relay", RELAY_MAC, 52)
-        subprocess.run(["ip", "netns", "exec", "ls-relay", "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", "20ms"], check=True, capture_output=True)
+        subprocess.run(["ip", "netns", "exec", _ns("relay"), "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", "20ms"], check=True, capture_output=True)
         chain = _SharedAddress(code_dir, lan)
         for _ in range(minutes * 60 // JUDGE_S):
             chain.judge()
@@ -905,9 +905,9 @@ def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 
         since = time.time()
         time.sleep(baseline_s)
         slow_at = time.time()
-        subprocess.run(["ip", "netns", "exec", "ls-router", "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", "5ms"], check=True)
+        subprocess.run(["ip", "netns", "exec", _ns("router"), "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", "5ms"], check=True)
         time.sleep(slow_s)
-        subprocess.run(["ip", "netns", "exec", "ls-router", "tc", "qdisc", "del", "dev", "e0", "root"], check=False)
+        subprocess.run(["ip", "netns", "exec", _ns("router"), "tc", "qdisc", "del", "dev", "e0", "root"], check=False)
         back_at = time.time()
         time.sleep(600)
         latency = _history(vedetta, SUBNET + ".1")[1]

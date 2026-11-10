@@ -6,7 +6,7 @@ import tempfile
 import time
 import urllib.request
 
-from tools.lansim.lan import SUBNET
+from tools.lansim.lan import SUBNET, _ns
 
 PORT = 8765
 ADDRESS = SUBNET + ".2"
@@ -28,7 +28,7 @@ class VedettaProcess:
     def __enter__(self) -> "VedettaProcess":
         env = {**os.environ, **ENV, "VEDETTA_DATA_DIR": self.data}
         log = open(os.path.join(self.data, "uvicorn.log"), "ab")
-        self.proc = subprocess.Popen(["ip", "netns", "exec", "ls-vedetta", PYTHON, "-m", "uvicorn", "app.main:app", "--host", ADDRESS, "--port", str(PORT),
+        self.proc = subprocess.Popen(["ip", "netns", "exec", _ns("vedetta"), PYTHON, "-m", "uvicorn", "app.main:app", "--host", ADDRESS, "--port", str(PORT),
                                       "--workers", "1", "--log-level", "warning"], cwd=self.code_dir, env=env, stdout=log, stderr=log)
         self._wait_ready()
         self.post("/api/settings", {"poll_interval": self.poll_interval})

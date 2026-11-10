@@ -2,16 +2,23 @@
 limit that is on the list, or a study that has no right answer). One line of JSON per run goes to the results file as soon as the run ends, so a campaign stopped half way keeps
 what it did. Linux and root only, a few hours:
 
-    python3 tools/lansim/run_campaign.py --code-dir vedetta --out campaign.jsonl [--quick] [--old-code-dir <the code of 0.13.1, for S30>]
+    python3 tools/lansim/run_campaign.py --code-dir vedetta --out campaign.jsonl [--quick] [--old-code-dir <the code of 0.13.1, for S30>] [--only S1,S4] [--jobs 4]
 
 Since 1.0 step P4 every run that returns the card -> MAC links (card_mac) also fails on a wrong link or a MAC linked to two cards (_link_problem), and the row carries the
 counts of the links; since step P5 "wrong" counts the links the app may use (the others are in wrong_stored), and the row carries what a run measured besides (extra).
+
+The runs mostly wait for Vedetta's cycles, so with --jobs N they go N at a time: each in a network namespace of its own (lsrun-a, lsrun-b, ...) with its own letter for the
+names of its machines (LANSIM_RUN, see lan.py). The longest scenarios start first; the lines of the results file come in the order the runs end.
 """
 import argparse
 import json
 import os
+import queue
+import subprocess
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from tools.lansim import scenarios as sc  # noqa: E402
@@ -217,26 +224,90 @@ def _with_links(row: tuple, result: dict) -> tuple:
     return name, verdict, note, _link_counts(result)
 
 
+SLOW_FIRST = ("S17", "S15", "S16")       # about 95, 20 and 18 minutes: started first, so the campaign does not end waiting on one long run
+LETTERS = "abcdefghijklmnop"
+# The ceiling: never more runs at once than half the processor threads, and never more than 8, so the PC stays usable; every run also has a lower priority (nice 10).
+MAX_JOBS = max(1, min(8, (os.cpu_count() or 2) // 2))
+
+
+def jobs(quick: bool, slow_first: bool = False) -> list[tuple[str, dict]]:
+    """Every run of the plan as (scenario, keyword arguments) in the order of the plan; with slow_first the longest scenarios go first (stable sort: the rest keeps its order)."""
+    out = [(key, kwargs_of(n)) for key, runs, kwargs_of in PLAN for n in range(1 if quick else runs)]
+    return sorted(out, key=lambda job: SLOW_FIRST.index(job[0]) if job[0] in SLOW_FIRST else len(SLOW_FIRST)) if slow_first else out
+
+
+def _in_namespace(letter: str, key: str, kwargs: dict, code_dir: str) -> list[dict]:
+    """One run inside the namespace lsrun-<letter>, as a child process that prints its rows as one line of JSON."""
+    start = time.time()
+    env = {**os.environ, "LANSIM_RUN": letter}
+    cmd = ["nice", "-n", "10", "ip", "netns", "exec", "lsrun-" + letter, sys.executable, "-B", os.path.abspath(__file__), "--one", key, "--kwargs", json.dumps(kwargs), "--code-dir", code_dir]
+    done = subprocess.run(cmd, env=env, capture_output=True, text=True)
+    lines = [line for line in done.stdout.splitlines() if line.startswith("[")]
+    if done.returncode != 0 or not lines:
+        return [{"scenario": key, "args": kwargs, "verdict": "fail", "note": "error: exit %d %s" % (done.returncode, done.stderr.strip()[-300:]), "seconds": round(time.time() - start)}]
+    return json.loads(lines[-1])
+
+
+def _write(out, rows: list[dict], lock: threading.Lock) -> None:
+    with lock:
+        for row in rows:
+            out.write(json.dumps(row) + "\n")
+            out.flush()
+            print("%-5s %-28s %-6s %s" % (row["scenario"], row.get("case", json.dumps(row["args"])), row["verdict"], row["note"][:80]), flush=True)
+
+
+def _parallel(todo: list[tuple[str, dict]], n: int, code_dir: str, out) -> None:
+    letters: queue.Queue = queue.Queue()
+    for letter in LETTERS[:n]:
+        subprocess.run(["ip", "netns", "del", "lsrun-" + letter], capture_output=True)
+        subprocess.run(["ip", "netns", "add", "lsrun-" + letter], check=True)
+        subprocess.run(["ip", "-n", "lsrun-" + letter, "link", "set", "lo", "up"], check=True)
+        letters.put(letter)
+    lock = threading.Lock()
+
+    def one(job: tuple[str, dict]) -> None:
+        letter = letters.get()
+        try:
+            _write(out, _in_namespace(letter, job[0], job[1], code_dir), lock)
+        finally:
+            letters.put(letter)
+    try:
+        with ThreadPoolExecutor(max_workers=n) as pool:
+            list(pool.map(one, todo))
+    finally:
+        for letter in LETTERS[:n]:
+            subprocess.run(["ip", "netns", "del", "lsrun-" + letter], capture_output=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--code-dir", default="vedetta")
-    parser.add_argument("--out", required=True, help="the results file (JSON lines, appended)")
+    parser.add_argument("--out", help="the results file (JSON lines, appended)")
     parser.add_argument("--quick", action="store_true", help="one run of each scenario (to try the campaign itself)")
     parser.add_argument("--old-code-dir", help="the code of the old version (a folder holding app/), for the update and the way back of S30")
     parser.add_argument("--only", help="run these scenarios only (comma separated)")
+    parser.add_argument("--jobs", type=int, default=1, help="runs at the same time, each in a namespace of its own (1 = one after the other, as always)")
+    parser.add_argument("--one", help=argparse.SUPPRESS)            # the child of --jobs: one run, its rows printed as one line of JSON
+    parser.add_argument("--kwargs", default="{}", help=argparse.SUPPRESS)
     args = parser.parse_args()
     global OLD_CODE_DIR
     OLD_CODE_DIR = os.path.abspath(args.old_code_dir) if args.old_code_dir else None
     code_dir = os.path.abspath(args.code_dir)
+    if args.one:
+        print(json.dumps(run(args.one, json.loads(args.kwargs), code_dir)), flush=True)
+        return 0
+    if not args.out:
+        parser.error("--out is required")
+    if not 1 <= args.jobs <= MAX_JOBS:
+        parser.error("--jobs must be between 1 and %d on this machine (the ceiling: half the processor threads, at most 8)" % MAX_JOBS)
     with open(args.out, "a", encoding="utf-8") as out:
-        for key, runs, kwargs_of in PLAN:
-            if args.only and key not in args.only.split(","):
-                continue
-            for n in range(1 if args.quick else runs):
-                for row in run(key, kwargs_of(n), code_dir):
-                    out.write(json.dumps(row) + "\n")
-                    out.flush()
-                    print("%-5s %-28s %-6s %s" % (row["scenario"], row.get("case", json.dumps(row["args"])), row["verdict"], row["note"][:80]), flush=True)
+        todo = [job for job in jobs(args.quick, slow_first=args.jobs > 1) if not args.only or job[0] in args.only.split(",")]
+        if args.jobs == 1:
+            lock = threading.Lock()
+            for key, kwargs in todo:
+                _write(out, run(key, kwargs, code_dir), lock)
+        else:
+            _parallel(todo, args.jobs, code_dir, out)
     return 0
 
 

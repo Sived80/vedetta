@@ -14,6 +14,10 @@ import sys
 
 SUBNET = "10.9.0"
 BRIDGE = "lsbr0"
+# One letter per run when several runs go at once (run_campaign --jobs): each run then lives in a network namespace of its own, so the bridge, the host ends of the cables
+# and the address .254 never meet; only the names of the machines' namespaces are shared by the whole system, and the letter keeps them apart. Empty = the single run of always.
+RUN = os.environ.get("LANSIM_RUN", "")
+PREFIX = "ls" + RUN + "-"
 ROUTER_MAC, VEDETTA_MAC, EXTENDER_MAC, EXTENDER2_MAC = "02:00:00:00:00:01", "02:00:00:00:00:02", "4e:00:00:00:00:03", "4e:00:00:00:00:04"
 
 
@@ -27,7 +31,7 @@ def _ip(*args: str, check: bool = True) -> str:
 
 
 def _ns(name: str) -> str:
-    return "ls-" + name
+    return PREFIX + name
 
 
 class Lan:
@@ -55,12 +59,12 @@ class Lan:
         self.cleanup()
 
     def cleanup(self) -> None:
-        """Removes what an earlier run may have left (namespaces and the bridge named ls...)."""
+        """Removes what an earlier run with the same letter may have left (its namespaces, and the bridge named ls... where this run lives)."""
         for proc in self.responders:
             proc.terminate()
         self.responders = []
         for line in _ip("netns", "list", check=False).splitlines():
-            if line.startswith("ls-"):
+            if line.startswith(PREFIX):
                 _ip("netns", "del", line.split()[0], check=False)
         _ip("link", "del", BRIDGE, check=False)
         for line in _ip("-o", "link", "show", check=False).splitlines():        # the host ends of the cables go away a little after their namespace

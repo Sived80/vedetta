@@ -228,6 +228,30 @@ check("S36 fails when the console stays hidden", run_campaign.CHECKS["S36"]({"us
 check("S36 fails when the laptop's link was never usable", run_campaign.CHECKS["S36"]({"usable": False, "console_listed_s": 300})[0], "fail")
 check("the P7 scenarios are in the campaign", {"S35", "S36"} <= set(scenarios.SCENARIOS) and {"S35", "S36"} <= {k for k, _, _ in run_campaign.PLAN}, True)
 
+# --- 10. several runs at once (run_campaign --jobs): each run's machines carry its letter, nothing else in the simulator names them by hand
+import subprocess  # noqa: E402
+ROOT = os.path.join(os.path.dirname(__file__), "..")
+
+
+def _ns_with(letter):
+    env = {**os.environ, "LANSIM_RUN": letter} if letter else {k: v for k, v in os.environ.items() if k != "LANSIM_RUN"}
+    code = "from tools.lansim.lan import _ns, PREFIX; print(_ns('vedetta'), PREFIX)"
+    return subprocess.run([sys.executable, "-B", "-c", code], cwd=ROOT, env=env, capture_output=True, text=True).stdout.split()
+
+
+check("one run: the names of always", _ns_with(""), ["ls-vedetta", "ls-"])
+check("run b: its own names", _ns_with("b"), ["lsb-vedetta", "lsb-"])
+for name in ("scenarios.py", "vedetta_proc.py", "run_campaign.py", "run_scenarios.py", "run_similarity.py"):
+    text = open(os.path.join(ROOT, "tools", "lansim", name), encoding="utf-8").read()
+    check("no namespace written by hand in " + name, '"ls-' in text, False)
+plan = run_campaign.jobs(quick=True)
+fast = run_campaign.jobs(quick=True, slow_first=True)
+check("--jobs runs the same runs", sorted(map(repr, fast)), sorted(map(repr, plan)))
+check("--jobs starts the longest first", [k for k, _ in fast[:3]], list(run_campaign.SLOW_FIRST))
+check("one at a time keeps the order of the plan", [k for k, _ in plan[:2]], ["S14", "S14B"])
+check("the ceiling is at most 8 and at most half the threads", 1 <= run_campaign.MAX_JOBS <= min(8, max(1, (os.cpu_count() or 2) // 2)), True)
+check("the full plan has every run", len(run_campaign.jobs(quick=False)), sum(r for _, r, _ in run_campaign.PLAN))
+
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))
     sys.exit(1)

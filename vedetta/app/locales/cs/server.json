@@ -185,5 +185,7 @@
   "identity_shift.reason.group": "rozpoznaný typ",
   "identity_shift.reason.dhcp_name": "název DHCP",
   "identity_shift.reason.mdns_name": "název Bonjour",
-  "identity_shift.reason.ha_model": "model v Home Assistant"
+  "identity_shift.reason.ha_model": "model v Home Assistant",
+  "extra.seen_by": "Viděno přes",
+  "extra.seen_by_ha": "Home Assistant (Vedetta ho nekontroluje)"
 }

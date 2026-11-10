@@ -1,8 +1,10 @@
 """MacLayerMixin: the tables of the single MAC layer (moved out of history.py's class by design, see maclayer.py).
 
 ip_mac       one row per (ip, mac, source): when first and last observed and how many times. Written in one transaction per cycle.
-mac_class    phase 2: what kind of MAC it is (normal, lender, multi-address host...). Empty for now.
-ip_conflict  phase 3: IP addresses answered by different MACs over time. Empty for now."""
+mac_class    phase 2: what kind of MAC it is (normal, lender, multi-address host...): the classifier's current verdict on each MAC of the window.
+ip_conflict  phase 3: IP addresses contested by two MACs, with when the contest was first and last found.
+Both are written by store_mac_verdict alone (once per cycle, from maclayer) and read by nothing else yet: the verdict is kept in the shadow."""
+import json
 import time
 
 MACLAYER_RETENTION_DAYS = 90
@@ -110,6 +112,29 @@ class MacLayerMixin:
             self._update_sessions(merged)
             self._db.commit()
         return len(merged)
+
+    @staticmethod
+    def _verdict_rows(verdict: dict) -> dict[str, tuple[str, str]]:
+        """{mac: (kind, detail)} of a verdict of macclassify.classify; detail holds the addresses and, for a lender, the clients behind it."""
+        return {mac: (v["kind"], json.dumps({"ips": v["ips"], "behind": v["behind"]}, separators=(",", ":"))) for mac, v in verdict["macs"].items()}
+
+    def _store_mac_class(self, rows: dict[str, tuple[str, str]], now: float) -> None:
+        """A row is written only when the verdict of its MAC changes (updated = since when it holds); a MAC gone from the window loses its row."""
+        stored = {mac: (kind, detail) for mac, kind, detail in self._db.execute("SELECT mac, kind, detail FROM mac_class")}
+        self._db.executemany("DELETE FROM mac_class WHERE mac = ?", [(mac,) for mac in stored if mac not in rows])
+        self._db.executemany("INSERT OR REPLACE INTO mac_class (mac, kind, detail, updated) VALUES (?, ?, ?, ?)",
+                             [(mac, kind, detail, now) for mac, (kind, detail) in rows.items() if stored.get(mac) != (kind, detail)])
+
+    def store_mac_verdict(self, verdict: dict, now: float) -> None:
+        """The single writer of mac_class and ip_conflict, in one transaction: the verdict of each MAC, and every contested address (first_seen kept,
+        last_seen moved to now; the old ones go with the retention)."""
+        rows = self._verdict_rows(verdict)
+        contests = [(c["ip"], ",".join(sorted(c["macs"])), now, now) for c in verdict["conflicts"]]
+        with self._lock:
+            self._store_mac_class(rows, now)
+            self._db.executemany("""INSERT INTO ip_conflict (ip, macs, first_seen, last_seen) VALUES (?, ?, ?, ?)
+                                    ON CONFLICT (ip, macs) DO UPDATE SET last_seen = MAX(last_seen, excluded.last_seen)""", contests)
+            self._db.commit()
 
     def rows(self, since: float = 0.0) -> list[dict]:
         """The ip_mac rows seen after `since`, as the classifier takes them."""

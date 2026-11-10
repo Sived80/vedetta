@@ -2,7 +2,8 @@
 
 An observation is (ip, mac, source, time). Sources are interchangeable and none is required: ARP and mDNS today, DHCP and optional router
 queries later. This module only turns what the other modules already know into observations (pure functions, no network, no database);
-storage/history_maclayer.py keeps them. Nothing here decides anything yet (phase 2 classifies, phase 3 stabilises conflicts)."""
+storage/history_maclayer.py keeps them. Every cycle the classifier's verdict on the recent window is stored too (mac_class, ip_conflict), in the
+shadow: nothing reads it yet and nothing here decides anything (the 1.0 steps after P1 move the decisions onto it one at a time)."""
 import asyncio
 import time
 from collections import Counter, defaultdict
@@ -97,7 +98,16 @@ def _dhcp_features(d: dict) -> dict:
     return out
 
 
-def observation_report(history, dhcp_seen: dict, window_days: int = 7) -> dict:
+VERDICT_WINDOW_DAYS = 7     # the stretch of the past the classifier reads, for the stored verdict and for the export alike
+
+
+def verdict(history, window_days: int = VERDICT_WINDOW_DAYS, now: float | None = None) -> dict:
+    """The classifier's reading of the last `window_days` (macclassify.classify over the rows, sessions and flips of the window). Reads only."""
+    since = (time.time() if now is None else now) - window_days * 86400
+    return macclassify.classify(history.rows(since), history.sessions(since), history.flips(since))
+
+
+def observation_report(history, dhcp_seen: dict, window_days: int = VERDICT_WINDOW_DAYS) -> dict:
     """Counts only (it goes into the export for the developer): how the classifier and the identity linker read the last `window_days`."""
     since = time.time() - window_days * 86400
     rows, sessions, flips = history.rows(since), history.sessions(since), history.flips(since)
@@ -131,12 +141,26 @@ _EVENT_MEMORY: dict = {}
 EVENT_MEMORY_MAX = 5000
 
 
+def _store_verdict_now(history, now: float | None) -> None:
+    now = time.time() if now is None else now
+    history.store_mac_verdict(verdict(history, now=now), now)
+
+
+async def store_verdict(history, now: float | None = None) -> None:
+    """The verdict of the window, stored (mac_class, ip_conflict) and never handed back: the cycle does not depend on it. A failure is only logged."""
+    try:
+        await asyncio.to_thread(_store_verdict_now, history, now)
+    except Exception:
+        logger.exception("Verdetto del livello MAC non salvato")
+
+
 async def record(arp: dict[str, dict], history) -> None:
-    """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address. Only records, nothing reads it yet,
-    and it must never disturb the cycle."""
+    """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored in
+    the shadow. Nothing reads either to decide yet, and neither must ever disturb the cycle (a failure of one does not stop the other)."""
     try:
         now = time.time()
         rows = only_new(from_arp(arp, now) + from_mdns(mdns_listener.by_mac, now) + from_dhcp(dhcp.seen, now), _EVENT_MEMORY)
         await asyncio.to_thread(history.observe, rows)
     except Exception:
         logger.exception("Registro dei MAC osservati non riuscito")
+    await store_verdict(history)

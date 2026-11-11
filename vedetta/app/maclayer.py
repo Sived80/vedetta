@@ -2,15 +2,15 @@
 
 An observation is (ip, mac, source, time). Sources are interchangeable and none is required: ARP and mDNS today, DHCP and optional router
 queries later. This module only turns what the other modules already know into observations (pure functions, no network, no database);
-storage/history_maclayer.py keeps them. Every cycle the classifier's verdict on the recent window is stored too (mac_class, ip_conflict), in the
-shadow: nothing reads it yet and nothing here decides anything (the 1.0 steps after P1 move the decisions onto it one at a time)."""
+storage/history_maclayer.py keeps them. Every cycle the classifier's verdict on the recent window is stored too (mac_class, ip_conflict) and read
+back into macverdict, where the rules that ask whether a MAC is lent find it (1.0 step P2). Nothing here decides anything."""
 import asyncio
 import time
 from collections import Counter, defaultdict
 from typing import NamedTuple
 
 from .applog import logger
-from . import macclassify, macidentity
+from . import macclassify, macidentity, macverdict
 from .scan import dhcp, mdns_listener
 from .storage.newdevices import normalize_mac
 
@@ -144,10 +144,25 @@ EVENT_MEMORY_MAX = 5000
 def _store_verdict_now(history, now: float | None) -> None:
     now = time.time() if now is None else now
     history.store_mac_verdict(verdict(history, now=now), now)
+    _read_verdict(history)
+
+
+def _read_verdict(history) -> None:
+    """The stored verdict becomes the one the rules read (macverdict): the single read of mac_class."""
+    macverdict.refresh(history.mac_kinds())
+
+
+def load_verdict(history) -> None:
+    """At start: the verdict stored by the last run, read before the first cycle (the Bonjour listener starts at once). A failure is only logged."""
+    try:
+        _read_verdict(history)
+    except Exception:
+        logger.exception("Verdetto del livello MAC non letto")
 
 
 async def store_verdict(history, now: float | None = None) -> None:
-    """The verdict of the window, stored (mac_class, ip_conflict) and never handed back: the cycle does not depend on it. A failure is only logged."""
+    """The verdict of the window, stored (mac_class, ip_conflict) and read back into macverdict; never handed back to the cycle. A failure is only
+    logged, and the rules keep the last verdict."""
     try:
         await asyncio.to_thread(_store_verdict_now, history, now)
     except Exception:
@@ -155,8 +170,8 @@ async def store_verdict(history, now: float | None = None) -> None:
 
 
 async def record(arp: dict[str, dict], history) -> None:
-    """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored in
-    the shadow. Nothing reads either to decide yet, and neither must ever disturb the cycle (a failure of one does not stop the other)."""
+    """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored and
+    read back for the rules. Neither must ever disturb the cycle (a failure of one does not stop the other)."""
     try:
         now = time.time()
         rows = only_new(from_arp(arp, now) + from_mdns(mdns_listener.by_mac, now) + from_dhcp(dhcp.seen, now), _EVENT_MEMORY)

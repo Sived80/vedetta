@@ -13,7 +13,7 @@ import json
 import re
 import time
 
-from .. import paths
+from .. import macverdict, paths
 from ..atomic import write_atomic
 from . import mdns_parse, scan_common
 from .mdns_browsing import Browsing, TypesQuestion
@@ -28,36 +28,14 @@ _NAME_STRONG = 3   # score of a user-chosen name (friendly_name / service with a
 by_mac: dict[str, dict] = {}   # lowercase mac -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"}
 by_ip: dict[str, dict] = {}    # ip -> same card, until the MAC is known
 _mac_for_ip = lambda ip: None  # noqa: E731  (set by start)
-_at_several_addresses = lambda mac: False  # noqa: E731  (set by start: the MAC answers at several addresses RIGHT NOW)
-_lent_counts = None  # set by start: a function (since) -> {MAC: how many addresses the MAC layer saw it at after `since`}; none = no memory, only the table of the moment
-
-# A repeater lends its MAC to the clients behind it, but only the ones that are awake are in the ARP table: judging by the table of the moment, a MAC is «lent» while a phone behind the repeater is
-# on and «its own» when the phone sleeps, and the card of the repeater turned from router to phone and back (the phone's Bonjour announcements were filed under the repeater's MAC). The memory of the MAC layer
-# keeps the answer: a MAC seen at LENT_MIN_ADDRESSES or more addresses in the last LENT_WINDOW_S is lent, whoever is awake. Two addresses only can be one device that changed address (a new lease), so they do not count.
-LENT_MIN_ADDRESSES = 3
-LENT_WINDOW_S = 7 * 86400
-LENT_REFRESH_S = 300
-_lent_memory: dict = {"ts": 0.0, "macs": frozenset()}
-
-
-def lent_in_memory(mac: str, now: float | None = None) -> bool:
-    """Was this MAC seen at several addresses in the last days? The count is read again at most every LENT_REFRESH_S; if it cannot be read the last answer stands."""
-    if _lent_counts is None:
-        return False
-    now = time.time() if now is None else now
-    if now - _lent_memory["ts"] > LENT_REFRESH_S:
-        try:
-            counts = _lent_counts(now - LENT_WINDOW_S)
-            _lent_memory["macs"] = frozenset(str(m).lower() for m, n in counts.items() if n >= LENT_MIN_ADDRESSES)
-        except Exception:
-            logger.debug("Memory of the lent MACs not read", exc_info=True)
-        _lent_memory["ts"] = now
-    return str(mac).lower() in _lent_memory["macs"]
 
 
 def _is_lent_mac(mac: str) -> bool:
-    """A MAC that a repeater lends to several addresses: now in the ARP table, or in the memory of the last days."""
-    return bool(mac) and (_at_several_addresses(mac) or lent_in_memory(mac))
+    """A MAC that names no single device: a repeater lends it to the clients behind it, or it is shared by design. The single MAC verdict says so
+    (macverdict, over the last days): who is awake right now does not change it, and a phone that got a new address is not lent."""
+    return bool(mac) and macverdict.shared(mac)
+
+
 _task: asyncio.Task | None = None
 _dirty = False
 
@@ -145,9 +123,9 @@ def as_scan_info(card: dict | None) -> dict:
     return out
 
 
-def start(state, lent_counts=None) -> None:
+def start(state) -> None:
     """From the lifespan: loads the memory and starts listening (if zeroconf is missing only the memory remains)."""
-    global _task, _mac_for_ip, _at_several_addresses, _lent_counts
+    global _task, _mac_for_ip
     _load()
 
     def arp() -> dict:
@@ -157,9 +135,6 @@ def start(state, lent_counts=None) -> None:
         m = (arp().get(ip) or {}).get("mac")
         return str(m).lower() if m else None
     _mac_for_ip = mac_for_ip
-    _at_several_addresses = lambda mac: [str((h or {}).get("mac")).lower() for h in arp().values()].count(mac) > 1  # noqa: E731  (a repeater lends its address to its clients)
-    if lent_counts is not None:
-        _lent_counts = lent_counts
     try:
         import zeroconf  # noqa: F401
     except ImportError:

@@ -34,24 +34,14 @@ assert ml.lookup(LENT, "10.0.0.105") is None
 ml.record("10.0.0.50", "_companion-link._tcp", "iPhone-di-Caio", '""')
 assert OWN in ml.by_mac and "10.0.0.50" not in ml.by_ip and ml.lookup(OWN)["name"] == "iPhone-di-Caio"
 # --- the repeater lends its MAC to clients that are not always awake: the answer must not depend on who is in the ARP table at this moment
-# (found again in the export of 12 October: the same repeater went from router to phone and back, as the phone behind it woke and slept)
-import time  # noqa: E402
+# (found again in the export of 12 October: the same repeater went from router to phone and back, as the phone behind it woke and slept).
+# Since step P2 of 1.0 the answer is the single MAC verdict over the last days (macverdict, filled by maclayer: tests/check_mac_verdict_readers.py).
+from app import macverdict  # noqa: E402
 ml.by_ip.clear(); ml.by_mac.clear()
 ARP.clear(); ARP.update({"10.0.0.105": LENT, "10.0.0.50": OWN})      # the clients behind the repeater are asleep: the MAC is at ONE address now
-ml._at_several_addresses = lambda mac: list(ARP.values()).count(mac) > 1
 ml._is_lent_mac = REAL_IS_LENT
-CALLS = []
-SEEN = {LENT: 5, OWN: 2}                                             # the MAC layer saw the lent MAC at 5 addresses, an ordinary one at 2 (one device that got a new lease)
-
-
-def counts(since):
-    CALLS.append(since)
-    return dict(SEEN)
-
-
-ml._lent_counts = counts
-ml._lent_memory.update(ts=0.0, macs=frozenset())
-assert ml._is_lent_mac(LENT) and not ml._is_lent_mac(OWN), "5 addresses make a MAC lent; 2 do not"
+macverdict.refresh({LENT: "lender", OWN: "normal"})                 # OWN was seen at two addresses one after the other: one device that got a new lease
+assert ml._is_lent_mac(LENT) and not ml._is_lent_mac(OWN), "the verdict says lent; two addresses one after the other do not"
 ml.record("10.0.0.108", "_nearbypresence._tcp", "nearby-phone", '""')
 assert LENT not in ml.by_mac and "10.0.0.108" in ml.by_ip, "an announcement of an address behind the repeater was filed under the repeater"
 assert ml.lookup(LENT, "10.0.0.105") is None, "the repeater got the phone's Bonjour card while the phone was asleep"
@@ -59,13 +49,11 @@ ml.by_mac[LENT] = {"name": "old", "services": ["_nearbypresence._tcp"], "ip": "1
 assert ml.lookup(LENT, "10.0.0.105") is None
 ml.record("10.0.0.50", "_companion-link._tcp", "iPhone-di-Caio", '""')
 assert OWN in ml.by_mac and ml.lookup(OWN)["name"] == "iPhone-di-Caio", "a MAC seen at two addresses only is still a device of its own"
-assert len(CALLS) == 1, ("the counts are read once in LENT_REFRESH_S", CALLS)
-# after the refresh time the count is read again; if it cannot be read the last answer stands, and nothing breaks
-ml._lent_memory["ts"] = time.time() - ml.LENT_REFRESH_S - 1
-SEEN.update({LENT: 1})
-assert not ml._is_lent_mac(LENT) and len(CALLS) == 2
-ml._lent_memory["ts"] = time.time() - ml.LENT_REFRESH_S - 1
-ml._lent_counts = lambda since: 1 / 0
-SEEN.update({LENT: 9})
-assert not ml._is_lent_mac(LENT), "an error reading the count must leave the last answer"
+# the other kinds of the verdict: a virtual router MAC is shared by design; a host with two addresses at once is one device; no verdict yet: its own
+macverdict.refresh({LENT: "virtual"})
+assert ml._is_lent_mac(LENT)
+macverdict.refresh({LENT: "multi_address"})
+assert not ml._is_lent_mac(LENT)
+macverdict.refresh({})
+assert not ml._is_lent_mac(LENT) and not ml._is_lent_mac("") and not ml._is_lent_mac(None)
 print("TUTTO OK")

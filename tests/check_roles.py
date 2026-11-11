@@ -14,7 +14,8 @@ UPNP = {
 ARP = {"192.168.50.1": {"mac": "b0:19:21:00:00:a9"}, "192.168.50.105": {"mac": "4e:3a:fd:00:00:a5"},
        "192.168.50.112": {"mac": "4E-3A-FD-00-00-A5".replace("-", ":")}, "192.168.50.91": {"mac": "4e:3a:fd:00:00:a5"},
        "192.168.50.113": {"mac": "38:b8:00:00:00:a8"}}
-r = roles.compute(gateway="192.168.50.1", dhcp_servers=["192.168.50.1"], dns_servers=["192.168.50.2"], upnp=UPNP, arp=ARP)
+LENT = frozenset({"4E:3A:FD:00:00:A5"})     # the single MAC verdict calls the repeater's MAC lent (tests/check_mac_verdict_readers.py)
+r = roles.compute(gateway="192.168.50.1", dhcp_servers=["192.168.50.1"], dns_servers=["192.168.50.2"], upnp=UPNP, arp=ARP, lenders=LENT)
 assert r["by_ip"]["192.168.50.1"] == {"gateway": "route", "dhcp": "dhcp"}, r
 assert r["by_ip"]["192.168.50.2"] == {"dns": "dns"}
 assert r["by_ip"]["192.168.50.105"] == {"repeater": "upnp"}
@@ -22,10 +23,10 @@ assert "192.168.50.113" not in r["by_ip"]  # a TV is not a network appliance
 assert r["via"]["192.168.50.112"] == {"ip": "192.168.50.105", "name": "FRITZ!WLAN Repeater 310", "mac": "4E:3A:FD:00:00:A5"}, r["via"]
 assert set(r["via"]) == {"192.168.50.112", "192.168.50.91"}
 # Shared MAC with nobody declaring itself a repeater: owner not identified.
-r = roles.compute(gateway=None, dhcp_servers=[], dns_servers=[], upnp={}, arp=ARP)
+r = roles.compute(gateway=None, dhcp_servers=[], dns_servers=[], upnp={}, arp=ARP, lenders=LENT)
 assert r["via"]["192.168.50.105"]["ip"] is None and len(r["via"]) == 3
 # Network UPnP types.
-r = roles.compute(gateway=None, dhcp_servers=[], dns_servers=[], arp={},
+r = roles.compute(gateway=None, dhcp_servers=[], dns_servers=[], arp={}, lenders=frozenset(),
                   upnp={"10.0.0.1": {"types": ["InternetGatewayDevice", "WANDevice", "WFADevice"], "name": "Box"}})
 assert r["by_ip"]["10.0.0.1"] == {"router": "upnp", "ap": "upnp"}, r
 # UPnP descriptor with nested devices.
@@ -62,7 +63,7 @@ OUT = """
 offers = scanner.parse_dhcp_offers(OUT)
 assert offers == [{"offered": "192.168.50.120", "type": "DHCPOFFER", "server": "192.168.50.1", "lease": "1d00h00m00s",
                    "netmask": "255.255.255.0", "router": ["192.168.50.1"], "dns": ["192.168.50.2"], "domain": "lan"}], offers
-r = roles.compute(gateway="192.168.50.1", dhcp_servers=[], dns_servers=[], upnp={}, arp={}, offers=offers)
+r = roles.compute(gateway="192.168.50.1", dhcp_servers=[], dns_servers=[], upnp={}, arp={}, lenders=frozenset(), offers=offers)
 assert r["by_ip"]["192.168.50.1"] == {"gateway": "route", "dhcp": "offer"}, r
 assert r["by_ip"]["192.168.50.2"] == {"dns": "offer"}, r
 assert r["dhcp"] == [{"server": "192.168.50.1", "router": ["192.168.50.1"], "dns": ["192.168.50.2"], "domain": "lan",

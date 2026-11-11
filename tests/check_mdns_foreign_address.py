@@ -13,8 +13,6 @@ from app.scan import mdns_listener as m  # noqa: E402
 
 LOCAL_ARP = {"10.0.0.20": "aa:bb:cc:00:00:14"}    # only the direct network is in the ARP table
 m._mac_for_ip = lambda ip: LOCAL_ARP.get(ip)
-m._at_several_addresses = lambda mac: False
-m._lent_counts = None
 m.by_mac.clear()
 m.by_ip.clear()
 

@@ -139,5 +139,5 @@ assert sql_files == {"storage/history_maclayer.py"}, sql_files
 assert callers == ["maclayer.py"], "one function writes the verdict: " + repr(callers)
 assert steps == ["maclayer.py"], "maclayer.record is the only step that stores the verdict: " + repr(steps)
 reads = re.findall(r"SELECT[^\"']*\bFROM\s+(mac_class|ip_conflict)\b", (APP / "storage" / "history_maclayer.py").read_text(encoding="utf-8"), re.IGNORECASE)
-assert reads == ["mac_class"], "the only read is the writer's own comparison with the stored verdict: " + repr(reads)
+assert reads == ["mac_class", "mac_class"], "the writer's own comparison and the one reader (step P2, tests/check_mac_verdict_readers.py): " + repr(reads)
 print("TUTTO OK")

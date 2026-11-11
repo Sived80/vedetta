@@ -3,7 +3,8 @@
 ip_mac       one row per (ip, mac, source): when first and last observed and how many times. Written in one transaction per cycle.
 mac_class    phase 2: what kind of MAC it is (normal, lender, multi-address host...): the classifier's current verdict on each MAC of the window.
 ip_conflict  phase 3: IP addresses contested by two MACs, with when the contest was first and last found.
-Both are written by store_mac_verdict alone (once per cycle, from maclayer) and read by nothing else yet: the verdict is kept in the shadow."""
+Both are written by store_mac_verdict alone (once per cycle, from maclayer). mac_class is read by mac_kinds alone, which maclayer hands to macverdict
+(the rules that ask whether a MAC is lent read it there); ip_conflict is read by nothing yet."""
 import json
 import time
 
@@ -136,6 +137,11 @@ class MacLayerMixin:
                                     ON CONFLICT (ip, macs) DO UPDATE SET last_seen = MAX(last_seen, excluded.last_seen)""", contests)
             self._db.commit()
 
+    def mac_kinds(self) -> dict[str, str]:
+        """The stored verdict, MAC -> kind: the one read of mac_class besides the writer's own (maclayer hands it to macverdict)."""
+        with self._lock:
+            return dict(self._db.execute("SELECT mac, kind FROM mac_class").fetchall())
+
     def rows(self, since: float = 0.0) -> list[dict]:
         """The ip_mac rows seen after `since`, as the classifier takes them."""
         with self._lock:
@@ -166,12 +172,6 @@ class MacLayerMixin:
             rows = self._db.execute(
                 "SELECT ip, source, first_seen, last_seen, seen_count FROM ip_mac WHERE mac = ? AND last_seen >= ? ORDER BY last_seen DESC", (mac, since)).fetchall()
         return [dict(zip(("ip", "source", "first_seen", "last_seen", "seen_count"), r)) for r in rows]
-
-    def mac_ip_counts(self, since: float = 0.0) -> dict[str, int]:
-        """MAC -> how many distinct addresses it was seen at after `since` (the input of phase 2: lender candidates)."""
-        with self._lock:
-            rows = self._db.execute("SELECT mac, COUNT(DISTINCT ip) FROM ip_mac WHERE last_seen >= ? GROUP BY mac", (since,)).fetchall()
-        return dict(rows)
 
     def maclayer_summary(self, window_days: int = 7) -> dict:
         """Counts only, never an address or a MAC (it goes into the export for the developer): rows per source, how many MACs and addresses,

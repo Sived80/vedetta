@@ -4,6 +4,9 @@ offers, journal lines, log line, alert for several servers) and _store_roles_and
 Generated inputs, with the collaborators replaced by deterministic in-memory ones (frozen clock, fake logger, fake journal, fake callbacks): for each case the return value, the
 side effects on the arguments AND on the module state, and the ORDER of every call (add_, log, journal, alert, change event, clock) must be exactly the ones stored in
 tests/golden/roles_helpers.json (a digest per case, plus a readable sample), written from the code as it was before the functions were split.
+Since step P2 of 1.0 the lent MACs come from the single MAC verdict (an argument, `lenders`): here it is given as the old rule judged (every MAC at two
+addresses or more of the case is lent), so the golden proves that where the verdict and the old rule agree nothing else changes. Where they do not
+agree (two addresses without a proof: a host of its own) tests/check_mac_verdict_readers.py says what happens.
 Regenerate only on purpose:  ROLES_HELPERS_GOLDEN_UPDATE=1 python tests/check_roles_helpers_golden.py"""
 import hashlib
 import json
@@ -16,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app.recognition import roles  # noqa: E402
 from app.storage import journal  # noqa: E402
+from app.storage.newdevices import normalize_mac  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "roles_helpers.json"
 N = 3000
@@ -94,6 +98,16 @@ def rand_by_ip(ips):
     return out
 
 
+def old_rule_lenders(arp):
+    """The MACs the rule before P2 called lent: the ones at two addresses or more of the view (no random draw: the cases stay the same)."""
+    count: dict = {}
+    for host in arp.values():
+        mac = normalize_mac((host or {}).get("mac"))
+        if mac:
+            count[mac] = count.get(mac, 0) + 1
+    return frozenset(m for m, n in count.items() if n >= 2)
+
+
 def run_find(case_rng_unused=None):
     ips = rng.sample(IPS, rng.randrange(0, 8))
     arp = {}
@@ -122,7 +136,7 @@ def run_find(case_rng_unused=None):
             by_ip.setdefault(ip, {}).setdefault(role, source)
     before = ser(by_ip)
     try:
-        via = roles._find_clients_behind_repeaters(arp, ip_arg, add_, by_ip, names)
+        via = roles._find_clients_behind_repeaters(arp, ip_arg, add_, by_ip, names, old_rule_lenders(arp))
         res = ser(via)
     except Exception as exc:
         res = ser(exc)

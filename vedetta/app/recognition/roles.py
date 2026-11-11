@@ -9,17 +9,19 @@ Sources (standard protocols only, no vendor API):
   router/ap/repeater  device type declared via UPnP (deviceType:
             InternetGatewayDevice, WLANAccessPointDevice, WFADevice) or declared
             name/model ("Repeater", "Extender")
-  via       same MAC on multiple IPs in the ARP table: a repeater that does not do WDS
-            "lends" its own MAC to the clients connected to it (MAC translation). The
-            owner of the MAC is the IP that declares itself repeater/AP; if nobody
-            does, the repeater remains "unidentified".
+  via       the addresses that answer with a lent MAC in the ARP table: a repeater that does
+            not do WDS "lends" its own MAC to the clients connected to it (MAC translation).
+            Whether a MAC is lent is the single MAC verdict (macverdict, "lender"); the ARP
+            table only says which of its clients are awake now. The owner of the MAC is the
+            IP that declares itself repeater/AP; if nobody does, the repeater remains
+            "unidentified".
 Each role carries its source: no role is inferred without one of these proofs."""
 import asyncio
 import ipaddress
 import re
 import time
 
-from .. import netutil
+from .. import macverdict, netutil
 from ..scan import dhcp, discovery, touch_policy
 from ..applog import logger
 from ..networks import registry
@@ -57,12 +59,12 @@ class _Runtime:
 _rt = _Runtime()
 
 
-def compute(*, gateway: str | None, dhcp_servers, dns_servers, upnp: dict[str, dict], arp: dict[str, dict],
+def compute(*, gateway: str | None, dhcp_servers, dns_servers, upnp: dict[str, dict], arp: dict[str, dict], lenders: frozenset[str],
             offers: list[dict] | None = None) -> dict:
-    """Pure: from the collected evidence to the roles per IP, with the source of each."""
+    """Pure: from the collected evidence to the roles per IP, with the source of each. `lenders`: the MACs the single MAC verdict calls lent (upper case)."""
     by_ip, add_, ip_ = _collect_gateway_and_dhcp_roles(dhcp_servers, gateway, offers)
     ip_, names, types = _collect_dns_and_upnp_roles(dns_servers, add_, ip_, upnp)
-    via = _find_clients_behind_repeaters(arp, ip_, add_, by_ip, names)
+    via = _find_clients_behind_repeaters(arp, ip_, add_, by_ip, names, lenders)
     return _build_roles_result(via, names, types, offers, by_ip, upnp)
 
 
@@ -105,12 +107,13 @@ def _collect_dns_and_upnp_roles(dns_servers, add_, ip_, upnp):
     return ip_, names, types
 
 
-def _find_clients_behind_repeaters(arp, ip_, add_, by_ip, names):
-    # Same MAC on multiple IPs: clients behind a repeater with MAC translation.
+def _find_clients_behind_repeaters(arp, ip_, add_, by_ip, names, lenders):
+    """Clients behind a repeater with MAC translation: the addresses that answer with a MAC the verdict calls lent. With one address awake the
+    repeater cannot be told from its client, so nothing is said."""
     groups = _group_ips_by_mac(arp)
     via: dict[str, dict] = {}
     for mac, ips in groups.items():
-        if len(ips) < 2:
+        if len(ips) < 2 or mac not in lenders:
             continue
         owner = _repeater_owner(ips, by_ip)
         _add_clients_via(via, ips, owner, names, mac)
@@ -330,7 +333,7 @@ async def _compute_roles_snapshot(upnp, arp, own_ip):
     gateway = default_gateway()
     candidates = _dns_askable(arp, own_ip) + ([gateway] if gateway else [])
     dns = await dns_servers(c for c in candidates if _is_ipv4(c))
-    result = compute(gateway=gateway, dhcp_servers=servers, dns_servers=dns, upnp=upnp, arp=arp, offers=_rt.offers["list"])
+    result = compute(gateway=gateway, dhcp_servers=servers, dns_servers=dns, upnp=upnp, arp=arp, lenders=macverdict.lenders(), offers=_rt.offers["list"])
     before, keys = snapshot(), ("by_ip", "via", "names", "dhcp", "types")
     return now, result, before, keys
 

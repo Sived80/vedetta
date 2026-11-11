@@ -12,7 +12,7 @@ from .storage import devices_config, journal
 from .storage.history import history
 from .ha import analysis_view, health_view, ha_registry, ha_tz, ha_update, passive_service
 from .scan import mdns_listener, dhcp, host_load, internet, scanner
-from . import external, i18n, lifecycle, paths
+from . import external, i18n, lifecycle, maclayer, paths
 from .state_support import _process_info
 from .recognition import roles
 from .applog import logger
@@ -49,7 +49,8 @@ async def lifespan(_: FastAPI):
     ha_registry.start()  # Home Assistant registry (read-only; empty outside HA)
     passive_service.start(on_change=state.emit_event)  # the clients Home Assistant sees on other networks (off until the user turns it on)
     ha_update.start()  # is there a newer version of this add-on? (asks the Supervisor for its own card; nothing outside HA)
-    mdns_listener.start(state, lent_counts=history.mac_ip_counts)  # Bonjour names: memory and continuous listening
+    await asyncio.to_thread(maclayer.load_verdict, history)   # the single MAC verdict of the last run, before the listeners ask it
+    mdns_listener.start(state)  # Bonjour names: memory and continuous listening
     await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,
                 dhcp_discover=scanner.dhcp_discover, internet_check=internet.check if external.any_internet_check() else None)  # who does what: gateway, DHCP, DNS, repeaters

@@ -38,10 +38,10 @@ assert rows["mdns"]["last_seen"] == 90.0 and rows["mdns"]["seen_count"] == 1
 # lookups: one MAC on many addresses (a lender candidate), one address with many MACs (a conflict candidate), the time window
 H.observe([Obs(f"10.0.0.{i}", "AA:BB:CC:00:00:99", "arp", 300.0 + i) for i in (11, 12, 13)] + [Obs("10.0.0.20", "AA:BB:CC:00:00:98", "arp", 400.0),
            Obs("10.0.0.20", "AA:BB:CC:00:00:97", "arp", 410.0)])
-assert H.mac_ip_counts()["AA:BB:CC:00:00:99"] == 3 and H.mac_ip_counts()["AA:BB:CC:00:00:01"] == 1
+assert len({r["ip"] for r in H.ips_for_mac("AA:BB:CC:00:00:99")}) == 3 and len({r["ip"] for r in H.ips_for_mac("AA:BB:CC:00:00:01")}) == 1
 assert [r["mac"] for r in H.macs_for_ip("10.0.0.20")] == ["AA:BB:CC:00:00:97", "AA:BB:CC:00:00:98"], "most recent first"
 assert [r["ip"] for r in H.ips_for_mac("AA:BB:CC:00:00:99")] == ["10.0.0.13", "10.0.0.12", "10.0.0.11"]
-assert "AA:BB:CC:00:00:01" not in H.mac_ip_counts(since=250.0) and H.macs_for_ip("10.0.0.20", since=405.0)[0]["mac"] == "AA:BB:CC:00:00:97"
+assert not H.ips_for_mac("AA:BB:CC:00:00:01", since=250.0) and H.macs_for_ip("10.0.0.20", since=405.0)[0]["mac"] == "AA:BB:CC:00:00:97"
 
 # retention: old rows go, the other tables exist for the next phases
 now = time.time()

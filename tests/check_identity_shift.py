@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import i18n  # noqa: E402
+from app import i18n, macverdict  # noqa: E402
 from app.ha import identity_shift as ids  # noqa: E402
 from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.storage.history import History  # noqa: E402
@@ -58,14 +58,14 @@ dhcp.seen.clear(); mdns_listener.by_mac.clear()
 dhcp.seen["50:b0:3b:00:00:2b"] = {"vendor_class": "PS5", "prl": "1,3,15,6"}
 dhcp.seen["8c:fd:f0:00:00:08"] = {"vendor_class": "chromeos"}
 ids.RESULTS.clear(); ids._checked.clear(); ids._alerted.clear()
-last = {"scan-10-0-0-106": "50:b0:3b:00:00:2b", "scan-10-0-0-1": "30:de:4b:00:00:01"}
+macverdict.refresh({"50:B0:3B:00:00:2B": "normal", "8C:FD:F0:00:00:08": "normal", "30:DE:4B:00:00:01": "normal"})
 assert ids.due("scan-10-0-0-106", "50:b0:3b:00:00:2b", now)
-f = ids.evaluate("scan-10-0-0-106", "50:B0:3B:00:00:2B", last, now)
+f = ids.evaluate("scan-10-0-0-106", "50:B0:3B:00:00:2B", now)
 assert f and f["verdict"] == "different" and f["new"] and f["a"]["mac"] == "8c:fd:f0:00:00:08" and f["b"]["mac"] == "50:b0:3b:00:00:2b", f
 assert not ids.due("scan-10-0-0-106", "50:b0:3b:00:00:2b", now + 60), "non si rigiudica a ogni controllo"
 assert ids.due("scan-10-0-0-106", "8c:fd:f0:00:00:08", now + 60), "ma subito se cambia il MAC"
 assert ids.due("scan-10-0-0-106", "50:b0:3b:00:00:2b", now + ids.RECHECK_S + 1)
-f2 = ids.evaluate("scan-10-0-0-106", "50:b0:3b:00:00:2b", last, now + 700)
+f2 = ids.evaluate("scan-10-0-0-106", "50:b0:3b:00:00:2b", now + 700)
 assert f2 and not f2["new"], "l'avviso e' una volta sola per coppia"
 for lang in ("it", "en"):
     i18n.use(lang)
@@ -73,9 +73,17 @@ for lang in ("it", "en"):
     assert [x["key"] for x in a] == ["other_device", "other_device_why"] and "PS5" in a[0]["value"] and a[1]["value"], a
 assert ids.attrs_for("scan-10-0-0-1", i18n.t) == []
 
-# a repeater that clones its MAC: the same MAC behind three cards, nothing is said
+# a repeater that clones its MAC: the single MAC verdict calls it lent (step P2 of 1.0; it was "the last MAC of two cards or more"), nothing is said
 H.mac_memory_set("1c:aa:00:00:00:99", "scan-10-0-0-50", "10.0.0.50", {"name": "TV", "grp": "media", "dhcp_class": "android-dhcp-11"}, now - 900)
 H.mac_memory_set("1c:aa:00:00:00:98", "scan-10-0-0-50", "10.0.0.50", {"name": "TV", "grp": "pc", "dhcp_class": "chromeos"}, now - 100)
-rep = {"scan-10-0-0-50": "1c:aa:00:00:00:98", "scan-10-0-0-51": "1c:aa:00:00:00:98", "scan-10-0-0-52": "1c:aa:00:00:00:98"}
-assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", rep, now) is None and "scan-10-0-0-50" not in ids.RESULTS
+dhcp.seen["1c:aa:00:00:00:99"] = {"vendor_class": "android-dhcp-11"}
+dhcp.seen["1c:aa:00:00:00:98"] = {"vendor_class": "chromeos"}
+macverdict.refresh({"1C:AA:00:00:00:98": "lender"})
+assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", now) is None and "scan-10-0-0-50" not in ids.RESULTS
+macverdict.refresh({"1C:AA:00:00:00:98": "virtual"})
+assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", now) is None, "a virtual router MAC names no single device either"
+# without the verdict of a lender the same two MACs are judged (two families of evidence: DHCP family and group)
+macverdict.refresh({"1C:AA:00:00:00:98": "multi_address"})
+assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", now)["verdict"] == "different"
+assert "_shared_macs" not in vars(ids), "the old rule (the last MAC of two cards) is gone"
 print("TUTTO OK")

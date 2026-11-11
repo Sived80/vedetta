@@ -101,20 +101,20 @@ def watch(device_id: str, previous: dict | None, result: dict, last_mac: dict, n
         job = mac_shadow.observe(device_id, previous, result, last_mac.get(device_id), now)
         judge = identity_shift.due(device_id, (result.get("mac") or "").lower(), now)
         if job or judge:
-            task = asyncio.create_task(_job(device_id, job, result if judge else None, last_mac, now, emit_alert))
+            task = asyncio.create_task(_job(device_id, job, result if judge else None, now, emit_alert))
             background.add(task)
             task.add_done_callback(background.discard)
     except Exception:
         logger.debug("mac_shadow failed for %s", device_id, exc_info=True)
 
 
-async def _job(device_id: str, job, judge_result: dict | None, last_mac: dict, now: float, emit_alert) -> None:
+async def _job(device_id: str, job, judge_result: dict | None, now: float, emit_alert) -> None:
     """The memory per MAC is written first (a thread); then, if it is time, the card is judged."""
     try:
         if job:
             await asyncio.to_thread(job)
         if judge_result is not None:
-            found = await asyncio.to_thread(identity_shift.evaluate, device_id, judge_result.get("mac"), dict(last_mac), now)
+            found = await asyncio.to_thread(identity_shift.evaluate, device_id, judge_result.get("mac"), now)
             _announce(found, judge_result, emit_alert)
     except Exception:
         logger.debug("shadow job failed for %s", device_id, exc_info=True)

@@ -8,8 +8,8 @@ and is silent when it cannot be sure.
 
 The rule (rocky on purpose; the judgement itself is recognition/same_device.py, the very one that decides whether a card keeps the name that another MAC announced):
   - "different" needs at least two INDEPENDENT families of evidence that agree (a fact is never counted twice), with real data for both MACs;
-  - any veto turns it into "unknown": a private (random) MAC, as phones use; a MAC behind two or more cards at once (a repeater that clones the MAC,
-    a NAT); a MAC that belongs to a network role (gateway, access point, repeater);
+  - any veto turns it into "unknown": a private (random) MAC, as phones use; a MAC that names no single device (a repeater that lends it to the
+    clients behind it, a virtual router MAC: the single MAC verdict, macverdict); a MAC that belongs to a network role (gateway, access point, repeater);
   - "same" evidence (the same DHCP or Bonjour name, the same Home Assistant device) wins over any difference.
 Families of evidence for "different": DHCP family (ChromeOS, PS5, Android, Windows...), recognised group (pc, media...), DHCP name, Bonjour name,
 Home Assistant model.
@@ -17,7 +17,7 @@ Home Assistant model.
 import time
 from functools import lru_cache
 
-from .. import datafile
+from .. import datafile, macverdict
 from ..recognition import naming, same_device, vendor_lookup
 from ..scan import dhcp, mdns_listener
 from ..storage.history import history
@@ -88,7 +88,7 @@ def due(device_id: str, mac: str, now: float) -> bool:
     return last is None or last[0] != mac or now - last[1] >= RECHECK_S
 
 
-def evaluate(device_id: str, mac_now: str, last_macs: dict[str, str], now: float | None = None) -> dict | None:
+def evaluate(device_id: str, mac_now: str, now: float | None = None) -> dict | None:
     """Judges the card: the MAC that had it first against each other MAC seen behind it. Returns the verdict "different" (with
     "new": True the first time it is found for that pair) or None. Nothing is written but the in-memory result."""
     now = time.time() if now is None else now
@@ -100,7 +100,7 @@ def evaluate(device_id: str, mac_now: str, last_macs: dict[str, str], now: float
     if len(rows) < 2:
         RESULTS.pop(device_id, None)
         return None
-    shared = _shared_macs(last_macs)
+    shared = {mac for mac in rows if macverdict.shared(mac)}
     profiles = sorted(starmap(profile, rows.items()), key=lambda p: p["first_seen"])
     owner = profiles[0]
     found = None
@@ -126,14 +126,6 @@ def _role(ip: str | None) -> bool:
 
 
 # ------------------------------------------------------------------ the check on a card (runs in a thread: reads the database)
-def _shared_macs(last_macs: dict[str, str]) -> set[str]:
-    count: dict[str, int] = {}
-    for m in last_macs.values():
-        k = (m or "").lower()
-        count[k] = count.get(k, 0) + 1
-    return {m for m, n in count.items() if n >= 2}
-
-
 def _describe(p: dict) -> dict:
     return {"vendor": p["vendor"], "class": p["dhcp_class"], "family": p["family"], "mac": p["mac"]}
 

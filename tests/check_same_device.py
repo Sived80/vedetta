@@ -92,7 +92,7 @@ try:
             return [{"mac": MAC_OLD, "ip": None, "first_seen": 1}, {"mac": MAC_NOW, "ip": None, "first_seen": 2}]
 
     identity_shift.history = Memory()
-    identity_shift.evaluate("card-1", MAC_NOW, {}, 1000.0)
+    identity_shift.evaluate("card-1", MAC_NOW, 1000.0)
     check("the notice of a second device asks the same function, with its own policy", calls, [same_device.NOTIFY])
 finally:
     same_device.judge = real

@@ -1,7 +1,7 @@
 """Golden-master test of DeviceState._shadow (the data per MAC for later analysis and the judgement "two different devices behind this card?"): 2500 generated situations - the
 observation returning nothing, False, a job that works or fails, or raising; the judgement due or not or raising; the evaluation finding nothing, a new or an old other device or raising;
 alerts enabled, disabled or failing; results with a MAC in capitals, lower case, empty, missing or an empty card; a memory of last MACs with or without the device - with the
-collaborators replaced by in-memory ones that record every call must give exactly the calls (with their arguments, in order, and whether the evaluation got a COPY of the memory),
+collaborators replaced by in-memory ones that record every call must give exactly the calls (with their arguments, in order; since step P2 of 1.0 the evaluation gets no memory of last MACs: it reads the single MAC verdict),
 the alerts sent, the log lines of the failures, how many background tasks were created and how many are left, stored in tests/golden/state_shadow.json, written from the code as it was
 before the two methods moved out of DeviceState (a digest per case plus a readable sample).
 Regenerate only on purpose:  STATE_SHADOW_GOLDEN_UPDATE=1 python tests/check_state_shadow_golden.py"""
@@ -74,8 +74,8 @@ async def main():
                 raise ValueError("due down")
             return due_mode == "yes"
 
-        def evaluate(device_id_, mac, memory, now_):
-            LOG.append(["evaluate", device_id_, mac, dict(memory), now_, memory is last])
+        def evaluate(device_id_, mac, now_):
+            LOG.append(["evaluate", device_id_, mac, now_])
             if eval_mode == "raise":
                 raise RuntimeError("evaluate down")
             return {"none": None, "new": {"new": True, "k": 1}, "old": {"new": False}}[eval_mode]

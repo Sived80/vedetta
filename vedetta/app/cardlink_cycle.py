@@ -1,4 +1,4 @@
-"""The step of the cycle that keeps the card -> MAC links (1.0 step P4), in the shadow: nobody reads them to decide anything yet.
+"""The step of the cycle that keeps the card -> MAC links (1.0 step P4); the cycle reads them through linkview (step P5).
 
 maclayer.record runs it after the verdict of the cycle (registered at start by main), at most every FULL_SWEEP_S. It gathers the facts the rule
 needs (cardlink.judge: pure) and hands its answer to History.store_card_links, the one writer of card_mac:
@@ -8,11 +8,14 @@ needs (cardlink.judge: pure) and hands its answer to History.store_card_links, t
   - the MACs of each card's presence history (History.card_macs);
   - for the cards whose history holds more than one MAC, the profile of each MAC as the notice of another device behind a card builds it
     (ha/identity_shift.profile) and whether it belongs to a network role, for the name check of the rule (L9).
-A failure is only logged: the cycle never sees it. The export reads the counts (counts)."""
+The requests of step P5 (a link released when two cards of one phone are merged, the gesture "this is a new device") wait in linkview and are
+written here, by the one writer, at the next judgement (cardlink.requested). After every judgement the rows just stored are read back into
+linkview, and at start the rows of the last run (load). A failure is only logged: the cycle never sees it, and linkview keeps its last answer.
+The export reads the counts (counts)."""
 import time
 from collections import Counter
 
-from . import arpview, cardlink, macverdict, netutil
+from . import arpview, cardlink, linkview, macverdict, netutil
 from .applog import logger
 from .ha import identity_shift
 from .networks import registry
@@ -39,16 +42,29 @@ async def update(history, now: float | None = None) -> None:
         logger.exception("Legami fra schede e MAC non aggiornati")
 
 
+def load(history) -> None:
+    """At start: the links stored by the last run become the ones the cycle reads (linkview), before any judgement of this run. A failure is
+    only logged."""
+    try:
+        linkview.load(history.card_links())
+    except Exception:
+        logger.exception("Legami fra schede e MAC non letti")
+
+
 def _judge_and_store(history, now: float) -> None:
-    links = history.card_links()
     cards = _cards(devices_config.load_devices(), netutil.last_network)
+    asked = cardlink.requested(history.card_links(), linkview.requests(), cards, now)
+    links = asked["links"]
     facts = _facts(history, cards, links, now)
     seeding = history.meta_get(SEEDED_KEY) is None
     res = cardlink.judge(cards, facts, links, now, seeding=seeding)
-    if res["write"] or res["delete"] or seeding:
-        history.store_card_links(res["write"], res["delete"], seeding)
+    write = list({r["device_id"]: r for r in asked["write"] + res["write"]}.values())
+    delete = sorted(set(asked["delete"] + res["delete"]))
+    if write or delete or seeding:
+        history.store_card_links(write, delete, seeding)
     _unlinked.clear()
     _unlinked.update(res["unlinked"].values())
+    linkview.refresh(history.card_links(), now, done=asked["done"])
 
 
 def _cards(devices: list[dict], cidr: str) -> list[dict]:

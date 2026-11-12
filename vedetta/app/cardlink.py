@@ -2,7 +2,7 @@
 (the cards, the facts of the MAC layer, the links stored so far); nothing is read or written here. The only imports are two pure modules of the
 app: macclassify (its constants) and recognition/same_device (the one judgement of "are these two MACs the same device?").
 
-Written in the shadow: nobody reads the link to decide anything yet (step P5 will). One prudent rule makes every link, the same for the cards of
+Step P5 reads the links (linkview: only a link stable for two judgements) for the presence of a card by its MAC. One prudent rule makes every link, the same for the cards of
 an installation that upgrades (at the first cycle, source "seed") and for the cards added later (source "rule"). A card is linked to MAC M when
   L1 it has a seq and an address on the line of a direct network now (the caller gives that network, None otherwise);
   L2 in the window of the verdict exactly one MAC answered ARP at its address, lent and virtual MACs left out: that MAC is M;
@@ -17,7 +17,8 @@ an installation that upgrades (at the first cycle, source "seed") and for the ca
      behind the card") calls the two different devices and the name is not M's own.
 Every "no" has a code (UNLINKED). A link that exists is never moved to another MAC (decision 4A): it is deleted when its card is gone (or the id
 now belongs to another card: another seq), held while M names no single device or the card is off that network, and linked again when the cause
-goes. Another MAC taking the card's address does not touch it: that is the case P5 must fix."""
+goes. Another MAC taking the card's address does not touch it (P5: the card is not online by that MAC). The requests of P5 (requested): a link
+released when two cards of one phone are merged, and the gesture "this is a new device" (source "user")."""
 from . import macclassify
 from .recognition import same_device
 
@@ -44,6 +45,36 @@ def judge(cards: list[dict], facts: dict, links: dict, now: float, seeding: bool
     taken = {(row["network"], row["mac"]) for row in kept.values()}
     write += _new_rows(candidates, taken, unlinked, now, "seed" if seeding else "rule")
     return {"write": write, "delete": delete, "unlinked": unlinked}
+
+
+def requested(links: dict, asked: dict, cards: list[dict], now: float) -> dict:
+    """The requests of step P5 turned into rows, before the judgement sees the links: {"links": the links after them, "write": rows to write,
+    "delete": device ids whose row goes, "done": the requests taken (written, or refused and forgotten)}. asked: device id -> ("release", None)
+    when two cards of one phone were merged (the row goes; the rule may link the card again when its history is clean), or ("relink", MAC) for
+    the gesture "this is a new device" (the row passes to that MAC, source "user"; refused when the card is gone or on no direct network, or
+    the MAC is another card's link on that network)."""
+    by_id = {c["id"]: c for c in cards}
+    out = {"links": dict(links), "write": [], "delete": [], "done": sorted(asked)}
+    for device_id in sorted(asked):
+        kind, mac = asked[device_id]
+        if kind == "release" and device_id in out["links"]:
+            del out["links"][device_id]
+            out["delete"].append(device_id)
+        elif kind == "relink":
+            _relink(out, by_id.get(device_id), _key(mac), now)
+    return out
+
+
+def _relink(out: dict, card: dict | None, mac: str, now: float) -> None:
+    if card is None or card.get("seq") is None or not card.get("network"):
+        return
+    if any(r["mac"] == mac and r["network"] == card["network"] for d, r in out["links"].items() if d != card["id"]):
+        return
+    row = {"device_id": card["id"], "seq": card["seq"], "network": card["network"], "mac": mac, "state": "linked", "reason": None,
+           "source": "user", "ip": card["ip"], "since": now, "changed": now}
+    out["links"][card["id"]] = row
+    out["write"].append(row)
+    out["delete"].append(card["id"])
 
 
 def _still_theirs(links: dict, by_id: dict) -> tuple[dict, list]:

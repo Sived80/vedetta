@@ -16,7 +16,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import cardlink_cycle, maclayer, macverdict, netutil  # noqa: E402
+from app import cardlink_cycle, linkview, maclayer, macverdict, netutil  # noqa: E402
 from app.export import anonymize, export_mask  # noqa: E402
 from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.storage import devices_config  # noqa: E402
@@ -139,6 +139,40 @@ run(cardlink_cycle.update(H, now=now + 6000))                # the main network 
 assert cardlink_cycle._last == 0.0
 netutil.last_network = NET
 
+# the cycle reads the links through linkview (1.0 step P5): filled after every judgement with the rows just stored, and at start from the last run
+# (no judgement of the new run has looked at them yet); a failure leaves the answer it had
+H._db.execute("UPDATE card_mac SET since = 1.0, changed = 1.0")
+H._db.commit()
+cardlink_cycle._last = 0.0
+run(cardlink_cycle.update(H, now=now + 7000))
+assert {d: linkview.row(d) for d in H.card_links()} == H.card_links(), "the rows just stored"
+assert linkview.check("scan-10-0-60-13", 4, "main", now + 7000) == (C, "used"), linkview.check("scan-10-0-60-13", 4, "main", now + 7000)
+linkview._rows, linkview._judged = {}, None                   # a new run
+cardlink_cycle.load(H)
+assert linkview.row("scan-10-0-60-13") == H.card_links()["scan-10-0-60-13"]
+assert linkview.check("scan-10-0-60-13", 4, "main", now + 7000) == (None, "unjudged"), "read at start, not judged yet in this run"
+cardlink_cycle.load(broken)                                  # logged, not raised; the answer stays
+assert linkview.row("scan-10-0-60-13") == H.card_links()["scan-10-0-60-13"]
+run(cardlink_cycle.update(H, now=now + 7400))
+assert linkview.check("scan-10-0-60-13", 4, "main", now + 7400) == (C, "used"), "the first judgement of this run looked at it"
+cardlink_cycle._last = 0.0
+run(maclayer.record({}, H3))                                 # a judgement that fails to store: the answer stays
+assert linkview.check("scan-10-0-60-13", 4, "main", now + 7400) == (C, "used")
+
+# the requests reach the one writer at its next judgement, and are forgotten once written: a release deletes the row (here the rule links the
+# card again at once, its history being clean: a new link, which waits two judgements as any other); a relink writes the new MAC, source "user"
+run(maclayer.store_verdict(H))                               # the verdict of this database again (the one of H3 was read last)
+linkview.release("scan-10-0-60-13")
+linkview.relink("scan-10-0-60-11", B)
+assert linkview.check("scan-10-0-60-13", 4, "main", now + 7400) == (None, "released")
+run(cardlink_cycle.update(H, now=now + 7800))
+got = rows(H)
+assert got["scan-10-0-60-13"][2:6] == (C, "linked", None, "rule") and H.card_links()["scan-10-0-60-13"]["changed"] == now + 7800, got
+assert got["scan-10-0-60-11"] == (5, "main", B, "linked", None, "user", "10.0.60.11"), got
+assert linkview.requests() == {} and linkview.check("scan-10-0-60-13", 4, "main", now + 7800) == (None, "young")
+run(cardlink_cycle.update(H, now=now + 8200))
+assert rows(H)["scan-10-0-60-11"][3:6] == ("linked", None, "user"), "the relinked row is kept as any link"
+
 # SPY on the database: every statement on card_mac, and the function that issued it, over cycles, a removed card and the retention
 H4 = History(tmp / "h4.db")
 network(H4, now - 1200)
@@ -180,7 +214,10 @@ for f in APP.rglob("*.py"):
         deciders.append(rel)
 assert sql_files == {"storage/history_maclayer.py"}, sql_files
 assert writers == ["cardlink_cycle.py"], writers
-assert sorted(readers) == ["cardlink_cycle.py", "cardlink_cycle.py"], "the step's comparison and the export count: " + repr(readers)
-assert deciders == [], deciders
+assert set(readers) == {"cardlink_cycle.py"} and len(readers) == 4, "the step's comparison, the reading back for linkview, at start, the export count: " + repr(readers)
+assert deciders == [], "they read the links through linkview: " + repr(deciders)
+importers = sorted(f.relative_to(APP).as_posix() for f in APP.rglob("*.py") if re.search(r"\bimport\b[^\n]*\blinkview\b", f.read_text(encoding="utf-8")))
+assert "cardlink_cycle.py" in importers and set(importers) <= {"state_cycle.py", "cardlink_cycle.py", "identity_upkeep.py"}, importers
+assert len(re.findall(r"cardlink_cycle\.load\b", (APP / "main.py").read_text(encoding="utf-8"))) == 1, "linkview filled at start"
 assert len(re.findall(r"cardlink_cycle\.counts\(", (APP / "export" / "export_zip.py").read_text(encoding="utf-8"))) == 1, "the export counts"
 print("TUTTO OK")

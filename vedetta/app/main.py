@@ -50,7 +50,8 @@ async def lifespan(_: FastAPI):
     passive_service.start(on_change=state.emit_event)  # the clients Home Assistant sees on other networks (off until the user turns it on)
     ha_update.start()  # is there a newer version of this add-on? (asks the Supervisor for its own card; nothing outside HA)
     await asyncio.to_thread(maclayer.load_verdict, history)   # the single MAC verdict of the last run, before the listeners ask it
-    maclayer.after_verdict(cardlink_cycle.update)   # the card -> MAC links, judged after the verdict of each cycle (in the shadow: nobody reads them yet)
+    await asyncio.to_thread(cardlink_cycle.load, history)   # the card -> MAC links of the last run, read by the cycle (linkview) until the first judgement
+    maclayer.after_verdict(cardlink_cycle.update)   # the card -> MAC links, judged after the verdict of each cycle
     mdns_listener.start(state)  # Bonjour names: memory and continuous listening
     await mqtt_service.start(state)  # MQTT publishing towards HA (off if not configured)
     roles.start(state, on_change=state.emit_event, on_alert=state.emit_alert,

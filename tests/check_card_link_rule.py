@@ -156,6 +156,27 @@ assert run([card("scan-a", IP1)], facts(BASE + [arp(IP1, M2, NOW - 600)], K, {"s
 # decision 4A: a link never moves to another MAC by itself, even when only another MAC answers for days
 assert run([card("scan-a", IP1)], facts([arp(IP1, M2, NOW - 6 * DAY)], K, {"scan-a": {"recent": {M2}, "older": {M2}}}), LINK)["write"] == []
 
+# --- the requests (1.0 step P5): the release of a link (two cards of one phone merged) and the relink of the gesture "this is a new device"
+# pass through the one writer: cardlink.requested turns them into rows to delete and write, before the judgement sees the links
+CARDS = [card("scan-a", IP1), card("scan-b", IP2, seq=2)]
+LINKB = {"scan-b": {**LINK["scan-a"], "device_id": "scan-b", "seq": 2, "mac": M2, "ip": IP2}}
+got = cardlink.requested({**LINK, **LINKB}, {"scan-a": ("release", None)}, CARDS, NOW)
+assert got == {"links": LINKB, "write": [], "delete": ["scan-a"], "done": ["scan-a"]}, got
+got = cardlink.requested(LINKB, {"scan-a": ("release", None)}, CARDS, NOW)            # no row (the card was never linked): nothing, done
+assert got == {"links": LINKB, "write": [], "delete": [], "done": ["scan-a"]}, got
+got = cardlink.requested({**LINK, **LINKB}, {"scan-a": ("relink", M3.lower())}, CARDS, NOW)
+new = {"device_id": "scan-a", "seq": 1, "network": "main", "mac": M3, "state": "linked", "reason": None, "source": "user", "ip": IP1,
+       "since": NOW, "changed": NOW}
+assert got == {"links": {"scan-a": new, **LINKB}, "write": [new], "delete": ["scan-a"], "done": ["scan-a"]}, got
+# refused, and forgotten: the MAC is another card's link on the same network; the card is gone or on no direct network
+for links, cards_now in (({**LINK, **LINKB}, CARDS), (LINK, CARDS[1:]), (LINK, [card("scan-a", "10.9.0.5", network=None)])):
+    got = cardlink.requested(links, {"scan-a": ("relink", M2)} if cards_now is CARDS else {"scan-a": ("relink", M3)}, cards_now, NOW)
+    assert got == {"links": links, "write": [], "delete": [], "done": ["scan-a"]}, got
+assert cardlink.requested(LINK, {}, CARDS, NOW) == {"links": LINK, "write": [], "delete": [], "done": []}
+# the relinked row is a link that exists for the judgement: unchanged, nothing more written; another card cannot take its MAC (L5)
+res = run([card("scan-a", IP1), card("scan-c", IP3, seq=3)], facts([arp(IP1, M3), arp(IP3, M3)], {M3: "normal"}), {"scan-a": new})
+assert res["write"] == [] and res["unlinked"].get("scan-c") in ("mac_on_two_cards", "too_soon"), res
+
 # --- random test: 2000 made-up networks
 rnd = random.Random(4)
 MACS = [f"02:00:00:00:{i // 256:02X}:{i % 256:02X}" for i in range(12)] + [PRIV, REP, VR]

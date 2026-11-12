@@ -252,6 +252,13 @@ check("one at a time keeps the order of the plan", [k for k, _ in plan[:2]], ["S
 check("the ceiling is at most 8 and at most half the threads", 1 <= run_campaign.MAX_JOBS <= min(8, max(1, (os.cpu_count() or 2) // 2)), True)
 check("the full plan has every run", len(run_campaign.jobs(quick=False)), sum(r for _, r, _ in run_campaign.PLAN))
 
+# --- S16: after the last outage the scenario waits until the judge can confirm H05 (min_cycles + 1 judgments), from the rule's own numbers
+from tools.lansim import scenarios  # noqa: E402
+from tools import replay_health_engine as rhe  # noqa: E402
+h05 = next(r for r in rhe.matrix.load() if r["id"] == "H05")
+check("the wait for H05 comes from its numbers", scenarios.judged_tail_s("H05", ROOT), (h05["params"]["min_cycles"] + 1) * rhe.REFRESH_S)
+check("S16 waits for it after the last outage", "judged_tail_s(\"H05\"" in open(os.path.join(ROOT, "tools", "lansim", "scenarios.py"), encoding="utf-8").read(), True)
+
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))
     sys.exit(1)

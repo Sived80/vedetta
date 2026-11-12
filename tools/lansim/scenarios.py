@@ -833,6 +833,15 @@ def _history(vedetta: VedettaProcess, gateway_ip: str | None = None) -> tuple[li
     return events, latency, {c["id"] for c in cards if c.get("is_mobile")}, by_ip
 
 
+def judged_tail_s(rule: str, code_dir: str) -> float:
+    """How long a scenario waits after its last fault so the judge can confirm `rule`: min_cycles judgments in a row, plus one for the judgment that first sees it, every REFRESH_S as in the app.
+    Ending earlier leaves the finding opened but never raised (S16 failed this way when the first outage went unseen and the fifth drop came late)."""
+    sys.path.insert(0, code_dir)
+    from tools import replay_health_engine
+    row = next(r for r in replay_health_engine.matrix.load() if r["id"] == rule)
+    return (row["params"]["min_cycles"] + 1) * replay_health_engine.REFRESH_S
+
+
 def _judged(code_dir: str, vedetta: VedettaProcess, since: float, gateway_ip: str | None = None) -> dict:
     """The history of this run judged by the rules on drops and latency as they ship, one judgment every two minutes as in the app (tools/replay_health_engine.py)."""
     sys.path.insert(0, code_dir)
@@ -886,6 +895,7 @@ def s16_restart_every_150s(code_dir: str) -> dict:
             lan.link(plugs[0], True)
             lan.link(phones[0], True)
             time.sleep(90)
+        time.sleep(max(0.0, judged_tail_s("H05", code_dir) - 90))
         vedetta.wait_cycles(2)
         return {"phones_marked": sum(1 for c in vedetta.cards() if c.get("is_mobile")), "judged": _judged(code_dir, vedetta, since)}
 

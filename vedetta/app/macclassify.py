@@ -202,6 +202,28 @@ def _contesting_macs(arp_macs, out):
     return sorted(m for m, rs in arp_macs.items() if rs and out[m]["kind"] not in ("lender", "virtual"))
 
 
+ANSWER_SOURCES = ("arp",)    # the sessions in which a MAC answered ARP at an address
+
+
+def last_evidence(conflicts: list[dict], sessions: list[dict], flips: list[dict]) -> list[dict]:
+    """When each conflict of classify was last really seen: the last change of the MAC answering the address between the two MACs, or the last
+    instant both answered it together (their ARP sessions there overlapping), whichever is later; None when neither exists. classify reads days of
+    history, so a conflict that ended stays a conflict there: this date tells one going on from one that is over. Pure; the input is not changed.
+    Returns copies of the conflicts with "last_evidence" added, in the same order."""
+    spans: dict[tuple, list] = defaultdict(list)          # (ip, mac) -> [(start, end)] of the ARP sessions
+    for s in sessions or []:
+        if s["source"] in ANSWER_SOURCES:
+            spans[(s["ip"], s["mac"])].append((s["start"], s["end"]))
+    flips_by_ip = _flips_by_ip(flips)
+    return [dict(c, last_evidence=_last_contest(c["ip"], *c["macs"], spans, flips_by_ip)) for c in conflicts]
+
+
+def _last_contest(ip, a, b, spans, flips_by_ip):
+    changed = [f["ts"] for f in flips_by_ip.get(ip, []) if {f["old"], f["new"]} == {a, b}]
+    together = [min(e0, e1) for (s0, e0), (s1, e1) in product(spans.get((ip, a), []), spans.get((ip, b), [])) if min(e0, e1) >= max(s0, s1)]
+    return max(changed + together, default=None)
+
+
 def _build_classification(conflicts, out, maybe, dhcp_at) -> dict:
     for c in conflicts:
         for m in c["macs"]:

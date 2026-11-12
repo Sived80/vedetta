@@ -1,16 +1,18 @@
 """Upkeep of the identity of the cards: what to do when the same device shows up with another address or another card.
 
-Three things, each done at the end of a check cycle: IP duplicates are reported once, an offline device whose known MAC answers at one other
-address is followed there, and two cards of the same phone (new address and private MAC) are merged into the older one.
+Three things, each done at the end of a check cycle: IP duplicates are reported once, a linked card whose MAC answered at another address follows
+it there (1.0 step P5, with the card -> MAC link; the old rule that followed the last MAC seen is gone), and two cards of the same phone (new
+address and private MAC) are merged into the older one (the kept card's link is released: it had the other MAC).
 
-This is a mixin of DeviceState: it works on its cards, MACs and alerts. The single MAC layer planned for the new heart will replace it."""
+This is a mixin of DeviceState: it works on its cards, MACs and alerts."""
 import asyncio
 import logging
 import time
 
-from . import macverdict
+from . import linkview, macpresence, macverdict, netutil
+from .networks import registry
 from .recognition import brands, naming
-from .storage import devices_config, newdevices
+from .storage import devices_config
 from .storage.overlap import SAME_MOMENT_S
 from .storage.history import history
 
@@ -34,75 +36,31 @@ class IdentityUpkeep:
             self._conflicts_reported.add(key)
             self.emit_alert(f"IP duplicato {ip}: risponde da {', '.join(macs)}", "alert.ip_conflict", ip=ip, macs=", ".join(macs))
 
-    @staticmethod
-    def _ips_by_mac(arp: dict[str, dict]) -> dict[str, list[str]]:
-        """MAC (normalised) -> addresses that answer with it, in the order of the ARP view."""
-        by_mac: dict[str, list[str]] = {}
-        for ip, host in arp.items():
-            mac = newdevices.normalize_mac(host.get("mac"))
-            if mac:
-                by_mac.setdefault(mac, []).append(ip)
-        return by_mac
-
-    def _moved_device(self, config: dict, arp: dict[str, dict], by_mac: dict[str, list[str]], used: set, holders: dict[str, dict]):
-        """(card, new address) of an offline device whose known MAC answers at exactly one address nobody uses; None otherwise."""
-        device = self.devices.get(config["id"])
-        mac = newdevices.normalize_mac(self._last_mac.get(config["id"]))
-        if not device or device.get("online") or not mac or config["ip"] in arp:
-            return None
-        # A MAC on multiple IPs belongs to a Wi-Fi repeater that "lends" its own
-        # address to the clients connected to it (MAC translation): it does not identify a
-        # device, so nothing is followed.
-        if len(by_mac.get(mac, [])) != 1:
-            return None
-        candidates = [ip for ip in by_mac[mac] if ip not in used or self._holder_is_gone(ip, mac, holders)]
-        return (device, candidates[0]) if len(candidates) == 1 else None
-
-    def _holder_is_gone(self, ip: str, mac: str, holders: dict[str, dict]) -> bool:
-        """The card that has this address in its settings is offline and its own last MAC is not the one that answers there: the address passed to another device."""
-        holder = holders.get(ip)
-        if holder is None or (self.devices.get(holder["id"]) or {}).get("online", True):
-            return False
-        return newdevices.normalize_mac(self._last_mac.get(holder["id"])) != mac
-
-    async def _apply_ip_change(self, config: dict, device: dict, new_ip: str, used: set, holders: dict[str, dict]) -> None:
-        """Writes the new address of the device, forgets the misses and tells it. An address held by a card that is gone is exchanged: that card takes the one left free."""
-        holder = holders.get(new_ip)
-        if holder is not None:
-            old_ip = config["ip"]
-            if not await asyncio.to_thread(devices_config.swap_ips, config["id"], holder["id"]):
-                return
-        else:
-            old_ip = await asyncio.to_thread(devices_config.update_ip, config["id"], new_ip)
-            if old_ip is None:
-                return
-        used.add(new_ip)
-        holders[new_ip] = config
-        if holder is None:
-            used.discard(old_ip)
-            holders.pop(old_ip, None)
-        else:
-            holders[old_ip] = holder
-        self._misses[config["id"]] = 0
-        label = device.get("name") or old_ip
-        self.emit_alert(f"{label}: IP cambiato {old_ip} -> {new_ip}", "alert.ip_changed",
-                        label=label, old=old_ip, new=new_ip)
+    async def follow_links(self, moves: dict[str, str]) -> None:
+        """The linked cards found at another address in this cycle (state_cycle: their MAC alone answered there) follow their MAC (1.0 step P5):
+        the plan of macpresence.follow, written at once (devices_config.set_ips). A move goes to an address on the line of the card's own direct
+        network that may hold a card (not paused, K9a); a card that held the address takes the one left free. Each card that moves is told
+        (alert.ip_changed) and its misses forgotten; the cycle is woken once. Nothing when the file changed meanwhile (tried at the next cycle)."""
+        cards, plan = self._follow_plan(moves)
+        if not plan or not await asyncio.to_thread(devices_config.set_ips, {cid: (cards[cid], ip) for cid, ip in plan.items()}):
+            return
+        for cid, ip in plan.items():
+            self._misses[cid] = 0
+            label = (self.devices.get(cid) or {}).get("name") or cards[cid]
+            self.emit_alert(f"{label}: IP cambiato {cards[cid]} -> {ip}", "alert.ip_changed", label=label, old=cards[cid], new=ip)
         self.trigger(reason="ip_changed")
 
-    async def follow_ip_changes(self, arp: dict[str, dict]) -> None:
-        """An offline device whose (already known) MAC now answers at exactly ONE other
-        IP not assigned to other devices has changed address (DHCP): it is followed
-        instead of being given up as off. No action if the candidates are ambiguous."""
-        if not arp:
-            return
-        by_mac = self._ips_by_mac(arp)
-        configs = devices_config.load_devices()
-        used = {c["ip"] for c in configs}
-        holders = {c["ip"]: c for c in configs}
-        for config in configs:
-            moved = self._moved_device(config, arp, by_mac, used, holders)
-            if moved is not None:
-                await self._apply_ip_change(config, moved[0], moved[1], used, holders)
+    @staticmethod
+    def _follow_plan(moves: dict[str, str]) -> tuple[dict[str, str], dict[str, str]]:
+        """(card id -> address now, card id -> new address): the moves that may go ahead, with the cards they push to the address left free."""
+        if not moves:
+            return {}, {}
+        cards = {c["id"]: c["ip"] for c in devices_config.load_devices() if c.get("ip")}
+        nets = registry.direct_networks([*cards.values(), *moves.values()], netutil.last_network)
+
+        def allowed(cid: str, ip: str) -> bool:
+            return nets.get(ip) is not None and nets.get(ip) == nets.get(cards[cid]) and registry.may_add(ip)
+        return cards, macpresence.follow(cards, moves, allowed)
 
     @staticmethod
     def _alnum_lower(text: str) -> str:
@@ -225,6 +183,7 @@ class IdentityUpkeep:
             await asyncio.to_thread(devices_config.update_scan_info, keep_id, newer_scan)
         await asyncio.to_thread(history.reassign_device, drop_id, keep_id)
         self._move_last_mac(drop_id, keep_id)
+        linkview.release(keep_id)            # the kept card's link was the other private MAC: released, deleted by the one writer
         self._misses[keep_id] = 0
         self.remove(drop_id)
         self._announce_merge(keep, drop_id, old_ip, new_ip, address)

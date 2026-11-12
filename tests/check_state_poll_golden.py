@@ -117,7 +117,7 @@ async def one_case():
     st._apply = recorder("_apply")
     st.remove = recorder("remove")
     st._save_latency = async_recorder("_save_latency")
-    st.follow_ip_changes = async_recorder("follow_ip_changes")
+    st.follow_links = async_recorder("follow_links")          # 1.0 step P5: the linked cards found elsewhere follow their MAC (none in these worlds)
     st.merge_duplicate_phones = async_recorder("merge_duplicate_phones")
     st.report_ip_conflicts = recorder("report_ip_conflicts")
     st.check_new_devices = async_recorder("check_new_devices")

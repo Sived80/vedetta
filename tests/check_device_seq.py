@@ -28,6 +28,10 @@ assert dc.ensure_seq() == 2 and [d["seq"] for d in dc.load_devices()] == [1, 2]
 assert dc.ensure_seq() == 0, "already numbered: nothing is written"
 assert [d["seq"] for d in dc.add_devices([{"ip": "10.0.1.3"}])] == [3]
 assert dc.update_ip("a", "10.0.1.9") == "10.0.1.1" and {d["id"]: d["seq"] for d in dc.load_devices()}["a"] == 1, "the number follows the card, not the address"
+seqs = {d["id"]: d["seq"] for d in dc.load_devices()}
+ips = {d["id"]: d["ip"] for d in dc.load_devices()}
+x, y = sorted(ips)[:2]
+assert dc.set_ips({x: (ips[x], ips[y]), y: (ips[y], ips[x])}) and {d["id"]: d["seq"] for d in dc.load_devices()} == seqs, "an exchange keeps each number on its card"
 
 # the twins: only cards that look the same get a number shown
 cards = [{"id": "1", "seq": 1, "name": "Shelly SHDM-2", "brand": "Shelly", "type": "iot"}, {"id": "2", "seq": 2, "name": "shelly shdm-2", "brand": "Shelly", "type": "iot"},

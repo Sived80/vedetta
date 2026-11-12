@@ -53,6 +53,27 @@ assert dc.set_override(c["id"], "not_a_field", "x") is None and dc.set_override(
 # removal
 assert dc.remove_device(c["id"]) is True and dc.remove_device(c["id"]) is False and len(dc.load_devices()) == 2
 
+# the moves of one cycle in one write (1.0 step P5): every change applied at once, the addresses unique at the END (an exchange is a permutation),
+# the name follows when it was the address; refused as a whole when a card is gone, its address changed meanwhile, or an address would be twice
+d3 = dc.add_devices([{"ip": "10.0.5.1", "name": "10.0.5.1"}, {"ip": "10.0.5.2", "name": "Printer"}, {"ip": "10.0.5.3"}])
+a3, b3, c3 = (x["id"] for x in d3)
+ip_of = lambda: {d["id"]: (d["ip"], d.get("name")) for d in dc.load_devices() if d["id"] in (a3, b3, c3)}  # noqa: E731
+assert dc.set_ips({a3: ("10.0.5.1", "10.0.5.2"), b3: ("10.0.5.2", "10.0.5.1")}) == {a3: "10.0.5.1", b3: "10.0.5.2"}
+assert ip_of() == {a3: ("10.0.5.2", "10.0.5.2"), b3: ("10.0.5.1", "Printer"), c3: ("10.0.5.3", None)}, ip_of()
+assert dc.set_ips({a3: ("10.0.5.2", "10.0.5.3"), c3: ("10.0.5.3", "10.0.5.9")}) == {a3: "10.0.5.2", c3: "10.0.5.3"}      # a chain
+before = dc.DEVICES_PATH.read_text(encoding="utf-8")
+assert dc.set_ips({a3: ("10.0.5.3", "10.0.5.1")}) is None, "the address of another card that stays: refused"
+assert dc.set_ips({a3: ("10.0.5.2", "10.0.5.8")}) is None, "the card's address changed meanwhile: refused"
+assert dc.set_ips({"nope": ("10.0.5.3", "10.0.5.8")}) is None and dc.set_ips({}) is None
+assert dc.DEVICES_PATH.read_text(encoding="utf-8") == before, "a refused plan writes nothing"
+writes = []
+real_save = dc._save
+dc._save = lambda data: (writes.append(1), real_save(data))
+assert dc.set_ips({a3: ("10.0.5.3", "10.0.5.4"), b3: ("10.0.5.1", "10.0.5.5"), c3: ("10.0.5.9", "10.0.5.6")})
+dc._save = real_save
+assert writes == [1], "one write for all the moves of the cycle"
+assert not hasattr(dc, "swap_ips"), "the exchange of two addresses is a plan of set_ips"
+
 # a failed write leaves the file as it was (atomic write) and no temporary file behind
 before = dc.DEVICES_PATH.read_text(encoding="utf-8")
 real_replace = os.replace

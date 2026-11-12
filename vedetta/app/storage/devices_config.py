@@ -206,23 +206,31 @@ def update_ip(device_id: str, new_ip: str) -> str | None:
 
 
 @_locked
-def swap_ips(id_a: str, id_b: str) -> bool:
-    """The two cards exchange their addresses (a device took the address of another that left, and this one takes the address the first left free).
-    False if one of them does not exist."""
-    if not DEVICES_PATH.exists():
-        return False
+def set_ips(changes: dict[str, tuple[str, str]]) -> dict[str, str] | None:
+    """The moves of one cycle in one write (1.0 step P5): card id -> (address now, new address). Every change is applied at once and the addresses
+    must be unique at the end (an exchange of two cards, or a chain, is a permutation); the name follows when it was the address. Refused as a
+    whole (None, nothing written) when a card is gone, its address is not the one given (the file changed meanwhile) or an address would be on
+    two cards. Returns card id -> old address."""
+    if not changes or not DEVICES_PATH.exists():
+        return None
     data = _read_yaml(DEVICES_PATH.read_text(encoding="utf-8")) or {}
-    cards = {d["id"]: d for d in data.get("devices", [])}
-    a, b = cards.get(id_a), cards.get(id_b)
-    if a is None or b is None or id_a == id_b:
-        return False
-    old_a, old_b = a["ip"], b["ip"]
-    a["ip"], b["ip"] = old_b, old_a
-    for card, old in ((a, old_a), (b, old_b)):
-        if card.get("name") == old:  # the name was the IP itself
-            card["name"] = card["ip"]
+    if not _move_all(data.get("devices", []), changes):
+        return None
     _save(data)
-    return True
+    return {device_id: old for device_id, (old, _) in changes.items()}
+
+
+def _move_all(devices: list[dict], changes: dict[str, tuple[str, str]]) -> bool:
+    """Every change applied to the cards in memory; False when a card is gone, its address is not the one given, or an address ends on two cards."""
+    cards = {d["id"]: d for d in devices}
+    if any(cards.get(device_id, {}).get("ip") != old for device_id, (old, _) in changes.items()):
+        return False
+    for device_id, (old, new) in changes.items():
+        cards[device_id]["ip"] = new
+        if cards[device_id].get("name") == old:  # the name was the IP itself
+            cards[device_id]["name"] = new
+    ips = [d.get("ip") for d in devices]
+    return len(ips) == len(set(ips))
 
 
 @_locked

@@ -1,9 +1,10 @@
-"""Golden-master test of IdentityUpkeep (identity_upkeep.py): _duplicate_key (the name that identifies a phone), follow_ip_changes (an offline device whose known MAC answers at exactly one
-other address is followed there), merge_duplicate_phones (two cards of the same phone, grouped by name, merged when at least one is online and they were not online together for long)
+"""Golden-master test of IdentityUpkeep (identity_upkeep.py): _duplicate_key (the name that identifies a phone), merge_duplicate_phones (two cards of the same phone, grouped by name, merged when at least one is online and they were not online together for long)
 and _merge_cards (the older card takes the address that answers, the other disappears). Generated worlds (cards, configuration, MACs, ARP view, history answers, failures of each
 collaborator, equal timestamps and values right on the thresholds), with the collaborators replaced by deterministic in-memory ones (devices_config, history, a frozen clock, fake
 alert/trigger/remove methods of a subclass): for each case the return value, the whole final state of the instance AND the ORDER and arguments of every call must be exactly the ones
 stored in tests/golden/identity_upkeep.json (a digest per case, plus a readable sample), written from the code as it was before the functions were split.
+The cases of follow_ip_changes are gone with it (1.0 step P5: a linked card follows its MAC, tests/check_ip_follow.py); their worlds are still drawn,
+so the random numbers of every other case are the ones they always were, and those cases keep their digests.
 Regenerate only on purpose:  IDENTITY_UPKEEP_GOLDEN_UPDATE=1 python tests/check_identity_upkeep_golden.py"""
 import asyncio
 import hashlib
@@ -73,15 +74,6 @@ class FakeConfig:
                 c["ip"] = ip
                 return WORLD.get("old_override", {}).get(device_id, old)
         return None
-
-    @staticmethod
-    def swap_ips(id_a, id_b):
-        LOG.append(["swap_ips", id_a, id_b])
-        cards = {c["id"]: c for c in WORLD["configs"]}
-        if id_a not in cards or id_b not in cards or id_a == id_b:
-            return False
-        cards[id_a]["ip"], cards[id_b]["ip"] = cards[id_b]["ip"], cards[id_a]["ip"]
-        return True
 
     @staticmethod
     def remove_device(device_id):
@@ -186,7 +178,7 @@ def case_key():
     return {"dev": d, "res": res}
 
 
-# ------------------------------------------------------------------ follow_ip_changes
+# ------------------------------------------------------------------ follow_ip_changes (gone in 1.0 step P5: the world is drawn, nothing is run)
 def case_follow():
     n = rng.randrange(0, 6)
     configs = [{"id": "d%d" % i, "ip": pick(IPS + [""] if rng.random() < 0.1 else IPS)} for i in range(n)]
@@ -222,12 +214,7 @@ def case_follow():
     WORLD.clear()
     WORLD.update(configs=configs, update_ip_fails={c["id"] for c in configs if rng.random() < 0.15},
                  old_override={c["id"]: pick(IPS + [""]) for c in configs if rng.random() < 0.12})
-    LOG.clear()
-    try:
-        res = ser(run(u.follow_ip_changes(arp)))
-    except Exception as exc:
-        res = ser(exc)
-    return {"res": res, "state": state_of(u), "configs": ser(configs), "log": list(LOG)}
+    return {"gone": "follow_ip_changes"}
 
 
 # ------------------------------------------------------------------ merge_duplicate_phones
@@ -319,14 +306,10 @@ assert json.loads(json.dumps(out[:20])) == want["sample"]
 
 # the scenarios are varied enough
 keys = [o for i, o in enumerate(out) if i % 4 == 0]
-fol = [o for i, o in enumerate(out) if i % 4 == 1]
 mph = [o for i, o in enumerate(out) if i % 4 == 2]
 mcd = [o for i, o in enumerate(out) if i % 4 == 3]
 assert sum(1 for o in keys if o["res"] is None) > 200 and sum(1 for o in keys if isinstance(o["res"], str)) > 100
-assert sum(1 for o in fol if any(l[0] == "update_ip" for l in o["log"])) > 100
-assert sum(1 for o in fol if any(l[0] == "trigger" for l in o["log"])) > 60
-assert sum(1 for o in fol if o["log"] == [] or o["log"] == [["load_devices"]]) > 50
-assert sum(1 for o in fol if any(l[0] == "update_ip" for l in o["log"]) and not any(l[0] == "alert" for l in o["log"])) > 5, "update_ip failures"
+assert all(o == {"gone": "follow_ip_changes"} for i, o in enumerate(out) if i % 4 == 1)
 assert sum(1 for o in mph if any(l[0] == "alert" for l in o["log"])) > 40
 assert sum(1 for o in mph if any(l[0] == "online_overlap" for l in o["log"]) and not any(l[0] == "remove_device" for l in o["log"])) > 20
 assert sum(1 for o in mph if any(l[0] == "first_presence" for l in o["log"])) > 100

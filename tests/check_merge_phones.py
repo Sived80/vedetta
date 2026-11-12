@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import identity_upkeep  # noqa: E402
+from app import identity_upkeep, linkview  # noqa: E402
 from app.storage import devices_config, history as history_mod
 from app.recognition import identity  # noqa: E402
 from app.storage.history import History  # noqa: E402
@@ -104,6 +104,8 @@ assert "new" not in s.devices and "old" in s.devices and [c["id"] for c in confi
 assert configs[0]["ip"] == "10.0.0.114" and ("remove", "new") in log and ("ip", "old", "10.0.0.114") in log, log
 assert H.first_presence(["new"]) == {} and "old" in H.first_presence(["old"])
 assert [a[0] for a in alerts] == ["alert.duplicate_merged"] and alerts[0][1]["new"] == "10.0.0.114", alerts
+# the kept card had the other private MAC: its link is released at once (1.0 step P5) and the one writer deletes it at its next judgement
+assert linkview.requests().get("old") == ("release", None) and linkview.check("old", 1, "main", now)[1] in ("released", "none"), linkview.requests()
 
 # the older card is the one online: it keeps its address, the offline ghost goes
 s, alerts = setup([("old", "10.0.0.20", "Tablet cucina Anna", True, [(30, 2)]), ("new", "10.0.0.21", "Tablet cucina Anna", False, [(1.5, 1.0)])])

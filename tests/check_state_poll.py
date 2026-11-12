@@ -3,7 +3,7 @@
 It pins down the order and the data flow of 0.6.2 without judging it: the configuration is read, every device is probed together with the
 shared ARP view, latency is measured for all, each result goes to _apply with its own latency sample, a failed probe is skipped (the others
 still go through), a device that left the configuration is removed, and then the post-steps run in a fixed order (latency saved, IP changes
-followed with the ARP view, phones merged, IP conflicts reported, new devices checked with the same ARP view) before `ready` is set."""
+followed (the linked cards found at another address: none here), phones merged, IP conflicts reported, new devices checked with the same ARP view) before `ready` is set."""
 import asyncio
 import os
 import sys
@@ -55,7 +55,7 @@ st._arp_by_ip = fake_arp
 st._apply = lambda config, result, current, sample=None, force=False: log.append(("apply", config["id"], result["id"], sample, sorted(current)))
 st.remove = lambda device_id: log.append(("remove", device_id))
 st._save_latency = lambda: rec("save_latency")
-st.follow_ip_changes = lambda arp: rec("follow", arp is ARP)
+st.follow_links = lambda moves: rec("follow", moves)
 st.merge_duplicate_phones = lambda: rec("merge")
 st.report_ip_conflicts = lambda: log.append(("conflicts",))
 st.check_new_devices = lambda arp: rec("new_devices", arp is ARP)
@@ -75,6 +75,6 @@ assert applied == [("apply", "a", "a", 12.0, ["a", "b", "c"]), ("apply", "c", "c
 assert ("remove", "gone") in log and ("remove", "b") not in log
 tail = kinds[kinds.index("remove"):]
 assert tail == ["remove", "save_latency", "follow", "merge", "conflicts", "new_devices", "record_macs"], tail
-assert ("follow", True) in log and ("new_devices", True) in log and ("record_macs", True) in log
+assert ("follow", {}) in log and ("new_devices", True) in log and ("record_macs", True) in log
 assert st.ready.is_set()
 print("TUTTO OK")

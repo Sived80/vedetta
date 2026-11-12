@@ -1,89 +1,93 @@
-"""An offline device whose MAC answers at another free IP follows the new address."""
+"""The address follows the MAC (1.0 step P5, IdentityUpkeep.follow_links): the linked cards found at another address in this cycle move there at
+the end of the cycle, all in ONE write of devices.yaml (devices_config.set_ips): a move to a free address, an exchange of two cards, a chain of
+three, a card without a link that held the address takes the one left free; two cards towards one address, or an address off the line, on
+another network or in a paused one: nobody moves. Every card that moves gets the notice of a changed address, its misses go to zero, and the
+cycle is woken once. A card without a link never follows an address by itself (decision 3A: the old "follow the IP" is gone)."""
 import asyncio
 import os
 import sys
+import tempfile
+from pathlib import Path
 
+import yaml
+
+os.environ.setdefault("VEDETTA_DATA_DIR", tempfile.mkdtemp())
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app.storage import devices_config  # noqa: E402
+from app import netutil  # noqa: E402
+from app.networks import registry  # noqa: E402
 from app.state import DeviceState  # noqa: E402
+from app.storage import devices_config  # noqa: E402
 
-configs = [{"id": "a", "ip": "10.0.0.5", "name": "10.0.0.5"}, {"id": "b", "ip": "10.0.0.6"}, {"id": "c", "ip": "10.0.0.7"}]
-moved = []
-
-
-def fake_update(device_id, new_ip):
-    moved.append((device_id, new_ip))
-    old = next(c["ip"] for c in configs if c["id"] == device_id)
-    return old
-
-
-devices_config.load_devices = lambda: [dict(c) for c in configs]
-devices_config.update_ip = fake_update
-swapped = []
+tmp = Path(tempfile.mkdtemp())
+devices_config.DEVICES_PATH = tmp / "devices.yaml"
+netutil.last_network = "10.0.0.0/24"
+CARDS = [{"id": "a", "ip": "10.0.0.5", "name": "10.0.0.5", "seq": 1}, {"id": "b", "ip": "10.0.0.6", "name": "Printer", "seq": 2},
+         {"id": "c", "ip": "10.0.0.7", "seq": 3}, {"id": "d", "ip": "10.0.0.8", "seq": 4}]
+assert not hasattr(DeviceState, "follow_ip_changes"), "the old rule is gone"
 
 
-def fake_swap(id_a, id_b):
-    swapped.append((id_a, id_b))
-    return True
-
-
-devices_config.swap_ips = fake_swap
-
-
-async def go():
+def world():
+    devices_config.DEVICES_PATH.write_text(yaml.safe_dump({"devices": [dict(c) for c in CARDS]}), encoding="utf-8")
     s = DeviceState()
-    alerts = []
-    s.emit_alert = lambda msg, key, **p: alerts.append((key, p))
-    s.trigger = lambda force=False, reason="": None
-    s.devices = {"a": {"online": False, "name": "Telefono"}, "b": {"online": False}, "c": {"online": True}}
-    s._last_mac = {"a": "AA:BB:CC:00:00:01", "b": "AA:BB:CC:00:00:02", "c": "AA:BB:CC:00:00:03"}
-    arp = {
-        "10.0.0.50": {"mac": "aa:bb:cc:00:00:01"},                                  # a: new IP, unique
-        "10.0.0.60": {"mac": "AA:BB:CC:00:00:02"}, "10.0.0.61": {"mac": "AA:BB:CC:00:00:02"},  # b: ambiguous
-        "10.0.0.7": {"mac": "AA:BB:CC:00:00:03"},                                   # c: online
-    }
-    await s.follow_ip_changes(arp)
-    assert moved == [("a", "10.0.0.50")], moved
-    assert len(alerts) == 1 and alerts[0][0] == "alert.ip_changed" and alerts[0][1]["new"] == "10.0.0.50", alerts
-    # without ARP nothing is done; with an IP already assigned to others it is not touched
-    moved.clear()
-    await s.follow_ip_changes({})
-    await s.follow_ip_changes({"10.0.0.7": {"mac": "AA:BB:CC:00:00:01"}})
-    assert not moved, moved
-    # MAC shared by a repeater (the same MAC on two IPs, one already configured): not followed.
-    s.devices["a"]["online"] = False
-    await s.follow_ip_changes({"10.0.0.6": {"mac": "AA:BB:CC:00:00:01"}, "10.0.0.90": {"mac": "AA:BB:CC:00:00:01"}})
-    assert not moved, moved
+    s.alerts, s.triggers = [], []
+    s.emit_alert = lambda msg, key, **p: s.alerts.append((key, p))
+    s.trigger = lambda force=False, reason="": s.triggers.append(reason)
+    s.devices = {c["id"]: {"id": c["id"], "online": False, "name": c.get("name")} for c in CARDS}
+    for c in CARDS:
+        s._misses[c["id"]] = 2
+    return s
 
 
+def ips():
+    return {d["id"]: d["ip"] for d in devices_config.load_devices()}
 
 
-async def swap_case():
-    """A PC took the address of a phone that left: the PC's card (offline at its old address) moves there, the phone's card takes the PC's old address. An online holder is never displaced."""
-    moved.clear(); swapped.clear()
-    cfgs = [{"id": "pc", "ip": "10.0.0.117"}, {"id": "ph", "ip": "10.0.0.116"}]
-    devices_config.load_devices = lambda: [dict(c) for c in cfgs]
-    s = DeviceState()
-    alerts = []
-    s.emit_alert = lambda msg, key, **p: alerts.append((key, p))
-    s.trigger = lambda force=False, reason="": None
-    s._last_mac = {"pc": "74:04:F1:CC:33:7D", "ph": "AA:BB:CC:00:00:01"}
-    arp = {"10.0.0.116": {"mac": "74:04:f1:cc:33:7d"}}
-    s.devices = {"pc": {"online": False, "name": "MSI"}, "ph": {"online": False, "name": "S23"}}
-    await s.follow_ip_changes(arp)
-    assert swapped == [("pc", "ph")] and not moved, (swapped, moved)
-    assert len(alerts) == 1 and alerts[0][0] == "alert.ip_changed" and alerts[0][1]["old"] == "10.0.0.117" and alerts[0][1]["new"] == "10.0.0.116", alerts
-    # the holder is online (it answers with its own MAC elsewhere): nothing is displaced
-    swapped.clear(); alerts.clear()
-    s.devices["ph"]["online"] = True
-    await s.follow_ip_changes(arp)
-    assert not swapped and not moved and not alerts, (swapped, moved, alerts)
-    # the holder's own MAC is the one that answers: it is where it says it is
-    s.devices["ph"]["online"] = False
-    await s.follow_ip_changes({"10.0.0.116": {"mac": "aa:bb:cc:00:00:01"}})
-    assert not swapped and not moved, (swapped, moved)
+writes = []
+real_set = devices_config.set_ips
+devices_config.set_ips = lambda changes: (writes.append(dict(changes)), real_set(changes))[1]
 
+# a move to a free address: one write, one notice, misses forgotten, one wake-up; the name that was the address follows it
+s = world()
+asyncio.run(s.follow_links({"a": "10.0.0.50"}))
+assert ips() == {"a": "10.0.0.50", "b": "10.0.0.6", "c": "10.0.0.7", "d": "10.0.0.8"}, ips()
+assert devices_config.load_devices()[0]["name"] == "10.0.0.50"
+assert s.alerts == [("alert.ip_changed", {"label": "10.0.0.5", "old": "10.0.0.5", "new": "10.0.0.50"})], s.alerts
+assert s._misses["a"] == 0 and s.triggers == ["ip_changed"] and len(writes) == 1, (s._misses, s.triggers, writes)
 
-asyncio.run(go())
-asyncio.run(swap_case())
+# an exchange (the case of 4b3f9dc) and a chain of three: one write, a notice per card, ONE wake-up
+writes.clear()
+s = world()
+asyncio.run(s.follow_links({"a": "10.0.0.6", "b": "10.0.0.5"}))
+assert ips()["a"] == "10.0.0.6" and ips()["b"] == "10.0.0.5" and len(writes) == 1 and len(s.alerts) == 2 and s.triggers == ["ip_changed"]
+writes.clear()
+s = world()
+asyncio.run(s.follow_links({"a": "10.0.0.6", "b": "10.0.0.7", "c": "10.0.0.5"}))
+assert (ips()["a"], ips()["b"], ips()["c"]) == ("10.0.0.6", "10.0.0.7", "10.0.0.5") and len(writes) == 1 and len(s.alerts) == 3
+
+# a card (linked or not) that holds the address and does not move takes the one left free
+writes.clear()
+s = world()
+asyncio.run(s.follow_links({"a": "10.0.0.8"}))
+assert ips()["a"] == "10.0.0.8" and ips()["d"] == "10.0.0.5" and len(writes) == 1 and len(s.alerts) == 2, (ips(), s.alerts)
+
+# nobody moves: two cards towards one address; an address on no direct network (off the line); an address of a paused network
+writes.clear()
+for moves in ({"a": "10.0.0.60", "b": "10.0.0.60"}, {"a": "10.9.9.9"}):
+    s = world()
+    asyncio.run(s.follow_links(moves))
+    assert ips() == {c["id"]: c["ip"] for c in CARDS} and not writes and not s.alerts and not s.triggers, (moves, ips(), s.alerts)
+registry.may_add = lambda ip: ip != "10.0.0.70"
+s = world()
+asyncio.run(s.follow_links({"a": "10.0.0.70"}))
+assert ips()["a"] == "10.0.0.5" and not writes
+# nothing to follow: nothing read, nothing written
+s = world()
+asyncio.run(s.follow_links({}))
+assert not writes and not s.alerts and not s.triggers
+
+# the file changed meanwhile (a card added at the address, or the card moved by another step): the write refuses, nothing is told
+s = world()
+devices_config.set_ips = lambda changes: None
+asyncio.run(s.follow_links({"a": "10.0.0.50"}))
+assert not s.alerts and not s.triggers and s._misses["a"] == 2
 print("TUTTO OK")

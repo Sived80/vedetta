@@ -89,7 +89,8 @@ added = dc.add_devices([{"ip": "10.0.70.16", "name": "Camera 2", "adapter": "gen
 assert added and added[0]["id"] == "scan-10-0-70-16" and added[0]["seq"] != seq["scan-10-0-70-16"], "same id, new seq"
 H.reassign_device("phone-b", "phone")
 dc.remove_device("phone-b")
-assert dc.swap_ips("lamp", "tv")
+ips = {d["id"]: d["ip"] for d in dc.load_devices()}
+assert dc.set_ips({"lamp": (ips["lamp"], ips["tv"]), "tv": (ips["tv"], ips["lamp"])})
 for i in range(10):                               # the lamp and the TV really swapped their addresses
     t = now + i * 60
     H.observe([Obs("10.0.70.12", LAMP, "arp", t), Obs("10.0.70.11", TV, "arp", t), Obs("10.0.70.16", CAM, "arp", t)])

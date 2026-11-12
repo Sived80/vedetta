@@ -109,9 +109,9 @@ def _apply_results(state, snapshot: list[dict], results: list, samples: dict) ->
 
 
 async def _after_cycle(state, arp: dict, moves: dict[str, str]) -> None:
-    """What follows a cycle: changed addresses, duplicate phones, conflicts, new devices and the MAC layer. `moves`: the linked cards found at
-    another address in this cycle (followed from step P5.4)."""
-    await state.follow_ip_changes(arp)
+    """What follows a cycle: the linked cards found at another address follow their MAC (`moves`), duplicate phones, conflicts, new devices and the
+    MAC layer."""
+    await state.follow_links(moves)
     await state.merge_duplicate_phones()
     state.report_ip_conflicts()
     await state.check_new_devices(arp)

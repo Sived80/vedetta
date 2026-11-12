@@ -1,10 +1,13 @@
 """Update test on a COPY of real data: the folder of data of an installation (what /data holds) is copied, opened by the old code, by the new code and again by the old code (the way back), and what must survive is compared.
 
-    python tools/upgrade_check.py <data folder> [--old origin/main] [--new .]
+    python tools/upgrade_check.py <data folder> [--old origin/main] [--new .] [--network 10.0.0.0/24]
 
 The original folder is never touched: every step works on a copy in a temporary folder. The old code is taken from a git revision (git archive), the new one from the working tree. A step is a fresh process (the data
 folder is read when the modules are imported). What is compared (inventory): the integrity of the database, the rows of every table that the old code knows, the cards of devices.yaml (id, name, address, the choices of the user)
 and the other files of the folder. Going forward the new code may add tables, columns and keys; going back the old code must still open everything and find the same rows.
+Step P4 adds a third step, forward again: a table born with the new code must survive the way back, and the card -> MAC links (card_mac) must still be right: none inherited by a card added again with
+the same id (another seq), none moved to another MAC, no MAC on two cards. With --network (the main network: on a PC the routes of the installation cannot be read) the new code also judges the
+links (the first time: the seed) at each step forward, at the moment the data end.
 Exit code 0 = all as it must be; 1 = something was lost or does not open."""
 import argparse
 import json
@@ -28,6 +31,17 @@ if sys.argv[1:] == ["upgrade"]:
     if hasattr(devices_config, "ensure_seq_safely"):
         devices_config.ensure_seq_safely()
     import app.storage.history  # noqa: F401  (creating the History opens the database and adds the tables the version needs)
+    try:
+        from app import cardlink_cycle, maclayer, netutil
+    except ImportError:            # a version without the card -> MAC links
+        cardlink_cycle = None
+    if cardlink_cycle is not None and os.environ.get("UPGRADE_CHECK_NETWORK"):
+        import asyncio
+        h = app.storage.history.history
+        end = h._db.execute("select max(last_seen) from ip_mac").fetchone()[0]
+        netutil.last_network = os.environ["UPGRADE_CHECK_NETWORK"]
+        asyncio.run(maclayer.store_verdict(h, now=end))
+        asyncio.run(cardlink_cycle.update(h, now=end))
 else:
     import app.storage.history  # noqa: F401
 from app.storage import devices_config
@@ -35,6 +49,9 @@ con = sqlite3.connect(str(data / "vedetta.db"))
 tables = {r[0]: con.execute('select count(*) from "%s"' % r[0]).fetchone()[0] for r in con.execute("select name from sqlite_master where type='table' and name not like 'sqlite_%' order by 1")}
 out = {"integrity": con.execute("pragma integrity_check").fetchone()[0], "tables": tables}
 out["devices"] = {d["id"]: {k: d.get(k) for k in ("ip", "name", "type_user", "brand_user", "mobile", "adapter", "ignored")} for d in devices_config.load_devices()}
+out["seqs"] = {d["id"]: d.get("seq") for d in devices_config.load_devices()}
+if "card_mac" in tables:
+    out["links"] = {r[0]: [r[1], r[2]] for r in con.execute("select device_id, seq, mac from card_mac")}
 out["files"] = sorted(p.name for p in data.iterdir() if p.is_file() and not p.name.startswith("vedetta.db-") and ".bak" not in p.name)
 print("INVENTORY" + json.dumps(out, sort_keys=True))
 '''
@@ -59,8 +76,42 @@ def compare(before: dict, after: dict, direction: str) -> list[str]:
     return problems
 
 
-def _run(code_root: Path, work: Path, step: str) -> dict:
-    env = dict(os.environ, VEDETTA_DATA_DIR=str(work), PYTHONPATH=str(code_root), PYTHONDONTWRITEBYTECODE="1")
+def compare_born(start: dict, forward: dict, back: dict, direction: str) -> list[str]:
+    """What the way back lost of the tables born with the new code (pure): the old code does not know them, so it must leave them as they are."""
+    problems = []
+    for table, rows in forward["tables"].items():
+        if table in start["tables"]:
+            continue
+        if table not in back["tables"]:
+            problems.append("%s: table %s, born with the new code, is gone" % (direction, table))
+        elif back["tables"][table] < rows:
+            problems.append("%s: table %s, born with the new code, lost rows (%d -> %d)" % (direction, table, rows, back["tables"][table]))
+    return problems
+
+
+def compare_links(forward: dict, again: dict, direction: str) -> list[str]:
+    """The card -> MAC links after the new code ran again (pure): each belongs to a card that is there with the same seq (none inherited by a card
+    added again with the same id), none moved to another MAC since the first step forward, no MAC on two cards."""
+    before, links, seqs = forward.get("links") or {}, again.get("links") or {}, again.get("seqs") or {}
+    problems = [_link_problem(device_id, seq, mac, before, seqs, direction) for device_id, (seq, mac) in sorted(links.items())]
+    macs = [mac for _, mac in links.values()]
+    problems += ["%s: one MAC linked to two cards" % direction for mac in sorted(set(macs)) if macs.count(mac) > 1]
+    return [p for p in problems if p]
+
+
+def _link_problem(device_id: str, seq, mac: str, before: dict, seqs: dict, direction: str) -> str | None:
+    if device_id not in seqs:
+        return "%s: the link of %s has no card" % (direction, device_id)
+    if seqs[device_id] != seq:
+        return "%s: the link of %s was inherited from another card (seq %s, the card has %s)" % (direction, device_id, seq, seqs[device_id])
+    old = before.get(device_id)
+    if old and old[0] == seq and old[1] != mac:
+        return "%s: the link of %s moved to another MAC" % (direction, device_id)
+    return None
+
+
+def _run(code_root: Path, work: Path, step: str, network: str | None = None) -> dict:
+    env = dict(os.environ, VEDETTA_DATA_DIR=str(work), PYTHONPATH=str(code_root), PYTHONDONTWRITEBYTECODE="1", UPGRADE_CHECK_NETWORK=network or "")
     done = subprocess.run([sys.executable, "-W", "ignore", "-c", INVENTORY, step], cwd=code_root, env=env, capture_output=True, text=True, timeout=600)
     line = next((ln for ln in done.stdout.splitlines() if ln.startswith("INVENTORY")), None)
     if done.returncode != 0 or line is None:
@@ -85,6 +136,7 @@ def main() -> int:
     ap.add_argument("data")
     ap.add_argument("--old", default="origin/main")
     ap.add_argument("--new", default=".")
+    ap.add_argument("--network", help="the main network of the installation (for the judgement of the card -> MAC links)")
     args = ap.parse_args()
     source = Path(args.data)
     if not (source / "vedetta.db").exists():
@@ -99,11 +151,14 @@ def main() -> int:
         old_code = _checkout(args.old, tmp_path / "old")
         new_code = _checkout(args.new, tmp_path / "new")
         start = _run(old_code, work, "read")
-        forward = _run(new_code, work, "upgrade")
+        forward = _run(new_code, work, "upgrade", args.network)
         back = _run(old_code, work, "read")
-    problems = compare(start, forward, "forward") + compare(start, back, "back")
+        again = _run(new_code, work, "upgrade", args.network)
+    problems = (compare(start, forward, "forward") + compare(start, back, "back") + compare_born(start, forward, back, "back")
+                + compare(back, again, "again") + compare_links(forward, again, "again"))
     print("cards:", len(start["devices"]), "| tables before:", len(start["tables"]), "after the new code:", len(forward["tables"]), "| new tables:", sorted(set(forward["tables"]) - set(start["tables"])))
     print("files only after the new code:", sorted(set(forward["files"]) - set(start["files"])))
+    print("card -> MAC links: forward", len(forward.get("links") or {}), "| again", len(again.get("links") or {}))
     print("\n".join(problems) if problems else "UPDATE AND WAY BACK: ALL AS IT MUST BE")
     return 1 if problems else 0
 

@@ -98,6 +98,7 @@ MOVES: dict = {}
 
 probe.probe_device = fake_probe
 latency.measure_many = no_latency
+TALLY = linkview.tally()
 st._miss_limit = lambda: 1                    # the strictest tolerance: one miss is offline
 st._record_presence = lambda *a: None
 st._shadow = lambda *a: None
@@ -117,6 +118,12 @@ assert not st.devices["laptop"]["online"] and st.devices["laptop"].get("mac") !=
 # the printer's link is too young: the rule of before (online by whoever answers its address)
 cycle({"10.0.70.13": {"mac": M_CONSOLE}}, fresh=True)
 assert st.devices["printer"]["online"]
+# the counts of the export, over these five cycles: each cycle the laptop's link was used and the printer's was too young; another device
+# answered the laptop's address in three; the laptop was found at another address once
+got = linkview.tally()
+delta = {k: got.get(k, 0) - TALLY.get(k, 0) for k in ("cycles", "used", "other_at_address", "found_elsewhere")}
+assert delta == {"cycles": 5, "used": 5, "other_at_address": 3, "found_elsewhere": 1}, delta
+assert got["unused"]["young"] - TALLY.get("unused", {}).get("young", 0) == 5, got
 
 
 # --- 4. the refresh of one card is told the same

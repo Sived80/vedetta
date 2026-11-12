@@ -173,6 +173,12 @@ assert linkview.requests() == {} and linkview.check("scan-10-0-60-13", 4, "main"
 run(cardlink_cycle.update(H, now=now + 8200))
 assert rows(H)["scan-10-0-60-11"][3:6] == ("linked", None, "user"), "the relinked row is kept as any link"
 
+# the counts of presence by MAC for the export (1.0 step P5): numbers only, next to the counts of the links
+pc = cardlink_cycle.presence_counts()
+assert set(pc) == {"cycles", "used", "unused", "other_at_address", "found_elsewhere", "moved", "pushed", "two_private"}, pc
+assert all(isinstance(v, int) for k, v in pc.items() if k != "unused") and all(isinstance(v, int) for v in pc["unused"].values()), pc
+assert len(re.findall(r"cardlink_cycle\.presence_counts\(", (APP / "export" / "export_zip.py").read_text(encoding="utf-8"))) == 1, "the export counts"
+
 # SPY on the database: every statement on card_mac, and the function that issued it, over cycles, a removed card and the retention
 H4 = History(tmp / "h4.db")
 network(H4, now - 1200)

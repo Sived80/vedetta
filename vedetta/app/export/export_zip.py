@@ -247,6 +247,7 @@ def _describe_service(manifest: dict, pending) -> None:
     except Exception as exc:
         manifest["notes"].append(f"service: {exc!r}")
     manifest["card_links"] = cardlink_cycle.counts()   # counts of the card -> MAC links (step P4): no MAC, no address
+    manifest["mac_presence"] = cardlink_cycle.presence_counts()   # counts of presence by MAC (step P5): no MAC, no address
     manifest["phone_merge"] = state.merge_report         # counts: why two cards of the same phone were (not) merged, without any name
     try:
         manifest["health"] = health_view.manifest_part()  # counts and seconds of the health judge: no address, no name

@@ -72,6 +72,16 @@
      "samples": []
     },
     "lines_removed": [],
+    "mac_presence": {
+     "cycles": 0,
+     "found_elsewhere": 0,
+     "moved": 0,
+     "other_at_address": 0,
+     "pushed": 0,
+     "two_private": 0,
+     "unused": {},
+     "used": 0
+    },
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
      "data/blob.bin: binary file not included",
@@ -160,6 +170,16 @@
      "samples": []
     },
     "lines_removed": [],
+    "mac_presence": {
+     "cycles": 0,
+     "found_elsewhere": 0,
+     "moved": 0,
+     "other_at_address": 0,
+     "pushed": 0,
+     "two_private": 0,
+     "unused": {},
+     "used": 0
+    },
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
      "data/blob.bin: binary file not included",
@@ -247,6 +267,16 @@
      "samples": []
     },
     "lines_removed": [],
+    "mac_presence": {
+     "cycles": 0,
+     "found_elsewhere": 0,
+     "moved": 0,
+     "other_at_address": 0,
+     "pushed": 0,
+     "two_private": 0,
+     "unused": {},
+     "used": 0
+    },
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
      "data/blob.bin: binary file not included",
@@ -338,6 +368,16 @@
      "samples": []
     },
     "lines_removed": [],
+    "mac_presence": {
+     "cycles": 0,
+     "found_elsewhere": 0,
+     "moved": 0,
+     "other_at_address": 0,
+     "pushed": 0,
+     "two_private": 0,
+     "unused": {},
+     "used": 0
+    },
     "notes": [
      "anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)",
      "data/t.db: binary file not included",

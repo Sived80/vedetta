@@ -119,6 +119,19 @@ def _answering_now(ip: str, sessions: list[dict], kinds: dict, now: float) -> di
     return since
 
 
+def two_private(links: dict, history: dict, kinds: dict) -> int:
+    """Decision 4A of 12/11, counted for the export: the links to a private MAC whose card's history (up to 90 days) holds another private MAC that
+    is not lent or virtual (two phones with private MACs at one address: the judgement of "same device?" is silent between them)."""
+    def private(mac) -> bool:
+        return macclassify.is_locally_administered(_key(mac)) and kinds.get(_key(mac)) not in SHARED
+    return sum(1 for d, r in links.items() if r["state"] == "linked" and private(r["mac"])
+               and any(private(m) and _key(m) != r["mac"] for m in _all_macs(history.get(d))))
+
+
+def _all_macs(h: dict | None) -> set:
+    return set((h or {}).get("recent") or ()) | set((h or {}).get("older") or ())
+
+
 def _still_theirs(links: dict, by_id: dict) -> tuple[dict, list]:
     """(the links whose card is still there with the same seq, the device ids of the others, sorted)."""
     delete = sorted(d for d, row in links.items() if d not in by_id or by_id[d].get("seq") != row["seq"])

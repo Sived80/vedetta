@@ -177,6 +177,16 @@ assert cardlink.requested(LINK, {}, CARDS, NOW) == {"links": LINK, "write": [], 
 res = run([card("scan-a", IP1), card("scan-c", IP3, seq=3)], facts([arp(IP1, M3), arp(IP3, M3)], {M3: "normal"}), {"scan-a": new})
 assert res["write"] == [] and res["unlinked"].get("scan-c") in ("mac_on_two_cards", "too_soon"), res
 
+# decision 4A of 12/11: a private MAC linked over a card whose history holds another private MAC (two phones with private MACs, the judgement of
+# "same device?" silent) is linked as in P4, and counted for the export
+PRIV2 = "0A:00:00:00:01:06"
+L_PRIV = {"scan-p": {**LINK["scan-a"], "device_id": "scan-p", "mac": PRIV}}
+assert cardlink.two_private(L_PRIV, {"scan-p": {"recent": {PRIV}, "older": {PRIV, PRIV2}}}, {PRIV: "private"}) == 1
+assert cardlink.two_private(L_PRIV, {"scan-p": {"recent": {PRIV}, "older": {PRIV, "3C:00:00:00:01:09"}}}, {PRIV: "private"}) == 0, "the older MAC is not private"
+assert cardlink.two_private(L_PRIV, {"scan-p": {"recent": {PRIV}, "older": {PRIV, PRIV2}}}, {PRIV2: "lender"}) == 0, "a lent MAC is no phone"
+assert cardlink.two_private({"scan-p": {**L_PRIV["scan-p"], "state": "held"}}, {"scan-p": {"recent": set(), "older": {PRIV2}}}, {}) == 0
+assert cardlink.two_private({"scan-a": {**LINK["scan-a"], "mac": "3C:00:00:00:01:01"}}, {"scan-a": {"recent": set(), "older": {PRIV2}}}, {}) == 0, "the link is not private"
+
 # --- random test: 2000 made-up networks
 rnd = random.Random(4)
 MACS = [f"02:00:00:00:{i // 256:02X}:{i % 256:02X}" for i in range(12)] + [PRIV, REP, VR]

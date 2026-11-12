@@ -7,7 +7,7 @@ planned for the end of the cycle."""
 import asyncio
 import time
 
-from . import linkview, macpresence, netutil
+from . import linkview, macpresence, macverdict, netutil
 from .applog import logger
 from .formatters import update_generic_titles
 from .scan import latency, probe, touch_policy
@@ -23,7 +23,11 @@ def latency_targets(snapshot: list[dict]) -> list[tuple]:
 def probe_inputs(state, configs: list[dict]) -> list[dict]:
     """What each probe is told: the card, its usable link (`link`, None without one: linkview), the MAC its names are asked with (`last_mac`:
     the link, else the last MAC seen) and the usable links of the other cards (`links_of_others`, lower case)."""
-    links = _usable_links(configs, time.time())
+    return _inputs(state, configs, _link_checks(configs, time.time()))
+
+
+def _inputs(state, configs: list[dict], checks: dict[str, tuple]) -> list[dict]:
+    links = {i: m for i, (m, _) in checks.items() if m}
     every = {m.lower() for m in links.values()}
     return [{**d, "last_mac": links.get(d["id"]) or state._last_mac.get(d["id"]), "link": links.get(d["id"]),
              "links_of_others": frozenset(every - {(links.get(d["id"]) or "").lower()})} for d in configs]
@@ -34,14 +38,21 @@ def probe_input(state, config: dict, configs: list[dict]) -> dict:
     return next(i for i in probe_inputs(state, configs) if i["id"] == config["id"])
 
 
-def _usable_links(configs: list[dict], now: float) -> dict[str, str]:
-    """Card id -> the MAC of its link, for the links that may be used now (linkview: U1-U6); the network of each card worked out as the judgement does."""
+def _link_checks(configs: list[dict], now: float) -> dict[str, tuple]:
+    """Card id -> (the MAC of its link or None, why: linkview.REASONS or "used"), for the cards that have a stored link; the network of each card
+    worked out as the judgement does."""
     linked = [d for d in configs if linkview.row(d["id"])]
     if not linked:
         return {}
     nets = registry.direct_networks([d["ip"] for d in linked if d.get("ip")], netutil.last_network)
-    found = {d["id"]: linkview.check(d["id"], d.get("seq"), nets.get(d.get("ip")), now)[0] for d in linked}
-    return {i: m for i, m in found.items() if m}
+    return {d["id"]: linkview.check(d["id"], d.get("seq"), nets.get(d.get("ip")), now) for d in linked}
+
+
+def _note_links(checks: dict[str, tuple]) -> None:
+    """The counts of the export: one cycle, its links used and not used (by reason)."""
+    linkview.note("cycles")
+    for _, why in checks.values():
+        linkview.note("used") if why == "used" else linkview.note("unused", reason=why)
 
 
 async def poll_once(state) -> None:
@@ -53,7 +64,9 @@ async def poll_once(state) -> None:
     arp_task = asyncio.create_task(state._arp_by_ip(0))
     # Response time measured in parallel with the probes, in the same cycle.
     lat_task = asyncio.create_task(latency.measure_many(latency_targets(snapshot)))
-    inputs = probe_inputs(state, snapshot)
+    checks = _link_checks(snapshot, time.time())
+    _note_links(checks)
+    inputs = _inputs(state, snapshot, checks)
     results = await asyncio.gather(*(probe.probe_device(i, arp_task) for i in inputs), return_exceptions=True)
     samples = await _samples(lat_task)
     moves = await _found_elsewhere(state, inputs, results, arp_task, started)
@@ -69,14 +82,17 @@ async def _found_elsewhere(state, inputs: list[dict], results: list, arp_task, s
     waiting = [k for k, (i, r) in enumerate(zip(inputs, results)) if i["link"] and isinstance(r, dict) and not r.get("online")]
     if not waiting:
         return {}
-    await _arp_of(arp_task)
+    view = await _arp_of(arp_task)
     answers = state._view.answered_since(started)
     moves = {}
     for k in waiting:
+        if macpresence.at_address(inputs[k]["link"], view.get(inputs[k]["ip"]), macverdict.shared) == "other":
+            linkview.note("other_at_address")
         where = macpresence.elsewhere(inputs[k]["link"], answers)
         if where is not None:
             results[k] = {**results[k], "online": True, "mac": inputs[k]["link"]}
             moves[inputs[k]["id"]] = where
+            linkview.note("found_elsewhere")
     return moves
 
 

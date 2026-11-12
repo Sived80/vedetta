@@ -92,6 +92,15 @@ assert linkview.requests() == {"c1": ("relink", M2)} and check() == (None, "rele
 linkview.refresh({"c1": row(mac=M2, changed=NOW)}, judged_at=NOW, done=["c1"])
 assert linkview.requests() == {} and check() == (None, "young") and linkview.offer("c1") is None
 
+# the counts of presence by MAC since the start (the export): only numbers, never a MAC or an address
+before = linkview.tally()
+linkview.note("used", 2)
+linkview.note("unused", reason="young")
+linkview.note("unused", 3, reason="young")
+after = linkview.tally()
+assert after["used"] - before.get("used", 0) == 2 and after["unused"]["young"] - before.get("unused", {}).get("young", 0) == 4, after
+assert set(after) <= {"cycles", "used", "unused", "other_at_address", "found_elsewhere", "moved", "pushed"}, after
+
 # the reasons a link is not used are a closed list (the export counts them)
 assert set(linkview.REASONS) == {"none", "held", "seq", "network", "young", "unjudged", "kind", "released"}, linkview.REASONS
 print("TUTTO OK")

@@ -13,7 +13,7 @@ import yaml
 
 os.environ.setdefault("VEDETTA_DATA_DIR", tempfile.mkdtemp())
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
-from app import netutil  # noqa: E402
+from app import linkview, netutil  # noqa: E402
 from app.networks import registry  # noqa: E402
 from app.state import DeviceState  # noqa: E402
 from app.storage import devices_config  # noqa: E402
@@ -42,6 +42,7 @@ def ips():
     return {d["id"]: d["ip"] for d in devices_config.load_devices()}
 
 
+TALLY = linkview.tally()
 writes = []
 real_set = devices_config.set_ips
 devices_config.set_ips = lambda changes: (writes.append(dict(changes)), real_set(changes))[1]
@@ -84,6 +85,10 @@ assert ips()["a"] == "10.0.0.5" and not writes
 s = world()
 asyncio.run(s.follow_links({}))
 assert not writes and not s.alerts and not s.triggers
+
+# the counts of the export: seven cards moved after their MAC, one took the address another left
+got = linkview.tally()
+assert (got["moved"] - TALLY.get("moved", 0), got["pushed"] - TALLY.get("pushed", 0)) == (7, 1), got
 
 # the file changed meanwhile (a card added at the address, or the card moved by another step): the write refuses, nothing is told
 s = world()

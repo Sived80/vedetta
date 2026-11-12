@@ -27,6 +27,7 @@ RECENT_DAYS = 7          # decision 3B (12/11): the card's history counts for th
 
 _last = 0.0              # when the links were last judged (0: never in this run, so at the first cycle)
 _unlinked: Counter = Counter()      # the reasons of the cards left without a link at the last judgement (counts for the export)
+_two_private = 0                     # the links to a private MAC over another private MAC at the last judgement (decision 4A, for the export)
 
 
 async def update(history, now: float | None = None) -> None:
@@ -65,7 +66,18 @@ def _judge_and_store(history, now: float) -> None:
     _unlinked.clear()
     _unlinked.update(res["unlinked"].values())
     stored = history.card_links()
+    global _two_private
+    _two_private = cardlink.two_private(stored, facts["history"], facts["kinds"])
     linkview.refresh(stored, now, offers=cardlink.offers(cards, stored, facts["sessions"], facts["kinds"], now), done=asked["done"])
+
+
+def presence_counts() -> dict:
+    """Counts only, never a MAC or an address (for the export): presence by MAC since the start (linkview.tally: cycles, links used and not used
+    by reason, another device at a linked card's address, cards found at another address, moved, pushed to the address left free) and the
+    links to a private MAC over another private MAC at the last judgement."""
+    got = linkview.tally()
+    out = {k: got.get(k, 0) for k in ("cycles", "used", "other_at_address", "found_elsewhere", "moved", "pushed")}
+    return {**out, "unused": got.get("unused", {}), "two_private": _two_private}
 
 
 def relink_offer(device_id: str) -> str | None:

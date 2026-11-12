@@ -10,6 +10,8 @@ so the probes of a cycle ask it at no cost. A link of card C to MAC M is used no
      the links every JUDGE_S: this closes the gap between two judgements).
 Nothing here writes a link: the release of a link (two cards of one phone merged) and the relink of the gesture "this is a new device" are
 requests the one writer (cardlink_cycle -> History.store_card_links) takes at its next judgement. Imports macverdict only (pure)."""
+from collections import Counter
+
 from . import macverdict
 
 JUDGE_S = 300.0                 # one judgement of the links every arpview.FULL_SWEEP_S (cardlink_cycle)
@@ -22,6 +24,7 @@ _judged: float | None = None            # when the last judgement of this run wa
 _released: set[str] = set()             # cards whose link is not used any more, until the writer took the request
 _requests: dict[str, tuple] = {}        # device id -> ("release", None) or ("relink", MAC): asked of the one writer
 _offers: dict[str, str] = {}            # device id -> the one other MAC that answers its address (the gesture "this is a new device")
+_tally: Counter = Counter()             # counts of presence by MAC since the start, for the export (numbers only)
 
 
 def load(rows: dict[str, dict]) -> None:
@@ -82,6 +85,23 @@ def relink(device_id: str, mac: str) -> None:
 def requests() -> dict[str, tuple]:
     """The requests waiting for the writer (a copy): device id -> (kind, MAC)."""
     return dict(_requests)
+
+
+def note(what: str, n: int = 1, reason: str | None = None) -> None:
+    """Counts one fact of presence by MAC for the export: cycles, links used, links not used (with their reason), another device at a linked
+    card's address, a card found at another address, cards moved after their MAC or pushed to the address left free."""
+    _tally[(what, reason)] += n
+
+
+def tally() -> dict:
+    """The counts since the start: {fact: n}, and {"unused": {reason: n}}."""
+    out: dict = {}
+    for (what, reason), n in _tally.items():
+        if reason is None:
+            out[what] = n
+        else:
+            out.setdefault(what, {})[reason] = n
+    return out
 
 
 def offer(device_id: str) -> str | None:

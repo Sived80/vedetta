@@ -44,6 +44,12 @@ class IdentityUpkeep:
         cards, plan = self._follow_plan(moves)
         if not plan or not await asyncio.to_thread(devices_config.set_ips, {cid: (cards[cid], ip) for cid, ip in plan.items()}):
             return
+        linkview.note("moved", sum(1 for cid in plan if cid in moves))
+        linkview.note("pushed", sum(1 for cid in plan if cid not in moves))
+        self._announce_moves(cards, plan)
+
+    def _announce_moves(self, cards: dict[str, str], plan: dict[str, str]) -> None:
+        """Each card that moved: its misses forgotten and the notice of a changed address; then the cycle is woken once."""
         for cid, ip in plan.items():
             self._misses[cid] = 0
             label = (self.devices.get(cid) or {}).get("name") or cards[cid]

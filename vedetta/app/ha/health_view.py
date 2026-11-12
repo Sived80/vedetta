@@ -1,4 +1,4 @@
-"""The network-health findings for the page and the log (health/). It reads the signals the app already has (the IP conflicts of the ARP scan), hands them to the judge now and then, and keeps the findings. Read-only: it sends nothing to any device.
+"""The network-health findings for the page and the log (health/). It reads the signals the app already has (the IP conflicts of the single MAC verdict), hands them to the judge now and then, and keeps the findings. Read-only: it sends nothing to any device.
 On unless VEDETTA_HEALTH=off is set. A rule in shadow is only counted in the log and kept for the export; nothing of it reaches the event of the page, because a rule is shown to everyone only after it has been judged on real networks (see the promotion criteria of the project).
 The page shows the findings of the rules that are shown to everyone; in its debug mode it asks for the ones in shadow too (page(shadow=True))."""
 import asyncio
@@ -6,11 +6,11 @@ import contextlib
 import os
 import time
 
+from .. import macverdict
 from ..applog import logger
 from ..health import matrix, signals
 from ..health.engine import Change, Engine
 from ..recognition.identity import default_gateway
-from ..scan import scanner
 from ..state import state
 from ..storage import devices_config
 from ..storage.history import history
@@ -60,7 +60,7 @@ def _who(known: list[dict], events: list[tuple]) -> tuple[set, int]:
 
 
 def read_signals(now: float | None = None, presence=None, latency=None, cards=_cards) -> dict:
-    """What the rules look at: the IP conflicts of the scan, the drops of each device in the last day (from the presence history; the first sight of a device in the window is not a drop), the phones
+    """What the rules look at: the IP conflicts going on (the single MAC verdict, macverdict), the drops of each device in the last day (from the presence history; the first sight of a device in the window is not a drop), the phones
     (the rules on drops leave them out), how many fixed devices were on the network in that day and the latency of the gateway. Only the devices that have a card are judged: the history of one
     that was deleted, or merged into another, stays in the database for a while."""
     now = time.time() if now is None else now
@@ -68,7 +68,7 @@ def read_signals(now: float | None = None, presence=None, latency=None, cards=_c
     ids = {c["id"] for c in known}
     events = [e for e in (presence or history.presence_since)(now - SIGNAL_WINDOW_S) if e[0] in ids]
     mobile, fixed = _who(known, events)
-    return {"now": now, "conflicts": {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()}, "drops": signals.drops_by_device(events), "mobile": mobile,
+    return {"now": now, "conflicts": macverdict.conflicts(now), "drops": signals.drops_by_device(events), "mobile": mobile,
             "devices": fixed, "latency": (latency or gateway_latency)(now)}
 
 
@@ -85,12 +85,13 @@ def running() -> bool:
     return _engine is not None
 
 
-def page(engine: Engine | None = None, devices=devices_config.load_devices, gateway=default_gateway, shadow: bool = False) -> list[dict]:
-    """What the health screen draws: every active finding of the rules that are shown (and of the ones in shadow, when the debug mode asks), with who (name and IP), what and when (ha/health_page.py)."""
+def page(engine: Engine | None = None, devices=devices_config.load_devices, gateway=default_gateway, shadow: bool = False, now: float | None = None) -> list[dict]:
+    """What the health screen draws: every active finding of the rules that are shown (and of the ones in shadow, when the debug mode asks), with who (name and IP), what and when (ha/health_page.py).
+    The conflicting addresses are the ones going on in the single MAC verdict: a search of the network in between does not empty them."""
     engine = _engine if engine is None else engine
     if engine is None:
         return []
-    conflicts = {ip: list(macs) for ip, macs in scanner.arp_conflicts.items()}
+    conflicts = macverdict.conflicts(time.time() if now is None else now)
     return health_page.build([f for f in engine.findings() if shadow or not f.shadow], TILE_OF, devices(), conflicts, gateway())
 
 

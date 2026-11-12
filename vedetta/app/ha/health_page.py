@@ -1,5 +1,5 @@
 """The network-health findings as the page draws them: who (the name and the IP of each device; the MAC only for a device that has no card, the one thing that tells it apart), what (the rule and its counts), when (first and last sight) and how many times.
-Pure: the findings, the device cards, the IP conflicts of the scan and the address of the gateway are handed in. Only the active findings are drawn, one entry for each conflicting address, and a device that is not known any more leaves nothing to show."""
+Pure: the findings, the device cards, the IP conflicts going on (the single MAC verdict) and the address of the gateway are handed in. Only the active findings are drawn, one entry for each conflicting address, and a device that is not known any more leaves nothing to show."""
 from dataclasses import dataclass
 
 LEVELS = {"info": "warn", "warning": "warn", "critical": "bad"}

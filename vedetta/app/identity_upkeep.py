@@ -8,8 +8,8 @@ import asyncio
 import logging
 import time
 
+from . import macverdict
 from .recognition import brands, naming
-from .scan import scanner
 from .storage import devices_config, newdevices
 from .storage.overlap import SAME_MOMENT_S
 from .storage.history import history
@@ -25,8 +25,9 @@ _GENERIC_PHONE_NAMES = {"iphone", "ipad", "android", "phone", "tablet", "galaxy"
 
 class IdentityUpkeep:
     def report_ip_conflicts(self) -> None:
-        """Warns once for each IP answered by different MACs (scanner.arp_conflicts)."""
-        for ip, macs in scanner.arp_conflicts.items():
+        """Warns once for each IP contested by different MACs, and each set of them, while the app runs: the conflicts going on of the single verdict
+        (macverdict, judged in time by macclassify; since 1.0 step P3, before it was the last ARP scan)."""
+        for ip, macs in macverdict.conflicts(time.time()).items():
             key = (ip, tuple(macs))
             if key in self._conflicts_reported:
                 continue

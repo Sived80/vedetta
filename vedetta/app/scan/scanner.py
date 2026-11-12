@@ -1,7 +1,7 @@
 """Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define,
 so callers and tests keep writing scanner.name. New code should import the specific module."""
 from .scan_common import is_valid_ipv4, timed_out  # noqa: F401
-from .scan_arp import ARP_TIMEOUT_S, arp_conflicts, arp_scan, neighbors, own_host, parse_arp_scan, with_neighbours  # noqa: F401
+from .scan_arp import ARP_TIMEOUT_S, arp_scan, neighbors, own_host, parse_arp_scan, with_neighbours  # noqa: F401
 from .scan_mdns import _MDNS_BUDGET, _MDNS_INFO_TIMEOUT, _MDNS_MANUFACTURER_KEYS, _MDNS_META_TYPE, _MDNS_MODEL_KEYS, _MDNS_NAME_KEYS, _MDNS_SLUG_RE, _MDNS_TYPES_WINDOW, _MDNS_USER_NAMED, _PtrProtocol, _build_ptr_query, _mdns_browse, _parse_ptr_answer, _props_to_txt, _read_dns_name, mdns_meta, mdns_scan, parse_mdns_txt, resolve_mdns_name, resolve_names  # noqa: F401
 from .scan_cert import _DER_NAME_OIDS, _der_item, cert_subject, parse_ssh_hostkey, parse_ssl_cert  # noqa: F401
 from .scan_nmap import FAST_PORTS, PILOT_MAX_S, PILOT_TIMEOUT_S, _LIGHT_NMAP_SEMAPHORE, _NMAP_SEMAPHORE, _TLS_PORTS, _configured_host_timeout, _describe_nmap, _parse_hosts, _run_nmap, fast_ports, no_talk_open_ports, pilot, tls_ssh_scan, with_no_talk_ports  # noqa: F401

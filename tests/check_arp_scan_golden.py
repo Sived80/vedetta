@@ -1,7 +1,7 @@
-"""Golden-master test of scan_arp.parse_arp_scan (arp-scan output -> hosts, with the other MACs that answered an address in `also` since 1.0 step P3, and the module's
-`arp_conflicts` dictionary: several MACs on one address, none of which also answers for other addresses): 4000 generated outputs - repeated addresses (DUP lines), mixed-case MACs, vendors "(Unknown...)" or missing, header and junk lines, invalid addresses, a stale
-`arp_conflicts` from a previous call - must give exactly the hosts (in order) AND the conflicts (in key order) stored in tests/golden/arp_scan.json, written from the code as it was
-before the function was split.
+"""Golden-master test of scan_arp.parse_arp_scan (arp-scan output -> hosts, with the other MACs that answered an address in `also` since 1.0 step P3; the module's
+`arp_conflicts` dictionary is gone with P3, the conflicts are judged in time by the single MAC layer): 4000 generated outputs - repeated addresses (DUP lines), mixed-case MACs,
+vendors "(Unknown...)" or missing, header and junk lines, invalid addresses - must give exactly the hosts (in order) stored in tests/golden/arp_scan.json, written from the code as
+it was before the function was split (then with `also`, then without the conflicts: both with a differential proof).
 Regenerate only on purpose:  ARPSCAN_GOLDEN_UPDATE=1 python tests/check_arp_scan_golden.py"""
 import json
 import os
@@ -38,12 +38,10 @@ def line():
 out = []
 for _ in range(N):
     text = "\n".join(line() for _ in range(rng.randrange(0, 14)))
-    scan_arp.arp_conflicts.clear()
-    if rng.random() < 0.3:
-        scan_arp.arp_conflicts["172.16.0.1"] = ["stale"]
+    rng.random()                     # the draw that used to leave a stale conflict from a previous call: kept, so every case is the same text as before
     try:
         hosts = scan_arp.parse_arp_scan(text)
-        out.append({"hosts": hosts, "conflicts": list(scan_arp.arp_conflicts.items())})
+        out.append({"hosts": hosts})
     except Exception as exc:
         out.append({"exception": type(exc).__name__})
 out = json.loads(json.dumps(out, sort_keys=True))
@@ -55,11 +53,10 @@ assert len(want) == len(out) == N
 for i, (x, y) in enumerate(zip(out, want)):
     assert x == y, "case %d differs: %s" % (i, json.dumps([x, y])[:500])
 assert not any("exception" in o for o in out)
-with_conflicts = sum(1 for o in out if o["conflicts"])
 with_hosts = sum(1 for o in out if o["hosts"])
-assert with_conflicts > 150 and with_hosts > 3000 and any(len(o["conflicts"]) > 1 for o in out), "scenarios too uniform (%d, %d)" % (with_conflicts, with_hosts)
 with_also = sum(1 for o in out if any("also" in h for h in o["hosts"]))
-assert with_also > 1000 and any(len(h.get("also", [])) > 1 for o in out for h in o["hosts"]), "scenarios too uniform for the other answers (%d)" % with_also
+assert with_also > 1000 and with_hosts > 3000 and any(len(h.get("also", [])) > 1 for o in out for h in o["hosts"]) \
+    and any(sum("also" in h for h in o["hosts"]) > 1 for o in out), "scenarios too uniform (%d, %d)" % (with_also, with_hosts)
 assert all(h["mac"] not in h.get("also", []) and len(set(h.get("also", []))) == len(h.get("also", [])) and h.get("also", True) for o in out for h in o["hosts"])
 assert any(h["vendor"] is None for o in out for h in o["hosts"]) and any(h["vendor"] for o in out for h in o["hosts"])
 print("TUTTO OK")

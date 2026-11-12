@@ -5,7 +5,7 @@
     "tile": "addr",
     "params": {
       "min_cycles": 2,
-      "clear_cycles": 10
+      "clear_cycles": 3
     },
     "signals": [
       "ARP"

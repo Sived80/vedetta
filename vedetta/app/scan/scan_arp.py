@@ -6,9 +6,6 @@ from .arpplan import parse_neighbors
 import contextlib
 
 
-# IPs to which different MACs responded in the last arp-scan (address conflict).
-arp_conflicts: dict[str, list[str]] = {}
-
 
 ARP_TIMEOUT_S = 120.0   # arp-scan that does not finish is closed: the cycle goes on with the last result
 
@@ -89,17 +86,13 @@ def parse_arp_scan(text: str) -> list[dict]:
     (in order, each once) are listed in "also" - only on those addresses, with no judgment
     (the single MAC layer judges them in time, 1.0 step P3)."""
     hosts, by_ip = [], {}
-    macs_by_ip: dict[str, set[str]] = {}
     for ip, mac, vendor in _arp_rows(text):
-        macs_by_ip.setdefault(ip, set()).add(mac)
         host = by_ip.get(ip)
         if host is None:
             by_ip[ip] = {"ip": ip, "mac": mac, "vendor": vendor}
             hosts.append(by_ip[ip])
         elif mac != host["mac"] and mac not in host.get("also", ()):
             host.setdefault("also", []).append(mac)
-    arp_conflicts.clear()
-    arp_conflicts.update(_real_conflicts(macs_by_ip))
     return hosts
 
 
@@ -110,13 +103,3 @@ def _arp_rows(text: str):
         if len(parts) >= 2 and is_valid_ipv4(parts[0]):
             vendor = parts[2].strip() if len(parts) >= 3 and not parts[2].startswith("(Unknown") else None
             yield parts[0], parts[1].upper(), vendor
-
-
-def _real_conflicts(macs_by_ip: dict[str, set[str]]) -> dict[str, list[str]]:
-    """Several MACs on the same IP, and none of those MACs also answers for other IPs (that would be an ARP proxy or a repeater,
-    not a duplicate address)."""
-    mac_ips: dict[str, set[str]] = {}
-    for ip, macs in macs_by_ip.items():
-        for mac in macs:
-            mac_ips.setdefault(mac, set()).add(ip)
-    return {ip: sorted(macs) for ip, macs in macs_by_ip.items() if len(macs) > 1 and all(len(mac_ips[m]) == 1 for m in macs)}

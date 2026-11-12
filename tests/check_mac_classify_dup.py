@@ -45,6 +45,13 @@ assert hosts == [{"ip": "10.0.40.5", "mac": CAM, "vendor": "Cam", "also": [RELAY
 assert maclayer.from_arp(view("10.0.40.5\t02:00:00:00:40:01\tCam\n10.0.40.5\t02:00:00:00:40:02\t-\n"), 5.0) == [
     maclayer.Observation("10.0.40.5", CAM, "arp", 5.0), maclayer.Observation("10.0.40.5", RELAY, "arp_dup", 5.0)]
 
+# ... the two cases the parse used to judge by itself in one scan (check_netinfo.py before P3): now it only lists what answered, the judge decides in time
+hosts = scan_arp.parse_arp_scan("192.0.2.5\taa:aa:aa:aa:aa:01\tX\n192.0.2.5\taa:aa:aa:aa:aa:02\tY\n192.0.2.9\tbb:bb:bb:bb:bb:01\tZ\n")
+assert [(h["ip"], h.get("also")) for h in hosts] == [("192.0.2.5", ["AA:AA:AA:AA:AA:02"]), ("192.0.2.9", None)], hosts
+hosts = scan_arp.parse_arp_scan("192.0.2.5\tcc:cc:cc:cc:cc:01\t-\n192.0.2.5\tcc:cc:cc:cc:cc:02\t-\n192.0.2.6\tcc:cc:cc:cc:cc:02\t-\n")
+assert [(h["ip"], h["mac"], h.get("also")) for h in hosts] == [("192.0.2.5", "CC:CC:CC:CC:CC:01", ["CC:CC:CC:CC:CC:02"]), ("192.0.2.6", "CC:CC:CC:CC:CC:02", None)]
+assert not hasattr(scan_arp, "arp_conflicts"), "no snapshot of the last scan: an ARP proxy is told apart in time (case 2)"
+
 # 1) the camera always answers first, the relay second (it is slower): the first answer never changes, the two are seen together -> conflict
 IP = "10.0.40.52"
 both = f"{IP}\t{CAM}\tCam\n{IP}\t{RELAY}\tRelay\n"

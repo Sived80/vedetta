@@ -54,14 +54,7 @@ s, i = scanner.parse_ssl_cert("Subject: commonName=fritz.box/organizationName=AV
 assert s == "commonName=fritz.box/organizationName=AVM" and i == "commonName=fritz.box"
 assert scanner.parse_ssh_hostkey("\n  3072 SHA256:abc (RSA)\n  256 SHA256:def (ED25519)") == "3072 SHA256:abc (RSA)"
 
-# ARP conflicts: two MACs on the same IP = conflict; one MAC on several IPs (repeater) no.
-txt = "192.168.1.5\taa:aa:aa:aa:aa:01\tX\n192.168.1.5\taa:aa:aa:aa:aa:02\tY\n192.168.1.9\tbb:bb:bb:bb:bb:01\tZ\n"
-hosts = scanner.parse_arp_scan(txt)
-assert [h["ip"] for h in hosts] == ["192.168.1.5", "192.168.1.9"]
-assert scanner.arp_conflicts == {"192.168.1.5": ["AA:AA:AA:AA:AA:01", "AA:AA:AA:AA:AA:02"]}, scanner.arp_conflicts
-txt = "192.168.1.5\tcc:cc:cc:cc:cc:01\t-\n192.168.1.5\tcc:cc:cc:cc:cc:02\t-\n192.168.1.6\tcc:cc:cc:cc:cc:02\t-\n"
-scanner.parse_arp_scan(txt)
-assert scanner.arp_conflicts == {}, "un MAC che risponde per piu' IP e' un proxy/ripetitore, non un conflitto"
+# ARP conflicts: since 1.0 step P3 the parse only lists the answers and the single MAC layer judges them in time (tests/check_mac_classify_dup.py).
 
 # IGMP.
 out = "\n  192.168.1.20\n    Interface: eth0\n    Version: 2\n    Group: 239.255.255.250\n    Description: SSDP\n  192.168.1.21\n    Group: 224.0.0.251\n"

@@ -7,6 +7,7 @@ import tempfile
 
 os.environ["VEDETTA_DATA_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
+from app import macverdict  # noqa: E402
 from app.ha import health_view as hv  # noqa: E402
 from app.health.engine import Engine  # noqa: E402
 from app.health import matrix  # noqa: E402
@@ -57,32 +58,38 @@ assert hv.gateway_latency(NOW, gateway=lambda: None, devices=lambda: [{"id": "gw
 assert hv.gateway_latency(NOW, gateway=lambda: "10.0.0.1", devices=lambda: [{"id": "x", "ip": "10.0.0.9"}], points=lambda *a: [(1, 1)]) == {}, "the gateway is not a card"
 assert hv.read_signals(NOW, presence=lambda since: [], latency=lambda now: {"gateway": [(1, 2)]})["latency"] == {"gateway": [(1, 2)]}
 
-# --- the signals come from the scan view, copied (the judge cannot change the scan)
-hv.scanner.arp_conflicts.clear()
-hv.scanner.arp_conflicts["10.0.0.5"] = ["m1", "m2"]
+# --- the conflicts come from the single verdict (macverdict, 1.0 step P3): the ones going on at the time of the judgment, copied (the judge cannot change them)
+macverdict.refresh_conflicts([{"ip": "10.0.0.5", "macs": ["02:00:00:00:00:01", "02:00:00:00:00:02"], "first_seen": NOW - 9000, "last_evidence": NOW - 60}])
 read = hv.read_signals(NOW, presence=lambda since: [], latency=lambda now: {})
+assert read["conflicts"] == {"10.0.0.5": ["02:00:00:00:00:01", "02:00:00:00:00:02"]}, read["conflicts"]
 read["conflicts"]["10.0.0.5"].append("m3")
-assert hv.scanner.arp_conflicts["10.0.0.5"] == ["m1", "m2"], "the signals are a copy"
-hv.scanner.arp_conflicts.clear()
+assert macverdict.conflicts(NOW) == {"10.0.0.5": ["02:00:00:00:00:01", "02:00:00:00:00:02"]}, "the signals are a copy"
+assert hv.read_signals(NOW + macverdict.CONFLICT_OPEN_S, presence=lambda since: [], latency=lambda now: {})["conflicts"] == {}, "over: no evidence for 20 minutes"
+assert not hasattr(hv, "scanner"), "the scan is not a source of conflicts any more"
+macverdict.refresh_conflicts([])
 
 # --- the page: every active finding of the rules that are shown, the ones in shadow too when the debug mode asks (shadow=True), with the names and addresses resolved from the cards
-hv.scanner.arp_conflicts["10.0.0.5"] = ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02"]
+macverdict.refresh_conflicts([{"ip": "10.0.0.5", "macs": ["AA:BB:CC:00:00:01", "AA:BB:CC:00:00:02"], "first_seen": 0.0, "last_evidence": NOW}])
 cards = [{"id": "a", "name": "Stampante", "ip": "10.0.0.5", "mac": "AA:BB:CC:00:00:01"}]
 sh = Engine([dict(ROW, status="shadow")])
 hv.judge_once(sh, CONFLICT, 0)
 hv.judge_once(sh, CONFLICT, 10)
-assert hv.page(sh, devices=lambda: cards, gateway=lambda: None) == [], "without the debug mode a rule in shadow shows nothing"
-got = hv.page(sh, devices=lambda: cards, gateway=lambda: None, shadow=True)
+assert hv.page(sh, devices=lambda: cards, gateway=lambda: None, now=NOW) == [], "without the debug mode a rule in shadow shows nothing"
+got = hv.page(sh, devices=lambda: cards, gateway=lambda: None, shadow=True, now=NOW)
 assert len(got) == 1 and got[0]["id"] == "H20:10.0.0.5" and got[0]["shadow"] is True and got[0]["tile"] == "addr", got
 assert got[0]["devs"][0] == {"id": "a", "name": "Stampante", "ip": "10.0.0.5"} and got[0]["devs"][1]["mac"] == "aa:bb:cc:00:00:02", got[0]["devs"]
 assert hv.page(None) == [] and hv.snapshot(sh) == [], "no engine, nothing; and the snapshot of the event still hides the shadow"
 shown = Engine([dict(ROW, status="active")])
 hv.judge_once(shown, CONFLICT, 0)
 hv.judge_once(shown, CONFLICT, 10)
-assert [f["id"] for f in hv.page(shown, devices=lambda: cards, gateway=lambda: None)] == ["H20:10.0.0.5"], "a rule that is shown reaches everyone"
+assert [f["id"] for f in hv.page(shown, devices=lambda: cards, gateway=lambda: None, now=NOW)] == ["H20:10.0.0.5"], "a rule that is shown reaches everyone"
+# the entry does not vanish between two full sweeps of the network (the scan of the cards alone, or the Search button, used to empty it): it stays while the
+# evidence is recent, whatever the ARP asked in between
+for later in range(0, 2 * 300 + 1, 60):
+    assert [f["id"] for f in hv.page(shown, devices=lambda: cards, gateway=lambda: None, now=NOW + later)] == ["H20:10.0.0.5"], later
 log = [{"rule": "H20", "last_seen": 300, "shadow": True}, {"rule": "H05", "last_seen": 200, "shadow": False}]
 assert hv.report(400, past=lambda since: log)["last_problem"] == {"rule": "H05", "end": 200} and hv.report(400, past=lambda since: log, shadow=True)["last_problem"]["rule"] == "H20",     "the last problem of the report is one of a rule that is shown, unless the debug mode asks"
-hv.scanner.arp_conflicts.clear()
+macverdict.refresh_conflicts([])
 
 # --- the report of a quiet network: when the judge looked last and the last problem of the log (the one that ended most recently), none if the log is empty
 hv._judged = None

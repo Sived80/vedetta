@@ -134,6 +134,18 @@ H8.observe([Obs("10.0.6.3", "AA:BB:CC:00:00:94", "arp", 10.0)])
 H8.observe([Obs("10.0.6.3", "AA:BB:CC:00:00:95", "arp", 70.0)])
 assert H8.flips()[-1]["gap"] == 60.0
 
+# step P3 (G2): the other answers to the same ARP question (`also` of the view) are observations of their own source, arp_dup; the changes of the MAC
+# answering an address (ip_flip) come from the first answer alone, as before
+H9 = History(Path(tempfile.mkdtemp()) / "vedetta.db")
+DA, DB = "02:00:00:00:05:0A", "02:00:00:00:05:0B"
+for k, (first, other) in enumerate([(DA, DB), (DA, DB), (DB, DA), (DA, None)]):
+    H9.observe(maclayer.from_arp({"10.0.5.1": {"mac": first, **({"also": [other.lower()]} if other else {})}}, 100.0 + 60 * k))
+assert [(f["old"], f["new"]) for f in H9.flips()] == [(DA, DB), (DB, DA)], "the first answers were A, A, B, A"
+assert sorted((r["mac"], r["source"], r["seen_count"]) for r in H9.macs_for_ip("10.0.5.1")) == [
+    (DA, "arp", 3), (DA, "arp_dup", 1), (DB, "arp", 1), (DB, "arp_dup", 2)], H9.macs_for_ip("10.0.5.1")
+dup = [Obs("10.0.5.1", DB, "arp_dup", 1.0)]
+assert maclayer.only_new(dup, {}) == dup and maclayer.only_new(dup, {("arp_dup", DB, "10.0.5.1"): 5.0}) == dup, "kept every cycle, like the first answer"
+
 # the memory of the listeners' events is bounded
 mem = {}
 old_max = maclayer.EVENT_MEMORY_MAX

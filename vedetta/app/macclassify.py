@@ -20,10 +20,14 @@ from itertools import chain, combinations, product
 LENDER_MIN_IPS = 3           # decision 1: three addresses (or a proof) before a MAC is called a lender
 CONFLICT_MIN_SEEN = 3        # without sessions: both MACs seen at least this many times at the address
 CONFLICT_MIN_OVERLAP_S = 60  # their periods overlap at least this long (a replaced device does not overlap)
+CONFLICT_MIN_TOGETHER_S = 300     # one answering first and the other second (arp_dup) at least this long: two full sweeps of the network
+                                  # (arpview.FULL_SWEEP_S; between two sweeps the view keeps what the last one found, so one sweep alone is shorter)
 CONFLICT_MIN_FLIPS = 6       # with flips: the MAC answering the address changed at least this many times between the two
 CONFLICT_MAX_MEDIAN_GAP_S = 900   # ... in a continuous rhythm (median time between two changes), not in rare bursts
 FLIP_MAX_GAP_S = 600         # a change after a longer silence of the address is a MAC coming back (or a replacement), not part of an alternation
 PROOF_SLACK_S = 600          # a DHCP proof counts if it was active within this slack of the ARP session it explains
+
+ANSWER_SOURCES = ("arp", "arp_dup")   # a MAC answering ARP at an address: the first answer, or another answer to the same question (step P3)
 
 _VIRTUAL_PREFIXES = ("00:00:5E:00:01:", "00:00:5E:00:02:", "00:00:0C:07:AC:", "00:00:0C:9F:F")   # VRRP v4/v6, HSRP v1/v2
 
@@ -69,7 +73,7 @@ def _classify_mac_kinds(rows, sessions):
     dhcp_at = _dhcp_macs_at(by_ip)
     out: dict[str, dict] = {}
     for mac, ips in by_mac.items():
-        arp_ips = sorted(ip for ip, rs in ips.items() if any(r["source"] == "arp" for r in rs))
+        arp_ips = sorted(ip for ip, rs in ips.items() if any(r["source"] in ANSWER_SOURCES for r in rs))
         simultaneous, behind = _simultaneous_and_behind(mac, arp_ips, sessions, arp_sess, arp_at, dhcp_sessions, dhcp_at)
         kind = _kind(mac, simultaneous, behind)
         out[mac] = {"kind": kind, "ips": sorted(ips), "behind": behind if kind == "lender" else []}
@@ -86,11 +90,11 @@ def _group(rows):
 
 
 def _index_sessions(sessions):
-    arp_sess: dict[str, list] = defaultdict(list)        # mac -> [(start, end, ip)]
+    arp_sess: dict[str, list] = defaultdict(list)        # mac -> [(start, end, ip)] of its ARP answers, first or not
     arp_at: dict[tuple, list] = defaultdict(list)        # (mac, ip) -> [(start, end)]
     dhcp_at: dict[str, dict[str, list]] = defaultdict(lambda: defaultdict(list))      # ip -> mac -> [(start, end)]
     for s in sessions or []:
-        if s["source"] == "arp":
+        if s["source"] in ANSWER_SOURCES:
             arp_sess[s["mac"]].append((s["start"], s["end"], s["ip"]))
             arp_at[(s["mac"], s["ip"])].append((s["start"], s["end"]))
         elif s["source"] == "dhcp":
@@ -134,15 +138,33 @@ def _behind_timed(mac, arp_ips, arp_at, dhcp_sessions):
 def _find_address_conflicts(flips, sessions, by_ip, arp_sess, out):
     flips_by_ip = _flips_by_ip(flips)
     use_time = bool(sessions) and flips is not None
+    spans = _answer_spans(sessions)
     conflicts, maybe = [], []
     for ip, macs in by_ip.items():
-        arp_macs = {m: [r for r in rs if r["source"] == "arp"] for m, rs in macs.items()}
+        arp_macs = {m: [r for r in rs if r["source"] in ANSWER_SOURCES] for m, rs in macs.items()}
         for a, b in combinations(_contesting_macs(arp_macs, out), 2):
-            if _contest(ip, a, b, arp_macs[a], arp_macs[b], arp_sess, flips_by_ip, use_time):
+            if _contest(ip, a, b, arp_macs[a], arp_macs[b], arp_sess, flips_by_ip, use_time) or (use_time and _seen_together(ip, a, b, spans)):
                 # a "multi_address" MAC may be a repeater we cannot prove (no DHCP seen): then the contest is only possible, not certain
                 sure = "multi_address" not in (out[a]["kind"], out[b]["kind"])
                 (conflicts if sure else maybe).append({"ip": ip, "macs": [a, b]})
     return conflicts, maybe
+
+
+def _answer_spans(sessions) -> dict[tuple, list]:
+    """(source, ip, mac) -> [(start, end)] of the ARP sessions, first answers and other answers apart."""
+    spans: dict[tuple, list] = defaultdict(list)
+    for s in sessions or []:
+        if s["source"] in ANSWER_SOURCES:
+            spans[(s["source"], s["ip"], s["mac"])].append((s["start"], s["end"]))
+    return spans
+
+
+def _seen_together(ip, a, b, spans) -> bool:
+    """One MAC answered the address first while the other answered the same questions second (RFC 5227: two answers to one ARP probe), long
+    enough to span two full sweeps: a conflict even when the first answer never changes hands (the same device is always faster)."""
+    together = (_overlap(spans.get(("arp", ip, a), []), spans.get(("arp_dup", ip, b), []))
+                + _overlap(spans.get(("arp", ip, b), []), spans.get(("arp_dup", ip, a), [])))
+    return together >= CONFLICT_MIN_TOGETHER_S
 
 
 def _contest(ip, a, b, rows_a, rows_b, arp_sess, flips_by_ip, use_time):
@@ -200,9 +222,6 @@ def _flips_by_ip(flips):
 def _contesting_macs(arp_macs, out):
     """The MACs that answer ARP at an address and are neither lenders nor virtual: the ones that can contest it."""
     return sorted(m for m, rs in arp_macs.items() if rs and out[m]["kind"] not in ("lender", "virtual"))
-
-
-ANSWER_SOURCES = ("arp",)    # the sessions in which a MAC answered ARP at an address
 
 
 def last_evidence(conflicts: list[dict], sessions: list[dict], flips: list[dict]) -> list[dict]:

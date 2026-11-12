@@ -1,5 +1,5 @@
-"""Golden-master test of scan_arp.parse_arp_scan (arp-scan output -> hosts, and the module's `arp_conflicts` dictionary: several MACs on one address, none of which also answers for
-other addresses): 4000 generated outputs - repeated addresses (DUP lines), mixed-case MACs, vendors "(Unknown...)" or missing, header and junk lines, invalid addresses, a stale
+"""Golden-master test of scan_arp.parse_arp_scan (arp-scan output -> hosts, with the other MACs that answered an address in `also` since 1.0 step P3, and the module's
+`arp_conflicts` dictionary: several MACs on one address, none of which also answers for other addresses): 4000 generated outputs - repeated addresses (DUP lines), mixed-case MACs, vendors "(Unknown...)" or missing, header and junk lines, invalid addresses, a stale
 `arp_conflicts` from a previous call - must give exactly the hosts (in order) AND the conflicts (in key order) stored in tests/golden/arp_scan.json, written from the code as it was
 before the function was split.
 Regenerate only on purpose:  ARPSCAN_GOLDEN_UPDATE=1 python tests/check_arp_scan_golden.py"""
@@ -58,5 +58,8 @@ assert not any("exception" in o for o in out)
 with_conflicts = sum(1 for o in out if o["conflicts"])
 with_hosts = sum(1 for o in out if o["hosts"])
 assert with_conflicts > 150 and with_hosts > 3000 and any(len(o["conflicts"]) > 1 for o in out), "scenarios too uniform (%d, %d)" % (with_conflicts, with_hosts)
+with_also = sum(1 for o in out if any("also" in h for h in o["hosts"]))
+assert with_also > 1000 and any(len(h.get("also", [])) > 1 for o in out for h in o["hosts"]), "scenarios too uniform for the other answers (%d)" % with_also
+assert all(h["mac"] not in h.get("also", []) and len(set(h.get("also", []))) == len(h.get("also", [])) and h.get("also", True) for o in out for h in o["hosts"])
 assert any(h["vendor"] is None for o in out for h in o["hosts"]) and any(h["vendor"] for o in out for h in o["hosts"])
 print("TUTTO OK")

@@ -23,13 +23,19 @@ class Observation(NamedTuple):
     ts: float
 
 
+ARP_SOURCES = ("arp", "arp_dup")     # the first answer to an ARP question, and the other MACs that answered the same question
+
+
 def from_arp(arp: dict[str, dict], ts: float) -> list[Observation]:
-    """{ip: {"mac": ...}} of one ARP view -> observations (entries without a usable MAC are skipped)."""
+    """{ip: {"mac": ..., "also": [...]}} of one ARP view -> observations (entries without a usable MAC are skipped). The first answer is source
+    "arp"; the other MACs that answered the same address ("also", the DUP lines of arp-scan) are source "arp_dup", so the changes of the MAC
+    answering an address (ip_flip, made by "arp" alone) stay as they were."""
     out = []
     for ip, host in (arp or {}).items():
         mac = normalize_mac((host or {}).get("mac"))
         if mac and ip:
             out.append(Observation(ip, mac, "arp", ts))
+            out += [Observation(ip, m, "arp_dup", ts) for m in dict.fromkeys(map(normalize_mac, host.get("also") or ())) if m and m != mac]
     return out
 
 
@@ -125,11 +131,11 @@ def observation_report(history, dhcp_seen: dict, window_days: int = VERDICT_WIND
 
 
 def only_new(observations: list, memory: dict) -> list:
-    """Keeps every ARP observation (one per cycle is the point) but a DHCP or mDNS one only when its own timestamp is newer than the one already
-    recorded for (source, mac, ip): the listeners keep their last entry in memory and re-reading it every cycle is not a new event."""
+    """Keeps every ARP observation, first answer or not (one per cycle is the point) but a DHCP or mDNS one only when its own timestamp is newer
+    than the one already recorded for (source, mac, ip): the listeners keep their last entry in memory and re-reading it every cycle is not a new event."""
     out = []
     for o in observations:
-        if o.source == "arp":
+        if o.source in ARP_SOURCES:
             out.append(o)
             continue
         key = (o.source, o.mac, o.ip)

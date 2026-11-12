@@ -84,15 +84,20 @@ def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
 
 def parse_arp_scan(text: str) -> list[dict]:
     """arp-scan lines -> hosts. An address that replies more than once ("DUP" lines,
-    typical of repeaters and routers with proxy ARP) appears only once: the
-    first reply is kept."""
-    hosts, seen = [], set()
+    typical of repeaters and routers with proxy ARP, and of two devices on one address)
+    appears only once: the first reply is the host, and the other MACs that replied for it
+    (in order, each once) are listed in "also" - only on those addresses, with no judgment
+    (the single MAC layer judges them in time, 1.0 step P3)."""
+    hosts, by_ip = [], {}
     macs_by_ip: dict[str, set[str]] = {}
     for ip, mac, vendor in _arp_rows(text):
         macs_by_ip.setdefault(ip, set()).add(mac)
-        if ip not in seen:
-            seen.add(ip)
-            hosts.append({"ip": ip, "mac": mac, "vendor": vendor})
+        host = by_ip.get(ip)
+        if host is None:
+            by_ip[ip] = {"ip": ip, "mac": mac, "vendor": vendor}
+            hosts.append(by_ip[ip])
+        elif mac != host["mac"] and mac not in host.get("also", ()):
+            host.setdefault("also", []).append(mac)
     arp_conflicts.clear()
     arp_conflicts.update(_real_conflicts(macs_by_ip))
     return hosts

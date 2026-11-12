@@ -94,21 +94,8 @@ def evaluate(device_id: str, mac_now: str, now: float | None = None) -> dict | N
     now = time.time() if now is None else now
     mac_now = (mac_now or "").lower()
     _checked[device_id] = (mac_now, now)
-    rows = {r["mac"].lower(): r for r in history.mac_memory_for(device_id)}
-    if mac_now not in rows:
-        rows[mac_now] = {"mac": mac_now, "ip": None, "first_seen": now}
-    if len(rows) < 2:
-        RESULTS.pop(device_id, None)
-        return None
-    shared = {mac for mac in rows if macverdict.shared(mac)}
-    profiles = sorted(starmap(profile, rows.items()), key=lambda p: p["first_seen"])
-    owner = profiles[0]
-    found = None
-    for other in profiles[1:]:
-        j = same_device.judge(owner, other, shared, _role(owner["ip"]), _role(other["ip"]), policy=same_device.NOTIFY)
-        if j["verdict"] == "different":
-            found = {"verdict": "different", "a": _describe(owner), "b": _describe(other), "reasons": j["reasons"], "ts": now}
-            break
+    rows = _memory_rows(device_id, mac_now, now)
+    found = _first_different(rows, now) if len(rows) >= 2 else None
     if not found:
         RESULTS.pop(device_id, None)
         return None
@@ -117,6 +104,25 @@ def evaluate(device_id: str, mac_now: str, now: float | None = None) -> dict | N
     _alerted.add(key)
     RESULTS[device_id] = found
     return found
+
+
+def _memory_rows(device_id: str, mac_now: str, now: float) -> dict:
+    """The MACs seen behind the card (memory per MAC), the one of now included."""
+    rows = {r["mac"].lower(): r for r in history.mac_memory_for(device_id)}
+    rows.setdefault(mac_now, {"mac": mac_now, "ip": None, "first_seen": now})
+    return rows
+
+
+def _first_different(rows: dict, now: float) -> dict | None:
+    """The first MAC judged a different device from the one that had the card first, or None."""
+    shared = {mac for mac in rows if macverdict.shared(mac)}
+    profiles = sorted(starmap(profile, rows.items()), key=lambda p: p["first_seen"])
+    owner = profiles[0]
+    for other in profiles[1:]:
+        j = same_device.judge(owner, other, shared, _role(owner["ip"]), _role(other["ip"]), policy=same_device.NOTIFY)
+        if j["verdict"] == "different":
+            return {"verdict": "different", "a": _describe(owner), "b": _describe(other), "reasons": j["reasons"], "ts": now}
+    return None
 
 
 def _role(ip: str | None) -> bool:

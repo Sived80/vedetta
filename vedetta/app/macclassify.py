@@ -143,11 +143,18 @@ def _find_address_conflicts(flips, sessions, by_ip, arp_sess, out):
     for ip, macs in by_ip.items():
         arp_macs = {m: [r for r in rs if r["source"] in ANSWER_SOURCES] for m, rs in macs.items()}
         for a, b in combinations(_contesting_macs(arp_macs, out), 2):
-            if _contest(ip, a, b, arp_macs[a], arp_macs[b], arp_sess, flips_by_ip, use_time) or (use_time and _seen_together(ip, a, b, spans)):
+            if _contested(ip, a, b, arp_macs, arp_sess, flips_by_ip, use_time, spans):
                 # a "multi_address" MAC may be a repeater we cannot prove (no DHCP seen): then the contest is only possible, not certain
                 sure = "multi_address" not in (out[a]["kind"], out[b]["kind"])
                 (conflicts if sure else maybe).append({"ip": ip, "macs": [a, b]})
     return conflicts, maybe
+
+
+def _contested(ip, a, b, arp_macs, arp_sess, flips_by_ip, use_time, spans) -> bool:
+    """MAC a and MAC b contest the address: they take turns (_contest), or, with sessions, both answer the same questions long enough (_seen_together)."""
+    if _contest(ip, a, b, arp_macs[a], arp_macs[b], arp_sess, flips_by_ip, use_time):
+        return True
+    return use_time and _seen_together(ip, a, b, spans)
 
 
 def _answer_spans(sessions) -> dict[tuple, list]:

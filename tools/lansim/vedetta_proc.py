@@ -16,17 +16,18 @@ ENV = {"VEDETTA_IFACE": "e0", "VEDETTA_INTERNET_PUBLIC_IP": "false", "VEDETTA_IN
 
 
 class VedettaProcess:
-    """`with VedettaProcess(code_dir) as v:` starts the app from `code_dir` (a folder holding `app/`), `v.cards()` lists the cards, leaving the block stops it."""
+    """`with VedettaProcess(code_dir) as v:` starts the app from `code_dir` (a folder holding `app/`), `v.cards()` lists the cards, leaving the block stops it. `data`: a data folder of
+    an earlier run (an update or a way back on the same data, S30); a new empty one otherwise."""
 
-    def __init__(self, code_dir: str, poll_interval: int = 10) -> None:
+    def __init__(self, code_dir: str, poll_interval: int = 10, data: str | None = None) -> None:
         self.code_dir = code_dir
         self.poll_interval = poll_interval
-        self.data = tempfile.mkdtemp(prefix="lansim-data-")
+        self.data = data or tempfile.mkdtemp(prefix="lansim-data-")
         self.proc: subprocess.Popen | None = None
 
     def __enter__(self) -> "VedettaProcess":
         env = {**os.environ, **ENV, "VEDETTA_DATA_DIR": self.data}
-        log = open(os.path.join(self.data, "uvicorn.log"), "wb")
+        log = open(os.path.join(self.data, "uvicorn.log"), "ab")
         self.proc = subprocess.Popen(["ip", "netns", "exec", "ls-vedetta", PYTHON, "-m", "uvicorn", "app.main:app", "--host", ADDRESS, "--port", str(PORT),
                                       "--workers", "1", "--log-level", "warning"], cwd=self.code_dir, env=env, stdout=log, stderr=log)
         self._wait_ready()
@@ -59,6 +60,12 @@ class VedettaProcess:
         req = urllib.request.Request("http://%s:%d%s" % (ADDRESS, PORT, path), json.dumps(body).encode(), {"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read() or b"null")
+
+    def remove(self, device_id: str) -> None:
+        """What the user does when they remove a card."""
+        req = urllib.request.Request("http://%s:%d/api/devices/%s" % (ADDRESS, PORT, device_id), method="DELETE")
+        with urllib.request.urlopen(req, timeout=20) as r:
+            r.read()
 
     def cards(self) -> list[dict]:
         """The cards as the interface gets them (address, name, where the name comes from, online, mobile)."""

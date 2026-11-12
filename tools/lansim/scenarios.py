@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 from tools.lansim import phases
-from tools.lansim.lan import SUBNET, Lan
+from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTER_MAC, SUBNET, Lan
 from tools.lansim.vedetta_proc import VedettaProcess
 
 ANDROID_MAC, IOS_MAC, IOS_MAC_2 = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "5a:00:00:00:00:24"
@@ -33,14 +33,98 @@ def _ip_conflict_rows(vedetta: VedettaProcess) -> int:
         db.close()
 
 
+# The card -> MAC link (1.0 step P4), in the shadow: what card_mac says at the end of a run, against the truth the scenario knows.
+NEVER = (EXTENDER_MAC, EXTENDER2_MAC)      # where the extenders lend their MAC (S4, S10): no card may be linked to it, not even the extender's own
+LINK_WAIT_S = 720                          # a link needs two full sweeps of answers and a judgement (every five minutes): about ten minutes from the start
+
+
+def link_tally(links: dict, truth: dict, never=()) -> dict:
+    """links: device id -> (mac, state, seq) as card_mac holds them; truth: device id -> the MAC of the device at its address when the cards were added. Counts right, wrong
+    (another MAC, or a MAC of `never`), absent, held, and the MACs linked to two cards; `by_card` gives the verdict of each card of the truth."""
+    never = {m.lower() for m in never}
+    by_card = {d: _link_verdict(links.get(d), want.lower(), never) for d, want in truth.items()}
+    out = {k: list(by_card.values()).count(k) for k in ("right", "wrong", "absent", "held")}
+    out["wrong"] += _wrong_elsewhere(links, truth, never)
+    out["two_cards"] = _two_cards(links)
+    out["by_card"] = by_card
+    return out
+
+
+def _wrong_elsewhere(links: dict, truth: dict, never: set) -> int:
+    """Links of cards outside the truth to a MAC that no card may have (an extender's)."""
+    return sum(1 for d, link in links.items() if d not in truth and link[0].lower() in never)
+
+
+def _two_cards(links: dict) -> int:
+    macs = [link[0].lower() for link in links.values()]
+    return sum(1 for m in set(macs) if macs.count(m) > 1)
+
+
+def _link_verdict(link, want: str, never: set) -> str:
+    if link is None:
+        return "absent"
+    mac, state = link[0].lower(), link[1]
+    if mac != want or mac in never:
+        return "wrong"
+    return "held" if state == "held" else "right"
+
+
+def _card_links(vedetta: VedettaProcess) -> dict:
+    """The rows of card_mac, read-only: device id -> (mac, state, seq); none when the table is not there (an older version)."""
+    db = sqlite3.connect("file:%s?mode=ro" % os.path.join(vedetta.data, "vedetta.db"), uri=True)
+    try:
+        return {d: (m, s, q) for d, m, s, q in db.execute("SELECT device_id, mac, state, seq FROM card_mac")}
+    except sqlite3.OperationalError:
+        return {}
+    finally:
+        db.close()
+
+
+def _base_macs(extenders: int = 1) -> dict:
+    """The MAC at each address of the fixed machines of the LAN (the router and the extenders)."""
+    out = {SUBNET + ".1": ROUTER_MAC, SUBNET + ".3": EXTENDER_MAC}
+    if extenders > 1:
+        out[SUBNET + ".4"] = EXTENDER2_MAC
+    return out
+
+
+def _truth(vedetta: VedettaProcess, macs_by_ip: dict) -> dict:
+    """Device id -> the MAC of the device at its address now (to be taken right after the cards are added)."""
+    return {c["id"]: macs_by_ip[c["ip"]] for c in vedetta.cards() if c.get("ip") in macs_by_ip}
+
+
+def _links(vedetta: VedettaProcess, truth: dict, never=()) -> dict:
+    """The tally of the links of this run. Where an extender never lends its MAC (it holds no client) it is a device like any other: its own card may be linked to it."""
+    return link_tally(_card_links(vedetta), truth, never)
+
+
+def _wait_link(vedetta: VedettaProcess, device_id: str | None, timeout: float) -> bool:
+    """Waits until the card is linked (at most `timeout` seconds)."""
+    end = time.time() + timeout
+    while time.time() < end:
+        if device_id and (_card_links(vedetta).get(device_id) or ("", ""))[1] == "linked":
+            return True
+        time.sleep(20)
+    return False
+
+
+def _id_at(vedetta: VedettaProcess, address: str) -> str | None:
+    return next((c["id"] for c in vedetta.cards() if c.get("ip") == address), None)
+
+
 def s1_stable(code_dir: str) -> dict:
-    """An Android phone on the network, nothing happens: one phone card, named as the phone announces itself."""
+    """An Android phone on the network, nothing happens: one phone card, named as the phone announces itself; its card ends linked to the phone's MAC (P4)."""
     with Lan() as lan, VedettaProcess(code_dir) as vedetta:
         address = lan.add_client("c1", ANDROID_MAC, 20)
         lan.announce("c1", "android", ANDROID_MAC, address)
         vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: ANDROID_MAC})
         vedetta.wait_cycles(SETTLE + 1)
-        return {"phones": _phone_cards(vedetta)}
+        phones = _phone_cards(vedetta)
+        phone_id = _id_at(vedetta, address)
+        _wait_link(vedetta, phone_id, LINK_WAIT_S)
+        links = _links(vedetta, truth)
+        return {"phones": phones, "links": links, "phone_link": links["by_card"].get(phone_id, "absent")}
 
 
 def s4_extender_holds(code_dir: str) -> dict:
@@ -49,13 +133,16 @@ def s4_extender_holds(code_dir: str) -> dict:
         address = lan.add_client("c1", ANDROID_MAC, 20)
         lan.announce("c1", "android", ANDROID_MAC, address)
         vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: ANDROID_MAC})
         vedetta.wait_cycles(SETTLE + 1)
         before = _phone_cards(vedetta)
         for held in (True, False, True, False, True, False):
             lan.hold("c1", address, "ext" if held else None)
             vedetta.wait_cycles(1)
         vedetta.wait_cycles(SETTLE)
-        return {"before": before, "after": _phone_cards(vedetta), "cards_total": len(vedetta.cards()), "ip_conflict_rows": _ip_conflict_rows(vedetta)}
+        after = _phone_cards(vedetta)
+        _wait_link(vedetta, _id_at(vedetta, address), 300)          # linked to the phone, or not linked: never to the extender
+        return {"before": before, "after": after, "cards_total": len(vedetta.cards()), "ip_conflict_rows": _ip_conflict_rows(vedetta), "links": _links(vedetta, truth, NEVER)}
 
 
 def s5_inherited_name(code_dir: str) -> dict:
@@ -64,6 +151,7 @@ def s5_inherited_name(code_dir: str) -> dict:
         address = lan.add_client("c1", ANDROID_MAC, 20)
         lan.announce("c1", "android", ANDROID_MAC, address)
         vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: ANDROID_MAC})
         vedetta.wait_cycles(SETTLE + 1)
         before = _phone_cards(vedetta)
         lan.link("c1", False)
@@ -71,7 +159,7 @@ def s5_inherited_name(code_dir: str) -> dict:
         lan.add_client("c2", IOS_MAC, 20)
         lan.announce("c2", "ios", IOS_MAC, address)
         vedetta.wait_cycles(SETTLE + 2)
-        return {"before": before, "after": _phone_cards(vedetta)}
+        return {"before": before, "after": _phone_cards(vedetta), "links": _links(vedetta, truth)}
 
 
 def s10_two_extenders(code_dir: str, cycles: int = 24, seed: int = 1, dense: bool = False) -> dict:
@@ -90,6 +178,7 @@ def s10_two_extenders(code_dir: str, cycles: int = 24, seed: int = 1, dense: boo
             walks[name] = (address, phases.roam_schedule(random.Random(seed * 100 + i), cycles, **roam))
             holder[name] = None
         vedetta.add_found()
+        truth = _truth(vedetta, _phones_and_base(names))
         vedetta.wait_cycles(SETTLE + 1)
         before = _phone_cards(vedetta)
         for cycle in range(cycles):
@@ -100,10 +189,16 @@ def s10_two_extenders(code_dir: str, cycles: int = 24, seed: int = 1, dense: boo
             vedetta.wait_cycles(1)
         vedetta.wait_cycles(SETTLE)
         return {"before": before, "after": _phone_cards(vedetta), "cards_total": len(vedetta.cards()), "ip_conflict_rows": _ip_conflict_rows(vedetta),
+                "links": _links(vedetta, truth, NEVER),
                 "phones_all": [{"ip": c.get("ip"), "name": c.get("name"), "name_source": c.get("name_source"), "type": c.get("type"), "brand": c.get("brand"), "mobile": c.get("is_mobile"), "online": c.get("online")}
                                for c in vedetta.cards() if (c.get("ip") or "").rsplit(".", 1)[-1] in ("20", "21", "22")],
                 "handoffs": sum(a in ("ext", "ext2") and b in ("ext", "ext2") and a != b for _, walk in walks.values() for a, b in zip(walk, walk[1:])),
                 "holds": {name: sum(1 for a, b in zip(walk, walk[1:]) if a != b) for name, (_, walk) in walks.items()}}
+
+
+def _phones_and_base(names: tuple) -> dict:
+    """The MAC at each address of S10: the router, the two extenders, the phones."""
+    return {**_base_macs(2), **{"%s.%d" % (SUBNET, number): mac for _n, _k, mac, number, _h in names}}
 
 
 LAPTOP_MAC, CONSOLE_MAC = "3c:00:00:00:00:31", "70:00:00:00:00:32"       # real (not private) MACs: the judgement of "two devices behind a card" is silent for private ones
@@ -126,6 +221,7 @@ def _console_takes_address(code_dir: str, user_named: bool, laptop_returns: bool
         address = lan.add_client("c1", LAPTOP_MAC, 20)
         lan.announce("c1", "windows", LAPTOP_MAC, address)
         vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: LAPTOP_MAC})
         vedetta.wait_cycles(SETTLE + 1)
         if user_named:
             vedetta.rename(next(c["id"] for c in vedetta.cards() if c.get("ip") == address), "Portatile")
@@ -136,7 +232,7 @@ def _console_takes_address(code_dir: str, user_named: bool, laptop_returns: bool
         lan.add_client("c2", CONSOLE_MAC, 20)
         lan.announce("c2", "console", CONSOLE_MAC, address)
         vedetta.wait_cycles(SETTLE + 3)
-        result = {"before": before, "console_on": _card_at(vedetta, address), "cards_total": len(vedetta.cards())}
+        result = {"before": before, "console_on": _card_at(vedetta, address), "cards_total": len(vedetta.cards()), "links": _links(vedetta, truth)}
         if laptop_returns:
             new_address = "%s.%d" % (SUBNET, LAPTOP_RETURN_ADDRESS)
             lan.move("c1", address, new_address)
@@ -145,6 +241,7 @@ def _console_takes_address(code_dir: str, user_named: bool, laptop_returns: bool
             vedetta.add_found()
             vedetta.wait_cycles(SETTLE + 2)
             result["laptop_back"] = {"at_old_address": _card_at(vedetta, address), "at_new_address": _card_at(vedetta, new_address), "cards_total": len(vedetta.cards())}
+            result["links"] = _links(vedetta, truth)            # never one MAC on two cards
         return result
 
 
@@ -173,6 +270,7 @@ def _pair(code_dir: str, first: str, second: str) -> dict:
         address = lan.add_client("c1", "3c:00:00:00:00:51", 20)
         lan.announce("c1", first, "3c:00:00:00:00:51", address, "first-" + first)
         vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: "3c:00:00:00:00:51"})
         vedetta.wait_cycles(SETTLE + 1)
         before = [c["name"] for c in _card_at(vedetta, address)]
         lan.link("c1", False)
@@ -181,7 +279,7 @@ def _pair(code_dir: str, first: str, second: str) -> dict:
         lan.announce("c2", second, "70:00:00:00:00:52", address, "second-" + second)
         vedetta.wait_cycles(SETTLE + 3)
         after = [c["name"] for c in _card_at(vedetta, address)]
-        return {"before": before, "after": after, "cards_total": len(vedetta.cards()), "ip_conflict_rows": _ip_conflict_rows(vedetta)}
+        return {"before": before, "after": after, "cards_total": len(vedetta.cards()), "ip_conflict_rows": _ip_conflict_rows(vedetta), "links": _links(vedetta, truth)}
 
 
 def s13_any_pair(code_dir: str) -> dict:
@@ -192,6 +290,86 @@ def s13_any_pair(code_dir: str) -> dict:
         results["%s -> %s" % (first, second)] = outcome = _pair(code_dir, first, second)
         print("RESULT %s -> %s: before %s, after %s" % (first, second, outcome["before"], outcome["after"]), flush=True)
     return results
+
+
+def s13l_link_holds(code_dir: str) -> dict:
+    """1.0 step P4: the laptop stays long enough for its card to be linked to its MAC, then leaves and the console takes the address. The link must not follow the address: it stays on
+    the laptop, still "linked", and the console is never linked to the card."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address = lan.add_client("c1", LAPTOP_MAC, 20)
+        lan.announce("c1", "windows", LAPTOP_MAC, address)
+        vedetta.add_found()
+        truth = _truth(vedetta, {**_base_macs(), address: LAPTOP_MAC})
+        laptop_id = _id_at(vedetta, address)
+        _wait_link(vedetta, laptop_id, LINK_WAIT_S)
+        before = _card_links(vedetta).get(laptop_id)
+        lan.link("c1", False)
+        vedetta.wait_cycles(SETTLE)
+        lan.add_client("c2", CONSOLE_MAC, 20)
+        lan.announce("c2", "console", CONSOLE_MAC, address)
+        vedetta.wait_cycles(SETTLE + 3)
+        time.sleep(330)                                       # at least one more judgement of the links with the console at the address
+        return {"before": before, "after": _card_links(vedetta).get(laptop_id), "laptop": LAPTOP_MAC.upper(), "links": _links(vedetta, truth)}
+
+
+def _seqs(data: str) -> dict:
+    """Device id -> seq, from devices.yaml of the data folder."""
+    import yaml
+    with open(os.path.join(data, "devices.yaml"), encoding="utf-8") as f:
+        return {d["id"]: d.get("seq") for d in (yaml.safe_load(f) or {}).get("devices", [])}
+
+
+S30_DEVICES = (("c1", "android", ANDROID_MAC, 20, "android-s30"), ("c2", "windows", LAPTOP_MAC, 21, "laptop-s30"), ("c3", "console", CONSOLE_MAC, 22, "console-s30"))
+
+
+def s30_upgrade_and_back(code_dir: str, old_code_dir: str | None = None, old_minutes: float = 10, back_minutes: float = 5) -> dict:
+    """1.0 step P4, an update and a way back with the app running on one data folder: the old version (`old_code_dir`, 0.13.1) for 10 minutes, two devices swapping their addresses
+    half way; the new version (the seed of the links); the old one again for 5 minutes, a card removed and added again (same id, new seq); the new one again. Expected: no wrong link,
+    no MAC on two cards, no link inherited by the card added again."""
+    if not old_code_dir:
+        raise RuntimeError("S30 needs the code of the old version (--old-code-dir)")
+    data = tempfile.mkdtemp(prefix="lansim-s30-")
+    with Lan() as lan:
+        for name, kind, mac, number, host in S30_DEVICES:
+            lan.announce(name, kind, mac, lan.add_client(name, mac, number), host)
+        with VedettaProcess(old_code_dir, data=data) as old:
+            old.add_found()
+            time.sleep(old_minutes * 30)
+            a, b, spare = ("%s.%d" % (SUBNET, n) for n in (20, 21, 29))
+            lan.move("c1", a, spare)
+            lan.move("c2", b, a)
+            lan.move("c1", spare, b)
+            lan.announce("c1", "android", ANDROID_MAC, b, "android-s30")
+            lan.announce("c2", "windows", LAPTOP_MAC, a, "laptop-s30")
+            time.sleep(old_minutes * 30)
+        where = {**_base_macs(), SUBNET + ".20": LAPTOP_MAC, SUBNET + ".21": ANDROID_MAC, SUBNET + ".22": CONSOLE_MAC}
+        with VedettaProcess(code_dir, data=data) as new:
+            new.wait_cycles(SETTLE + 1)
+            seed = _links(new, _truth(new, where))
+            sources = _sources(data)
+        with VedettaProcess(old_code_dir, data=data) as old:
+            old.wait_cycles(SETTLE)                           # the cards are listed once the first cycle has run
+            removed = _id_at(old, SUBNET + ".22")
+            if removed is None:
+                raise RuntimeError("S30: no card at .22 after the restart of the old version")
+            old.remove(removed)
+            old.add_found()
+            time.sleep(back_minutes * 60)
+        with VedettaProcess(code_dir, data=data) as new:
+            new.wait_cycles(SETTLE + 1)
+            first = dict(_card_links(new))
+            time.sleep(330)                                   # the next judgement: the card added again is judged by itself
+            links, rows, seqs = _links(new, _truth(new, where)), _card_links(new), _seqs(data)
+    return {"seed": seed, "seed_sources": sources, "removed_row_after_restart": list(first.get(removed) or ()), "links": links,
+            "inherited": sum(1 for d, (_m, _s, q) in rows.items() if seqs.get(d) != q), "rows": len(rows)}
+
+
+def _sources(data: str) -> dict:
+    db = sqlite3.connect("file:%s?mode=ro" % os.path.join(data, "vedetta.db"), uri=True)
+    try:
+        return dict(db.execute("SELECT source, COUNT(*) FROM card_mac GROUP BY source").fetchall())
+    finally:
+        db.close()
 
 
 CAMERA_MAC = "5a:00:00:00:00:41"
@@ -262,11 +440,12 @@ class _SharedAddress:
         sys.path.insert(0, code_dir)
         os.environ.setdefault("VEDETTA_DATA_DIR", tempfile.mkdtemp(prefix="lansim-s14-"))
         import asyncio
-        from app import maclayer, macverdict
+        from app import cardlink, maclayer, macverdict
         from app.health import engine, matrix
         from app.scan import scan_arp
         from app.storage.history import History
-        self.asyncio, self.maclayer, self.macverdict, self.scan_arp = asyncio, maclayer, macverdict, scan_arp
+        self.asyncio, self.maclayer, self.macverdict, self.scan_arp, self.cardlink = asyncio, maclayer, macverdict, scan_arp, cardlink
+        self.fake_card_linked: list[str] = []          # 1.0 step P4: a card at the contested address is never linked
         self.lan = lan
         self.history = History(Path(tempfile.mkdtemp(prefix="lansim-s14-")) / "vedetta.db")
         self.shipped = next(r for r in matrix.load() if r["id"] == "H20")
@@ -294,8 +473,17 @@ class _SharedAddress:
         for key, judge_ in self.judges.items():
             signals = {"conflicts": self.macverdict.conflicts(self.now) if key == "shipped" else old}
             self.changes[key] += [(c.change, round(self.now - self.start)) for c in judge_.judge(signals, self.now)]
+        self.fake_card_linked += self._fake_card_link()
         self.judgments += 1
         self.now += JUDGE_S
+
+    def _fake_card_link(self) -> list[str]:
+        """The rule of the card -> MAC link (cardlink.judge) for a card at the contested address, on the observations and the verdict of the chain: the MACs it would link."""
+        sessions = [dict(s, mac=s["mac"].upper()) for s in self.history.sessions(self.now - 7 * 86400)]
+        kinds = {m: k for m in {s["mac"] for s in sessions} if (k := self.macverdict.kind(m))}
+        card = {"id": "fake", "seq": 1, "ip": SUBNET + ".52", "network": "main", "name": None, "name_mac": None}
+        res = self.cardlink.judge([card], {"kinds": kinds, "sessions": sessions, "history": {}, "profiles": {}, "roles": set()}, {}, self.now)
+        return [r["mac"] for r in res["write"]]
 
     def close(self) -> int | None:
         """Judges until the finding of the shipped rule closes (at most CLOSE_WITHIN judgments): seconds of the fake clock from the last judgment with the relay."""
@@ -310,7 +498,7 @@ class _SharedAddress:
         shipped = self.changes["shipped"]
         opened = next((t for c, t in shipped if c == "opened"), None)
         rows = self.history._db.execute("SELECT COUNT(*) FROM ip_conflict").fetchone()[0]
-        return {"changes": {k: [c for c, _ in v] for k, v in self.changes.items()}, "shipped_at_s": shipped, "opened_after_s": opened,
+        return {"changes": {k: [c for c, _ in v] for k, v in self.changes.items()}, "shipped_at_s": shipped, "opened_after_s": opened, "fake_card_linked": sorted(set(self.fake_card_linked)),
                 "old_signal_in_scans": "%d of %d" % (self.seen, self.judgments), "first_answer_changed": self.first_changed, "ip_conflict_rows": rows, **extra}
 
 
@@ -463,4 +651,4 @@ def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 
                 "samples": len(latency), "slow_from_s": round(slow_at - since), "slow_until_s": round(back_at - since), "judged": _judged(code_dir, vedetta, since, SUBNET + ".1")}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

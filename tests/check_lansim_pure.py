@@ -147,6 +147,29 @@ check("S10 fails with a stored conflict", run_campaign.CHECKS["S10"]({"before": 
 check("S13 a replacement stored as a conflict fails", run_campaign._s13({"a -> b": {"before": ["x"], "after": ["y"], "ip_conflict_rows": 1}})[0][1], "fail")
 check("S13 a replacement passes", run_campaign._s13({"a -> b": {"before": ["x"], "after": ["y"], "ip_conflict_rows": 0}})[0][1], "pass")
 
+# --- 7. the card -> MAC link (1.0 step P4): what card_mac says, judged against the truth the scenario knows (the device at each address when the cards were added)
+PHONE, OTHER, EXT = "c6:00:00:00:00:21", "70:00:00:00:00:32", "4e:00:00:00:00:03"
+truth = {"scan-a": PHONE, "scan-b": "02:00:00:00:00:01", "scan-c": "3c:00:00:00:00:31", "scan-e": EXT}
+tally = scenarios.link_tally({"scan-a": (PHONE.upper(), "linked", 1), "scan-b": ("02:00:00:00:00:01", "held", 2)}, truth, scenarios.NEVER)
+check("link tally: right, held, absent", {k: tally[k] for k in ("right", "wrong", "absent", "held", "two_cards")}, {"right": 1, "wrong": 0, "absent": 2, "held": 1, "two_cards": 0})
+check("link tally: the verdict of each card", tally["by_card"], {"scan-a": "right", "scan-b": "held", "scan-c": "absent", "scan-e": "absent"})
+tally = scenarios.link_tally({"scan-a": (OTHER, "linked", 1), "scan-e": (EXT, "linked", 2), "scan-x": (EXT, "linked", 3)}, truth, scenarios.NEVER)
+check("link tally: the device that came later, and an extender (on its own card too), are wrong", (tally["wrong"], tally["two_cards"]), (3, 1))
+check("link tally: a MAC on two cards", scenarios.link_tally({"scan-a": (PHONE, "linked", 1), "scan-c": (PHONE, "linked", 2)}, truth, ())["two_cards"], 1)
+check("a link problem fails a run", run_campaign._link_problem({"links": {"wrong": 1, "two_cards": 0}}) != "", True)
+check("no link problem", run_campaign._link_problem({"links": {"wrong": 0, "two_cards": 0}}), "")
+check("a run without links has no link problem", run_campaign._link_problem({}), "")
+check("S1 wants its phone linked", run_campaign.CHECKS["S1"]({"phones": [{}], "phone_link": "absent"})[0], "fail")
+check("S1 passes with the phone linked", run_campaign.CHECKS["S1"]({"phones": [{}], "phone_link": "right"})[0], "pass")
+check("S13L passes when the link stays on the laptop", run_campaign.CHECKS["S13L"]({"before": ["L", "linked", 1], "after": ["L", "linked", 1], "laptop": "L"})[0], "pass")
+check("S13L fails when the laptop was never linked", run_campaign.CHECKS["S13L"]({"before": None, "after": None, "laptop": "L"})[0], "fail")
+check("S13L fails when the link moved", run_campaign.CHECKS["S13L"]({"before": ["L", "linked", 1], "after": ["C", "linked", 1], "laptop": "L"})[0], "fail")
+check("S30 fails on an inherited link", run_campaign.CHECKS["S30"]({"seed": {"wrong": 0, "two_cards": 0, "right": 2}, "links": {"wrong": 0, "two_cards": 0}, "inherited": 1})[0], "fail")
+check("S30 fails without a seed", run_campaign.CHECKS["S30"]({"seed": {"wrong": 0, "two_cards": 0, "right": 0}, "links": {"wrong": 0, "two_cards": 0}, "inherited": 0})[0], "fail")
+check("S30 passes", run_campaign.CHECKS["S30"]({"seed": {"wrong": 0, "two_cards": 0, "right": 2}, "links": {"wrong": 0, "two_cards": 0}, "inherited": 0})[0], "pass")
+check("S14 fails when the fake card at the contested address was linked", run_campaign.CHECKS["S14"]({"changes": {"shipped": ["opened", "raised", "closed"]}, "fake_card_linked": ["X"]})[0], "fail")
+check("S13L and S30 are scenarios of the campaign", {"S13L", "S30"} <= set(scenarios.SCENARIOS) and {"S13L", "S30"} <= {k for k, _, _ in run_campaign.PLAN}, True)
+
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))
     sys.exit(1)

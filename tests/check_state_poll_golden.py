@@ -32,7 +32,7 @@ GOLDEN = Path(__file__).parent / "golden" / "state_poll.json"
 N = 2500
 rng = random.Random(6006)
 LOG: list = []
-SHARED_TOLD: list = []
+LINKS_TOLD: list = []
 IDS = ["d1", "d2", "d3", "d4"]
 logger.error = lambda msg, *a, **k: LOG.append(["logger.error", str(msg), [str(x) for x in a]])
 logger.exception = lambda msg, *a, **k: LOG.append(["logger.exception", str(msg)])
@@ -75,8 +75,10 @@ async def one_case():
         LOG.append(["update_generic_titles", jcopy(devices)])
 
     async def probe_device(config, arp_task):
-        SHARED_TOLD.append("mac_shared" in config)          # the probe is told which MACs several cards share (a repeater); the recorded call is the one it always was
-        LOG.append(["probe_device", jcopy({k: v for k, v in config.items() if k != "mac_shared"}), isinstance(arp_task, asyncio.Task)])
+        # the probe is told the card's usable link and the other cards' (1.0 step P5); these worlds have no link, so they are None and empty, and the
+        # recorded call is the one it always was but for the view of the last MACs that P5 removed (mac_owner; mac_shared was never recorded)
+        LINKS_TOLD.append((config.get("link", "missing"), config.get("links_of_others", "missing")))
+        LOG.append(["probe_device", jcopy({k: v for k, v in config.items() if k not in ("link", "links_of_others")}), isinstance(arp_task, asyncio.Task)])
         await asyncio.sleep(0)
         if modes["probe"][config["id"]] == "raise":
             raise RuntimeError("probe down")
@@ -148,7 +150,7 @@ if os.environ.get("STATE_POLL_GOLDEN_UPDATE") or not GOLDEN.exists():
     GOLDEN.write_text(json.dumps(result, indent=0), encoding="utf-8")
     print("golden written")
 want = json.loads(GOLDEN.read_text(encoding="utf-8"))
-assert SHARED_TOLD and all(SHARED_TOLD), "every probe is told which MACs are shared"
+assert LINKS_TOLD and set(LINKS_TOLD) == {(None, frozenset())}, "every probe is told its link and the other cards' (none here)"
 assert len(want["digests"]) == len(result["digests"]) == N
 for i, (x, y) in enumerate(zip(result["digests"], want["digests"])):
     assert x == y, "cycle %d differs: %s" % (i, json.dumps(out[i], default=str)[:900])

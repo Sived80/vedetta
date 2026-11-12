@@ -1,66 +1,49 @@
 """Whose answer is an ARP answer. Presence on a LAN is "somebody answers ARP at the address of the card" (scan/probe.py), but an address can pass to another
-device (DHCP): then the answer is from a device that is positively another card, and the card of the one that left must not be kept online by it.
+device (DHCP): then the answer is another device's, and the card of the one that left must not be kept online by it.
 
-Pure: the ARP view and the map "known MAC -> card" are handed in. A MAC that answers at more than one address is a Wi-Fi repeater lending its own MAC to the
-clients behind it: it identifies nobody, so it never counts against a card."""
+Since 1.0 step P5 the probe is told the card's usable link (linkview: a link stable for two judgements) and the usable links of the other cards:
+  - a linked card is online by ITS MAC (macpresence.at_address): another MAC at its address is not this card; a MAC the verdict calls lent or
+    virtual (a repeater answering for the clients behind it) keeps the rule of before; whether its MAC answers elsewhere is decided after the
+    probes, by the cycle (state_cycle);
+  - a card without a usable link is online when somebody answers at its address, unless that MAC is another card's usable link (one guard,
+    decision 3A of 12/11).
+Pure but for the verdict it asks (macverdict, in memory)."""
+from .. import macpresence, macverdict
 
 
 def mac_key(mac) -> str:
     return str(mac or "").strip().lower()
 
 
-def answered_by_other_card(device: dict, ip: str, arp: dict[str, dict], owner: dict[str, str]) -> bool:
-    """True when the MAC that answers at `ip` is the last known MAC of a different card and answers at that address only."""
-    mac = mac_key((arp.get(ip) or {}).get("mac"))
-    if not mac or mac == mac_key(device.get("last_mac")):
-        return False
-    holder = owner.get(mac)
-    if holder is None or holder == device.get("id"):
-        return False
-    return sum(1 for host in arp.values() if mac_key(host.get("mac")) == mac) == 1
+def _not_this_card(device: dict, host: dict) -> bool:
+    """The answer at the address is positively another device's: for a linked card any MAC but its own (lent ones excepted), for the others the
+    usable link of another card."""
+    link = device.get("link")
+    if link:
+        return macpresence.at_address(link, host, macverdict.shared) == "other"
+    return mac_key(host.get("mac")) in (device.get("links_of_others") or ())
 
 
-def owners(last_macs: dict[str, str]) -> dict[str, str]:
-    """Known MAC -> the one card that has it as its last MAC. A MAC claimed by two cards is left out: nobody can be told apart by it."""
-    seen: dict[str, str] = {}
-    shared: set[str] = set()
-    for card_id, mac in last_macs.items():
-        key = mac_key(mac)
-        if not key:
-            continue
-        if key in seen:
-            shared.add(key)
-        seen[key] = card_id
-    return {key: card_id for key, card_id in seen.items() if key not in shared}
-
-
-def shared_macs(last_macs: dict[str, str]) -> set[str]:
-    """The MACs that are the last MAC of two or more cards: a repeater lending its own MAC to the devices behind it. They identify nobody."""
-    count: dict[str, int] = {}
-    for mac in last_macs.values():
-        key = mac_key(mac)
-        if key:
-            count[key] = count.get(key, 0) + 1
-    return {key for key, n in count.items() if n >= 2}
-
-
-def mac_view(last_macs: dict[str, str]) -> dict:
-    """What a probe is told about the MACs of the other cards: which MAC belongs to exactly one card, and which ones several cards share."""
-    return {"mac_owner": owners(last_macs), "mac_shared": shared_macs(last_macs)}
+def _mac_here(device: dict, host: dict) -> str | None:
+    """The MAC the answer gives the card: its own link when it is among the answers (also the second of a double answer), else the first."""
+    link = device.get("link")
+    if link and macpresence.at_address(link, host, macverdict.shared) == "mine" and mac_key(host.get("mac")) != mac_key(link):
+        return link
+    return host.get("mac")
 
 
 async def complete_with_arp(result: dict, device: dict, ip: str, arp_task) -> dict:
-    """The adapter's result completed by the ARP view: an answer at the address makes the device online (and gives its MAC), unless the MAC that answers is positively another card's."""
+    """The adapter's result completed by the ARP view: an answer at the address makes the device online (and gives its MAC), unless the answer is positively another device's."""
     if arp_task is None:
         return result
     arp = await arp_task
     arp_info = arp.get(ip)
     if not arp_info:
         return result
-    if answered_by_other_card(device, ip, arp, device.get("mac_owner") or {}):
-        return {"online": False}                                # the address passed to another known device: this card is not there
+    if _not_this_card(device, arp_info):
+        return {"online": False}                                # the address passed to another device: this card is not there
     if not result.get("online"):
         result = {**result, "online": True}
     if not result.get("mac"):
-        result["mac"] = arp_info.get("mac")
+        result["mac"] = _mac_here(device, arp_info)
     return result

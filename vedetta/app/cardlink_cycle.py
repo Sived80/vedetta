@@ -69,15 +69,9 @@ def _judge_and_store(history, now: float) -> None:
 
 def _cards(devices: list[dict], cidr: str) -> list[dict]:
     """The cards as the rule takes them, each with the network of its address (None when it is not on the line of a direct network)."""
-    scope = registry.scope_of(cidr)
-    on_line = set(registry.arp_targets([d["ip"] for d in devices if d.get("ip")], cidr))
+    nets = registry.direct_networks([d["ip"] for d in devices if d.get("ip")], cidr)
     return [{"id": d.get("id"), "seq": d.get("seq"), "ip": d.get("ip"), "name": d.get("name"), "name_mac": d.get("name_mac"),
-             "network": _network(d.get("ip"), scope, on_line)} for d in devices]
-
-
-def _network(ip, scope, on_line: set) -> str | None:
-    net = scope.network_of(ip) if ip in on_line else None
-    return net.id if net is not None and "direct" in net.via else None
+             "network": nets.get(d.get("ip"))} for d in devices]
 
 
 def _facts(history, cards: list[dict], links: dict, now: float) -> dict:

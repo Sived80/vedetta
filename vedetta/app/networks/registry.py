@@ -77,6 +77,22 @@ def scope_of(cidr: str) -> Scope:
     return Scope((main_net, *network_store.load(main_net)))
 
 
+def direct_networks(ips, cidr: str | None) -> dict:
+    """Address -> the id of the confirmed network that holds it, when that network is reached through the host's own interface and the address is
+    on the line now (K3: the network of a card is worked out from its address); None otherwise, and for every address while the main network
+    has not been read. The one computation of the network of a card for its link (cardlink_cycle, which writes it, and the cycle, which reads it)."""
+    ips = list(ips)
+    if not cidr:
+        return dict.fromkeys(ips)
+    scope = scope_of(cidr)
+    on_line = set(arp_targets(ips, cidr))
+    return {ip: _direct_id(scope.network_of(ip)) if ip in on_line else None for ip in ips}
+
+
+def _direct_id(network) -> str | None:
+    return network.id if network is not None and "direct" in network.via else None
+
+
 async def current() -> Scope:
     """The networks, the main one first."""
     cidr, _ = await main()

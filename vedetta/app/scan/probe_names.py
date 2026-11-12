@@ -8,7 +8,7 @@ from ..i18n import t_or as i18n_t_or
 from ..recognition import naming, name_owner, same_device
 from ..recognition import roles
 from ..formatters import truncate_name
-from .. import i18n
+from .. import i18n, macverdict
 from ..ha import ha_data
 from ..recognition import roles as _roles
 
@@ -83,7 +83,7 @@ def _name_moved(f: Facts) -> bool:
     old, now = (f.device.get("name_mac") or "").lower(), (f.identity_mac or "").lower()
     if not old or old == now:
         return False
-    shared = {m.lower() for m in (f.device.get("mac_shared") or ())}
+    shared = {m for m in (old, now) if macverdict.shared(m)}             # a MAC that names no single device (the single verdict) identifies nobody
     verdict = same_device.judge(_name_profile(old), _name_profile(now), shared, role_b=same_device.is_network(roles.roles_for(f.ip)), policy=same_device.NAME)
     return verdict["verdict"] == "different"
 

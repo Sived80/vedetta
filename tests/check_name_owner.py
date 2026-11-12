@@ -8,6 +8,7 @@ import tempfile
 
 os.environ.setdefault("VEDETTA_DATA_DIR", tempfile.mkdtemp())      # never the real folder of the developer
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
+from app import macverdict  # noqa: E402
 from app.recognition import name_owner  # noqa: E402
 from app.scan import dhcp, probe_names  # noqa: E402
 from app.storage import devices_config  # noqa: E402
@@ -63,8 +64,10 @@ check("the same fingerprint (the same device, a new MAC): nothing changes", (n.b
 dhcp.seen[NOW] = dict(FP_B)
 n = names_of(card, mac=MAC_A)
 check("the very same MAC (a machine that changes its own system): nothing changes", (n.base_name, n.auto_name), ("name-a", None))
-n = names_of({**card, "mac_shared": {NOW}})
+macverdict.refresh({NOW: "lender"})                # the single verdict (1.0 step P5: no more count of the cards that share a last MAC)
+n = names_of(card)
 check("the MAC answers for several addresses (a repeater): it identifies nobody", (n.base_name, n.auto_name), ("name-a", None))
+macverdict.refresh({})
 n = names_of({**card, "name_mac": "aa:aa:aa:aa:aa:aa"})
 check("the remembered MAC sent no fingerprint: nothing changes", (n.base_name, n.auto_name), ("name-a", None))
 del dhcp.seen[NOW]

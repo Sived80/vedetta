@@ -1,11 +1,16 @@
 """The periodic check of DeviceState and its decisions: one cycle (probes, response times and the network table together, the results applied, what is gone forgotten, the housekeeping that follows),
-the loop that repeats it, and the online/offline decision of a checked device (settle, publish)."""
+the loop that repeats it, and the online/offline decision of a checked device (settle, publish).
+
+Presence by MAC (1.0 step P5): every probe is told the card's usable link and those of the other cards (probe_inputs, linkview); after the probes
+a linked card left offline whose MAC answered alone at another address in THIS cycle is online there (macpresence.elsewhere), and the move is
+planned for the end of the cycle."""
 import asyncio
 import time
 
+from . import linkview, macpresence, netutil
 from .applog import logger
 from .formatters import update_generic_titles
-from .scan import latency, presence, probe, touch_policy
+from .scan import latency, probe, touch_policy
 from .networks import registry
 from .storage import devices_config
 
@@ -15,24 +20,64 @@ def latency_targets(snapshot: list[dict]) -> list[tuple]:
     return [(d["id"], d["ip"], d.get("port", 80)) for d in snapshot if touch_policy.may_touch(d)]
 
 
+def probe_inputs(state, configs: list[dict]) -> list[dict]:
+    """What each probe is told: the card, its usable link (`link`, None without one: linkview), the MAC its names are asked with (`last_mac`:
+    the link, else the last MAC seen) and the usable links of the other cards (`links_of_others`, lower case)."""
+    links = _usable_links(configs, time.time())
+    every = {m.lower() for m in links.values()}
+    return [{**d, "last_mac": links.get(d["id"]) or state._last_mac.get(d["id"]), "link": links.get(d["id"]),
+             "links_of_others": frozenset(every - {(links.get(d["id"]) or "").lower()})} for d in configs]
+
+
+def probe_input(state, config: dict, configs: list[dict]) -> dict:
+    """What the probe of one card is told (the refresh of a single card), the same as in a cycle."""
+    return next(i for i in probe_inputs(state, configs) if i["id"] == config["id"])
+
+
+def _usable_links(configs: list[dict], now: float) -> dict[str, str]:
+    """Card id -> the MAC of its link, for the links that may be used now (linkview: U1-U6); the network of each card worked out as the judgement does."""
+    linked = [d for d in configs if linkview.row(d["id"])]
+    if not linked:
+        return {}
+    nets = registry.direct_networks([d["ip"] for d in linked if d.get("ip")], netutil.last_network)
+    found = {d["id"]: linkview.check(d["id"], d.get("seq"), nets.get(d.get("ip")), now)[0] for d in linked}
+    return {i: m for i, m in found.items() if m}
+
+
 async def poll_once(state) -> None:
     snapshot = devices_config.load_devices()
     registry.propose([d["ip"] for d in snapshot])
     snapshot = registry.mark_off_limits(snapshot)
     update_generic_titles(snapshot)
+    started = time.time()
     arp_task = asyncio.create_task(state._arp_by_ip(0))
     # Response time measured in parallel with the probes, in the same cycle.
     lat_task = asyncio.create_task(latency.measure_many(latency_targets(snapshot)))
-    view = presence.mac_view(state._last_mac)
-    results = await asyncio.gather(
-        *(probe.probe_device({**d, "last_mac": state._last_mac.get(d["id"]), **view}, arp_task) for d in snapshot),
-        return_exceptions=True,
-    )
+    inputs = probe_inputs(state, snapshot)
+    results = await asyncio.gather(*(probe.probe_device(i, arp_task) for i in inputs), return_exceptions=True)
     samples = await _samples(lat_task)
+    moves = await _found_elsewhere(state, inputs, results, arp_task, started)
     _apply_results(state, snapshot, results, samples)
     await state._save_latency()
-    await _after_cycle(state, await _arp_of(arp_task))
+    await _after_cycle(state, await _arp_of(arp_task), moves)
     state.ready.set()
+
+
+async def _found_elsewhere(state, inputs: list[dict], results: list, arp_task, started: float) -> dict[str, str]:
+    """The linked cards the probes left offline whose MAC answered alone at one other address in this cycle: online there, by their MAC (the
+    result is changed in place), and the move planned (card id -> address). Nothing is asked of the network: the view of this cycle is read."""
+    waiting = [k for k, (i, r) in enumerate(zip(inputs, results)) if i["link"] and isinstance(r, dict) and not r.get("online")]
+    if not waiting:
+        return {}
+    await _arp_of(arp_task)
+    answers = state._view.answered_since(started)
+    moves = {}
+    for k in waiting:
+        where = macpresence.elsewhere(inputs[k]["link"], answers)
+        if where is not None:
+            results[k] = {**results[k], "online": True, "mac": inputs[k]["link"]}
+            moves[inputs[k]["id"]] = where
+    return moves
 
 
 async def _samples(lat_task) -> dict:
@@ -63,8 +108,9 @@ def _apply_results(state, snapshot: list[dict], results: list, samples: dict) ->
         state.remove(device_id)
 
 
-async def _after_cycle(state, arp: dict) -> None:
-    """What follows a cycle: changed addresses, duplicate phones, conflicts, new devices and the MAC layer."""
+async def _after_cycle(state, arp: dict, moves: dict[str, str]) -> None:
+    """What follows a cycle: changed addresses, duplicate phones, conflicts, new devices and the MAC layer. `moves`: the linked cards found at
+    another address in this cycle (followed from step P5.4)."""
     await state.follow_ip_changes(arp)
     await state.merge_duplicate_phones()
     state.report_ip_conflicts()

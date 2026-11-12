@@ -211,6 +211,11 @@ class ArpView:
             logger.exception("Scansione ARP fallita")
             self._cache_empty_if_none()
 
+    def answered_since(self, t: float) -> dict[str, dict]:
+        """The part of the view that answered at `t` (time.time()) or later: the answers of this cycle, not what the last full sweep or the memory
+        of a large network still keeps (1.0 step P5: a card follows its MAC only on an answer of this cycle)."""
+        return {ip: h for ip, (ts, h) in self.mem.items() if ts >= t}
+
     async def by_ip(self, max_age: float) -> dict[str, dict]:
         async with self.lock:
             now = time.monotonic()

@@ -4,8 +4,8 @@ what it did. Linux and root only, a few hours:
 
     python3 tools/lansim/run_campaign.py --code-dir vedetta --out campaign.jsonl [--quick] [--old-code-dir <the code of 0.13.1, for S30>]
 
-Since 1.0 step P4 every run that returns the card -> MAC links (card_mac, in the shadow) also fails on a wrong link or a MAC linked to two cards (_link_problem), and the row
-carries the counts of the links.
+Since 1.0 step P4 every run that returns the card -> MAC links (card_mac) also fails on a wrong link or a MAC linked to two cards (_link_problem), and the row carries the
+counts of the links; since step P5 "wrong" counts the links the app may use (the others are in wrong_stored), and the row carries what a run measured besides (extra).
 """
 import argparse
 import json
@@ -32,13 +32,68 @@ def _link_problem(r: dict) -> str:
 
 def _link_counts(r: dict) -> dict | None:
     t = r.get("links")
-    return {k: t[k] for k in ("right", "wrong", "absent", "held", "two_cards")} if t else None
+    return {k: t.get(k, 0) for k in ("right", "wrong", "wrong_stored", "absent", "held", "two_cards")} if t else None
+
+
+def _extra(r: dict) -> dict | None:
+    """What a run measured besides its verdict (P5): the share of time online of the phones behind the extenders, how long a card took to follow its device."""
+    got = {k: r[k] for k in ("online_share", "followed_s", "alerts") if isinstance(r, dict) and k in r}
+    return got or None
 
 
 def _s13l(r: dict) -> tuple[str, str]:
     if not r["before"] or r["before"][0] != r["laptop"] or r["before"][1] != "linked":
         return "fail", "the laptop was never linked: %s" % (r["before"],)
-    return ("pass", "") if list(r["after"] or ()) == list(r["before"]) else ("fail", "the link changed: %s -> %s" % (r["before"], r["after"]))
+    if list(r["after"] or ())[:3] != list(r["before"])[:3]:
+        return "fail", "the link changed: %s -> %s" % (r["before"], r["after"])
+    seen, first = r["seen"], r["card_before"] or {}
+    if not seen or seen[-1] is None or seen[-1]["online"]:
+        return "fail", "the laptop's card did not go offline"
+    if any(c is None or any(c[k] != first.get(k) for k in ("name", "brand", "type")) for c in seen):
+        return "fail", "the laptop's card changed name, brand or type: %s" % seen
+    return ("pass", "") if r["cards_at_address"] == 1 else ("fail", "%d cards at the address (1A: the console has none until P7)" % r["cards_at_address"])
+
+
+def _s11l(r: dict) -> tuple[str, str]:
+    if not r["usable"]:
+        return "fail", "the laptop's link never became usable"
+    end = r["card_end"] or {}
+    if r["followed_s"] is None or end.get("ip") != r["new_address"] or not end.get("online"):
+        return "fail", "the card did not follow the laptop: %s" % end
+    if any(c and c.get("name") != "Portatile" for c in r["seen"]) or end.get("name") != "Portatile":
+        return "fail", "the card showed another name: %s" % [c and c.get("name") for c in r["seen"]]
+    return ("pass", "") if r["cards_at_old_address"] == 0 else ("fail", "a card stayed at the old address")
+
+
+def _s31(r: dict) -> tuple[str, str]:
+    if not r["usable"]:
+        return "fail", "the links never became usable"
+    for k, ip in r["want"].items():
+        c = r["end"].get(k) or {}
+        if c.get("ip") != ip or c.get("name") != r["names"][k] or not c.get("online"):
+            return "fail", "%s: %s, wanted %s" % (k, c, ip)
+    if r["offline_seen"]:
+        return "fail", "a card went offline %d times" % r["offline_seen"]
+    return ("pass", "") if r["alerts"] == 2 else ("fail", "%d notices of a changed address" % r["alerts"])
+
+
+def _s32(r: dict) -> tuple[str, str]:
+    if not r["usable"]:
+        return "fail", "the link never became usable"
+    if r["followed_s"] is None or r["followed_s"] > 360 or (r["card_end"] or {}).get("ip") != r["new_address"]:
+        return "fail", "the card did not follow within a full sweep and a cycle: %s s" % r["followed_s"]
+    return ("pass", "") if r["alerts"] == 1 else ("fail", "%d notices of a changed address" % r["alerts"])
+
+
+def _s33(r: dict) -> tuple[str, str]:
+    if not r["usable"]:
+        return "fail", "the printer's link never became usable"
+    if not r["offline_before"] or not r["offered"] or not r["sent"]:
+        return "fail", "offline %s, offered %s, sent %s" % (r["offline_before"], r["offered"], r["sent"])
+    end = r["card_end"] or {}
+    if end.get("id") != r["card_id"] or end.get("name") != r["name"] or not end.get("online"):
+        return "fail", "the card after the gesture: %s" % end
+    return ("pass", "") if r["row_end"] and r["row_end"][0] == r["new_mac"] and r["row_end"][2] == "user" else ("fail", "the link: %s" % r["row_end"])
 
 
 def _s30(r: dict) -> tuple[str, str]:
@@ -81,6 +136,10 @@ CHECKS = {
     "S1": lambda r: ("fail", "%d phone cards" % len(r["phones"])) if len(r["phones"]) != 1 else
           ("pass", "") if r.get("phone_link") == "right" else ("fail", "the phone's card is not linked to its MAC: " + str(r.get("phone_link"))),
     "S13L": _s13l,
+    "S11L": _s11l,
+    "S31": _s31,
+    "S32": _s32,
+    "S33": _s33,
     "S30": _s30,
     "S4": lambda r: ("fail", _no_conflict_stored(r)) if _no_conflict_stored(r) else
           ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
@@ -110,6 +169,7 @@ PLAN = [
     ("S11", 4, lambda n: {}), ("S11B", 4, lambda n: {}), ("S11C", 4, lambda n: {}), ("S12", 2, lambda n: {}),
     ("S13", 2, lambda n: {}), ("S15", 3, lambda n: {}), ("S16", 3, lambda n: {}), ("S17", 1, lambda n: {}),
     ("S13L", 2, lambda n: {}), ("S30", 1, lambda n: {"old_code_dir": OLD_CODE_DIR}),
+    ("S11L", 2, lambda n: {}), ("S31", 2, lambda n: {}), ("S32", 2, lambda n: {}), ("S33", 1, lambda n: {}),
 ]
 OLD_CODE_DIR: str | None = None        # set by --old-code-dir (S30)
 FUNCTIONS = {"S10D": sc.s10_two_extenders, **{k: v for k, v in sc.SCENARIOS.items() if k != "S10D"}}
@@ -127,7 +187,7 @@ def run(key: str, kwargs: dict, code_dir: str) -> list[dict]:
         return [{"scenario": key, "case": pair, "args": kwargs, "verdict": v, "note": note, "seconds": round(seconds / len(rows)), "links": links}
                 for pair, v, note, links in rows]
     verdict, note, links = _with_links((key, *CHECKS[key](result)), result)[1:]
-    return [{"scenario": key, "args": kwargs, "verdict": verdict, "note": note, "seconds": seconds, "links": links}]
+    return [{"scenario": key, "args": kwargs, "verdict": verdict, "note": note, "seconds": seconds, "links": links, "extra": _extra(result)}]
 
 
 def _with_links(row: tuple, result: dict) -> tuple:

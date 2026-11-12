@@ -161,7 +161,6 @@ check("no link problem", run_campaign._link_problem({"links": {"wrong": 0, "two_
 check("a run without links has no link problem", run_campaign._link_problem({}), "")
 check("S1 wants its phone linked", run_campaign.CHECKS["S1"]({"phones": [{}], "phone_link": "absent"})[0], "fail")
 check("S1 passes with the phone linked", run_campaign.CHECKS["S1"]({"phones": [{}], "phone_link": "right"})[0], "pass")
-check("S13L passes when the link stays on the laptop", run_campaign.CHECKS["S13L"]({"before": ["L", "linked", 1], "after": ["L", "linked", 1], "laptop": "L"})[0], "pass")
 check("S13L fails when the laptop was never linked", run_campaign.CHECKS["S13L"]({"before": None, "after": None, "laptop": "L"})[0], "fail")
 check("S13L fails when the link moved", run_campaign.CHECKS["S13L"]({"before": ["L", "linked", 1], "after": ["C", "linked", 1], "laptop": "L"})[0], "fail")
 check("S30 fails on an inherited link", run_campaign.CHECKS["S30"]({"seed": {"wrong": 0, "two_cards": 0, "right": 2}, "links": {"wrong": 0, "two_cards": 0}, "inherited": 1})[0], "fail")
@@ -169,6 +168,54 @@ check("S30 fails without a seed", run_campaign.CHECKS["S30"]({"seed": {"wrong": 
 check("S30 passes", run_campaign.CHECKS["S30"]({"seed": {"wrong": 0, "two_cards": 0, "right": 2}, "links": {"wrong": 0, "two_cards": 0}, "inherited": 0})[0], "pass")
 check("S14 fails when the fake card at the contested address was linked", run_campaign.CHECKS["S14"]({"changes": {"shipped": ["opened", "raised", "closed"]}, "fake_card_linked": ["X"]})[0], "fail")
 check("S13L and S30 are scenarios of the campaign", {"S13L", "S30"} <= set(scenarios.SCENARIOS) and {"S13L", "S30"} <= {k for k, _, _ in run_campaign.PLAN}, True)
+
+# --- 8. presence by MAC (1.0 step P5): "wrong" counts only the links the app may use (linkview U1-U6, with the same constants), the links stored
+# but not usable are counted apart (wrong_stored), so that nothing is hidden; the new scenarios and the new expectations of S13L
+from app import linkview  # noqa: E402
+check("the same constants as the app", (scenarios.STABLE_S, set(scenarios.HOLD_KINDS)), (linkview.STABLE_S, set(linkview.HOLD_KINDS)))
+NOW = 1_800_000_000.0
+rows = {"a": (PHONE.upper(), "linked", 1, NOW - 700), "b": (OTHER, "linked", 2, NOW - 100), "c": (OTHER.upper(), "linked", 3, NOW - 900),
+        "d": (EXT, "held", 4, NOW - 900), "e": ("02:00:00:00:00:09", "linked", 9, NOW - 900), "f": (EXT.upper(), "linked", 6, NOW - 900)}
+usable = scenarios.usable_ids(rows, {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6}, {EXT.upper(): "lender"}, NOW)
+check("usable: linked, same seq, stable for two judgements, its MAC not lent or contested", usable, {"a", "c"})
+t = scenarios.link_tally({"scan-a": (OTHER, "linked", 1, NOW - 100), "scan-b": ("02:00:00:00:00:01", "linked", 2, NOW - 900)}, truth, (), usable={"scan-b"})
+check("a wrong link not usable yet is counted apart", (t["wrong"], t["wrong_stored"], t["right"]), (0, 1, 1))
+t = scenarios.link_tally({"scan-a": (OTHER, "linked", 1, NOW - 900)}, truth, (), usable={"scan-a"})
+check("a wrong link that may be used fails", (t["wrong"], t["wrong_stored"]), (1, 1))
+t = scenarios.link_tally({"scan-a": (OTHER, "linked", 1)}, truth, ())
+check("without the usable links (an older run) every stored link counts", (t["wrong"], t["wrong_stored"]), (1, 1))
+check("the counts of a run carry wrong_stored", set(run_campaign._link_counts({"links": {**t}})), {"right", "wrong", "wrong_stored", "absent", "held", "two_cards"})
+check("online share from the presence events", scenarios.online_share([(100.0, True), (160.0, False), (190.0, True)], 100.0, 220.0), round(90 / 120, 3))
+check("online share: nothing heard", scenarios.online_share([], 100.0, 220.0), 0.0)
+
+L = "3C:00:00:00:00:31"
+seen_ok = [{"name": "Laptop", "brand": "B", "type": "laptop", "online": True}, {"name": "Laptop", "brand": "B", "type": "laptop", "online": False}]
+base13 = {"before": [L, "linked", 1, 5.0], "after": [L, "linked", 1, 5.0], "laptop": L, "card_before": seen_ok[0], "seen": seen_ok, "cards_at_address": 1}
+check("S13L (P5) passes: link kept, the card offline, never the console's name, no card for the console", run_campaign.CHECKS["S13L"](base13)[0], "pass")
+check("S13L (P5) fails when the card stays online", run_campaign.CHECKS["S13L"]({**base13, "seen": seen_ok[:1]})[0], "fail")
+check("S13L (P5) fails when the card takes the console's name", run_campaign.CHECKS["S13L"]({**base13, "seen": seen_ok + [{**seen_ok[1], "name": "PS5"}]})[0], "fail")
+check("S13L (P5) fails when the console gets a card (1A: not before P7)", run_campaign.CHECKS["S13L"]({**base13, "cards_at_address": 2})[0], "fail")
+base11 = {"usable": True, "followed_s": 240, "card_end": {"ip": "x.31", "online": True, "name": "Portatile", "id": "L"}, "laptop_id": "L", "new_address": "x.31",
+          "seen": [{"name": "Portatile"}], "cards_at_old_address": 0, "links": {"wrong": 0, "two_cards": 0}}
+check("S11L passes: the card follows the laptop, keeps its name, the console never in it", run_campaign.CHECKS["S11L"](base11)[0], "pass")
+check("S11L fails when the card does not follow", run_campaign.CHECKS["S11L"]({**base11, "followed_s": None})[0], "fail")
+check("S11L fails when the console's name shows", run_campaign.CHECKS["S11L"]({**base11, "seen": [{"name": "PS5"}]})[0], "fail")
+check("S11L fails when the link was never usable", run_campaign.CHECKS["S11L"]({**base11, "usable": False})[0], "fail")
+base31 = {"usable": True, "end": {"A": {"ip": "x.21", "name": "a", "online": True}, "B": {"ip": "x.20", "name": "b", "online": True}},
+          "want": {"A": "x.21", "B": "x.20"}, "names": {"A": "a", "B": "b"}, "offline_seen": 0, "alerts": 2}
+check("S31 passes: both cards follow, names kept, never offline, a notice each", run_campaign.CHECKS["S31"](base31)[0], "pass")
+check("S31 fails when a card stays", run_campaign.CHECKS["S31"]({**base31, "want": {"A": "x.20", "B": "x.20"}})[0], "fail")
+check("S31 fails when a card went offline", run_campaign.CHECKS["S31"]({**base31, "offline_seen": 1})[0], "fail")
+base32 = {"usable": True, "followed_s": 200, "card_end": {"ip": "x.40", "online": True}, "new_address": "x.40", "alerts": 1}
+check("S32 passes: the card follows within the next full sweep, one notice", run_campaign.CHECKS["S32"](base32)[0], "pass")
+check("S32 fails when it takes longer than a sweep and a cycle", run_campaign.CHECKS["S32"]({**base32, "followed_s": 400})[0], "fail")
+check("S32 fails with no notice", run_campaign.CHECKS["S32"]({**base32, "alerts": 0})[0], "fail")
+base33 = {"usable": True, "offline_before": True, "offered": True, "sent": True, "card_end": {"id": "P", "name": "Printer", "online": True},
+          "card_id": "P", "name": "Printer", "row_end": ["NEW", "linked", "user"], "new_mac": "NEW"}
+check("S33 passes: offline, offered, sent, back online with the new device, history kept", run_campaign.CHECKS["S33"](base33)[0], "pass")
+check("S33 fails when not offered", run_campaign.CHECKS["S33"]({**base33, "offered": False})[0], "fail")
+check("S33 fails when the link did not pass to the new device", run_campaign.CHECKS["S33"]({**base33, "row_end": ["OLD", "linked", "seed"]})[0], "fail")
+check("the new scenarios are in the campaign", {"S11L", "S31", "S32", "S33"} <= set(scenarios.SCENARIOS) and {"S11L", "S31", "S32", "S33"} <= {k for k, _, _ in run_campaign.PLAN}, True)
 
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))

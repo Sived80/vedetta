@@ -12,6 +12,26 @@ class MacMemoryMixin:
             ).fetchone()
         return row["mac"] if row else None
 
+    def card_macs(self, recent_since: float) -> dict[str, dict[str, set]]:
+        """The MACs behind each card in its presence history (90 days): "older" all of them, "recent" those after `recent_since` plus the one
+        behind the card when that stretch began (a steady device has no event in it). One grouped query; MACs as stored (upper case, colons)."""
+        with self._lock:
+            got = self._db.execute(
+                """SELECT device_id, mac, MAX(CASE WHEN ts >= ? THEN ts END), MAX(CASE WHEN ts < ? THEN ts END) FROM presence_events
+                   WHERE mac IS NOT NULL GROUP BY device_id, mac""", (recent_since, recent_since)).fetchall()
+        out: dict[str, dict[str, set]] = {}
+        before: dict[str, tuple[float, str]] = {}
+        for device_id, mac, after_ts, before_ts in got:
+            entry = out.setdefault(device_id, {"recent": set(), "older": set()})
+            entry["older"].add(mac)
+            if after_ts is not None:
+                entry["recent"].add(mac)
+            if before_ts is not None and before_ts > before.get(device_id, (-1.0, ""))[0]:
+                before[device_id] = (before_ts, mac)
+        for device_id, (_, mac) in before.items():
+            out[device_id]["recent"].add(mac)
+        return out
+
     # ---- shadow data per MAC (analysis only) ----
     def mac_memory_set(self, mac: str, device_id: str, ip: str | None, fields: dict, ts: float) -> None:
         with self._lock:

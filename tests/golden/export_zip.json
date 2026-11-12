@@ -15,6 +15,12 @@
     ]
    ],
    "manifest.json": {
+    "card_links": {
+     "held": {},
+     "linked": 0,
+     "source": {},
+     "unlinked": {}
+    },
     "deep_search": {
      "devices": 2,
      "never_analysed": 2
@@ -99,6 +105,12 @@
    "data/notes.txt": "owner Giulia at 10.0.0.20",
    "data/settings.json": "{\n \"mqtt_password\": \"***\",\n \"note\": \"Area-1 10.0.0.20\",\n \"nested\": {\n  \"api_token\": \"***\",\n  \"x\": [\n   1,\n   {\n    \"secret\": \"***\"\n   }\n  ]\n }\n}",
    "manifest.json": {
+    "card_links": {
+     "held": {},
+     "linked": 0,
+     "source": {},
+     "unlinked": {}
+    },
     "deep_search": {
      "devices": 2,
      "never_analysed": 2
@@ -180,6 +192,12 @@
    "data/events.jsonl": "{\"n\": 32, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 33, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 34, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 35, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 36, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 37, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 38, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n{\"n\": 39, \"ip\": \"10.0.0.20\", \"name\": \"iPad-1\"}\n",
    "data/settings.json": "{\n \"mqtt_password\": \"***\",\n \"note\": \"Area-1 10.0.0.20\",\n \"nested\": {\n  \"api_token\": \"***\",\n  \"x\": [\n   1,\n   {\n    \"secret\": \"***\"\n   }\n  ]\n }\n}",
    "manifest.json": {
+    "card_links": {
+     "held": {},
+     "linked": 0,
+     "source": {},
+     "unlinked": {}
+    },
     "deep_search": {
      "devices": 2,
      "never_analysed": 2
@@ -269,6 +287,12 @@
   "entries": {
    "data/devices.yaml": "devices:\r\n- adapter: ping\r\n  id: d1\r\n  ip: 10.0.0.20\r\n  name: iPad-1\r\n- adapter: ping\r\n  id: d2\r\n  ip: 10.0.0.31\r\n  name: TV-1\r\n",
    "manifest.json": {
+    "card_links": {
+     "held": {},
+     "linked": 0,
+     "source": {},
+     "unlinked": {}
+    },
     "deep_search": {
      "devices": 2,
      "never_analysed": 2

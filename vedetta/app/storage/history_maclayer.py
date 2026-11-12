@@ -5,7 +5,10 @@ mac_class    phase 2: what kind of MAC it is (normal, lender, multi-address host
 ip_conflict  phase 3: IP addresses contested by two MACs, with when the contest was first and last found by the verdict, and its last evidence
              (the last time the two really contested the address: macclassify.last_evidence).
 Both are written by store_mac_verdict alone (once per cycle, from maclayer). mac_class is read by mac_kinds alone and ip_conflict by ip_conflicts
-alone; maclayer hands both to macverdict, where the rest of the app reads them (whether a MAC is lent; which conflicts are going on)."""
+alone; maclayer hands both to macverdict, where the rest of the app reads them (whether a MAC is lent; which conflicts are going on).
+card_mac     step P4: the MAC that identifies each card and the network where it is seen (the rule is cardlink.py), in the shadow: written by
+             store_card_links alone, read by card_links alone (the step that fills it, cardlink_cycle, and the counts of the export). The retention
+             never touches it: a link does not expire, it is deleted when its card is gone (seq tells a card from a later one with the same id)."""
 import json
 import time
 
@@ -54,7 +57,22 @@ CREATE TABLE IF NOT EXISTS ip_conflict (
     last_evidence REAL,
     PRIMARY KEY (ip, macs)
 );
+CREATE TABLE IF NOT EXISTS card_mac (
+    device_id TEXT PRIMARY KEY,
+    seq INTEGER NOT NULL,
+    network TEXT NOT NULL,
+    mac TEXT NOT NULL,
+    state TEXT NOT NULL,
+    reason TEXT,
+    source TEXT NOT NULL,
+    ip TEXT,
+    since REAL NOT NULL,
+    changed REAL NOT NULL,
+    UNIQUE (network, mac)
+);
 """
+CARD_MAC_COLUMNS = ("device_id", "seq", "network", "mac", "state", "reason", "source", "ip", "since", "changed")
+SEEDED_KEY = "card_mac_seeded"    # meta: the first judgement of the links (the seed) is done
 
 
 class MacLayerMixin:
@@ -152,6 +170,31 @@ class MacLayerMixin:
         with self._lock:
             rows = self._db.execute("SELECT ip, macs, first_seen, last_evidence FROM ip_conflict WHERE last_evidence >= ? ORDER BY ip, macs", (since,)).fetchall()
         return [{"ip": ip, "macs": macs.split(","), "first_seen": first, "last_evidence": last} for ip, macs, first, last in rows]
+
+    def store_card_links(self, write: list[dict], delete: list[str], seeded: bool) -> None:
+        """The single writer of card_mac, in one transaction: the rows that go, then the rows new or changed (a MAC already linked to another card
+        on the same network is refused by the table: the whole transaction fails, nothing is half written); `seeded` notes that the seed is done."""
+        with self._lock:
+            try:
+                self._write_card_links(write, delete, seeded)
+                self._db.commit()
+            except Exception:
+                self._db.rollback()
+                raise
+
+    def _write_card_links(self, write: list[dict], delete: list[str], seeded: bool) -> None:
+        self._db.executemany("DELETE FROM card_mac WHERE device_id = ?", [(d,) for d in delete])
+        self._db.executemany(f"""INSERT INTO card_mac ({", ".join(CARD_MAC_COLUMNS)}) VALUES ({", ".join("?" * len(CARD_MAC_COLUMNS))})
+                                 ON CONFLICT (device_id) DO UPDATE SET state = excluded.state, reason = excluded.reason,
+                                 changed = excluded.changed""", [tuple(r[c] for c in CARD_MAC_COLUMNS) for r in write])  # noqa: S608  fixed column names
+        if seeded:
+            self._db.execute("INSERT OR REPLACE INTO meta (key, value) VALUES (?, '1')", (SEEDED_KEY,))
+
+    def card_links(self) -> dict[str, dict]:
+        """The stored links, device id -> row: the one read of card_mac (the step that fills it compares with it; the export counts it)."""
+        with self._lock:
+            got = self._db.execute(f"SELECT {', '.join(CARD_MAC_COLUMNS)} FROM card_mac").fetchall()  # noqa: S608  fixed column names
+        return {r[0]: dict(zip(CARD_MAC_COLUMNS, r)) for r in got}
 
     def rows(self, since: float = 0.0) -> list[dict]:
         """The ip_mac rows seen after `since`, as the classifier takes them."""

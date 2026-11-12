@@ -182,9 +182,26 @@ async def store_verdict(history, now: float | None = None) -> None:
         logger.exception("Verdetto del livello MAC non salvato")
 
 
+_after_verdict: list = []     # the steps that read the fresh verdict and live above this module (step P4: the card links, cardlink_cycle)
+
+
+def after_verdict(step) -> None:
+    """At start (main): `step(history)`, a coroutine function, runs after the verdict of every cycle; registered once."""
+    if step not in _after_verdict:
+        _after_verdict.append(step)
+
+
+async def _run_after_verdict(history) -> None:
+    for step in _after_verdict:
+        try:
+            await step(history)
+        except Exception:
+            logger.exception("Passo dopo il verdetto del livello MAC non riuscito")
+
+
 async def record(arp: dict[str, dict], history) -> None:
     """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored and
-    read back for the rules. Neither must ever disturb the cycle (a failure of one does not stop the other)."""
+    read back for the rules, then the steps that read it (after_verdict). None must ever disturb the cycle (a failure of one does not stop the others)."""
     try:
         now = time.time()
         rows = only_new(from_arp(arp, now) + from_mdns(mdns_listener.by_mac, now) + from_dhcp(dhcp.seen, now), _EVENT_MEMORY)
@@ -192,3 +209,4 @@ async def record(arp: dict[str, dict], history) -> None:
     except Exception:
         logger.exception("Registro dei MAC osservati non riuscito")
     await store_verdict(history)
+    await _run_after_verdict(history)

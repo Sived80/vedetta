@@ -19,7 +19,7 @@ A module may import from its own layer or from a lower one, never from a higher 
 - **layer 1**: `frontend_serving`, `i18n`, `lifecycle`, `macclassify`, `macidentity`, `maclayer`, `networks/`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
-- **layer 4**: `arpview`, `ha/`, `identity_upkeep`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
+- **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
 - **layer 6**: `ingress`, `routes/`
 - **layer 7**: `main`
@@ -64,6 +64,7 @@ The functions that were restructured have a reference test that was generated fr
 | `assets.py` | The front-end of the /ha page, kept in several files. |
 | `atomic.py` | The atomic write of a file: a temporary file in the same folder, then os.replace. |
 | `cardlink.py` | The card -> MAC link (1.0 step P4): which MAC identifies a card, and on which network that MAC is seen. |
+| `cardlink_cycle.py` | The step of the cycle that keeps the card -> MAC links (1.0 step P4), in the shadow: nobody reads them to decide anything yet. |
 | `cyclestats.py` | How the check cycles go: a line in the log only when something is wrong (cycles chained by events, a slow cycle) and one summary an hour. |
 | `datafile.py` | Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures). |
 | `eventbus.py` | Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each. |

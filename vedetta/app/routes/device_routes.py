@@ -9,7 +9,7 @@ from ..storage import blocklist, devices_config, journal
 from ..networks import registry
 from ..ha import ha_data
 from ..storage.history import history
-from .. import i18n
+from .. import cardlink_cycle, i18n
 import ipaddress
 from ..applog import logger
 from ..ha.mqtt_ha import service as mqtt_service
@@ -332,6 +332,32 @@ async def _rescan_stream(devices: list[dict], tasks: list):
         yield _sse({"type": "progress", "done": done, "total": total, "name": d.get("name") or d["ip"], "id": d["id"]})
     logger.info("Scansione approfondita completata (%d dispositivi)", total)
     yield _sse({"type": "complete", "rescanned": total})
+
+
+@router.get("/api/devices/{device_id}/relink")
+async def api_device_relink_offer(device_id: str):
+    """Whether the card offers the gesture "this is a new device" (1.0 step P5): linked, offline, and one other device answers its address."""
+    device = state.devices.get(device_id)
+    if device is None:
+        raise HTTPException(404, "Dispositivo non trovato")
+    return {"offer": _relink_offered(device_id, device)}
+
+
+@router.post("/api/devices/{device_id}/relink")
+async def api_device_relink(device_id: str):
+    """The gesture "this is a new device": the card follows the device that now answers its address; id, name and history stay."""
+    device = state.devices.get(device_id)
+    if device is None:
+        raise HTTPException(404, "Dispositivo non trovato")
+    if not _relink_offered(device_id, device) or not cardlink_cycle.relink(device_id):
+        raise HTTPException(409, "Not offered")
+    logger.info("Scheda %s: legame passato all'apparecchio nuovo (gesto dell'utente)", device_id)
+    state.trigger(reason="relink")
+    return {"ok": True}
+
+
+def _relink_offered(device_id: str, device: dict) -> bool:
+    return not device.get("online") and cardlink_cycle.relink_offer(device_id) is not None
 
 
 @router.get("/api/devices/{device_id}/presence")

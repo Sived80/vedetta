@@ -18,7 +18,7 @@ an installation that upgrades (at the first cycle, source "seed") and for the ca
 Every "no" has a code (UNLINKED). A link that exists is never moved to another MAC (decision 4A): it is deleted when its card is gone (or the id
 now belongs to another card: another seq), held while M names no single device or the card is off that network, and linked again when the cause
 goes. Another MAC taking the card's address does not touch it (P5: the card is not online by that MAC). The requests of P5 (requested): a link
-released when two cards of one phone are merged, and the gesture "this is a new device" (source "user")."""
+released when two cards of one phone are merged, and the gesture "this is a new device" (source "user"), offered only when it applies (offers)."""
 from . import macclassify
 from .recognition import same_device
 
@@ -75,6 +75,48 @@ def _relink(out: dict, card: dict | None, mac: str, now: float) -> None:
     out["links"][card["id"]] = row
     out["write"].append(row)
     out["delete"].append(card["id"])
+
+
+OFFER_NOW_S = 300         # an answer at most this old is "now" (one full sweep of the network)
+OFFER_STEADY_S = 600      # the other device has answered for two judgements (decision 2A of 12/11: "at least 10 minutes")
+
+
+def offers(cards: list[dict], links: dict, sessions: list[dict], kinds: dict, now: float) -> dict[str, str]:
+    """The gesture "this is a new device" (step P5): card id -> the MAC it would pass to, for the linked cards whose own MAC does not answer
+    their address now while exactly one other MAC does, steadily for OFFER_STEADY_S: of one device (normal or private), not lent or virtual,
+    not another card's link on that network."""
+    by_id = {c["id"]: c for c in cards}
+    taken = {(r["network"], r["mac"]) for r in links.values()}
+    out = {}
+    for device_id, row in links.items():
+        card = by_id.get(device_id)
+        if row["state"] != "linked" or card is None or not card.get("ip"):
+            continue
+        mac = _newcomer(card["ip"], row["mac"], sessions, kinds, now)
+        if mac and (row["network"], mac) not in taken:
+            out[device_id] = mac
+    return out
+
+
+def _newcomer(ip: str, own: str, sessions: list[dict], kinds: dict, now: float) -> str | None:
+    """The one MAC (lent and virtual ones left out) that answers the address now, when it is not `own`, is of one device and answers steadily."""
+    since = _answering_now(ip, sessions, kinds, now)
+    if len(since) != 1:
+        return None
+    mac, start = since.popitem()
+    if mac == _key(own) or kinds.get(mac) not in LINKABLE:
+        return None
+    return mac if start <= now - OFFER_STEADY_S else None
+
+
+def _answering_now(ip: str, sessions: list[dict], kinds: dict, now: float) -> dict[str, float]:
+    """The MACs (lent and virtual ones left out) whose ARP answers at the address reach the last OFFER_NOW_S, each with the start of those answers."""
+    since: dict[str, float] = {}
+    for s in sessions:
+        mac = _key(s["mac"])
+        if s["ip"] == ip and s["source"] in macclassify.ANSWER_SOURCES and s["end"] >= now - OFFER_NOW_S and kinds.get(mac) not in SHARED:
+            since[mac] = min(since.get(mac, s["start"]), s["start"])
+    return since
 
 
 def _still_theirs(links: dict, by_id: dict) -> tuple[dict, list]:

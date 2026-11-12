@@ -64,7 +64,24 @@ def _judge_and_store(history, now: float) -> None:
         history.store_card_links(write, delete, seeding)
     _unlinked.clear()
     _unlinked.update(res["unlinked"].values())
-    linkview.refresh(history.card_links(), now, done=asked["done"])
+    stored = history.card_links()
+    linkview.refresh(stored, now, offers=cardlink.offers(cards, stored, facts["sessions"], facts["kinds"], now), done=asked["done"])
+
+
+def relink_offer(device_id: str) -> str | None:
+    """The MAC the gesture "this is a new device" would link the card to, when the last judgement offered it (None otherwise)."""
+    return linkview.offer(device_id)
+
+
+def relink(device_id: str) -> bool:
+    """The gesture: the card's link passes to the offered MAC at the next judgement, which comes at the next cycle; False when nothing is offered."""
+    global _last
+    mac = linkview.offer(device_id)
+    if not mac:
+        return False
+    linkview.relink(device_id, mac)
+    _last = 0.0
+    return True
 
 
 def _cards(devices: list[dict], cidr: str) -> list[dict]:

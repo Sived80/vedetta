@@ -161,6 +161,17 @@ function copyText(text) {
   return Promise.resolve(fallback());
 }
 
+export function relinkDevice(id, btn) {
+  if (btn) btn.disabled = true;
+  api("/api/devices/" + encodeURIComponent(id) + "/relink", { method: "POST" }).then(function () {
+    snack(t("js.ha.relink.done"), { kind: "success" });
+    if (btn) btn.remove();
+  }).catch(function () {
+    snack(t("js.ha.relink.failed"), { kind: "error" });
+    if (btn) btn.disabled = false;
+  });
+}
+
 export function wakeDevice(id) {
   const d = S.devices.get(id);
   if (!d) return;
@@ -259,6 +270,7 @@ dlg.addEventListener("click", function (e) {
       }
       S.mi.view = "main"; closeMore(); break;
     case "wake": if (d) wakeDevice(d.id); break;
+    case "relink": if (d) relinkDevice(d.id, act); break;
     case "share": if (d) { const share = !d.ha_share; saveOverride(d, { ha_share: share }).then(function (saved) { if (saved) snack(t(share ? "js.ha.share.added" : "js.ha.share.removed"), { kind: "success" }); }); } break;
     case "ignore-confirm": if (d) ignoreDevice(d, act); break;
   }

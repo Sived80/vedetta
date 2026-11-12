@@ -184,5 +184,16 @@ export function miActions(d) {
   const flag = '<button type="button" class="icon-btn small mi-flag rp' + (flagOn ? " on" : "") + '" data-act="focus" title="' + flagTip + '" aria-label="' + flagTip + '" aria-pressed="' + flagOn + '">' +
     icon("flag") + "</button>";
   el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+  if (d && !d.online) relinkOffer(d.id, el);
+}
+
+// The gesture "this is a new device" (the device of the card was replaced and another one answers at its address): asked only for an offline
+// card, shown only when the service offers it.
+function relinkOffer(id, el) {
+  api("/api/devices/" + encodeURIComponent(id) + "/relink").then(function (r) {
+    if (!r || !r.offer || S.open !== id || !el.isConnected || el.querySelector('[data-act="relink"]')) return;
+    el.insertAdjacentHTML("beforeend", '<button type="button" class="btn tonal rp" data-act="relink" title="' + esc(t("js.ha.relink.hint")) + '">' +
+      icon("auto-fix") + "<span>" + esc(t("js.ha.relink.button")) + "</span></button>");
+  }).catch(function () { /* nothing offered */ });
 }
 

@@ -37,7 +37,8 @@ The language list in the menu is built from the folders in [`vedetta/app/locales
 2. Set `lang.name` in `server.json` to the name of the language **in that language** (it is what the menu shows).
 3. Translate the texts. Keep the `{placeholders}` as they are; a text left out is shown in English.
 4. Name the code in the language line of `vedetta/DOCS.md` (the test checks it).
-5. Open a pull request. The tests (`python tools/run_tests.py`) check that nothing is broken.
+5. If you like, copy `vedetta/translations/en.yaml` to `<code>.yaml` and translate it too: it holds the texts of the app's options in Home Assistant.
+6. Open a pull request. The tests (`python tools/run_tests.py`) check that nothing is broken.
 
 ## Development
 

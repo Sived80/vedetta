@@ -3,7 +3,8 @@
 An observation is (ip, mac, source, time). Sources are interchangeable and none is required: ARP and mDNS today, DHCP and optional router
 queries later. This module only turns what the other modules already know into observations (pure functions, no network, no database);
 storage/history_maclayer.py keeps them. Every cycle the classifier's verdict on the recent window is stored too (mac_class, ip_conflict) and read
-back into macverdict, where the rules that ask whether a MAC is lent find it (1.0 step P2). Nothing here decides anything."""
+back into macverdict, where the rules that ask whether a MAC is lent find it (1.0 step P2), and the IP conflicts going on (step P3). Nothing here
+decides anything."""
 import asyncio
 import time
 from collections import Counter, defaultdict
@@ -102,9 +103,13 @@ VERDICT_WINDOW_DAYS = 7     # the stretch of the past the classifier reads, for 
 
 
 def verdict(history, window_days: int = VERDICT_WINDOW_DAYS, now: float | None = None) -> dict:
-    """The classifier's reading of the last `window_days` (macclassify.classify over the rows, sessions and flips of the window). Reads only."""
+    """The classifier's reading of the last `window_days` (macclassify.classify over the rows, sessions and flips of the window), each conflict
+    with its last evidence (macclassify.last_evidence). Reads only."""
     since = (time.time() if now is None else now) - window_days * 86400
-    return macclassify.classify(history.rows(since), history.sessions(since), history.flips(since))
+    sessions, flips = history.sessions(since), history.flips(since)
+    res = macclassify.classify(history.rows(since), sessions, flips)
+    res["conflicts"] = macclassify.last_evidence(res["conflicts"], sessions, flips)
+    return res
 
 
 def observation_report(history, dhcp_seen: dict, window_days: int = VERDICT_WINDOW_DAYS) -> dict:
@@ -144,18 +149,20 @@ EVENT_MEMORY_MAX = 5000
 def _store_verdict_now(history, now: float | None) -> None:
     now = time.time() if now is None else now
     history.store_mac_verdict(verdict(history, now=now), now)
-    _read_verdict(history)
+    _read_verdict(history, now)
 
 
-def _read_verdict(history) -> None:
-    """The stored verdict becomes the one the rules read (macverdict): the single read of mac_class."""
+def _read_verdict(history, now: float) -> None:
+    """The stored verdict becomes the one the rules read (macverdict): the single read of mac_class, and of the conflicts that may still be
+    going on (ip_conflict)."""
     macverdict.refresh(history.mac_kinds())
+    macverdict.refresh_conflicts(history.ip_conflicts(now - macverdict.CONFLICT_OPEN_S))
 
 
 def load_verdict(history) -> None:
     """At start: the verdict stored by the last run, read before the first cycle (the Bonjour listener starts at once). A failure is only logged."""
     try:
-        _read_verdict(history)
+        _read_verdict(history, time.time())
     except Exception:
         logger.exception("Verdetto del livello MAC non letto")
 

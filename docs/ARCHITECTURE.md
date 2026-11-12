@@ -77,7 +77,7 @@ The functions that were restructured have a reference test that was generated fr
 | `macclassify.py` | Single MAC layer, phase 2: what kind of MAC is this? Pure functions over the rows of ip_mac (no network, no database, no brand). |
 | `macidentity.py` | Single MAC layer, phase 3: are two MACs the same physical device? Probabilistic record linkage (Fellegi-Sunter), pure functions, no brand. |
 | `maclayer.py` | The single MAC layer, phase 1: what the network says about which MAC answers at which address, as plain observations. |
-| `macverdict.py` | The single MAC verdict as the rest of the app reads it (1.0 step P2): what kind of MAC each one is (macclassify, over the last days of ip_mac). |
+| `macverdict.py` | The single MAC verdict as the rest of the app reads it (1.0 step P2): what kind of MAC each one is (macclassify, over the last days of ip_mac), and (step P3) which addresses are contested by two MACs right now. |
 | `main.py` | Entry point of the service: creates the FastAPI app, starts and stops the background work in the lifespan, and mounts the routes that live in routes/. |
 | `maintenance.py` | Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not for a long time, and refreshes the table of manufacturer prefixes. |
 | `name_origin.py` | Which MAC announced the name of a card: noted whenever the MAC behind the card says the very name the card carries (the rule is in recognition/name_owner.py). |

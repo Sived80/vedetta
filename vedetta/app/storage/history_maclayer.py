@@ -2,9 +2,10 @@
 
 ip_mac       one row per (ip, mac, source): when first and last observed and how many times. Written in one transaction per cycle.
 mac_class    phase 2: what kind of MAC it is (normal, lender, multi-address host...): the classifier's current verdict on each MAC of the window.
-ip_conflict  phase 3: IP addresses contested by two MACs, with when the contest was first and last found.
-Both are written by store_mac_verdict alone (once per cycle, from maclayer). mac_class is read by mac_kinds alone, which maclayer hands to macverdict
-(the rules that ask whether a MAC is lent read it there); ip_conflict is read by nothing yet."""
+ip_conflict  phase 3: IP addresses contested by two MACs, with when the contest was first and last found by the verdict, and its last evidence
+             (the last time the two really contested the address: macclassify.last_evidence).
+Both are written by store_mac_verdict alone (once per cycle, from maclayer). mac_class is read by mac_kinds alone and ip_conflict by ip_conflicts
+alone; maclayer hands both to macverdict, where the rest of the app reads them (whether a MAC is lent; which conflicts are going on)."""
 import json
 import time
 
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS ip_conflict (
     macs TEXT NOT NULL,
     first_seen REAL NOT NULL,
     last_seen REAL NOT NULL,
+    last_evidence REAL,
     PRIMARY KEY (ip, macs)
 );
 """
@@ -58,11 +60,12 @@ CREATE TABLE IF NOT EXISTS ip_conflict (
 class MacLayerMixin:
     def _maclayer_migrate(self) -> None:
         """Columns added after the first deploy (CREATE TABLE IF NOT EXISTS does not add them to an existing table)."""
-        try:
-            self._db.execute("ALTER TABLE ip_flip ADD COLUMN gap REAL DEFAULT 0")
-            self._db.commit()
-        except Exception:  # noqa: S110  the column is already there
-            pass                                    # the column is already there
+        for column in ("ip_flip ADD COLUMN gap REAL DEFAULT 0", "ip_conflict ADD COLUMN last_evidence REAL"):
+            try:
+                self._db.execute("ALTER TABLE " + column)
+                self._db.commit()
+            except Exception:  # noqa: S110  the column is already there
+                pass                                # the column is already there
 
     @staticmethod
     def _merge_observations(observations) -> dict[tuple, list]:
@@ -128,19 +131,27 @@ class MacLayerMixin:
 
     def store_mac_verdict(self, verdict: dict, now: float) -> None:
         """The single writer of mac_class and ip_conflict, in one transaction: the verdict of each MAC, and every contested address (first_seen kept,
-        last_seen moved to now; the old ones go with the retention)."""
+        last_seen moved to now, last_evidence as the verdict dates it; the old ones go with the retention)."""
         rows = self._verdict_rows(verdict)
-        contests = [(c["ip"], ",".join(sorted(c["macs"])), now, now) for c in verdict["conflicts"]]
+        contests = [(c["ip"], ",".join(sorted(c["macs"])), now, now, c.get("last_evidence")) for c in verdict["conflicts"]]
         with self._lock:
             self._store_mac_class(rows, now)
-            self._db.executemany("""INSERT INTO ip_conflict (ip, macs, first_seen, last_seen) VALUES (?, ?, ?, ?)
-                                    ON CONFLICT (ip, macs) DO UPDATE SET last_seen = MAX(last_seen, excluded.last_seen)""", contests)
+            self._db.executemany("""INSERT INTO ip_conflict (ip, macs, first_seen, last_seen, last_evidence) VALUES (?, ?, ?, ?, ?)
+                                    ON CONFLICT (ip, macs) DO UPDATE SET last_seen = MAX(last_seen, excluded.last_seen),
+                                    last_evidence = COALESCE(excluded.last_evidence, last_evidence)""", contests)
             self._db.commit()
 
     def mac_kinds(self) -> dict[str, str]:
         """The stored verdict, MAC -> kind: the one read of mac_class besides the writer's own (maclayer hands it to macverdict)."""
         with self._lock:
             return dict(self._db.execute("SELECT mac, kind FROM mac_class").fetchall())
+
+    def ip_conflicts(self, since: float) -> list[dict]:
+        """The stored conflicts whose last evidence is after `since`: {ip, macs, first_seen, last_evidence}. The one read of ip_conflict (maclayer
+        hands it to macverdict)."""
+        with self._lock:
+            rows = self._db.execute("SELECT ip, macs, first_seen, last_evidence FROM ip_conflict WHERE last_evidence >= ? ORDER BY ip, macs", (since,)).fetchall()
+        return [{"ip": ip, "macs": macs.split(","), "first_seen": first, "last_evidence": last} for ip, macs, first, last in rows]
 
     def rows(self, since: float = 0.0) -> list[dict]:
         """The ip_mac rows seen after `since`, as the classifier takes them."""

@@ -14,7 +14,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from tools.lansim import scenarios as sc  # noqa: E402
 
 
+def _no_conflict_stored(r: dict) -> str:
+    """A repeater lending its MAC, or a device taking the address of another, must not be stored as an IP conflict (1.0 step P3: H20 reads them)."""
+    return "%d IP conflicts stored" % r["ip_conflict_rows"] if r.get("ip_conflict_rows") else ""
+
+
 def _phones_same(r: dict) -> tuple[str, str]:
+    if _no_conflict_stored(r):
+        return "fail", _no_conflict_stored(r)
     before, after = r["before"], r["after"]
     same = len(before) == len(after) and sorted(c["name"] for c in before) == sorted(c["name"] for c in after)
     return ("pass", "") if same else ("fail", "phone cards %d -> %d" % (len(before), len(after)))
@@ -30,7 +37,9 @@ def _s13(r: dict) -> list[tuple[str, str, str]]:
     for pair, got in r.items():
         first, second = pair.split(" -> ")
         changed = got["before"] != got["after"]
-        if first == second:
+        if _no_conflict_stored(got):
+            out.append((pair, "fail", "a replacement stored as a conflict: " + _no_conflict_stored(got)))
+        elif first == second:
             out.append((pair, "known" if not changed else "pass", "two devices of the same kind: same fingerprint, the name stays (known limit)"))
         else:
             out.append((pair, "pass" if changed else "fail", "" if changed else "the name of the device that left stayed"))
@@ -39,7 +48,8 @@ def _s13(r: dict) -> list[tuple[str, str, str]]:
 
 CHECKS = {
     "S1": lambda r: ("pass", "") if len(r["phones"]) == 1 else ("fail", "%d phone cards" % len(r["phones"])),
-    "S4": lambda r: ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
+    "S4": lambda r: ("fail", _no_conflict_stored(r)) if _no_conflict_stored(r) else
+          ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
     "S5": lambda r: ("pass", "") if r["after"] and all(c["name"] not in {b["name"] for b in r["before"]} for c in r["after"]) else ("fail", str(r["after"])),
     "S10": _phones_same,
     "S10D": _s10d,
@@ -48,6 +58,8 @@ CHECKS = {
     "S11C": lambda r: ("pass", "") if r["console_on"] and all(c.get("name") not in {b.get("name") for b in r["before"]} for c in r["console_on"]) else ("fail", "the console carries the laptop's name"),
     "S12": lambda r: ("study", ""),
     "S14": lambda r: ("pass", "") if r["changes"]["shipped"] == ["opened", "raised", "closed"] else ("fail", str(r["changes"]["shipped"])),
+    "S14B": lambda r: ("pass", "") if r["changes"]["shipped"] == ["opened", "raised", "closed"] else ("fail", str(r["changes"]["shipped"])),
+    "S14C": lambda r: ("pass", "") if r["changes"]["shipped"] == ["opened", "raised"] and r["open_at_end"] == ["active"] else ("fail", str(r["changes"]["shipped"])),
     "S15": lambda r: ("pass", "") if r["judged"]["H06"]["raised"] == ["lan"] and not r["judged"]["H05"]["raised"] else ("fail", str(r["judged"])),
     "S16": lambda r: ("pass", "") if r["judged"]["H05"]["raised"] == [sc.SUBNET + ".40"] else ("fail", str(r["judged"]["H05"])),
     "S17": lambda r: ("pass", "") if r["judged"]["H07"]["raised"] == ["gateway"] else ("fail", str(r["judged"]["H07"])),
@@ -55,7 +67,7 @@ CHECKS = {
 
 # (scenario, how many runs, the keyword arguments of run n): about seven hours and a half in all.
 PLAN = [
-    ("S14", 40, lambda n: {"seed": n + 1}),
+    ("S14", 40, lambda n: {"seed": n + 1}), ("S14B", 2, lambda n: {}), ("S14C", 1, lambda n: {}),
     ("S1", 8, lambda n: {}), ("S4", 6, lambda n: {}), ("S5", 8, lambda n: {}),
     ("S10", 4, lambda n: {"seed": n + 1}), ("S10D", 4, lambda n: {"seed": n + 1, "dense": True}),
     ("S11", 4, lambda n: {}), ("S11B", 4, lambda n: {}), ("S11C", 4, lambda n: {}), ("S12", 2, lambda n: {}),

@@ -130,6 +130,23 @@ check("an answer (not a request) gets no answer", arp.reply_to(answer, ASKER_MAC
 check("not ARP at all gets no answer", arp.reply_to(bytes(60), CAM_MAC, CAM_IP), None)
 check("a short frame gets no answer", arp.reply_to(direct[:20], CAM_MAC, CAM_IP), None)
 
+# --- 6. S14 (1.0 step P3): the signal H20 read before P3 is rebuilt by the scenario from the DUP lines of one arp-scan, only to compare (the app no longer has it);
+# the campaign judges the new runs and checks that the scenarios of repeaters and replaced devices store no conflict
+from tools.lansim import run_campaign, scenarios  # noqa: E402
+scan = "10.9.0.52\t5a:00:00:00:00:41\tX\n10.9.0.52\tc6:00:00:00:00:52\t(Unknown)\n10.9.0.20\t4e:00:00:00:00:03\t-\n10.9.0.21\t4e:00:00:00:00:03\t-\n" \
+       "10.9.0.21\tc6:00:00:00:00:21\t-\nInterface: e0\n"
+check("old signal: two MACs on one address, a MAC on two addresses is not", scenarios._old_signal(scan), {"10.9.0.52": ["5A:00:00:00:00:41", "C6:00:00:00:00:52"]})
+check("old signal: nothing", scenarios._old_signal(""), {})
+check("S14B and S14C are scenarios of the campaign", {"S14B", "S14C"} <= set(scenarios.SCENARIOS) and {"S14B", "S14C"} <= {k for k, _, _ in run_campaign.PLAN}, True)
+check("S14C passes when opened and raised and never closed", run_campaign.CHECKS["S14C"]({"changes": {"shipped": ["opened", "raised"]}, "open_at_end": ["active"]})[0], "pass")
+check("S14C fails when closed", run_campaign.CHECKS["S14C"]({"changes": {"shipped": ["opened", "raised", "closed"]}, "open_at_end": []})[0], "fail")
+check("S14B fails when never seen", run_campaign.CHECKS["S14B"]({"changes": {"shipped": []}})[0], "fail")
+check("S4 fails with a stored conflict", run_campaign.CHECKS["S4"]({"before": [{"name": "a"}], "after": [{"name": "a"}], "ip_conflict_rows": 1})[0], "fail")
+check("S4 passes without", run_campaign.CHECKS["S4"]({"before": [{"name": "a"}], "after": [{"name": "a"}], "ip_conflict_rows": 0})[0], "pass")
+check("S10 fails with a stored conflict", run_campaign.CHECKS["S10"]({"before": [{"name": "a"}], "after": [{"name": "a"}], "ip_conflict_rows": 2})[0], "fail")
+check("S13 a replacement stored as a conflict fails", run_campaign._s13({"a -> b": {"before": ["x"], "after": ["y"], "ip_conflict_rows": 1}})[0][1], "fail")
+check("S13 a replacement passes", run_campaign._s13({"a -> b": {"before": ["x"], "after": ["y"], "ip_conflict_rows": 0}})[0][1], "pass")
+
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))
     sys.exit(1)

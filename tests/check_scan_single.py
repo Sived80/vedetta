@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import main  # noqa: E402
-from app.routes import device_routes  # noqa: E402
+from app.routes import device_routes, scan_routes  # noqa: E402
 from app.scan import pipeline  # noqa: E402
 from app.storage import blocklist, devices_config, newdevices  # noqa: E402
 
@@ -18,6 +18,10 @@ async def fake_run_initial():
     return [{"ip": "10.9.9.9", "mac": "AA:BB:CC:00:00:01", "vendor": None, "hostname": "x"}]
 
 
+async def no_record(arp, history):
+    return None
+
+
 async def fake_net():
     return ("10.9.9.0/24", "10.9.9.1")
 
@@ -25,7 +29,8 @@ async def fake_net():
 pipeline.run_initial = fake_run_initial
 device_routes.registry.main = fake_net
 devices_config.load_devices = lambda: []
-newdevices.sync_present = lambda macs: None
+scan_routes.maclayer.observe_pass = no_record
+scan_routes._known_names = lambda: {}
 newdevices.list_new = lambda: []
 main.state.set_new_devices = lambda x: None
 blocklist.matches = lambda **k: False

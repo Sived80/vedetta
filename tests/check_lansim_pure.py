@@ -234,6 +234,13 @@ check("S37 fails when it takes longer", run_campaign.CHECKS["S37"]({"listed_s": 
 check("S37 fails when never listed", run_campaign.CHECKS["S37"]({"listed_s": None, "round_s": 300})[0], "fail")
 check("S37 is in the campaign", "S37" in scenarios.SCENARIOS and "S37" in {k for k, _, _ in run_campaign.PLAN}, True)
 
+# --- 9c. the button shows the inventory (1.0 step P9): the TV that stopped answering is still in its list (S38)
+base38 = {"first_listed_s": 60, "in_button": True, "seen_before_press_s": 200}
+check("S38 passes: the quiet TV in the button's list, seen before the press", run_campaign.CHECKS["S38"](base38)[0], "pass")
+check("S38 fails when the button does not list it", run_campaign.CHECKS["S38"]({**base38, "in_button": False})[0], "fail")
+check("S38 fails without the time of the last sight", run_campaign.CHECKS["S38"]({**base38, "seen_before_press_s": None})[0], "fail")
+check("S38 is in the campaign", "S38" in scenarios.SCENARIOS and "S38" in {k for k, _, _ in run_campaign.PLAN}, True)
+
 # --- 10. several runs at once (run_campaign --jobs): each run's machines carry its letter, nothing else in the simulator names them by hand
 import subprocess  # noqa: E402
 ROOT = os.path.join(os.path.dirname(__file__), "..")

@@ -216,6 +216,15 @@ async def _run_after_verdict(history) -> None:
             logger.exception("Passo dopo il verdetto del livello MAC non riuscito")
 
 
+async def observe_pass(arp: dict[str, dict], history) -> None:
+    """1.0 step P9: what the pass of the "Search devices" button heard, written in ip_mac like an ARP answer of the cycle (the inventory
+    reads it at the next cycle); no verdict, that stays with the cycle. Never disturbs the search."""
+    try:
+        await asyncio.to_thread(history.observe, from_arp(arp, time.time()))
+    except Exception:
+        logger.exception("Registro dei MAC del tasto non riuscito")
+
+
 async def record(arp: dict[str, dict], history, neighbours=()) -> None:
     """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored and
     read back for the rules, then the steps that read it (after_verdict). None must ever disturb the cycle (a failure of one does not stop the others)."""

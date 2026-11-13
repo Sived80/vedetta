@@ -29,7 +29,7 @@ function newRows() {
     rows.push(row);
   }
   S.found.forEach(function (h) {
-    take({ src: "found", ip: h.ip, mac: h.mac, name: h.hostname || "" });
+    take({ src: "found", ip: h.ip, mac: h.mac, name: h.hostname || "", lastSeen: h.last_seen });     // P9: the button lists the asleep too
   });
   // Never-seen MACs detected on the network are added only after a completed scan.
   const list = (S.scanDone || S.newReady) ? S.newDevices.devices : [];

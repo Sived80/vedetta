@@ -176,13 +176,6 @@ def last_seen_of(mac: str) -> float | None:
     return _last_seen.get(mac)
 
 
-def sync_present(macs: set[str]) -> None:
-    """After a search: the only MACs present are those the search actually found
-    (so the counter does not report what the button then does not find)."""
-    global _present
-    _present = {m for m in (normalize_mac(x) for x in macs) if m}
-
-
 def _seen_field(mac: str) -> dict:
     """{"last_seen": when the inventory last saw the MAC} when it knows (the list shows "seen X ago" for the ones asleep), else nothing."""
     when = _last_seen.get(mac)

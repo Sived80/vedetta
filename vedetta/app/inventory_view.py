@@ -14,6 +14,7 @@ from .storage.history import history
 
 _counts: dict = {}
 _known: list[str] = []          # the addresses of the devices confirmed or asleep at the last cycle, the most recent first (P8: known_ips)
+_listed: list[dict] = []        # the same devices as {ip, mac, last_seen}, never a MAC the verdict calls lent or virtual (P9: the button)
 
 
 def reset_counts() -> None:
@@ -38,11 +39,18 @@ def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> di
     rows = db.rows(now - inventory.KEEP_S)
     inv = inventory.build(rows, now, _network_of(rows))
     newdevices.set_inventory({mac for (_, mac), e in inv.items() if e["state"] == "asleep"}, {mac: e["last_seen"] for (_, mac), e in inv.items()})
-    global _known
-    _known = [e["ip"] for e in sorted(inv.values(), key=lambda e: -e["last_seen"]) if e["state"] in ("confirmed", "asleep")]
+    _remember(inv)
     out = _with_confirmed(dict(arp), inv)
     _counts.update(inventory.counts(inv), cycles=_counts["cycles"] + 1, added_from_inventory=_counts["added_from_inventory"] + len(out) - len(arp))
     return out
+
+
+def _remember(inv: dict) -> None:
+    """The devices confirmed or asleep of this cycle, the most recent first: their addresses (P8) and the rows the button lists (P9)."""
+    global _known, _listed
+    live = [(mac, e) for (_, mac), e in sorted(inv.items(), key=lambda kv: -kv[1]["last_seen"]) if e["state"] in ("confirmed", "asleep")]
+    _known = [e["ip"] for _, e in live]
+    _listed = [{"ip": e["ip"], "mac": mac, "last_seen": e["last_seen"]} for mac, e in live if not macverdict.shared(mac)]
 
 
 def _with_confirmed(out: dict[str, dict], inv: dict) -> dict[str, dict]:
@@ -89,3 +97,25 @@ def known_ips() -> list[str]:
     """1.0 step P8, decision 3A: the addresses the periodic check asks every cycle besides the cards: the devices the inventory confirmed or
     has asleep at the last cycle, the most recent first (never a candidate). Empty until the first cycle."""
     return list(dict.fromkeys(_known))
+
+
+def listable(fresh: list[dict], configs: list[dict], now: float, listed: list[dict] | None = None) -> list[dict]:
+    """1.0 step P9 (decisions 1A, 2A): what the "Search devices" button shows. The hosts the pass of the button has just heard (`fresh`, seen
+    now) and the devices the inventory confirmed or has asleep at the last cycle (`listed`, by default the last cycle's), once per MAC, the
+    fresh first; never a configured device: a MAC linked to a card, or an address of a card without a link (decision 2A of P7).
+    Rows: {ip, mac, hostname, last_seen}."""
+    listed = _listed if listed is None else listed
+    linked, unlinked = linked_macs(configs), unlinked_ips(configs)
+    out, macs = [], set()
+    for h in fresh:
+        _take(out, macs, {"ip": h["ip"], "mac": h["mac"], "hostname": h.get("hostname"), "last_seen": now})
+    for e in listed:
+        _take(out, macs, {"ip": e["ip"], "mac": e["mac"], "hostname": None, "last_seen": e["last_seen"]})
+    return [r for r in out if newdevices.normalize_mac(r["mac"]) not in linked and r["ip"] not in unlinked]
+
+
+def _take(out: list, macs: set, row: dict) -> None:
+    mac = newdevices.normalize_mac(row["mac"]) or row["mac"]
+    if mac not in macs:
+        macs.add(mac)
+        out.append(row)

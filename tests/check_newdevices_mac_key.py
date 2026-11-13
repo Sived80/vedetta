@@ -1,6 +1,6 @@
 """Characterization of the "new devices" alerts as keyed by MAC, before the work on more networks (for a network behind a router there is no MAC, so these alerts are not
 used there): observed_macs keeps one entry per MAC (normalized), skips a host without a valid MAC and the skipped addresses, takes the name from DHCP only for a MAC seen now;
-sync_present keeps only valid MACs; list_new shows only the "new" rows whose MAC is present. Fake history; private placeholder addresses.
+list_new shows only the "new" rows whose MAC is present. Fake history; private placeholder addresses.
     python tests/check_newdevices_mac_key.py"""
 import os
 import sys
@@ -45,8 +45,7 @@ def row(mac, status, ip, first):
 
 hist = FakeHistory({m["mac"]: m for m in (row("AA:BB:CC:00:00:0A", "new", "10.0.0.10", 2.0), row("AA:BB:CC:00:00:0B", "known", "10.0.0.11", 1.0),
                                           row("AA:BB:CC:00:00:0C", "new", "10.0.0.12", 1.0))})
-newdevices.sync_present({"aa:bb:cc:00:00:0a", "aa:bb:cc:00:00:0b", None, "", "junk"})
-assert newdevices._present == {"AA:BB:CC:00:00:0A", "AA:BB:CC:00:00:0B"}, newdevices._present
+newdevices._present = {"AA:BB:CC:00:00:0A", "AA:BB:CC:00:00:0B"}      # what the last cycle heard (evaluate)
 assert [r["mac"] for r in newdevices.list_new(hist)] == ["AA:BB:CC:00:00:0A"], "only the new MACs that are present"
 newdevices._present = None
 assert [r["mac"] for r in newdevices.list_new(hist)] == ["AA:BB:CC:00:00:0C", "AA:BB:CC:00:00:0A"], "before any search: every new one, oldest first"

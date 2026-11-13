@@ -4,10 +4,13 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import Request
 from ..sse import SSE_HEADERS, _sse
 import asyncio
+import time
 from ..storage import blocklist, devices_config, journal, newdevices
 from ..networks import registry
 from ..applog import logger
 from ..scan import pipeline
+from .. import inventory_view, maclayer
+from ..storage.history import history
 from .bodies import json_dict
 from ..scan import scanner
 from ..state import state
@@ -34,25 +37,31 @@ async def api_scan_quick():
 
 
 async def _run_quick_scan() -> tuple[list[dict], int]:
+    """1.0 step P9 (decisions 1A, 2A): a pass over the whole network now, written in the MAC layer like the pass of the cycle, then the
+    inventory: what answered now and the devices confirmed or asleep that are not cards (inventory_view.listable), "seen X ago" for
+    the ones asleep. The counter of new devices is not narrowed to what the pass heard any more: it is the same inventory."""
     state.search_started()
     try:
-        known_ips = {d["ip"] for d in devices_config.load_devices()}
         hosts = await pipeline.run_initial()
-        new_hosts = [
-            {"ip": h["ip"], "mac": h["mac"], "hostname": h["hostname"], "already_added": False}
-            for h in hosts
-            if h["ip"] not in known_ips
-        ]
-        logger.info("Ricerca rapida: %d host visti, %d nuovi", len(hosts), len(new_hosts))
-        journal.add("detail", "journal.quick", icon="magnify", seen=len(hosts), new=len(new_hosts))
-        # The new-devices counter is realigned to what the search found.
-        newdevices.sync_present({h["mac"] for h in hosts if h.get("mac")})
+        own = newdevices.own_macs()      # this computer is not a device of the network for the MAC layer
+        await maclayer.observe_pass({h["ip"]: {"mac": h["mac"]} for h in hosts if newdevices.normalize_mac(h["mac"]) not in own}, history)
+        rows = inventory_view.listable(hosts, devices_config.load_devices(), time.time())
+        names = await asyncio.to_thread(_known_names)
+        found = [{"ip": r["ip"], "mac": r["mac"], "hostname": r["hostname"] or names.get(str(r["mac"]).upper()),
+                  "already_added": False, "last_seen": r["last_seen"]} for r in rows]
+        logger.info("Ricerca rapida: %d host visti, %d da mostrare", len(hosts), len(found))
+        journal.add("detail", "journal.quick", icon="magnify", seen=len(hosts), new=len(found))
         state.set_new_devices(await asyncio.to_thread(newdevices.list_new))
         # Ignored ones are not shown; their count goes in the header.
-        visible = [h for h in new_hosts if not blocklist.matches(mac=h["mac"], ip=h["ip"], name=h["hostname"])]
-        return visible, len(new_hosts) - len(visible)
+        visible = [h for h in found if not blocklist.matches(mac=h["mac"], ip=h["ip"], name=h["hostname"])]
+        return visible, len(found) - len(visible)
     finally:
         state.search_finished()
+
+
+def _known_names() -> dict[str, str]:
+    """MAC -> the DHCP name already heard (the table of known MACs), for the devices the inventory lists without one."""
+    return {str(m).upper(): r["hostname"] for m, r in history.known_all().items() if r.get("hostname")}
 
 
 @router.post("/api/scan/deep")

@@ -66,11 +66,12 @@ print("ok: nuovo MAC -> un solo avviso, IP aggiornato")
 # 4b) a MAC known only from DHCP (not in ARP) is not "present"
 obs = newdevices.observed_macs(arp(("10.0.0.1", A)), {"AA:BB:CC:DD:EE:01".lower(): {"hostname": "x"}}, set())
 assert list(obs) == [A], obs
-newdevices.sync_present({C})
-assert [d["mac"] for d in newdevices.list_new(hist)] == [C]
-newdevices.sync_present(set())
-assert newdevices.list_new(hist) == []
-print("ok: DHCP da solo non vale come presenza, sync_present")
+run(arp(("10.0.0.1", A)))
+assert newdevices.list_new(hist) == [], "a new MAC not heard in the cycle and not asleep is not listed"
+newdevices.set_inventory({C}, {C: 1.0})
+assert [d["mac"] for d in newdevices.list_new(hist)] == [C], "a new MAC the inventory has asleep stays listed (P7, 3A)"
+newdevices.set_inventory(set(), {})
+print("ok: DHCP da solo non vale come presenza; presenti = ciclo + addormentati")
 run(arp(("10.0.0.9", C)))  # restore presence for the following tests
 
 # 5) ignore: it disappears from 'new' and does not alert again

@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.13.1 · Bussola**, released in November 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 0.13.2 · Bussola**, released in November 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **0.13.2 · Bussola** | 13 Nov | The page opens behind a reverse proxy (issue #48) |
 | **0.13.1 · Bussola** | 8 Nov | Scan network works on large networks (/8, /16) · no borrowed presence from the router's MAC · a change of network followed within a minute, without a restart · fewer packets |
 | **0.13.0 · Ascolto** | 7 Nov | Devices silent to a broadcast count as present · ignored devices left alone by the DNS check · no brands borrowed from an integration's placeholder model · mDNS services announced later are seen · clearer first steps with an empty list |
 | **0.12.0 · Sigillo** | 5 Nov | Signed images built by GitHub, checkable by anyone · a Cameras group, handled gently · no fixed port · the devices shared with Home Assistant are visible, and the learned ones easy to remove · fewer false double NAT warnings and wrong names · a stricter page |

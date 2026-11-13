@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.2 · Bussola
+A small fix for **Bussola**.
+- **The page opens behind a reverse proxy.** Behind a proxy that adds its own security policy, or rewrites the scripts of a page, Vedetta showed `js.ha.error.title` instead of your devices. The page no longer needs inline scripts to start (issue #48).
+
+**Thank you** to the person who reported it in issue #48.
+
 ## 0.13.1 · Bussola
 **Bussola** is Italian for *compass*: Vedetta keeps its bearings when the network around it changes or reaches beyond it.
 - **Scan network works on large networks.** With a mask of 255.0.0.0 or a /16 the search asked millions of addresses and ended in an error after two minutes. It now asks the part of the network around Home Assistant, the known devices and one more block, like the regular check; a /24 is asked whole as before.

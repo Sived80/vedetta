@@ -217,6 +217,17 @@ check("S33 fails when not offered", run_campaign.CHECKS["S33"]({**base33, "offer
 check("S33 fails when the link did not pass to the new device", run_campaign.CHECKS["S33"]({**base33, "row_end": ["OLD", "linked", "seed"]})[0], "fail")
 check("the new scenarios are in the campaign", {"S11L", "S31", "S32", "S33"} <= set(scenarios.SCENARIOS) and {"S11L", "S31", "S32", "S33"} <= {k for k, _, _ in run_campaign.PLAN}, True)
 
+# --- 9. the single inventory (1.0 step P7): a new device that comes and goes stays in the list (S35); a console that takes a linked laptop's
+# address shows up as new (S36)
+base35 = {"first_listed_s": 120, "listed_away": [True] * 19 + [False]}
+check("S35 passes: listed in at least 90% of the cycles it was away", run_campaign.CHECKS["S35"](base35)[0], "pass")
+check("S35 fails below 90%", run_campaign.CHECKS["S35"]({**base35, "listed_away": [True] * 10 + [False] * 10})[0], "fail")
+check("S35 fails when never listed", run_campaign.CHECKS["S35"]({**base35, "first_listed_s": None})[0], "fail")
+check("S36 passes: the console is a new device", run_campaign.CHECKS["S36"]({"usable": True, "console_listed_s": 300})[0], "pass")
+check("S36 fails when the console stays hidden", run_campaign.CHECKS["S36"]({"usable": True, "console_listed_s": None})[0], "fail")
+check("S36 fails when the laptop's link was never usable", run_campaign.CHECKS["S36"]({"usable": False, "console_listed_s": 300})[0], "fail")
+check("the P7 scenarios are in the campaign", {"S35", "S36"} <= set(scenarios.SCENARIOS) and {"S35", "S36"} <= {k for k, _, _ in run_campaign.PLAN}, True)
+
 if failed:
     print("FAILED:\n  " + "\n  ".join(failed))
     sys.exit(1)

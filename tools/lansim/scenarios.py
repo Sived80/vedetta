@@ -487,6 +487,56 @@ def s32_move(code_dir: str) -> dict:
                 "alerts": _alerts(vedetta, "alert.ip_changed"), "links": _links(vedetta, truth)}
 
 
+BLINK_TV_MAC = "3c:00:00:00:00:81"
+AWAY_CYCLES = 30       # S35: cycles the TV is away after it was listed (about 8 minutes: more than one full sweep of the network)
+
+
+def _listed(vedetta: VedettaProcess, mac: str) -> bool:
+    return mac.upper() in {str(d.get("mac") or "").upper() for d in vedetta.get("/api/new-devices")}
+
+
+def _wait_listed(vedetta: VedettaProcess, mac: str, timeout: float) -> float | None:
+    """Seconds until `mac` is in the list of new devices (None if not within `timeout`)."""
+    start = time.time()
+    while time.time() - start < timeout:
+        if _listed(vedetta, mac):
+            return round(time.time() - start)
+        time.sleep(5)
+    return None
+
+
+def s35_tv_away_stays_listed(code_dir: str) -> dict:
+    """1.0 step P7: a new device (a TV nobody added) is seen, then leaves for longer than a full sweep. With the inventory it stays in the list of
+    new devices while away (decision 3A: asleep, "seen X ago"); before, it disappeared at the next sweep and came back with it."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        vedetta.add_found()
+        vedetta.wait_cycles(SETTLE)
+        lan.add_client("tv", BLINK_TV_MAC, 50)
+        first = _wait_listed(vedetta, BLINK_TV_MAC, 420)
+        lan.link("tv", False)
+        away = []
+        for _ in range(AWAY_CYCLES):
+            vedetta.wait_cycles(1)
+            away.append(_listed(vedetta, BLINK_TV_MAC))
+        return {"first_listed_s": first, "listed_away": away}
+
+
+def s36_console_at_linked_address(code_dir: str) -> dict:
+    """1.0 step P7: the laptop's card is linked; the laptop leaves and the console takes its address. The console is a new device (decision 2A:
+    "configured by address" only for the cards without a link); before, it stayed hidden behind the laptop's card."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address = lan.add_client("c1", LAPTOP_MAC, 20)
+        lan.announce("c1", "windows", LAPTOP_MAC, address, "laptop-s36")
+        vedetta.add_found()
+        laptop_id = _id_at(vedetta, address)
+        usable = _wait_usable(vedetta, laptop_id, USABLE_WAIT_S)
+        lan.link("c1", False)
+        vedetta.wait_cycles(SETTLE)
+        lan.add_client("c2", CONSOLE_MAC, 20)
+        lan.announce("c2", "console", CONSOLE_MAC, address)
+        return {"usable": usable, "console_listed_s": _wait_listed(vedetta, CONSOLE_MAC, 420)}
+
+
 PRINTER_MAC, NEW_PRINTER_MAC = "3c:00:00:00:00:61", "3c:00:00:00:00:62"
 
 
@@ -866,4 +916,4 @@ def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 
                 "samples": len(latency), "slow_from_s": round(slow_at - since), "slow_until_s": round(back_at - since), "judged": _judged(code_dir, vedetta, since, SUBNET + ".1")}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S35": s35_tv_away_stays_listed, "S36": s36_console_at_linked_address, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

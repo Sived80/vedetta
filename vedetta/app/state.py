@@ -5,7 +5,7 @@ import time
 
 from .formatters import update_generic_titles
 from .storage import devices_config, newdevices, settings
-from .scan import latency, probe, touch_policy
+from .scan import latency, probe, scanner, touch_policy
 from . import maclayer, name_origin, state_support, state_cycle
 from .cyclestats import CycleStats
 from .identity_upkeep import IdentityUpkeep
@@ -283,7 +283,7 @@ class DeviceState(IdentityUpkeep):
         await state_cycle.poll_once(self)
 
     async def _record_macs(self, arp: dict[str, dict]) -> None:
-        await maclayer.record(arp, history)
+        await maclayer.record(arp, history, await scanner.neighbor_entries(self._view.net[1] if self._view.net else None))
 
     async def _save_latency(self) -> None:
         """One average sample per minute per device, in a single transaction."""

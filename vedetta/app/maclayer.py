@@ -49,6 +49,23 @@ def from_mdns(cards_by_mac: dict[str, dict], ts: float) -> list[Observation]:
     return out
 
 
+NEIGH_STATES = ("REACHABLE", "STALE", "DELAY", "PROBE")
+
+
+def from_neigh(entries: list[dict], ts: float) -> list[Observation]:
+    """The neighbour table of the system (1.0 step P7, source "neigh") -> observations stamped with when the system last CONFIRMED each entry
+    (`confirmed_age` seconds before `ts`), never with the time it is read: a STALE entry of a device gone for hours stays on a home network for
+    ever. Without that number only a REACHABLE entry counts, as just confirmed. Never read by the verdict (macclassify.ANSWER_SOURCES)."""
+    out = []
+    for e in entries or ():
+        mac, ip, age = normalize_mac(e.get("mac")), e.get("ip"), e.get("confirmed_age")
+        if age is None and e.get("state") == "REACHABLE":
+            age = 0
+        if mac and ip and age is not None and e.get("state") in NEIGH_STATES:
+            out.append(Observation(ip, mac, "neigh", ts - age))
+    return out
+
+
 def from_dhcp(seen: dict[str, dict], ts: float) -> list[Observation]:
     """The DHCP clients heard on port 67 (chaddr -> entry with the address it uses) -> observations. The chaddr is the client's own MAC even
     behind a repeater that lends its MAC in ARP, which is why this source matters for telling the two apart."""
@@ -199,12 +216,12 @@ async def _run_after_verdict(history) -> None:
             logger.exception("Passo dopo il verdetto del livello MAC non riuscito")
 
 
-async def record(arp: dict[str, dict], history) -> None:
+async def record(arp: dict[str, dict], history, neighbours=()) -> None:
     """One batch per cycle: what ARP and the Bonjour listener say about which MAC is at which address, then the verdict of the window stored and
     read back for the rules, then the steps that read it (after_verdict). None must ever disturb the cycle (a failure of one does not stop the others)."""
     try:
         now = time.time()
-        rows = only_new(from_arp(arp, now) + from_mdns(mdns_listener.by_mac, now) + from_dhcp(dhcp.seen, now), _EVENT_MEMORY)
+        rows = only_new(from_arp(arp, now) + from_mdns(mdns_listener.by_mac, now) + from_dhcp(dhcp.seen, now) + from_neigh(neighbours, now), _EVENT_MEMORY)
         await asyncio.to_thread(history.observe, rows)
     except Exception:
         logger.exception("Registro dei MAC osservati non riuscito")

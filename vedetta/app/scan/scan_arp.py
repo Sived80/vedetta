@@ -2,7 +2,7 @@
 import asyncio
 from .scan_common import is_valid_ipv4
 from ..networks import registry
-from .arpplan import parse_neighbors
+from .arpplan import parse_neighbor_entries, parse_neighbors
 import contextlib
 
 
@@ -45,8 +45,8 @@ async def arp_scan(targets: list[str] | None = None, timeout: float = ARP_TIMEOU
     return hosts
 
 
-async def neighbors(net: str | None = None) -> list[dict]:
-    """The neighbours the system has just seen answer (`ip neigh`): they cost no packet. [] if it cannot be read."""
+async def _neigh_text() -> str | None:
+    """The text of `ip -4 -o neigh show dev <main interface>`; None if it cannot be read."""
     try:
         proc = await asyncio.create_subprocess_exec(
             "ip", "-4", "-o", "neigh", "show", "dev", registry.main_interface(),
@@ -54,8 +54,21 @@ async def neighbors(net: str | None = None) -> list[dict]:
         )
         out, _ = await asyncio.wait_for(proc.communicate(), 10)
     except Exception:
-        return []
-    return parse_neighbors(out.decode(errors="replace"), net)
+        return None
+    return out.decode(errors="replace")
+
+
+async def neighbors(net: str | None = None) -> list[dict]:
+    """The neighbours the system has just seen answer (`ip neigh`): they cost no packet. [] if it cannot be read."""
+    text = await _neigh_text()
+    return parse_neighbors(text, net) if text is not None else []
+
+
+async def neighbor_entries(net: str | None = None) -> list[dict]:
+    """The neighbour table in every state that holds a MAC, with how long ago each entry was confirmed (1.0 step P7: a source of the
+    inventory). Only read: no packet. [] if it cannot be read."""
+    text = await _neigh_text()
+    return parse_neighbor_entries(text, net) if text is not None else []
 
 
 def with_neighbours(hosts: list[dict], neighbours: list[dict]) -> list[dict]:

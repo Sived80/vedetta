@@ -8,6 +8,9 @@ On a normal home network (a /24 or smaller: 254 addresses) the whole network is 
     oldest block when it has gone round. What was learned is kept (storage/history.py, table scan_blocks), so a restart goes on from
     where it was.
 No more than MAX_TARGETS addresses per cycle, whatever the network. A network wider than a /16 is read as the /16 around this machine.
+Since 1.0 step P8 the periodic check (plan(..., cycle_s=...)) walks a network up to a /24 the same way: one slice a cycle, in turn,
+plus the known devices; the slice is at least MIN_SLICE addresses and covers the network within ROUND_S. The quick search (no cycle_s)
+still asks such a network whole, until step P9.
 Pure functions, no network access: see tests/check_arpplan.py."""
 import ipaddress
 import re
@@ -16,6 +19,18 @@ FULL_PREFIX = 24     # a /24 or smaller is asked whole
 WIDEST_PREFIX = 16   # nothing wider than a /16 is ever walked through
 MAX_KNOWN = 512      # addresses of known devices asked besides the two blocks
 MAX_TARGETS = 1024   # 2 blocks of 256 + MAX_KNOWN
+# 1.0 step P8: the periodic check walks a network up to a /24 one slice a cycle, in turn (decisions 1A, 2A of 13/11).
+MIN_SLICE = 32       # a slice is never smaller than 32 addresses (a /27)
+ROUND_S = 300        # and grows so that the whole network is asked within 5 minutes, whatever the length of the cycle
+
+
+def slice_prefix(cidr: str, cycle_s: float) -> int:
+    """The prefix of the slices of a network up to a /24 for a periodic check every `cycle_s` seconds: at least MIN_SLICE addresses, and
+    big enough to cover the network within ROUND_S (a slice is never wider than the network itself)."""
+    net = _network(cidr)
+    cycles = max(1, int(ROUND_S // max(1.0, float(cycle_s))))
+    want = max(MIN_SLICE, -(-net.num_addresses // cycles))
+    return max(net.prefixlen, 32 - (want - 1).bit_length())
 
 
 def _network(cidr: str) -> ipaddress.IPv4Network | None:
@@ -34,11 +49,16 @@ def block_of(ip: str) -> str | None:
         return None
 
 
-def plan(cidr: str, own_ip: str | None, known_ips: list[str], block_ts: dict[str, float], force: bool = False) -> dict | None:
+def plan(cidr: str, own_ip: str | None, known_ips: list[str], block_ts: dict[str, float], force: bool = False, cycle_s: float | None = None) -> dict | None:
     """None: ask the whole network (small network, or unreadable). Otherwise {"network", "targets", "blocks", "total", "done"}:
     targets = what arp-scan is given; blocks = the /24 blocks asked whole in this cycle (own first); total = blocks in the network;
     done = how many of them have been asked at least once (before this cycle); fresh = the blocks asked for the very first time now
-    (their devices are a starting point, not "new devices": see storage/newdevices.py). block_ts = {block: when it was last asked}."""
+    (their devices are a starting point, not "new devices": see storage/newdevices.py). block_ts = {block: when it was last asked}.
+    cycle_s (the periodic check, 1.0 step P8): a network up to a /24 is asked one slice a cycle, in turn (slice_prefix), plus the known
+    devices; without it (the quick search, until step P9) such a network is asked whole, as before."""
+    small = _network(cidr) if cycle_s else None
+    if small is not None and small.prefixlen >= FULL_PREFIX:
+        return _slices_plan(small, known_ips, block_ts, cycle_s)
     scope = _scope(cidr, own_ip, force)
     if scope is None:
         return None
@@ -82,6 +102,16 @@ def _blocks_plan(net, own: str | None, known_ips: list[str], block_ts: dict[str,
     singles = _known_singles(known_ips, net, [ipaddress.ip_network(b) for b in asked])
     return {"network": str(net), "targets": asked + singles, "blocks": asked, "total": len(blocks),
             "done": sum(1 for b in blocks if b in block_ts), "fresh": [b for b in asked if b != own and b not in block_ts]}
+
+
+def _slices_plan(net, known_ips: list[str], block_ts: dict[str, float], cycle_s: float) -> dict:
+    """A network up to a /24 walked one slice a cycle: the slice that waited longest (never asked first, in address order) and the known
+    devices outside it. "fresh": the slice asked for the very first time (its devices are a starting point, as the blocks of a wide network)."""
+    slices = [str(s) for s in net.subnets(new_prefix=slice_prefix(str(net), cycle_s))]
+    chosen = min(slices, key=lambda b: (block_ts.get(b, -1.0), slices.index(b)))
+    singles = _known_singles(known_ips, net, [ipaddress.ip_network(chosen)])
+    return {"network": str(net), "targets": [chosen] + singles, "blocks": [chosen], "total": len(slices),
+            "done": sum(1 for b in slices if b in block_ts), "fresh": [] if chosen in block_ts else [chosen]}
 
 
 def _blocks_to_ask(blocks: list[str], own: str | None, block_ts: dict[str, float]) -> list[str]:

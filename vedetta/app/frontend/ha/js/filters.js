@@ -41,7 +41,7 @@ function setFilter(kind, value) {
 
 // ---------------------------------------------------------- "Network" card
 export var netEl = $("card-network");
-var FALLBACK_VERSION = "0.13.1";
+var FALLBACK_VERSION = "0.13.2";
 function versionText() { return "v" + String(window.VEDETTA_VERSION || S.version || FALLBACK_VERSION).replace(/^v/i, ""); }
 
 // Search, real-time status and settings: nodes created only once (with their

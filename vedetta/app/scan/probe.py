@@ -35,7 +35,7 @@ async def probe_device(device: dict, arp_task=None) -> dict:
     names = NameState(base_name, placeholder, ha_stale)
     choose_automatic_name(f, names)
     prefer_home_assistant_name(f, names)
-    brand_stage = _probe_device_brand(f, names.display_name)
+    brand_stage = _probe_device_brand(f, names)
     assessment, is_mobile = _probe_device_mobile(f, names.display_name, brand_stage)
     product = name_from_brand_and_model(f, names, brand_stage.ident)
     name_from_brand_and_type(f, names, product, brand_stage.ident, is_mobile)
@@ -141,18 +141,17 @@ def _stale_name(f: Facts, base_name):
     return placeholder or ha_stale, ha_stale
 
 
-def _probe_device_brand(f: Facts, display_name) -> Brand:
-    # Brand, battery and "mobile" are decided in identity.py (multiple evidences with
-    # source and confidence). The MAC prefix is only the maker of the network card: the
-    # product brand comes from the device's own sources (UPnP/mDNS,
-    # name, web title, DHCP fingerprint).
+def _probe_device_brand(f: Facts, names: NameState) -> Brand:
+    # Brand, battery and "mobile" are decided in identity.py (multiple evidences with source and confidence). The MAC prefix is only the maker
+    # of the network card: the product brand comes from the device's own sources (UPnP/mDNS, name, web title, DHCP fingerprint). A saved name
+    # that Home Assistant no longer gives is no clue (#36: six Shelly plugs kept the FRITZ!Box's old name and became AVM routers).
     info, card = f.scan_info, f.ha_card
     shelly_model = (f.result.get("extra") or {}).get("model")
     models = [info.get("mdns_model"), info.get("upnp_model"), info.get("onvif_hardware"),
               info.get("api_model"), shelly_model, (card or {}).get("model")]
     ident = identify_brand(
         f.identity_mac,
-        names=[f.device.get("name"), f.dhcp_name, f.dhcp_class, info.get("mdns_name"), info.get("upnp_name"),
+        names=[None if names.ha_stale else f.device.get("name"), f.dhcp_name, f.dhcp_class, info.get("mdns_name"), info.get("upnp_name"),
                info.get("netbios_name"), info.get("onvif_name"), info.get("api_name"),
                (f.result.get("extra") or {}).get("hostname"), *models],
         upnp_manufacturer=info.get("upnp_manufacturer"),
@@ -163,10 +162,10 @@ def _probe_device_brand(f: Facts, display_name) -> Brand:
         is_gateway=f.ip == default_gateway(),
     )
     ident = _chosen_brand(ident, card, f.device)
-    model_class = match_model([*models, f.dhcp_name, display_name])
+    model_class = match_model([*models, f.dhcp_name, names.display_name])
     battery, battery_source = battery_assess(
         api=f.result.get("battery"), scan=info.get("battery"), model_class=model_class,
-        texts=[*models, info.get("snmp_descr"), info.get("http_title"), display_name])
+        texts=[*models, info.get("snmp_descr"), info.get("http_title"), names.display_name])
     return Brand(ident, model_class, battery, battery_source)
 
 

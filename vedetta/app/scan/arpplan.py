@@ -106,12 +106,13 @@ def _blocks_plan(net, own: str | None, known_ips: list[str], block_ts: dict[str,
 
 def _slices_plan(net, known_ips: list[str], block_ts: dict[str, float], cycle_s: float) -> dict:
     """A network up to a /24 walked one slice a cycle: the slice that waited longest (never asked first, in address order) and the known
-    devices outside it. "fresh": the slice asked for the very first time (its devices are a starting point, as the blocks of a wide network)."""
+    devices outside it. "fresh" is always empty: the first check asks such a network whole (arpview), so a slice is never a starting point,
+    and whoever turns up in a slice not yet asked is a new device (S37; also after a new size of slice, when the cycle changes)."""
     slices = [str(s) for s in net.subnets(new_prefix=slice_prefix(str(net), cycle_s))]
     chosen = min(slices, key=lambda b: (block_ts.get(b, -1.0), slices.index(b)))
     singles = _known_singles(known_ips, net, [ipaddress.ip_network(chosen)])
     return {"network": str(net), "targets": [chosen] + singles, "blocks": [chosen], "total": len(slices),
-            "done": sum(1 for b in slices if b in block_ts), "fresh": [] if chosen in block_ts else [chosen]}
+            "done": sum(1 for b in slices if b in block_ts), "fresh": []}
 
 
 def _blocks_to_ask(blocks: list[str], own: str | None, block_ts: dict[str, float]) -> list[str]:

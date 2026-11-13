@@ -23,7 +23,10 @@ assert arpplan.slice_prefix("192.168.1.0/26", 30) == 27 and arpplan.slice_prefix
 p = arpplan.plan(NET, OWN, ["192.168.1.9", "192.168.1.200", "10.9.9.9", "not an ip"], {}, cycle_s=30)
 assert p["blocks"] == ["192.168.1.0/27"], p["blocks"]
 assert p["targets"] == ["192.168.1.0/27", "192.168.1.200"], p["targets"]
-assert p["network"] == NET and p["total"] == 8 and p["done"] == 0 and p["fresh"] == ["192.168.1.0/27"], p
+assert p["network"] == NET and p["total"] == 8 and p["done"] == 0, p
+# a slice asked for the first time is never a starting point: the first check asks a home network whole, so what turns up later in a slice
+# not yet asked is a new device (S37: a stranger at .230 joined before the turn of its slice and was taken as known)
+assert p["fresh"] == [], p
 ts = {"192.168.1.%d/27" % (32 * i): 1000.0 + i for i in range(8)}
 ts["192.168.1.96/27"] = 5.0
 p = arpplan.plan(NET, OWN, [], ts, cycle_s=30)
@@ -35,6 +38,8 @@ for cycle in range(8):
     asked += p["blocks"]
     ts[p["blocks"][0]] = float(cycle)
 assert sorted(asked) == sorted("192.168.1.%d/27" % (32 * i) for i in range(8)), asked
+# the whole first lap of the slices, and a new size of slice after a change of cycle, mark nothing as a starting point
+assert all(arpplan.plan(NET, OWN, [], {}, cycle_s=c)["fresh"] == [] for c in (10, 30, 60, 120, 300))
 
 # 4. with a long cycle the slice grows; with a 5-minute cycle the /24 is asked whole every time
 assert arpplan.plan(NET, OWN, [], {}, cycle_s=120)["blocks"] == ["192.168.1.0/25"]

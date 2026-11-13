@@ -11,6 +11,7 @@ import os
 import time
 from collections.abc import Callable
 
+from . import inventory_view
 from .applog import logger
 from .networks import registry
 from .scan import arpplan, scanner
@@ -75,9 +76,9 @@ class ArpView:
 
     @staticmethod
     def _known_ips() -> list[str]:
-        """Addresses of the configured devices first, then of the known ones (thread)."""
+        """Addresses of the configured devices first, then of the devices the inventory knows, confirmed or asleep (1.0 step P8, decision 3A)."""
         ips = [c["ip"] for c in devices_config.load_devices() if c.get("ip")]
-        return ips + [r["ip"] for r in history.known_all().values() if r.get("ip")]
+        return ips + inventory_view.known_ips()
 
     async def _arp_plan(self) -> dict | None:
         """None: the whole network is asked (a network up to a /24 at the first check and after a refresh asked by hand; a network that cannot

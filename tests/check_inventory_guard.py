@@ -82,4 +82,10 @@ c = inventory_view.counts()
 assert c["cycles"] == 1 and c["macs"] == 4 and c["states"] == {"confirmed": 2, "candidate": 1, "asleep": 1} and c["added_from_inventory"] == 1, c
 assert all(":" not in k for k in c["sources"]), "sources by name, never a MAC"
 
+# 6. P8 decision 3A: the addresses the periodic check asks every cycle besides the cards: the devices the inventory confirms or has asleep,
+# the most recent first, never a candidate
+inventory_view.history = H
+inventory_view.seen_now({}, NOW)
+assert inventory_view.known_ips() == ["10.0.0.7", "10.0.0.5", "10.0.0.8"], inventory_view.known_ips()
+
 print("check_inventory_guard OK")

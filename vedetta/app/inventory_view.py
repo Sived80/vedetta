@@ -13,6 +13,7 @@ from .storage import newdevices
 from .storage.history import history
 
 _counts: dict = {}
+_known: list[str] = []          # the addresses of the devices confirmed or asleep at the last cycle, the most recent first (P8: known_ips)
 
 
 def reset_counts() -> None:
@@ -37,6 +38,8 @@ def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> di
     rows = db.rows(now - inventory.KEEP_S)
     inv = inventory.build(rows, now, _network_of(rows))
     newdevices.set_inventory({mac for (_, mac), e in inv.items() if e["state"] == "asleep"}, {mac: e["last_seen"] for (_, mac), e in inv.items()})
+    global _known
+    _known = [e["ip"] for e in sorted(inv.values(), key=lambda e: -e["last_seen"]) if e["state"] in ("confirmed", "asleep")]
     out = _with_confirmed(dict(arp), inv)
     _counts.update(inventory.counts(inv), cycles=_counts["cycles"] + 1, added_from_inventory=_counts["added_from_inventory"] + len(out) - len(arp))
     return out
@@ -80,3 +83,9 @@ def unlinked_ips(configs: list[dict]) -> set[str]:
 def linked_macs(configs: list[dict]) -> set[str]:
     """The MACs of the linked cards: configured devices, whatever address they answer at."""
     return {m for m in map(_linked, configs) if m}
+
+
+def known_ips() -> list[str]:
+    """1.0 step P8, decision 3A: the addresses the periodic check asks every cycle besides the cards: the devices the inventory confirmed or
+    has asleep at the last cycle, the most recent first (never a candidate). Empty until the first cycle."""
+    return list(dict.fromkeys(_known))

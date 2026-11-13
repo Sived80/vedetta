@@ -71,6 +71,13 @@
      },
      "samples": []
     },
+    "inventory": {
+     "added_from_inventory": 0,
+     "cycles": 0,
+     "macs": 0,
+     "sources": {},
+     "states": {}
+    },
     "lines_removed": [],
     "mac_presence": {
      "cycles": 0,
@@ -169,6 +176,13 @@
      },
      "samples": []
     },
+    "inventory": {
+     "added_from_inventory": 0,
+     "cycles": 0,
+     "macs": 0,
+     "sources": {},
+     "states": {}
+    },
     "lines_removed": [],
     "mac_presence": {
      "cycles": 0,
@@ -265,6 +279,13 @@
       "memory": 10.0
      },
      "samples": []
+    },
+    "inventory": {
+     "added_from_inventory": 0,
+     "cycles": 0,
+     "macs": 0,
+     "sources": {},
+     "states": {}
     },
     "lines_removed": [],
     "mac_presence": {
@@ -366,6 +387,13 @@
       "memory": 10.0
      },
      "samples": []
+    },
+    "inventory": {
+     "added_from_inventory": 0,
+     "cycles": 0,
+     "macs": 0,
+     "sources": {},
+     "states": {}
     },
     "lines_removed": [],
     "mac_presence": {

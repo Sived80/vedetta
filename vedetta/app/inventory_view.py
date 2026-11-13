@@ -12,6 +12,22 @@ from .networks import registry
 from .storage import newdevices
 from .storage.history import history
 
+_counts: dict = {}
+
+
+def reset_counts() -> None:
+    global _counts
+    _counts = {"cycles": 0, "macs": 0, "states": {}, "sources": {}, "added_from_inventory": 0}
+
+
+reset_counts()
+
+
+def counts() -> dict:
+    """What the export carries (step P7): the cycles, the inventory of the last cycle (MACs, by state, by set of sources) and how many
+    devices the inventory added to what ARP showed, since the start. Numbers only."""
+    return {**_counts, "states": dict(_counts["states"]), "sources": dict(_counts["sources"])}
+
 
 def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> dict[str, dict]:
     """address -> {mac, vendor}: the ARP view of the cycle and the confirmed devices of the inventory that did not answer now. `history`: the
@@ -21,7 +37,9 @@ def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> di
     rows = db.rows(now - inventory.KEEP_S)
     inv = inventory.build(rows, now, _network_of(rows))
     newdevices.set_inventory({mac for (_, mac), e in inv.items() if e["state"] == "asleep"}, {mac: e["last_seen"] for (_, mac), e in inv.items()})
-    return _with_confirmed(dict(arp), inv)
+    out = _with_confirmed(dict(arp), inv)
+    _counts.update(inventory.counts(inv), cycles=_counts["cycles"] + 1, added_from_inventory=_counts["added_from_inventory"] + len(out) - len(arp))
+    return out
 
 
 def _with_confirmed(out: dict[str, dict], inv: dict) -> dict[str, dict]:

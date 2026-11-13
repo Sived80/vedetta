@@ -16,7 +16,7 @@ from ..storage import journal, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
 from ..ha import ha_registry, ha_tz, mqtt_ha
-from .. import cardlink_cycle, maintenance, paths
+from .. import cardlink_cycle, inventory_view, maintenance, paths
 from ..state import state
 from ..ha import ha_data, health_view
 from ..scan import host_load
@@ -248,6 +248,7 @@ def _describe_service(manifest: dict, pending) -> None:
         manifest["notes"].append(f"service: {exc!r}")
     manifest["card_links"] = cardlink_cycle.counts()   # counts of the card -> MAC links (step P4): no MAC, no address
     manifest["mac_presence"] = cardlink_cycle.presence_counts()   # counts of presence by MAC (step P5): no MAC, no address
+    manifest["inventory"] = inventory_view.counts()   # counts of the single inventory (step P7): no MAC, no address
     manifest["phone_merge"] = state.merge_report         # counts: why two cards of the same phone were (not) merged, without any name
     try:
         manifest["health"] = health_view.manifest_part()  # counts and seconds of the health judge: no address, no name

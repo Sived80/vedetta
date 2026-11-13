@@ -73,4 +73,13 @@ listed = {d["mac"]: d for d in newdevices.list_new(NH)}
 assert set(listed) == {OLD, TV}, "asleep stays in the list"
 assert abs(listed[OLD]["last_seen"] - (NOW - 3000)) < 1, listed[OLD]
 
+# 5. what the export carries (P7 step 4): numbers only, every key always there
+inventory_view.reset_counts()
+assert inventory_view.counts() == {"cycles": 0, "macs": 0, "states": {}, "sources": {}, "added_from_inventory": 0}, inventory_view.counts()
+inventory_view.history = H
+inventory_view.seen_now({"10.0.0.20": {"mac": LAPTOP}}, NOW)
+c = inventory_view.counts()
+assert c["cycles"] == 1 and c["macs"] == 4 and c["states"] == {"confirmed": 2, "candidate": 1, "asleep": 1} and c["added_from_inventory"] == 1, c
+assert all(":" not in k for k in c["sources"]), "sources by name, never a MAC"
+
 print("check_inventory_guard OK")

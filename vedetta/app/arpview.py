@@ -1,7 +1,8 @@
 """The view of the network that ARP gives: who answers at which address and with which MAC.
 
-On a normal network (up to a /24) the whole network is asked every FULL_SWEEP_S and the configured devices in the checks between; on a large
-network a plan of blocks is asked, a few at a time, and what each block told is remembered (see scan/arpplan.py). The result is cached for
+Since 1.0 step P8 every network is walked the same way (see scan/arpplan.py): a plan of slices (a /24 or smaller: slices of at least 32
+addresses, the whole network within arpplan.ROUND_S; a large network: blocks of 256) is asked one slice a cycle, plus the known devices, and
+what each slice told is remembered. A network up to a /24 is asked whole at the first check and after a refresh asked by hand. The result is cached for
 a few seconds so that the probes of a cycle share one answer. Knows nothing about cards, events or alerts: the new-device watch is told
 about the blocks asked for the first time through a callback."""
 import asyncio
@@ -13,17 +14,24 @@ from collections.abc import Callable
 from .applog import logger
 from .networks import registry
 from .scan import arpplan, scanner
-from .storage import devices_config
+from .storage import devices_config, settings
 from .storage.history import history
 
 ARP_CYCLE_TIMEOUT_S = 60.0   # arp-scan of the periodic check that does not finish is closed
-# A normal network (up to a /24): a sweep of every address (about 625 requests in a burst) at every check is more than presence needs, and a
-# weak Wi-Fi, a repeater or a mesh feels it. The whole network is asked once in FULL_SWEEP_S (to find the new devices); the checks between ask
-# only the devices that are configured. Every ARP request is paced SWEEP_INTERVAL_MS apart instead of in a burst.
+# The whole network is asked at least once in FULL_SWEEP_S: since 1.0 step P8 by the turn of its slices (arpplan.ROUND_S), not in one burst.
+# Other modules time their judgements on it (cardlink_cycle, linkview). Every ARP request of a home network is paced SWEEP_INTERVAL_MS apart.
 FULL_SWEEP_S = 300.0
 SWEEP_INTERVAL_MS = 20
 ARP_MEMORY_S = 24 * 3600     # on a large network, what a block told is kept this long (see scan/arpplan.py)
 NET_TTL_S = 300.0
+
+
+def _cycle_s() -> float:
+    """The length of the periodic check (settings.poll_interval): the slices of a home network are sized on it (arpplan.slice_prefix)."""
+    try:
+        return float(settings.poll_interval())
+    except Exception:
+        return float(settings.DEFAULTS["poll_interval"])
 
 
 class ArpView:
@@ -51,6 +59,13 @@ class ArpView:
                     return None
         return self.net[1], self.net[2]
 
+    @staticmethod
+    def _is_small(cidr: str) -> bool:
+        try:
+            return ipaddress.ip_network(cidr, strict=False).prefixlen >= arpplan.FULL_PREFIX
+        except ValueError:
+            return False
+
     def whole_size(self) -> int:
         """Addresses of the whole network when it is asked whole (a /24: 256)."""
         try:
@@ -65,14 +80,15 @@ class ArpView:
         return ips + [r["ip"] for r in history.known_all().values() if r.get("ip")]
 
     async def _arp_plan(self) -> dict | None:
-        """None: the whole network is asked (up to a /24, as always). Otherwise the plan of a large network (scan/arpplan.py)."""
+        """None: the whole network is asked (a network up to a /24 at the first check and after a refresh asked by hand; a network that cannot
+        be read). Otherwise the plan (scan/arpplan.py): since 1.0 step P8 also a network up to a /24 is walked one slice a cycle, in turn."""
         net = await self.network()
-        if net is None:
+        if net is None or (self.last_full is None and self._is_small(net[0])):
             return None
         try:
             known = await asyncio.to_thread(self._known_ips)
             blocks = await asyncio.to_thread(history.scan_blocks)
-            return arpplan.plan(net[0], net[1], known, blocks, force=bool(os.environ.get("VEDETTA_ARP_BLOCKS")))
+            return arpplan.plan(net[0], net[1], known, blocks, force=bool(os.environ.get("VEDETTA_ARP_BLOCKS")), cycle_s=_cycle_s())
         except Exception:
             logger.exception("Piano ARP fallito: si chiede solo la rete attorno a questo computer")
             return arpplan.own_block_only(net[1])
@@ -173,10 +189,11 @@ class ArpView:
 
     async def _read_blocks(self, plan: dict) -> tuple[dict[str, dict], list[dict]]:
         """A large network: the view (with what is remembered) and the hosts that answered now."""
-        if self.plan_info is None:
+        if self.plan_info is None and not self._is_small(plan["network"]):
             logger.info("Rete grande (%s, %d blocchi da 256 indirizzi): a ogni giro si chiede la rete attorno a questo computer, "
                         "i dispositivi noti e un blocco in piu', a turno", plan["network"], plan["total"])
-        hosts = await scanner.arp_scan(plan["targets"], timeout=ARP_CYCLE_TIMEOUT_S)
+        paced = {"interval_ms": SWEEP_INTERVAL_MS} if self._is_small(plan["network"]) else {}     # the slices of a home network are paced, as its sweeps (P8)
+        hosts = await scanner.arp_scan(plan["targets"], timeout=ARP_CYCLE_TIMEOUT_S, **paced)
         return await self._remember(hosts, plan), hosts
 
     def _log_first_blocks(self, hosts: list[dict]) -> None:

@@ -86,10 +86,10 @@ for name in CTX:
     html = render(new_env, name, base=PREFIX)
     for url in URL_ATTR.findall(html):
         assert url.startswith(PREFIX + "/"), "URL non prefissato in %s: %s" % (name, url)
-    assert 'window.VEDETTA_BASE = "%s"' % PREFIX in html, "VEDETTA_BASE mancante in " + name
+    assert '"base": "%s"' % PREFIX in html, "il prefisso manca nei dati di avvio (boot) di " + name   # issue #48: nessuno script interno
     assert PREFIX + "/static/js/base.js" in html
     assert PREFIX + "/static/" in html
-assert "VEDETTA_BASE" not in render(new_env, "ha.html", base="")
+assert '"base": ""' in render(new_env, "ha.html", base="") and "/static/js/base.js" not in render(new_env, "ha.html", base="")
 print("ok: URL dei template prefissati")
 
 # 3) no internal absolute URL in the static sources outside the points covered by the wrapper

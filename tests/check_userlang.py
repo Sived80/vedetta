@@ -24,9 +24,8 @@ BOB = {"X-Remote-User-ID": "b" * 32}
 def page(headers=None, query=""):
     r = c.get("/ha" + query, headers=headers or {})
     assert r.status_code == 200, r.text[:300]
-    lang = r.text.split("window.VEDETTA_LANG = ")[1].split(";")[0].strip('" ')
-    auto = r.text.split("window.VEDETTA_LANG_AUTO = ")[1].split(";")[0].strip()
-    return lang, auto == "true"
+    boot = json.loads(r.text.split('<script type="application/json" id="vedetta-boot">')[1].split("</script>")[0])   # the start data (issue #48)
+    return boot["lang"], boot["lang_auto"] is True
 
 
 # 1) nobody chose, nothing known: English; the browser's language is used when we have it

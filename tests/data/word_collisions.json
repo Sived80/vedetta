@@ -41,6 +41,10 @@
    "meaning": "same",
    "note": "the home automation hub: same as the type Home Assistant"
   },
+  "netatmo": {
+   "meaning": "multi",
+   "note": "smart-home devices (thermostats, weather stations, smoke alarms) but also cameras: a weak prior for the smart home (#36)"
+  },
   "hue": {
    "meaning": "same",
    "note": "smart lighting: same as the iot words"

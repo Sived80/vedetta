@@ -2,7 +2,7 @@
  "_comment": "Generic keywords per group of device, matched in the text of a device (name, brand, what the scans collected, port labels). subs: substrings (long words); toks: whole words (the short ones, so they do not fire inside other words). No rule is for a single device: add a word to recognise more. The typical ports of each group are in ha_type_evidence.py (_PORT_TYPE). A word that a type of device_kinds.json already says in the same way is not repeated here: tests/check_type_words_redundancy.py checks it.",
  "groups": {
   "iot": {
-   "subs": ["meross", "yeelight", "tradfri", "lightbulb", "dimmer", "relay", "sensor"],
+   "subs": ["meross", "yeelight", "tradfri", "lightbulb", "dimmer", "relay", "sensor", "netatmo"],
    "toks": ["esp32", "esp8266", "hue", "kasa", "sensore", "tapo", "wiz"]
   },
   "printer": {

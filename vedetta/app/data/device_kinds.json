@@ -776,6 +776,22 @@
    "upnp": []
   },
   {
+   "id": "smarthome",
+   "group": "iot",
+   "icon": "home-automation",
+   "words": [],
+   "tokens": [],
+   "w": 2,
+   "mdns": [
+    "_homepilot._tcp"
+   ],
+   "upnp": [],
+   "brands": [
+    "tuya",
+    "rademacher"
+   ]
+  },
+  {
    "id": "bluetooth",
    "group": "iot",
    "icon": "bluetooth",

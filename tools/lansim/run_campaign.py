@@ -107,6 +107,13 @@ def _s36(r: dict) -> tuple[str, str]:
     return ("pass", "") if r["console_listed_s"] is not None else ("fail", "the console stayed hidden behind the laptop's card")
 
 
+def _s37(r: dict) -> tuple[str, str]:
+    """P8: the device nobody knows is listed as new within a round of the slices and a cycle (60 s)."""
+    if r["listed_s"] is None:
+        return "fail", "never listed as new"
+    return ("pass", "") if r["listed_s"] <= r["round_s"] + 60 else ("fail", "listed after %s s" % r["listed_s"])
+
+
 def _s33(r: dict) -> tuple[str, str]:
     if not r["usable"]:
         return "fail", "the printer's link never became usable"
@@ -164,6 +171,7 @@ CHECKS = {
     "S33": _s33,
     "S35": _s35,
     "S36": _s36,
+    "S37": _s37,
     "S30": _s30,
     "S4": lambda r: ("fail", _no_conflict_stored(r)) if _no_conflict_stored(r) else
           ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
@@ -194,7 +202,7 @@ PLAN = [
     ("S13", 2, lambda n: {}), ("S15", 3, lambda n: {}), ("S16", 3, lambda n: {}), ("S17", 1, lambda n: {}),
     ("S13L", 2, lambda n: {}), ("S30", 1, lambda n: {"old_code_dir": OLD_CODE_DIR}),
     ("S11L", 2, lambda n: {}), ("S31", 2, lambda n: {}), ("S32", 2, lambda n: {}), ("S33", 1, lambda n: {}),
-    ("S35", 2, lambda n: {}), ("S36", 2, lambda n: {}),
+    ("S35", 2, lambda n: {}), ("S36", 2, lambda n: {}), ("S37", 2, lambda n: {}),
 ]
 OLD_CODE_DIR: str | None = None        # set by --old-code-dir (S30)
 FUNCTIONS = {"S10D": sc.s10_two_extenders, **{k: v for k, v in sc.SCENARIOS.items() if k != "S10D"}}

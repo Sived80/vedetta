@@ -228,6 +228,12 @@ check("S36 fails when the console stays hidden", run_campaign.CHECKS["S36"]({"us
 check("S36 fails when the laptop's link was never usable", run_campaign.CHECKS["S36"]({"usable": False, "console_listed_s": 300})[0], "fail")
 check("the P7 scenarios are in the campaign", {"S35", "S36"} <= set(scenarios.SCENARIOS) and {"S35", "S36"} <= {k for k, _, _ in run_campaign.PLAN}, True)
 
+# --- 9b. one way to walk the network (1.0 step P8): a device nobody knows is found by the turn of the slices within a round (S37)
+check("S37 passes: the new device listed within a round of the slices and a cycle", run_campaign.CHECKS["S37"]({"listed_s": 250, "round_s": 300})[0], "pass")
+check("S37 fails when it takes longer", run_campaign.CHECKS["S37"]({"listed_s": 400, "round_s": 300})[0], "fail")
+check("S37 fails when never listed", run_campaign.CHECKS["S37"]({"listed_s": None, "round_s": 300})[0], "fail")
+check("S37 is in the campaign", "S37" in scenarios.SCENARIOS and "S37" in {k for k, _, _ in run_campaign.PLAN}, True)
+
 # --- 10. several runs at once (run_campaign --jobs): each run's machines carry its letter, nothing else in the simulator names them by hand
 import subprocess  # noqa: E402
 ROOT = os.path.join(os.path.dirname(__file__), "..")

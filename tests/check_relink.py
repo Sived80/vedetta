@@ -23,6 +23,8 @@ from app.routes import device_routes  # noqa: E402
 from app.state import state  # noqa: E402
 from app.storage import devices_config  # noqa: E402
 from app.storage.history import History  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 NOW = 1_800_000_000.0
 OLD, NEW, OTHER, REP = "02:00:00:00:80:01", "02:00:00:00:80:02", "02:00:00:00:80:03", "02:00:00:00:80:0A"

@@ -21,6 +21,8 @@ from app.export import anonymize, export_mask  # noqa: E402
 from app.scan import dhcp, mdns_listener  # noqa: E402
 from app.storage import devices_config  # noqa: E402
 from app.storage.history import History  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 APP = Path(__file__).resolve().parent.parent / "vedetta" / "app"
 Obs = maclayer.Observation

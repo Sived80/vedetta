@@ -21,6 +21,8 @@ from app import linkview, macverdict, netutil, state as state_mod, state_cycle  
 from app.arpview import ArpView  # noqa: E402
 from app.scan import latency, presence, probe  # noqa: E402
 from app.storage import devices_config  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 NET = "10.0.70.0/24"
 M_LAPTOP, M_CONSOLE, M_PRINTER = "02:00:00:00:70:01", "02:00:00:00:70:02", "02:00:00:00:70:03"

@@ -17,6 +17,8 @@ from app import linkview, netutil  # noqa: E402
 from app.networks import registry  # noqa: E402
 from app.state import DeviceState  # noqa: E402
 from app.storage import devices_config  # noqa: E402
+from app.networks import registry as _routes  # noqa: E402
+_routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")   # the fake network, not the routes of this computer
 
 tmp = Path(tempfile.mkdtemp())
 devices_config.DEVICES_PATH = tmp / "devices.yaml"

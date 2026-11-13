@@ -1,10 +1,12 @@
-"""Watch for MACs never seen on the network: compares what ARP and DHCP show with the known ones and warns once for each new one.
+"""Watch for MACs never seen on the network: compares what the inventory shows (the ARP view of the cycle and the devices it confirms, 1.0 step
+P7: inventory_view) and DHCP with the known ones and warns once for each new one.
 
 Holds the state of that watch (the current set of "new" MACs, the blocks of a large network asked for the first time, the own address).
 Sending the events and the alerts is left to the caller through two callbacks, so this module knows nothing about DeviceState."""
 import asyncio
 from collections.abc import Callable
 
+from . import inventory_view
 from .applog import logger
 from .networks import registry
 from .scan import dhcp
@@ -47,14 +49,15 @@ class NewDeviceWatch:
     async def _evaluate(self, arp: dict[str, dict]) -> tuple[list[dict], list[dict]]:
         """(devices to alert, full list of the new ones) after comparing the seen MACs with the known ones."""
         configs = devices_config.load_devices()
-        configured_macs = self._configured_macs()
+        configured_macs = self._configured_macs() | inventory_view.linked_macs(configs)
         skip_ips = await self._skip_ips()
-        observed = newdevices.observed_macs(arp, dhcp.seen, skip_ips)
+        seen = await asyncio.to_thread(inventory_view.seen_now, arp)      # 1.0 step P7: the inventory, not only the snapshot of this cycle
+        observed = newdevices.observed_macs(seen, dhcp.seen, skip_ips)
         observed = {m: o for m, o in observed.items()
                     if not blocklist.matches(mac=m, ip=o["ip"], name=o["hostname"])}
         baseline, self.baseline_blocks = self.baseline_blocks, ()
         return await asyncio.to_thread(
-            newdevices.evaluate, observed, {c["ip"] for c in configs}, configured_macs, newdevices.own_macs(),
+            newdevices.evaluate, observed, inventory_view.unlinked_ips(configs), configured_macs, newdevices.own_macs(),
             baseline_blocks=baseline,
         )
 

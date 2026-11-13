@@ -19,7 +19,7 @@ A module may import from its own layer or from a lower one, never from a higher 
 - **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `storage/`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
-- **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
+- **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `inventory_view`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
 - **layer 6**: `ingress`, `routes/`
 - **layer 7**: `main`
@@ -76,6 +76,7 @@ The functions that were restructured have a reference test that was generated fr
 | `iface.py` | LAN network interface: from VEDETTA_IFACE, otherwise from the default routing (/proc/net/route, no external command: it also works with BusyBox). |
 | `ingress.py` | Home Assistant ingress support (add-on). |
 | `inventory.py` | The single inventory (1.0 step P7): who is on the network, remembered, instead of the snapshot of the last ARP read. |
+| `inventory_view.py` | What the guard of new devices sees (1.0 step P7): the inventory of the MAC layer instead of the snapshot of the last ARP read. |
 | `lifecycle.py` | Why did the service restart? A small record of the run (tests/check_lifecycle.py): when it started, a heartbeat (time, memory, the longest delay of the event loop) and a mark when it stops cleanly. |
 | `linkview.py` | The card -> MAC links as the cycle reads them (1.0 step P5): which stored link may be trusted now. |
 | `macclassify.py` | Single MAC layer, phase 2: what kind of MAC is this? Pure functions over the rows of ip_mac (no network, no database, no brand). |
@@ -87,7 +88,7 @@ The functions that were restructured have a reference test that was generated fr
 | `maintenance.py` | Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not for a long time, and refreshes the table of manufacturer prefixes. |
 | `name_origin.py` | Which MAC announced the name of a card: noted whenever the MAC behind the card says the very name the card carries (the rule is in recognition/name_owner.py). |
 | `netutil.py` | Network helpers: the local network of the host (get_local_network: subnet and own address, on the interface chosen in iface) and filter_local_ips, which keeps only the addresses that belong to that network. |
-| `newdevicewatch.py` | Watch for MACs never seen on the network: compares what ARP and DHCP show with the known ones and warns once for each new one. |
+| `newdevicewatch.py` | Watch for MACs never seen on the network: compares what the inventory shows (the ARP view of the cycle and the devices it confirms, 1.0 step P7: inventory_view) and DHCP with the known ones and warns once for each new one. |
 | `paths.py` | Data paths and environment parameters: a single source of truth. |
 | `pause.py` | Pause of the periodic check: when it ends, how long it was, and its survival to a service restart (pause.json). |
 | `procfs.py` | Tolerant, lazy reading of the text tables the kernel exposes (/proc/net/route, /proc/net/arp, /proc/self/status). |
@@ -305,7 +306,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
 | `js/net-rotator.js` | 290 | rotating tile of the Network card |
 | `js/network.js` | 59 | pause |
-| `js/new-devices.js` | 331 | new devices |
+| `js/new-devices.js` | 337 | new devices |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
 | `js/tile.js` | 313 | tile |
 | `js/update.js` | 34 | update available |

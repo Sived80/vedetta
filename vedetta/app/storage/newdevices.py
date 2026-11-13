@@ -23,6 +23,10 @@ BASELINE_KEY = "newdev_baseline"
 # not something the user can act on (the scan does not find it): it stays
 # recorded but disappears from the counter and the list until it reappears.
 _present: set[str] | None = None
+# 1.0 step P7: the MACs the inventory says are asleep (confirmed, silent for a while) stay in the list of new devices (decision 3A), and
+# when each MAC was last seen (inventory_view.seen_now sets both every cycle).
+_asleep: set[str] = set()
+_last_seen: dict[str, float] = {}
 _MAC_RE = re.compile(r"^([0-9A-F]{2}:){5}[0-9A-F]{2}$")
 
 
@@ -158,6 +162,20 @@ def _in_blocks(ip: str | None, blocks: tuple[str, ...]) -> bool:
         return False
 
 
+def set_inventory(asleep: set[str], last_seen: dict[str, float]) -> None:
+    """What the inventory says (inventory_view): the MACs asleep and when each MAC was last seen."""
+    global _asleep, _last_seen
+    _asleep, _last_seen = set(asleep), dict(last_seen)
+
+
+def asleep_macs() -> set[str]:
+    return set(_asleep)
+
+
+def last_seen_of(mac: str) -> float | None:
+    return _last_seen.get(mac)
+
+
 def sync_present(macs: set[str]) -> None:
     """After a search: the only MACs present are those the search actually found
     (so the counter does not report what the button then does not find)."""
@@ -165,12 +183,18 @@ def sync_present(macs: set[str]) -> None:
     _present = {m for m in (normalize_mac(x) for x in macs) if m}
 
 
+def _seen_field(mac: str) -> dict:
+    """{"last_seen": when the inventory last saw the MAC} when it knows (the list shows "seen X ago" for the ones asleep), else nothing."""
+    when = _last_seen.get(mac)
+    return {"last_seen": when} if when is not None else {}
+
+
 def list_new(hist: History = history) -> list[dict]:
     """The 'new' devices, in the API format."""
     out = [{
                 "mac": r["mac"], "ip": r["ip"], "vendor": lookup_vendor(r["mac"]) or r["vendor"],
-                "hostname": r["hostname"], "first_seen": r["first_seen"], **_brand_fields(r["mac"], r["hostname"]),
-            } for r in hist.known_all().values() if r["status"] == "new" and (_present is None or r["mac"] in _present)]
+                "hostname": r["hostname"], "first_seen": r["first_seen"], **_seen_field(r["mac"]), **_brand_fields(r["mac"], r["hostname"]),
+            } for r in hist.known_all().values() if r["status"] == "new" and (_present is None or r["mac"] in _present or r["mac"] in _asleep)]
     return sorted(out, key=lambda d: d["first_seen"])
 
 

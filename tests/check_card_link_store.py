@@ -225,7 +225,7 @@ assert writers == ["cardlink_cycle.py"], writers
 assert set(readers) == {"cardlink_cycle.py"} and len(readers) == 4, "the step's comparison, the reading back for linkview, at start, the export count: " + repr(readers)
 assert deciders == [], "they read the links through linkview: " + repr(deciders)
 importers = sorted(f.relative_to(APP).as_posix() for f in APP.rglob("*.py") if re.search(r"\bimport\b[^\n]*\blinkview\b", f.read_text(encoding="utf-8")))
-assert "cardlink_cycle.py" in importers and set(importers) <= {"state_cycle.py", "cardlink_cycle.py", "identity_upkeep.py"}, importers
+assert "cardlink_cycle.py" in importers and set(importers) <= {"state_cycle.py", "cardlink_cycle.py", "identity_upkeep.py", "inventory_view.py"}, importers   # P7: the guard reads which cards are linked
 assert len(re.findall(r"cardlink_cycle\.load\b", (APP / "main.py").read_text(encoding="utf-8"))) == 1, "linkview filled at start"
 assert len(re.findall(r"cardlink_cycle\.counts\(", (APP / "export" / "export_zip.py").read_text(encoding="utf-8"))) == 1, "the export counts"
 print("TUTTO OK")

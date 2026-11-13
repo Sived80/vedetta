@@ -1,4 +1,4 @@
-import { COMPACT, LANG, REDUCED, api, esc, icon, ipKey, t } from "./core.js";
+import { COMPACT, LANG, REDUCED, ago, api, esc, icon, ipKey, nowSec, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { ign } from "./ignored.js";
 import { schedule } from "./live.js";
@@ -35,7 +35,7 @@ function newRows() {
   const list = (S.scanDone || S.newReady) ? S.newDevices.devices : [];
   list.forEach(function (d) {
     if (S.dismissedNew[String(d.mac || d.ip).toUpperCase()]) return;     // closed with "Cancel": it comes back only for a device not seen before
-    take({ src: "new", ip: d.ip, mac: d.mac, name: d.hostname || "" });
+    take({ src: "new", ip: d.ip, mac: d.mac, name: d.hostname || "", lastSeen: d.last_seen });
   });
   const ad = S.adding;
   if (ad) Object.keys(ad.ips).forEach(function (ip) { if (ad.meta[ip]) take(ad.meta[ip]); });
@@ -59,6 +59,12 @@ function redrawNew() {
   newEl._markup = "";
   renderNew();
 }
+// 1.0 step P7 (decision 3A): a new device that has not been heard for a while stays in the list, with when it was last seen.
+const ASLEEP_S = 900;
+function asleep(d) {
+  return d.lastSeen && nowSec() - d.lastSeen > ASLEEP_S ? " · " + ago(d.lastSeen) : "";
+}
+
 export function renderNew() {
   if (COMPACT) { newEl.hidden = true; return; }
   const list = newRows();
@@ -88,7 +94,7 @@ export function renderNew() {
     }
     const fresh = state === "done" && ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900;
     return '<div class="nd-row nd-' + state + '" data-ip="' + esc(d.ip || "") + '"><span class="nd-ic">' + (state === "idle" ? icon("devices") : ndRing(state, fresh)) + '</span><div class="nd-text"><div class="nd-name">' + esc(label) +
-      '</div><div class="nd-sub">' + esc(d.ip && d.mac ? d.mac : "") + '</div></div><div class="nd-actions">' + cells + "</div></div>";
+      '</div><div class="nd-sub">' + esc((d.ip && d.mac ? d.mac : "") + asleep(d)) + '</div></div><div class="nd-actions">' + cells + "</div></div>";
   }).join("");
   let title, sub;
   if (active) { title = t("js.ha.new.run_title", { done: saved, total: total }); sub = t("js.ha.new.run_sub"); }

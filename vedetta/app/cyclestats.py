@@ -55,11 +55,12 @@ class CycleStats:
             args = (n, durs[n // 2], durs[-1], sum(s[1] for s in self._stat) // n, sum(s[2] for s in self._stat) // n, self._stat_chains)
             if plan_info:
                 logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
-                            "host trovati in media %d, avviati a catena %d volte; rete grande %s: %d blocchi su %d gia' controllati",
+                            "host trovati in media %d, avviati a catena %d volte; rete %s chiesta a turno: %d parti su %d gia' chieste",
                             *args, plan_info["network"], plan_info["done"], plan_info["total"])
             else:
                 logger.info("Ultima ora: %d controlli, durata mediana %.1f s, massima %.1f s, indirizzi chiesti in media %d, "
                             "host trovati in media %d, avviati a catena %d volte", *args)
             self.last_summary = {"cycles": n, "median_s": round(durs[n // 2], 1), "max_s": round(durs[-1], 1), "chains": self._stat_chains,
-                                 "addresses_asked": args[3], "hosts_found": args[4]}
+                                 "addresses_asked": args[3], "hosts_found": args[4],
+                                 **({"walk": {"done": plan_info["done"], "total": plan_info["total"]}} if plan_info else {})}   # P8: parts of the network asked
             self._stat, self._stat_since, self._stat_chains = [], now, 0

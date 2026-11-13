@@ -35,5 +35,5 @@ assert len(infos) == 1 and s.last_summary["cycles"] == 3 and s.last_summary["cha
 assert s.last_summary["addresses_asked"] == (254 + 254 + 300) // 3 and s._stat == []
 s._stat_since -= cyclestats.SUMMARY_S + 1
 s.note_end(time.monotonic() - 2.0, 10, 5, {"network": "10.0.0.0/16", "done": 3, "total": 9})
-assert "3 blocchi su 9" in infos[1] and s.last_summary["cycles"] == 1
+assert "3 parti su 9" in infos[1] and s.last_summary["cycles"] == 1 and s.last_summary["walk"] == {"done": 3, "total": 9}, (infos[1], s.last_summary)   # P8: every network walked in parts
 print("TUTTO OK")

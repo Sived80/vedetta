@@ -24,8 +24,10 @@ _MDNS_MODEL_KEYS = ("model", "am", "md")
 _MDNS_MANUFACTURER_KEYS = ("manufacturer", "mf")
 
 
-def parse_mdns_txt(txt: str) -> dict:
-    """{"model", "manufacturer"} from the TXT string (`"k=v" "k2=v2"`) built by _props_to_txt (`"k=v" "k2=v2"`)."""
+def parse_mdns_txt(txt: str, stype: str | None = None) -> dict:
+    """{"model", "manufacturer"} from the TXT string (`"k=v" "k2=v2"`) built by _props_to_txt (`"k=v" "k2=v2"`); for a HomeKit service also
+    "hap_category", the accessory category of the standard (HAP, key `ci`: 5 lightbulb, 7 outlet, 8 switch, 17 camera ...). Only collected:
+    no rule reads it yet (decision A, 14/11: the rule comes after the data)."""
     pairs = dict(m.groups() for m in re.finditer(r'"([A-Za-z]+)=([^"]*)"', txt))
     out = {}
     for field, keys in (("model", _MDNS_MODEL_KEYS), ("manufacturer", _MDNS_MANUFACTURER_KEYS)):
@@ -33,6 +35,8 @@ def parse_mdns_txt(txt: str) -> dict:
             if pairs.get(key):
                 out[field] = pairs[key][:60]
                 break
+    if stype == "_hap._tcp" and re.fullmatch(r"[0-9]{1,3}", pairs.get("ci") or ""):
+        out["hap_category"] = int(pairs["ci"])
     return out
 
 

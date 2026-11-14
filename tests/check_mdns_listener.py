@@ -43,6 +43,13 @@ macs["10.0.0.20"] = "aa:bb:cc:00:00:20"
 ml.record("10.0.0.20", "_hap._tcp", "fourth", "", now=1400.0)
 assert "10.0.0.20" not in ml.by_ip and ml.by_mac["aa:bb:cc:00:00:20"]["name"] == "fourth"
 
+# the HomeKit accessory category (TXT key `ci` of the HAP standard) is kept, only from a HomeKit service and only when it is a number
+ml.record("10.0.0.20", "_hap._tcp", "fourth", '"ci=7" "md=Plug"', now=1450.0)
+assert ml.by_mac["aa:bb:cc:00:00:20"]["hap_category"] == 7
+ml.record("10.0.0.20", "_hap._tcp", "fourth", '"ci=x7"', now=1460.0)
+ml.record("10.0.0.20", "_http._tcp", "web", '"ci=17"', now=1470.0)
+assert ml.by_mac["aa:bb:cc:00:00:20"]["hap_category"] == 7, "another service's ci, or a ci that is no number, changes nothing"
+
 # the memory file: round trip, broken file ignored, unwritable folder survived
 ml._save()
 assert ml._dirty is False and ml.STORE_PATH.exists()

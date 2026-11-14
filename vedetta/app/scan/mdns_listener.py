@@ -58,7 +58,7 @@ def record(ip: str, stype: str, instance: str, txt: str, now: float | None = Non
     instance, txt = scan_common.clean_text(instance, 255) or "", scan_common.clean_text(txt, 2048) or ""
     now = time.time() if now is None else now
     score, name = score_name(stype, instance, txt)
-    meta = mdns_parse.parse_mdns_txt(txt)
+    meta = mdns_parse.parse_mdns_txt(txt, stype)
     mac = _own_mac(ip)
     card = _updated_card(by_mac.get(mac) if mac else by_ip.get(ip), stype, name, score, meta, ip, now)
     if mac:
@@ -77,12 +77,12 @@ def _own_mac(ip: str) -> str | None:
 
 def _updated_card(card: dict | None, stype: str, name: str, score: int, meta: dict, ip: str, now: float) -> dict:
     """A copy of the card remembered for a device, updated with one announcement: the service is added, a better name replaces the old one
-    (on equal score the most recent wins), model and manufacturer are filled when the announcement has them, address and time are renewed."""
+    (on equal score the most recent wins), model, manufacturer and HomeKit category are filled when the announcement has them, address and time are renewed."""
     card = dict(card or {})
     services = set(card.get("services") or []) | {stype}
     if score >= int(card.get("score") or 0):
         card.update(name=truncate_name(name), score=score)
-    for key in ("model", "manufacturer"):
+    for key in ("model", "manufacturer", "hap_category"):
         if meta.get(key):
             card[key] = meta[key]
     card.update(services=sorted(services), ip=ip, seen=now)

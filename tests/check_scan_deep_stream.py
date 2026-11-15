@@ -20,6 +20,29 @@ from app.state import state  # noqa: E402
 from app.storage import journal  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "scan_deep_stream.json"
+
+
+class _GatedAsyncio:
+    """asyncio as the route module sees it, with one change: the fake jobs below wait until the stream calls as_completed, then
+    finish in their fixed order. Without it the order depended on when the server starts the stream (later in Starlette 1.x)."""
+    started = False
+
+    def __getattr__(self, name):
+        return getattr(asyncio, name)
+
+    def as_completed(self, fs):
+        _GatedAsyncio.started = True
+        return asyncio.as_completed(fs)
+
+
+async def _wait_for_stream():
+    for _ in range(100000):
+        if _GatedAsyncio.started:
+            return
+        await asyncio.sleep(0)
+
+
+scan_routes.asyncio = _GatedAsyncio()
 LOG: list = []
 journal.add = lambda *a, **k: LOG.append(["journal.add", list(a), k])
 state.search_started = lambda: LOG.append(["search_started"])
@@ -34,13 +57,14 @@ async def _local(ips):
 scan_routes.registry.allowed = _local
 
 
-TURNS = 40      # the loops of the event loop that one step of delay lasts
+TURNS = 200     # the loops of the event loop that one step of delay lasts
 
 
 def job(kind, i):
     """The search i ends TURNS * (i + 1) turns of the event loop after the start: the order of the answers, and the time the stream has between two of them to do its work, are counted in turns and do not depend on a
     clock (it used to be a pause of 0.02 s times the number, and under load two close pauses could swap)."""
     async def run():
+        await _wait_for_stream()
         for _ in range(TURNS * (i + 1)):
             await asyncio.sleep(0)
         if kind == "ok":
@@ -76,6 +100,7 @@ def run_scenario(kinds):
         return [asyncio.ensure_future(job(k, i)()) for i, k in enumerate(kinds)]
 
     pipeline.start_associative = fake_start
+    _GatedAsyncio.started = False
     app = FastAPI()
     app.include_router(scan_routes.router)
     with TestClient(app) as client:

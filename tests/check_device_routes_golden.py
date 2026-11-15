@@ -26,6 +26,29 @@ from app.state import state  # noqa: E402
 from app.storage import blocklist, devices_config, journal  # noqa: E402
 
 GOLDEN = Path(__file__).parent / "golden" / "device_routes.json"
+
+
+class _GatedAsyncio:
+    """asyncio as the route module sees it, with one change: the fake jobs below wait until the stream calls as_completed, then
+    finish in their fixed order. Without it the order depended on when the server starts the stream (later in Starlette 1.x)."""
+    started = False
+
+    def __getattr__(self, name):
+        return getattr(asyncio, name)
+
+    def as_completed(self, fs):
+        _GatedAsyncio.started = True
+        return asyncio.as_completed(fs)
+
+
+async def _wait_for_stream():
+    for _ in range(100000):
+        if _GatedAsyncio.started:
+            return
+        await asyncio.sleep(0)
+
+
+device_routes.asyncio = _GatedAsyncio()
 N = 2500
 rng = random.Random(1212)
 LOG: list = []
@@ -105,8 +128,9 @@ async def fake_prepare_batch(profile, ips):
 
 async def fake_rescan_device(d, batch):
     LOG.append(["rescan_device", d["id"], batch])
-    for _ in range(50 * (IDS.index(d["id"]) + 1)):    # a fixed finishing order: as_completed has none when several finish together, and the
-        await asyncio.sleep(0)                          # stream must already be waiting (Starlette 1.x starts it a few loop turns later)
+    await _wait_for_stream()
+    for _ in range(IDS.index(d["id"]) + 1):         # a fixed finishing order: as_completed has none when several finish together
+        await asyncio.sleep(0)
     if M["rescan"].get(d["id"]) == "raise":
         raise RuntimeError("rescan down")
 
@@ -213,6 +237,7 @@ def case_rescan():
     body = pick([{"ids": ids}] * 8 + [{}])
     configure(local=pick(["all", "half", "half", "raise"]), batch=pick(["ok", "ok", "ok", "raise"]), rescan={c["id"]: pick(["ok", "ok", "raise"]) for c in cfgs})
     devices_config.load_devices = fake_load(cfgs)
+    _GatedAsyncio.started = False
     r = client.post("/api/devices/rescan", json=body)
     return ["rescan", body, r]
 

@@ -1,4 +1,4 @@
-import { $, COMPACT, LANG, ago, api, dlg, reloadHost, t } from "./core.js";
+import { $, COMPACT, LANG, STREAM_STALE_MS, ago, api, dlg, reloadHost, t } from "./core.js";
 import { S, setConn, snack } from "./core-ui.js";
 import { setStarBadge, setUpdateDot } from "./core-menu.js";
 import { buildNetwork, netEl, networkBuilt, refreshDone, updateNetwork, updateScan } from "./filters.js";
@@ -124,6 +124,11 @@ function onAlert(ev) {
 }
 
 // ------------------------------------------------------- real-time stream
+// The stream is open and spoke recently (an event or a ping): no need to reopen it.
+// Reopening a healthy stream drops it while data flows, and Supervisor logs every such drop as an error (#55).
+export function streamAlive() {
+  return !!S.es && S.es.readyState !== 2 && Date.now() - S.conn.last < STREAM_STALE_MS;
+}
 export function connect() {
   clearTimeout(S.retryTimer);
   if (S.es) { S.es.close(); S.es = null; }
@@ -146,6 +151,8 @@ export function connect() {
   on("alert", onAlert);
   on("new_devices", onNewDevices);
   on("analysis", onAnalysis);
+  // The heartbeat of a quiet stream: it only says the stream is alive (on() keeps the time).
+  on("ping", function () {});
   // The clients Home Assistant sees (adopted or to adopt) changed: the cards come again with the devices.
   on("passive", function () { netsChanged(); });
   // The link with the MQTT broker (configured? connected?): the Home Assistant tile follows it as it changes, without waiting for a full reload.
@@ -227,7 +234,8 @@ export function load(opts) {
     fetchHist();
     api("/api/settings").then(function (s) { if (s && s.miss_limit) S.missLimit = s.miss_limit; }).catch(function () {});
     S.loadFails = 0;
-    connect();
+    // A resync (roles, networks, return to the app) keeps a stream that is alive: it already sends every change.
+    if (!streamAlive()) connect();
   }).catch(function (err) {
     S.loadFails = (S.loadFails || 0) + 1;
     S.lastErr = err || null;

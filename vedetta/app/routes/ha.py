@@ -296,7 +296,9 @@ async def api_ha_events(request: Request, rev: int = 0):
     return StreamingResponse(stream(), media_type="text/event-stream", headers=SSE_HEADERS)
 
 
-PING_SECONDS = 15      # a quiet stream sends a comment this often, so a proxy does not close it and a gone client is noticed
+PING_SECONDS = 15      # a quiet stream sends a ping this often, so a proxy does not close it and a gone client is noticed
+# A named event and not a comment: the page sees it (a comment never reaches EventSource) and knows the stream is alive (#55).
+PING_FRAME = "event: ping\ndata: {}\n\n"
 
 
 async def _opening(rev: int, frame):
@@ -320,6 +322,6 @@ async def _live(queue, request, frame):
         except asyncio.TimeoutError:
             if not state.is_subscribed(queue) or await request.is_disconnected():
                 return
-            yield ": ping\n\n"
+            yield PING_FRAME
             continue
         yield frame(event)

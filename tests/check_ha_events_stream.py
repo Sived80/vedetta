@@ -1,5 +1,5 @@
 """The event stream of the page (routes/ha.api_ha_events, server-sent events), with a fake state and a fake request: it opens with the retry hint, then the events the client missed, then the picture of the
-moment (poll, activity, new devices, roles), then every event of the bus as a frame; when nothing comes for a while it sends a ping comment, and it ends (releasing its queue) when the state dropped the queue or
+moment (poll, activity, new devices, roles), then every event of the bus as a frame; when nothing comes for a while it sends a ping event, and it ends (releasing its queue) when the state dropped the queue or
 the client went away. Written on the code before it was flattened and kept passing after it (differential proof). The wait of 15 seconds is cut to a few hundredths of a second for the test."""
 import asyncio
 import json
@@ -90,7 +90,7 @@ async def main():
     out = await collect(state, FakeRequest(disconnect_after=2), put=[{"type": "poll", "n": 9}, {"type": "removed", "id": "y"}])
     assert state.asked_rev == 7
     expected = ["retry: 3000\n\n", frame({"type": "removed", "id": "x"}), frame({"type": "poll", "n": 0}), frame({"type": "poll", "n": 1}), frame({"type": "activity", "n": 2}),
-                frame({"type": "new_devices", "count": 3}), frame({"type": "roles", "n": 4}), frame({"type": "analysis", "n": 5}), frame({"type": "mqtt", "active": True, "connected": False}), frame({"type": "poll", "n": 9}), frame({"type": "removed", "id": "y"}), ": ping\n\n"]
+                frame({"type": "new_devices", "count": 3}), frame({"type": "roles", "n": 4}), frame({"type": "analysis", "n": 5}), frame({"type": "mqtt", "active": True, "connected": False}), frame({"type": "poll", "n": 9}), frame({"type": "removed", "id": "y"}), routes_ha.PING_FRAME]
     assert out == expected, out
     assert state.released == [state.queue], "the queue is released when the stream ends"
 
@@ -98,12 +98,12 @@ async def main():
     state = FakeState()
     state.alive = False
     out = await collect(state, FakeRequest())
-    assert out[-1] == frame({"type": "mqtt", "active": True, "connected": False}) and ": ping\n\n" not in out and state.released == [state.queue], out
+    assert out[-1] == frame({"type": "mqtt", "active": True, "connected": False}) and routes_ha.PING_FRAME not in out and state.released == [state.queue], out
 
     # 3) quiet and nobody leaves: a ping every quiet period
     state = FakeState()
     out = await collect(state, FakeRequest(), limit=9)
-    assert out.count(": ping\n\n") >= 2 and out[0] == "retry: 3000\n\n", out
+    assert out.count(routes_ha.PING_FRAME) >= 2 and out[0] == "retry: 3000\n\n", out
     assert state.released == [state.queue]
 
 

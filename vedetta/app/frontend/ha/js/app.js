@@ -1,4 +1,4 @@
-import { POLL_WATCHDOG_MS, redirecting } from "./core.js";
+import { POLL_WATCHDOG_MS, STREAM_STALE_MS, redirecting } from "./core.js";
 import { S, buildToolbar } from "./core-ui.js";
 import { showDebugBadge } from "./debug.js";
 import { updateScan } from "./filters.js";
@@ -17,10 +17,10 @@ function start() {
   }, 6000);
   setInterval(tick, 30000);
   setInterval(fetchHist, 300000);
-  // If the stream goes quiet (mobile network, standby): beyond the maximum interval between
-  // two cycles with no event at all it is reopened from scratch.
+  // If the stream goes quiet (mobile network, standby): with no event and no ping for a while
+  // it is reopened from scratch.
   setInterval(function () {
-    if (S.es && S.loaded && Date.now() - S.conn.last > POLL_WATCHDOG_MS) connect();
+    if (S.es && S.loaded && Date.now() - S.conn.last > STREAM_STALE_MS) connect();
   }, 15000);
   window.addEventListener("pagehide", function () { if (S.es) { S.es.close(); S.es = null; } });
   window.addEventListener("pageshow", function (e) { if (e.persisted && S.loaded) connect(); });

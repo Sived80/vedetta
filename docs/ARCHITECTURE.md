@@ -282,7 +282,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
 | `js/core-menu.js` | 318 | guided typing |
 | `js/core-ui.js` | 199 | state |
-| `js/core.js` | 238 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
+| `js/core.js` | 240 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 158 | deep search |
 | `js/export-vlan.js` | 107 | an optional extra of the export for the developer |
@@ -295,7 +295,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/health-sim.js` | 49 | network health: made-up findings, debug mode only |
 | `js/ignored.js` | 342 | ignored devices |
-| `js/live.js` | 256 | update |
+| `js/live.js` | 264 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 199 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 325 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |

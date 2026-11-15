@@ -40,6 +40,8 @@ export let REDUCED = false;
 })();
 export const TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
 export const POLL_WATCHDOG_MS = 90000;
+// The server sends a ping every 15 s on a quiet stream: with nothing for this long the stream is dead.
+export const STREAM_STALE_MS = 40000;
 
 // ---------------------------------------------------------------- language
 // The server decides the language: the choice of the logged-in Home Assistant user (kept on the server), the language of Home

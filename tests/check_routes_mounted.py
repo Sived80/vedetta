@@ -9,7 +9,17 @@ os.environ["VEDETTA_DATA_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import main  # noqa: E402
 
-routes = [(method, route.path) for route in main.app.routes for method in sorted(getattr(route, "methods", None) or [])]
+def _flat_routes(routes, prefix=""):
+    """Every route with its full path. FastAPI 0.162+ keeps an included router as one entry: walk into it."""
+    for r in routes:
+        ctx = getattr(r, "include_context", None)
+        if ctx is not None:
+            yield from _flat_routes(ctx.included_router.routes, prefix + ctx.prefix)
+        else:
+            yield prefix, r
+
+
+routes = [(method, pre + route.path) for pre, route in _flat_routes(main.app.routes) for method in sorted(getattr(route, "methods", None) or [])]
 twice = [key for key, count in collections.Counter(routes).items() if count > 1]
 assert not twice, "a route is mounted twice: %s" % twice
 

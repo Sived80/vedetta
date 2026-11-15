@@ -55,9 +55,10 @@ async def ha_page(request: Request, theme: str = "auto", bg: str = "", compact: 
     lang, chosen = i18n.resolve_request(request)
     theme = theme if theme in THEMES else "auto"
     return templates.TemplateResponse(
+        request,
         "ha.html",
         {
-            "request": request, "lang": lang, "lang_auto": not chosen, "languages": i18n.available(), "js_strings": i18n.js_table(lang),
+            "lang": lang, "lang_auto": not chosen, "languages": i18n.available(), "js_strings": i18n.js_table(lang),
             "theme": theme, "transparent": bg == "transparent", "compact": _flag(compact),
             "limit": max(1, min(limit, 30)),
         },

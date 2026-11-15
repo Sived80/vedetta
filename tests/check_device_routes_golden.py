@@ -105,8 +105,8 @@ async def fake_prepare_batch(profile, ips):
 
 async def fake_rescan_device(d, batch):
     LOG.append(["rescan_device", d["id"], batch])
-    for _ in range(IDS.index(d["id"]) + 1):         # a fixed finishing order: as_completed has none when several finish together
-        await asyncio.sleep(0)
+    for _ in range(50 * (IDS.index(d["id"]) + 1)):    # a fixed finishing order: as_completed has none when several finish together, and the
+        await asyncio.sleep(0)                          # stream must already be waiting (Starlette 1.x starts it a few loop turns later)
     if M["rescan"].get(d["id"]) == "raise":
         raise RuntimeError("rescan down")
 

@@ -1,6 +1,7 @@
 """Time zone (and language) of Home Assistant. The nightly maintenance (03:00) and the time written in the log are the user's own, read from
 Home Assistant (WebSocket command get_config, with the read-only access the app already has). Without Home Assistant (or with
 the access turned off) the container's own time zone is used."""
+import asyncio
 import json
 import time
 from datetime import datetime, tzinfo
@@ -64,21 +65,31 @@ async def _read_zone(token: str) -> ZoneInfo | None:
 
 async def _authenticate(ws, token: str) -> None:
     """The Home Assistant WebSocket greeting and login; raises if the server does not ask for authentication or refuses the token."""
-    first = json.loads(await ws.recv())
+    first = await _recv(ws)
     if first.get("type") != "auth_required":
         raise RuntimeError(f"unexpected answer: {first.get('type')}")
     await ws.send(json.dumps({"type": "auth", "access_token": token}))
-    if json.loads(await ws.recv()).get("type") != "auth_ok":
+    if (await _recv(ws)).get("type") != "auth_ok":
         raise RuntimeError("authentication refused")
 
 
 async def _get_config(ws) -> dict | None:
-    """Asks for the configuration and waits for the answer to that request (other messages are skipped); None if the request failed."""
+    """Asks for the configuration and waits for the answer to that request (other messages are skipped, for at most the registry's
+    timeout in all); None if the request failed."""
     await ws.send(json.dumps({"id": 1, "type": "get_config"}))
+    return await asyncio.wait_for(_answer_to(ws, 1), ha_registry.TIMEOUT_S)
+
+
+async def _answer_to(ws, request_id: int) -> dict | None:
     while True:
-        msg = json.loads(await ws.recv())
-        if msg.get("id") == 1:
+        msg = await _recv(ws)
+        if msg.get("id") == request_id:
             return msg.get("result") if msg.get("success") else None
+
+
+async def _recv(ws) -> dict:
+    """One message, waited for at most the registry's timeout (a server that accepts and then says nothing must not hang the task)."""
+    return json.loads(await asyncio.wait_for(ws.recv(), ha_registry.TIMEOUT_S))
 
 
 def _apply_zone(found: ZoneInfo | None) -> bool:

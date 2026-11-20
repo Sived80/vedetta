@@ -112,9 +112,20 @@ async def allowed(ips: list) -> list:
     kept = scope.searchable(ips)
     kept_set = set(kept)
     rejected = [ip for ip in ips if ip not in kept_set]
-    if rejected:
-        logger.warning("Scansione rifiutata, IP fuori dalla rete locale %s: %s", scope.networks[0].cidr, ", ".join(rejected))
+    presence = [ip for ip in rejected if scope.network_of(ip) is not None]      # in a known network that allows only presence: not "outside"
+    outside = [ip for ip in rejected if ip not in set(presence)]
+    if presence:
+        logger.warning("Ricerca approfondita non permessa, rete solo presenza (si sceglie «Porte» nel pannello Reti): %s", ", ".join(presence))
+    if outside:
+        logger.warning("Scansione rifiutata, IP fuori dalla rete locale %s: %s", scope.networks[0].cidr, ", ".join(outside))
     return kept
+
+
+def deep_allowed_now(ips) -> set | None:
+    """The addresses of `ips` that registry.allowed would keep, with the main network last read (no host read: for the cards of the page);
+    None while the main network is not known yet."""
+    cidr = netutil.last_network
+    return set(scope_of(cidr).searchable(list(ips))) if cidr else None
 
 
 def through_router(ip) -> bool:

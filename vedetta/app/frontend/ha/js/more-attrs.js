@@ -188,7 +188,9 @@ export function miActions(d) {
   const watchTip = esc(t(watchOn ? "js.ha.watch.remove" : "js.ha.watch.add"));
   const bell = '<button type="button" class="icon-btn small mi-watch rp' + (watchOn ? " on" : "") + '" data-act="watch" title="' + watchTip + '" aria-label="' + watchTip + '" aria-pressed="' + watchOn + '">' +
     icon(watchOn ? "bell-ring" : "bell-outline") + "</button>";
-  el.innerHTML = flag + bell + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+  // deep_ok false: a network behind the router set to "presence only", the server refuses its devices: the button is off and says what to do
+  const deepTip = d && d.deep_ok === false ? t("js.ha.deep.presence_only") : deepOneBusy(d && d.id) ? t("js.ha.deep.busy") : "";
+  el.innerHTML = flag + bell + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepTip ? ' disabled title="' + esc(deepTip) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   if (d && !d.online) relinkOffer(d.id, el);
 }
 

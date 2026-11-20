@@ -128,6 +128,17 @@ const emit = (rescanning) => sources[sources.length - 1].emit("activity", { type
   await pressDeep();
   check(sent().length === 4 && sent()[3] === a, "a ricerca finita lo stesso dispositivo si puo' cercare di nuovo");
 
+  // --- a device of a network behind the router set to "presence only" (deep_ok false): the server would refuse it, the button says why
+  const cd = Object.assign({}, D.find((d) => d.id === c), { deep_ok: false });
+  sources[sources.length - 1].emit("device", { type: "device", device: cd });
+  await wait(60);
+  await openSheet(c);
+  const blocked = doc.querySelector('dialog[open] [data-act="deep"]');
+  check(blocked && blocked.disabled, "rete 'solo presenza': il pulsante della ricerca e' spento");
+  check(blocked && blocked.title.includes(IT ? "Porte" : "Ports"), "e dice di scegliere 'Porte' per quella rete: " + (blocked && blocked.title));
+  const before = sent().length;
+  if (blocked) { blocked.click(); await wait(40); }
+  check(sent().length === before, "nessuna richiesta che il server rifiuterebbe");
   check(errors.length === 0, "nessun errore nella pagina: " + errors.join(" | ").slice(0, 200));
   console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);

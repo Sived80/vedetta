@@ -79,7 +79,8 @@ async def api_ha_devices(request: Request):
     ready=false until the first check cycle is finished."""
     i18n.use_request(request)
     seen = passive_view.compact_all(await asyncio.to_thread(passive_store.snapshot))      # the devices Home Assistant sees: cards like the others, apart from what cannot be known without probing them
-    return {"rev": state.rev, "ready": state.ready.is_set(), "devices": ha_data.compact_all(state.sorted_devices()) + seen, "analysis": analysis_view.snapshot()}
+    return {"rev": state.rev, "ready": state.ready.is_set(), "devices": with_deep(ha_data.compact_all(state.sorted_devices())) + seen,
+            "analysis": analysis_view.snapshot()}
 
 
 @router.get("/api/ha/devices/{device_id}/debug")
@@ -346,13 +347,21 @@ async def api_ha_history(device_id: str, request: Request, hours: int = 24):
     return {"device_id": device_id, "hours": hours, **window, "latency": series}
 
 
+def with_deep(cards: list[dict]) -> list[dict]:
+    """The cards with "deep_ok": whether the deep search may ask the device (registry.allowed would keep its address). A device of a network
+    behind the router set to "presence only" never is: the badge of the page must not count it, or its number never goes down. Unmarked
+    while the main network is not known yet."""
+    ok = registry.deep_allowed_now([c.get("ip") for c in cards if c.get("ip")])
+    return cards if ok is None else [{**c, "deep_ok": c.get("ip") in ok} for c in cards]
+
+
 def localize(event: dict, cfg: dict[str, dict]) -> dict:
     """Shared-state event -> JSON for this UI: devices in
     compact format, notices as translated text (no HTML)."""
     if event["type"] == "device" and "device" in event:
         device = event["device"]
         return {**{k: v for k, v in event.items() if k != "device"},
-                "device": ha_data.compact_device(device, cfg.get(device["id"]))}
+                "device": with_deep([ha_data.compact_device(device, cfg.get(device["id"]))])[0]}
     if event["type"] == "alert" and "key" in event:
         rest = {k: v for k, v in event.items() if k != "params"}
         return {**rest, "message": i18n.t(event["key"], **event.get("params", {}))}

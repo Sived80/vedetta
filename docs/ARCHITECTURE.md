@@ -309,7 +309,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/core-ui.js` | 199 | state |
 | `js/core.js` | 258 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
-| `js/deep.js` | 159 | deep search |
+| `js/deep.js` | 163 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer |
 | `js/export.js` | 270 | export for analysis |
 | `js/filters.js` | 249 | filters |
@@ -323,7 +323,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
 | `js/live.js` | 264 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 222 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-attrs.js` | 224 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |

@@ -511,6 +511,7 @@
   "js.ha.export.focus_title": "Dispositivi segnalati: {n}",
   "js.ha.export.focus_text": "Il report include la loro scheda, la storia e la tua nota.",
   "js.ha.deep.busy": "Ricerca approfondita in corso: attendi che finisca.",
+  "js.ha.deep.presence_only": "Questa rete controlla solo la presenza: accendi Porte nel pannello Reti per cercare a fondo i suoi dispositivi.",
   "js.ha.deep.already": "Questo dispositivo è già in ricerca.",
   "js.ha.export.dest_q": "Per chi è questo export?",
   "js.ha.export.dev_title": "Per lo sviluppatore",

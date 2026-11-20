@@ -511,6 +511,7 @@
   "js.ha.export.focus_title": "Flagged devices: {n}",
   "js.ha.export.focus_text": "The report includes their card, history and your note.",
   "js.ha.deep.busy": "A deep search is running: wait until it finishes.",
+  "js.ha.deep.presence_only": "This network only checks presence: turn on Ports for it in Networks to search its devices in depth.",
   "js.ha.deep.already": "This device is already being searched.",
   "js.ha.export.dest_q": "Who is this export for?",
   "js.ha.export.dev_title": "For the developer",

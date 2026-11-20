@@ -511,6 +511,7 @@
   "js.ha.export.focus_title": "Markierte Geräte: {n}",
   "js.ha.export.focus_text": "Der Bericht enthält ihre Karte, ihren Verlauf und deine Notiz.",
   "js.ha.deep.busy": "Eine Tiefensuche läuft: Warte, bis sie fertig ist.",
+  "js.ha.deep.presence_only": "Dieses Netzwerk prüft nur die Anwesenheit: Schalte unter Netzwerke Ports ein, um seine Geräte gründlich zu durchsuchen.",
   "js.ha.deep.already": "Dieses Gerät wird bereits durchsucht.",
   "js.ha.export.dest_q": "Für wen ist dieser Export?",
   "js.ha.export.dev_title": "Für den Entwickler",

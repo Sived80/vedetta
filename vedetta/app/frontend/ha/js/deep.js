@@ -13,7 +13,7 @@ export var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
 export function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
 // Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search"). Only the ones online now: an
 // offline device cannot be analysed, and the badge kept asking for it (an offline printer, 17/11); it counts again when it answers.
-function deepPending() { return Array.from(S.devices.values()).filter(function (d) { return !d.scanned_at && !d.deep_empty_at && d.online; }); }
+function deepPending() { return Array.from(S.devices.values()).filter(function (d) { return !d.scanned_at && !d.deep_empty_at && d.online && d.deep_ok !== false; }); }   // deep_ok false: a "presence only" network, never searched
 var deepFlying = new Set();       // the devices whose search THIS page started and whose request is still open (a second device is queued by the server, not dropped)
 function deepBusy() { return deepFlying.size > 0; }               // the top buttons wait until every request of this page is over
 export function deepOneBusy(id) { return !!id && (S.activity.rescanning.has(id) || deepFlying.has(id)); }   // a device already being searched cannot be started again
@@ -23,7 +23,11 @@ export function syncDeepBusy() {
   if (busy && deepMenuEl && !deepMenuEl.hidden) toggleDeepMenu(false);
   if (typeof dlg !== "undefined" && dlg) {
     var sheetBtn = dlg.querySelector('[data-act="deep"]');
-    if (sheetBtn) { var one = deepOneBusy(S.open); sheetBtn.disabled = one; sheetBtn.title = one ? t("js.ha.deep.busy") : ""; }
+    if (sheetBtn) {
+      var open = S.devices.get(S.open), presence = !!(open && open.deep_ok === false), one = deepOneBusy(S.open);
+      sheetBtn.disabled = presence || one;
+      sheetBtn.title = presence ? t("js.ha.deep.presence_only") : one ? t("js.ha.deep.busy") : "";
+    }
   }
 }
 export function runDeep(ids) {

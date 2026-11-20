@@ -517,6 +517,7 @@
   "js.ha.export.focus_title": "Označená zařízení: {n}",
   "js.ha.export.focus_text": "Sestava obsahuje jejich kartu, historii a vaši poznámku.",
   "js.ha.deep.busy": "Probíhá hloubkové vyhledávání: počkejte na jeho dokončení.",
+  "js.ha.deep.presence_only": "Tato síť sleduje jen přítomnost: v části Sítě zapněte Porty, aby šlo její zařízení hloubkově prohledat.",
   "js.ha.deep.already": "Toto zařízení se již vyhledává.",
   "js.ha.export.dest_q": "Pro koho je tento export určen?",
   "js.ha.export.dev_title": "Pro vývojáře",

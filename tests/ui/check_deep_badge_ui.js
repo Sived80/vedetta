@@ -101,6 +101,11 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   check(badge().textContent === "1", "un dispositivo offline non si puo' analizzare: non conta (1)");
   await setDevice(0, { online: true });
   check(badge().textContent === "2", "quando torna in rete conta di nuovo (2)");
+  // a network behind the router set to "presence only": the server never searches its devices in depth (deep_ok false), the badge must not count them
+  await setDevice(0, { deep_ok: false });
+  check(badge().textContent === "1", "un dispositivo di una rete 'solo presenza' non si puo' analizzare: non conta (1)");
+  await setDevice(0, { deep_ok: true });
+  check(badge().textContent === "2", "quando la rete passa a 'Porte' conta di nuovo (2)");
 
   // --- the network card is rebuilt (return to the app, silent reload): the badge is put back in the new arrow, it is not lost
   const oldSplit = q(".gauge-side .split"), freshSplit = doc.createElement("div");

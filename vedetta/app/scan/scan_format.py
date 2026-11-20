@@ -45,7 +45,7 @@ def _copy_upnp_and_mdns_fields(info, fields):
 
 def _copy_declared_identity_fields(fields, info):
     for key in ("onvif_name", "onvif_hardware", "onvif_manufacturer", "wsd_types", "rtsp_server",
-                "tls_subject", "tls_issuer", "ssh_hostkey", "api_source", "api_vendor", "api_model", "api_name",
+                "tls_subject", "tls_issuer", "tls_fp", "ssh_hostkey", "api_source", "api_vendor", "api_model", "api_name",
                 "api_fw", "mdns_services", "igmp_groups"):
         if info.get(key):
             fields[key] = info[key]

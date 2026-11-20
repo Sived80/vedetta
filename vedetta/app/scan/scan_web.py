@@ -1,5 +1,6 @@
 """scan_web: moved out of scanner.py (see tools/split_module.py)."""
 import asyncio
+import hashlib
 from .scan_cert import cert_subject
 from ..formatters import is_useless_title
 import re
@@ -14,26 +15,27 @@ WEB_SERVICE_NAMES = {"http", "https", "http-alt", "http-proxy", "https-alt", "ww
 EPHEMERAL_PORT_START = 49152  # IANA dynamic/private range: never a stable service
 
 
-async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | None] | None:
-    """GET over TLS without verification (it is a home device with its own certificate): response
-    and certificate subject."""
+async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | None, str | None] | None:
+    """GET over TLS without verification (it is a home device with its own certificate): response, certificate subject and
+    the SHA-256 fingerprint of the certificate (lower-case hex: every address of one machine presents the same one, twins.py)."""
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(ip, port, ssl=ctx), timeout=timeout)
-        subject = None
+        subject = fp = None
         sslobj = writer.get_extra_info("ssl_object")
         if sslobj:
             der = sslobj.getpeercert(binary_form=True)
             subject = cert_subject(der) if der else None
+            fp = hashlib.sha256(der).hexdigest() if der else None
         writer.write(f"GET / HTTP/1.0\r\nHost: {ip}\r\n\r\n".encode())
         await writer.drain()
         data = await asyncio.wait_for(reader.read(65536), timeout=timeout)
         writer.close()
         with contextlib.suppress(Exception):
             await writer.wait_closed()
-        return data, subject
+        return data, subject, fp
     except Exception:
         return None
 
@@ -76,21 +78,21 @@ def _plain_is_enough(data: bytes) -> bool:
     return data.startswith(b"HTTP/") and (data[9:10] == b"2" or (data[9:10] == b"3" and b"location: https:" not in head0))
 
 
-async def _plain_or_tls(ip: str, port: int, timeout: float, data: bytes) -> tuple[bytes, str | None, bool] | None:
-    """(answer, certificate subject, over TLS?) to use, or None if the port does not speak HTTP. A TLS port answers plain text badly
+async def _plain_or_tls(ip: str, port: int, timeout: float, data: bytes) -> tuple[bytes, str | None, bool, str | None] | None:
+    """(answer, certificate subject, over TLS?, certificate fingerprint) to use, or None if the port does not speak HTTP. A TLS port answers plain text badly
     (no HTTP, or a 4xx/5xx error): we retry over TLS, which also provides page, title and certificate."""
     if _plain_is_enough(data):
-        return data, None, False
+        return data, None, False, None
     tls = await _https_get(ip, port, max(timeout, 4.0))
     if tls and tls[0].startswith(b"HTTP/"):
-        data, tls_subject = tls
-        return data, tls_subject, True
+        data, tls_subject, tls_fp = tls
+        return data, tls_subject, True, tls_fp
     if not data.startswith(b"HTTP/"):
         return None
-    return data, None, False
+    return data, None, False, None
 
 
-def _describe_response(data: bytes, tls_subject: str | None, used_tls: bool) -> dict:
+def _describe_response(data: bytes, tls_subject: str | None, used_tls: bool, tls_fp: str | None = None) -> dict:
     """The response is already here: besides the size we read, almost
     for free, the Server header and the page title. They say what
     is really running on that port (e.g. "pve-api-daemon" = Proxmox) much
@@ -109,6 +111,7 @@ def _describe_response(data: bytes, tls_subject: str | None, used_tls: bool) -> 
         "status": status,
         "scheme": "https" if used_tls else "http",
         "usable": is_web_ui(status, page_title, len(body)),
+        **({"tls_fp": tls_fp} if tls_fp else {}),
     }
 
 
@@ -167,6 +170,8 @@ def _mark_port(p: dict, found: dict | None) -> None:
         p["http_page_title"] = found["title"]
         if found.get("tls_subject"):
             p["tls_subject"] = found["tls_subject"]
+        if found.get("tls_fp"):
+            p["tls_fp"] = found["tls_fp"]
 
 
 async def _confirm_http_ports(ip: str, ports: list[dict]) -> None:
@@ -254,10 +259,14 @@ def _guess_port(ports: list[dict]) -> int:
 
 def web_identity(ports: list[dict]) -> dict:
     """Server and title read from the web port chosen as the default (if the confirmation
-    GET found them): they are the best proof of what the device is."""
+    GET found them): they are the best proof of what the device is. The certificate fingerprint is the one of that port,
+    else the one of any port confirmed over TLS (the default port may be a plain 80 while the router's panel is on 8443)."""
     chosen = _guess_port(ports)
+    out = {}
     for p in ports:
         if p["port"] == chosen and p.get("http_body_size"):
-            return {"http_server": p.get("http_server"), "http_title": p.get("http_page_title"),
-                    "tls_subject": p.get("tls_subject")}
-    return {}
+            out = {"http_server": p.get("http_server"), "http_title": p.get("http_page_title"),
+                   "tls_subject": p.get("tls_subject")}
+            break
+    fp = next((p["tls_fp"] for p in sorted(ports, key=lambda p: p["port"] != chosen) if p.get("http_body_size") and p.get("tls_fp")), None)
+    return {**out, "tls_fp": fp} if fp else out

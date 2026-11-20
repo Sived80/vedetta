@@ -38,7 +38,7 @@ _ANNOUNCED_CLUES = ("mdns_name", "mdns_model", "mdns_manufacturer", "mdns_servic
                     "upnp_model", "netbios_name", "wsd_types", "igmp_groups")
 # Clues read from an open port: they only make sense while the port answers.
 _WEB_CLUES = ("http_title", "http_server")
-_PORT_CLUES = ("http_title", "http_server", "rtsp_server", "tls_subject", "tls_issuer", "ssh_hostkey", "snmp_descr",
+_PORT_CLUES = ("http_title", "http_server", "rtsp_server", "tls_subject", "tls_issuer", "tls_fp", "ssh_hostkey", "snmp_descr",
                "onvif_name", "onvif_hardware", "onvif_manufacturer", "api_source", "api_vendor", "api_model",
                "api_name", "api_fw", "battery")
 

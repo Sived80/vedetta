@@ -143,6 +143,8 @@ async def _confirm_web_identity(chosen, ip, info):
             info["http_title"] = found["http_title"]
         if found.get("tls_subject") and not info.get("tls_subject"):
             info["tls_subject"] = found["tls_subject"]
+        if found.get("tls_fp"):
+            info["tls_fp"] = found["tls_fp"]
 
     adapter, extra = "generic", {}
     return adapter, extra

@@ -130,7 +130,7 @@ def install(script):
         calls.append(["https_get", ip, port, timeout])
         if script["tls"] == "raise":
             raise ValueError("tls broke")
-        return script["tls"]
+        return (*script["tls"], None) if isinstance(script["tls"], tuple) else script["tls"]      # no certificate fingerprint: the golden predates it
 
     scan_web.asyncio = types.SimpleNamespace(open_connection=open_connection, wait_for=wait_for, TimeoutError=REAL_ASYNCIO.TimeoutError, gather=REAL_ASYNCIO.gather)
     scan_web._https_get = https_get

@@ -143,7 +143,7 @@ async def _finished(task):
 SCAN_INFO_KEYS = ("http_title", "http_server", "mdns_name", "mdns_model", "mdns_manufacturer", "mdns_services",
                   "upnp_name", "upnp_manufacturer", "upnp_model", "netbios_name", "snmp_descr", "onvif_name",
                   "onvif_hardware", "onvif_manufacturer", "wsd_types", "rtsp_server", "tls_subject", "tls_issuer",
-                  "ssh_hostkey", "api_source", "api_vendor", "api_model", "api_name", "api_fw", "igmp_groups")
+                  "tls_fp", "ssh_hostkey", "api_source", "api_vendor", "api_model", "api_name", "api_fw", "igmp_groups")
 
 
 @router.post("/api/scan/cancel")

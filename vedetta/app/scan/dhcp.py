@@ -11,6 +11,7 @@ import socket
 import time
 
 
+from ..atomic import write_atomic
 from ..paths import DATA_DIR as CONFIG_DIR
 from . import scan_common
 import contextlib
@@ -26,14 +27,74 @@ seen: dict[str, dict] = {}
 # DHCP server IP (option 54 in client requests) -> last time seen
 servers: dict[str, float] = {}
 
+# Bounds: anyone on the segment can send requests with invented MACs. A home or office network has far fewer devices; beyond the cap
+# the cards seen least recently go first (trimmed to 90% so that a flood does not sort the memory at every packet).
+SEEN_MAX = 2000
+SERVERS_MAX = 64
+SAVE_DELAY_S = 30.0        # the file is written at most once in this time, never on the packet path
+_dirty = False
+_timer: asyncio.TimerHandle | None = None
 
-def _save() -> None:
+
+def _trim(memory: dict, cap: int, when) -> None:
+    """Keeps at most `cap` entries: when beyond it, the oldest (by `when(value)`) go until 90% of the cap is left."""
+    if len(memory) <= cap:
+        return
+    for key in sorted(memory, key=lambda k: when(memory[k]))[:len(memory) - cap * 9 // 10]:
+        del memory[key]
+
+
+def _card_time(card) -> float:
     try:
-        tmp = STORE_PATH.with_suffix(".tmp")
-        tmp.write_text(json.dumps(seen), encoding="utf-8")
-        tmp.replace(STORE_PATH)
-    except OSError:
-        pass
+        return float((card or {}).get("seen") or 0)
+    except (AttributeError, TypeError, ValueError):
+        return 0.0
+
+
+def _save(snapshot: dict | None = None) -> None:
+    """Writes the memory atomically (temporary file, fsync, rename). `snapshot` is a copy taken on the loop when the write runs in a thread."""
+    global _dirty
+    _dirty = False
+    data = dict(seen) if snapshot is None else snapshot
+    try:
+        write_atomic(STORE_PATH, lambda f: json.dump(data, f), ".dhcp-", folder=STORE_PATH.parent)
+    except (OSError, ValueError, TypeError):
+        logger.warning("Memoria DHCP non salvata", exc_info=True)
+
+
+def _mark_dirty() -> None:
+    """A card changed: the save is scheduled once, SAVE_DELAY_S later (a burst of packets gives one write)."""
+    global _dirty, _timer
+    _dirty = True
+    if _timer is not None:
+        return
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        return
+    _timer = loop.call_later(SAVE_DELAY_S, lambda: asyncio.ensure_future(flush()))
+
+
+async def flush() -> None:
+    """Writes the memory if it changed, in a worker thread (the copy is taken here, on the loop)."""
+    global _timer
+    if _timer is not None:
+        _timer.cancel()
+        _timer = None
+    if _dirty:
+        await asyncio.to_thread(_save, dict(seen))
+
+
+def stop(transport: asyncio.BaseTransport | None) -> None:
+    """From the lifespan, at shutdown: closes the listener and writes what is still unsaved."""
+    global _timer
+    if transport:
+        transport.close()
+    if _timer is not None:
+        _timer.cancel()
+        _timer = None
+    if _dirty:
+        _save()
 
 
 def _dotted(value: bytes) -> str:
@@ -125,14 +186,16 @@ class _Listener(asyncio.DatagramProtocol):
         server = info.pop("server_id", None)
         if server:
             servers[server] = time.time()
+            _trim(servers, SERVERS_MAX, float)
         previous = seen.get(mac, {})
         entry = _merge_entry(previous, info)
         changed = _kept_fields(entry) != _kept_fields(previous)
         seen[mac] = entry
+        _trim(seen, SEEN_MAX, _card_time)
         if changed:
             logger.info("DHCP: %s hostname=%s prl=%s classe=%s", mac, entry.get("hostname") or "-",
                         entry.get("prl") or "-", entry.get("vendor_class") or "-")
-            _save()
+            _mark_dirty()
 
 
 async def start() -> asyncio.BaseTransport | None:
@@ -153,8 +216,9 @@ async def start() -> asyncio.BaseTransport | None:
 
 
 def _load() -> None:
-    with contextlib.suppress(OSError, ValueError):
+    with contextlib.suppress(OSError, ValueError, TypeError):
         seen.update(json.loads(STORE_PATH.read_text(encoding="utf-8")))
+    _trim(seen, SEEN_MAX, _card_time)
 
 
 # ---- classification ----

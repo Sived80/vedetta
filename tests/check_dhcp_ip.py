@@ -49,8 +49,8 @@ clock = {"t": 1000.0}
 real_time = dhcp.time.time
 dhcp.time.time = lambda: clock["t"]
 saves = []
-real_save = dhcp._save
-dhcp._save = lambda: saves.append(1)
+real_save = dhcp._mark_dirty
+dhcp._mark_dirty = lambda: saves.append(1)          # the (debounced) save is asked only when a card changed
 lis = dhcp._Listener()
 lis.datagram_received(packet(3, requested=R), None)
 e = dhcp.seen["be:11:22:33:44:55"]
@@ -62,10 +62,11 @@ assert e["ip"] == "192.168.1.77" and e["ip_ts"] == 1000 and e["seen"] == 1100, e
 obs_now = maclayer.from_dhcp(dhcp.seen, 5000.0)
 assert [o.ts for o in obs_now] == [1000.0], "the observation carries the age of the address, not of the last packet"
 clock["t"] = 1200.0
+assert saves, "a new card asks for a save"
 n = len(saves)
 lis.datagram_received(packet(3, requested=R), None)       # the same request again: a renewal, nothing changed -> no new save, but the address is renewed
 assert len(saves) == n and dhcp.seen["be:11:22:33:44:55"]["ip_ts"] == 1200
-dhcp.time.time, dhcp._save = real_time, real_save
+dhcp.time.time, dhcp._mark_dirty = real_time, real_save
 legacy = maclayer.from_dhcp({"be:11:22:33:44:55": {"ip": "192.168.1.77", "seen": 77}}, 5000.0)
 assert [o.ts for o in legacy] == [77.0], "an entry written before ip_ts existed falls back to seen"
 

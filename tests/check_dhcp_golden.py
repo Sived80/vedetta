@@ -77,7 +77,8 @@ def fake_time():
 
 
 dhcp.time = types.SimpleNamespace(time=fake_time)
-dhcp._save = lambda: calls.append(["save"])
+dhcp._save = lambda *a: calls.append(["save"])
+dhcp._mark_dirty = lambda: calls.append(["save"])   # the save is now scheduled (debounced), not written on the packet path: the moment it is asked stays the same
 dhcp.logger = types.SimpleNamespace(info=lambda *a: calls.append(["log"] + list(a)))
 DMACS = ["aa:bb:cc:00:00:01", "aa:bb:cc:00:00:02", "aa:bb:cc:00:00:03"]
 HN = ["host-a", "host-b", "", None, "iPhone"]

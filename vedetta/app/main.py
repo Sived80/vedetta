@@ -73,8 +73,7 @@ async def lifespan(_: FastAPI):
     _journal_damaged_settings()
     logger.info("Servizio avviato")
     yield
-    if dhcp_transport:
-        dhcp_transport.close()
+    dhcp.stop(dhcp_transport)   # closes the listener and writes the DHCP memory not yet saved
     nightly.cancel()
     await ha_registry.stop()
     await passive_service.stop()

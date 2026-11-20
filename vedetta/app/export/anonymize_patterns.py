@@ -71,6 +71,8 @@ _HOME_DOT = re.compile(r"(?<![\d.])(?:192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,
 
 # An SSH key fingerprint (16 bytes with ":" as nmap writes it, or "SHA256:" and 43 characters): unique to one machine, masked as ssh-key-N.
 _SSH_FP = re.compile(r"(?<![0-9A-Za-z:])(?:[0-9A-Fa-f]{2}:){15}[0-9A-Fa-f]{2}(?![0-9A-Za-z:])|(?<![0-9A-Za-z])SHA256:[A-Za-z0-9+/]{43}=?(?![A-Za-z0-9+/=])")
+# A TLS certificate fingerprint (SHA-256, 64 hex digits, scan_info "tls_fp"): unique to one machine as well, masked as tls-cert-N.
+_TLS_FP = re.compile(r"(?<![0-9A-Za-z])[0-9A-Fa-f]{64}(?![0-9A-Za-z])")
 _MAC = re.compile(r"(?<![0-9A-Za-z])(?<![^0-9A-Za-z][0-9A-Fa-f]{2}[:\-])(?<!^[0-9A-Fa-f]{2}[:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])(?!\2[0-9A-Fa-f]{2}\2[0-9A-Fa-f]{2})")
 
 

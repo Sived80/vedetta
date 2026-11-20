@@ -25,6 +25,7 @@ class Registry:
         self._dns: dict[str, int] = {}       # domain name (lower) -> number
         self._v6: dict[str, int] = {}        # IPv6 address (compressed) -> number
         self._ssh: dict[str, int] = {}       # SSH key fingerprint (lower) -> number
+        self._tls: dict[str, int] = {}       # TLS certificate fingerprint (lower) -> number
         self._name_re: re.Pattern | None = None
 
     def add_public_ip(self, ip: str | None) -> None:

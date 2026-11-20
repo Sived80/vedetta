@@ -1,5 +1,5 @@
 """AuditMixin: methods of Anonymizer that belong together (moved out of anonymize.py by tools/split_class.py)."""
-from .anonymize_patterns import _SSH_FP, _DOMAIN, _EMAIL, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _SECRET_PAIR, _VERSION_WORD, _WELL_KNOWN, _ip_ok, _public_domain, _v6_ok
+from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _SECRET_PAIR, _VERSION_WORD, _WELL_KNOWN, _ip_ok, _public_domain, _v6_ok
 from itertools import chain
 import ipaddress
 import re
@@ -49,6 +49,8 @@ class AuditMixin:
                 yield "MAC address", text[m.start():m.end()]
         for m in _SSH_FP.finditer(text):
             yield "SSH key", m.group(0)
+        for m in _TLS_FP.finditer(text):
+            yield "TLS certificate", m.group(0)
         for m in _EMAIL.finditer(text):
             if not m.group(0).endswith("@masked.invalid"):
                 yield "email address", m.group(0)

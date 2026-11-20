@@ -6,13 +6,14 @@ relations stay readable and the values do not:
   - public IP    -> 203.0.113.<n>
   - MAC          -> same manufacturer prefix + a counter (the prefix is needed to judge the brand); a private MAC -> 02:00:00 + a counter
   - SSH key fingerprint -> ssh-key-<n> (the size and kind of the key stay)
+  - TLS certificate fingerprint (SHA-256) -> tls-cert-<n>
   - device names (own name, DHCP hostname, Bonjour name, name in Home Assistant) -> iPhone-1, TV-2, ...
   - areas of Home Assistant -> Area-1
 Ports, times, scores, clues, brand, model and versions are left as they are."""
 import ipaddress
 import re
 
-from .anonymize_patterns import _SSH_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, _v6_ok  # noqa: F401
+from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, _v6_ok  # noqa: F401
 from .anonymize_audit import AuditMixin
 from .anonymize_registry import Registry
 
@@ -76,6 +77,9 @@ class Anonymizer(Registry, AuditMixin):
     def _ssh_sub(self, m: re.Match) -> str:
         return "ssh-key-%d" % self._ssh.setdefault(m.group(0).lower(), len(self._ssh) + 1)
 
+    def _tls_sub(self, m: re.Match) -> str:
+        return "tls-cert-%d" % self._tls.setdefault(m.group(0).lower(), len(self._tls) + 1)
+
     def _notify_sub(self, m: re.Match) -> str:
         name = m.group(1).lower()
         if name in _NOTIFY_KEEP or name.startswith("recipient_"):
@@ -120,6 +124,7 @@ class Anonymizer(Registry, AuditMixin):
         s = _NOTIFY.sub(self._notify_sub, s)
         s = _URL_CREDS.sub(r"\1***:***@", s)
         s = _SECRET_PAIR.sub(r"\1\2***", s)
+        s = _TLS_FP.sub(self._tls_sub, s)
         s = _SSH_FP.sub(self._ssh_sub, s)                # before the MACs: a fingerprint is a longer run of the same digits
         s = _MAC.sub(self._mac, s)
         s = _IPV6.sub(self._v6_sub, s)
@@ -165,6 +170,7 @@ class Anonymizer(Registry, AuditMixin):
                 "public_ips": {self._public_ip(ip): ip for ip in self._pub},
                 "macs": {v: k for k, v in self._macs.items()},
                 "ssh_keys": {f"ssh-key-{i}": k for k, i in self._ssh.items()},
+                "tls_certs": {f"tls-cert-{i}": k for k, i in self._tls.items()},
                 "domain_names": {f"host-{i}.masked.invalid": d for d, i in self._dns.items()},
                 "ipv6": {f"{_V6_PLACEHOLDER}{i:x}": a for a, i in self._v6.items()},
                 "names": {v: sorted(k for k, x in {**self._names, **self._areas}.items() if x == v)

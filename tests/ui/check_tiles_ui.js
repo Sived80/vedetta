@@ -108,7 +108,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   const labels = Object.keys(seen);
   check(labels.length >= 4, "la tile gira tra almeno quattro schede: " + labels.join(", "));
   const internet = seen.Internet;
-  check(!!internet && internet.includes("203.0.113.7") && /Connessione diretta|Direct connection/.test(internet) && /Online/.test(internet) && /Salti: 3|Hops: 3/.test(internet) && /controllato|checked/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
+  check(!!internet && internet.includes("203.0.113.7") && /(Connessione|Connection)\s*(Diretta|Direct)(?!\s*(connection|connessione))/i.test(internet) && !/Connessione diretta|Direct connection/.test(internet) && /Online/.test(internet) && /Salti: 3|Hops: 3/.test(internet) && /controllato|checked/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
   // 1.0.1: the latency of the gateway is a box of the main network's tile (tests/ui/check_net_tiles_ui.js), no more a tile of its own
   check(!labels.some((l) => /^(Latenza|Latency|Gateway)$/.test(l)), "niente piu' tile separate di latenza e gateway: " + labels.join(", "));
   // The MQTT tile: "exposed" counts the devices shared with Home Assistant, and only while the broker is connected.
@@ -137,6 +137,11 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   // The tile of the functions that reach the internet, and the tile "Internet" when a check is off (add-on options).
   const ext = seen[labels.find((l) => /Permessi|Permissions/.test(l))];
   check(!!ext && /2 (di|of) 3/.test(ext) && /Prefissi MAC|MAC/.test(ext) && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Permessi»: due accese su tre, quale e' spenta, e le tre funzioni nella legenda: " + ext);
+  // the legend under the boxes names the functions that are on, as a plain list (20/11: "IP pubblico Acceso · Percorso Acceso · ..." was hard to read)
+  const extLabel = labels.find((l) => /Permessi|Permissions/.test(l));
+  const extBody = await visit(extLabel);
+  const extLeg = extBody ? extBody.querySelector(".bar-leg").textContent.replace(/\s+/g, " ").trim() : "";
+  check(/^(IP pubblico, Percorso|Public IP, Path)$/.test(extLeg), "tile «Permessi»: la legenda elenca solo le funzioni accese, separate da virgole: «" + extLeg + "»");
   let reload = 0;
   const reloadWith = async (external) => {
     data.summary.external = external;
@@ -146,7 +151,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   const text = async (label) => { const b = await visit(label); return b ? b.textContent.replace(/\s+/g, " ") : ""; };
   await reloadWith({ public_ip: { on: false }, path: { on: true, target: "1.1.1.1" }, mac_database: { on: true, updated: 1700000000 } });
   let it = await text("Internet");
-  check(/(Spento|Off)/.test(it) && !/203\.0\.113\.7/.test(it) && /Connessione diretta|Direct connection/.test(it), "IP pubblico spento: la tile «Internet» dice «Spento» al posto dell'indirizzo, il percorso resta");
+  check(/(Spento|Off)/.test(it) && !/203\.0\.113\.7/.test(it) && /(Connessione|Connection)\s*(Diretta|Direct)/.test(it), "IP pubblico spento: la tile «Internet» dice «Spento» al posto dell'indirizzo, il percorso resta");
   await reloadWith({ public_ip: { on: true }, path: { on: false, target: "1.1.1.1" }, mac_database: { on: false, updated: null } });
   it = await text("Internet");
   check(/203\.0\.113\.7/.test(it) && /Percorso non verificato|Path not checked/.test(it) && /Salti: –|Hops: –/.test(it), "percorso spento: l'IP c'e', il tipo di connessione non si inventa («Percorso non verificato», salti «–»)");

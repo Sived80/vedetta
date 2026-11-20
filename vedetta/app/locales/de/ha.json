@@ -47,6 +47,7 @@
   "js.ha.tile.hops": "Hops: {n}",
   "js.ha.tile.checked": "geprüft {ago}",
   "js.ha.tile.net_direct": "Direkte Verbindung",
+  "js.ha.tile.net_direct_short": "Direkt",
   "js.ha.tile.net_cgnat": "CGNAT des Anbieters",
   "js.ha.tile.net_double": "Doppeltes NAT",
   "js.ha.tile.net_maybe_double": "Doppeltes NAT?",

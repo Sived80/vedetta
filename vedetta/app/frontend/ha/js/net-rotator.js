@@ -140,7 +140,9 @@ function internetTile() {
   const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : net.maybe_double_nat ? "js.ha.tile.net_maybe_double" : "js.ha.tile.net_direct");
   const ip = ipOn ? (net.public_ip || "–") : t("js.ha.tile.off");
   const b1 = statBox(t("js.ha.tile.ext_public_ip"), esc(ip), reachable ? color : "var(--error-color)", "tinted");
-  const b2 = statBox(t("js.ha.tile.connection"), esc(kind));
+  // in the box the label already says "Connection": the direct case is one word there (the tooltip keeps the whole text)
+  const direct = pathOn && !net.cgnat && !net.double_nat && !net.maybe_double_nat;
+  const b2 = statBox(t("js.ha.tile.connection"), esc(direct ? t("js.ha.tile.net_direct_short") : kind));
   const foot = tileLegend(esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + " · " + esc(t(reachable ? "js.ha.tile.online" : "js.ha.tile.offline")),
     esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })), pathOn ? hops / 5 * 100 : 0, color);
   return { id: "internet", tip: t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }), html: cardHTML(color, "earth", name, b1, b2, foot) };
@@ -155,11 +157,11 @@ function externalTile() {
   const color = "var(--teal-color)";
   const b1 = statBox(t("js.ha.tile.ext_on_lbl"), esc(t("js.ha.tile.ext_count", { n: n, total: rows.length })), n ? "var(--success-color)" : "var(--secondary-text-color)", "tinted");
   const b2 = statBox(t("js.ha.tile.ext_off_lbl"), off.length ? esc(off.join(", ")) : "–");
-  const all = rows.map(function (r) { return t(r[1]) + " " + t(r[0] ? "js.ha.tile.on" : "js.ha.tile.off"); }).join(" · ");
+  const onNames = rows.filter(function (r) { return r[0]; }).map(function (r) { return t(r[1]); }).join(", ");      // the legend: the ones that are on
   return {
     id: "external",
     tip: t("js.ha.tile.external_tip", { n: n, total: rows.length }),
-    html: cardHTML(color, "toggle-switch", esc(t("js.ha.tile.external")), b1, b2, tileLegend(esc(all), "", n / rows.length * 100, color))
+    html: cardHTML(color, "toggle-switch", esc(t("js.ha.tile.external")), b1, b2, tileLegend(esc(onNames), "", n / rows.length * 100, color))
   };
 }
 

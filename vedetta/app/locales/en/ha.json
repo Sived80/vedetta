@@ -47,6 +47,7 @@
   "js.ha.tile.hops": "Hops: {n}",
   "js.ha.tile.checked": "checked {ago}",
   "js.ha.tile.net_direct": "Direct connection",
+  "js.ha.tile.net_direct_short": "Direct",
   "js.ha.tile.net_cgnat": "Provider CGNAT",
   "js.ha.tile.net_double": "Double NAT",
   "js.ha.tile.net_maybe_double": "Double NAT?",

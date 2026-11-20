@@ -48,6 +48,7 @@
   "js.ha.tile.hops": "Skoky: {n}",
   "js.ha.tile.checked": "zkontrolováno {ago}",
   "js.ha.tile.net_direct": "Přímé připojení",
+  "js.ha.tile.net_direct_short": "Přímé",
   "js.ha.tile.net_cgnat": "CGNAT poskytovatele",
   "js.ha.tile.net_double": "Dvojí NAT",
   "js.ha.tile.net_maybe_double": "Dvojí NAT?",

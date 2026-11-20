@@ -331,7 +331,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-month.js` | 70 | "Last 30 days" in the card |
 | `js/net-gauge.js` | 127 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 278 | rotating tile of the Network card |
+| `js/net-rotator.js` | 280 | rotating tile of the Network card |
 | `js/netpanel.js` | 493 | the panel «Networks» (v10) |
 | `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 358 | new devices |

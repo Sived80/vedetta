@@ -144,6 +144,11 @@ def vlan_for(network: ipaddress.IPv4Network, host: dict) -> int | None:
     return None
 
 
+def has_leg(network: ipaddress.IPv4Network, host: dict) -> bool:
+    """The host (Home Assistant) has an interface with an IPv4 address in `network` (read_host), a VLAN or not."""
+    return any(_inside(a.get("address"), network) for item in host.get("interfaces") or [] for a in item.get("ipv4") or [])
+
+
 def _inside(address, network: ipaddress.IPv4Network) -> bool:
     try:
         return ipaddress.IPv4Address(address) in network

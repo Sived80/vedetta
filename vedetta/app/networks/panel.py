@@ -73,5 +73,6 @@ def describe(network: Network, seen: Seen, name: str | None, main: bool, answers
                        answers=(life["on"] > 0 or life["cards"] == 0) if answers is None else answers,
                        dns_names=any(src == DNS_SOURCE and _in(network, ip) for _, ip, src in seen.cards),
                        trackers=any(_in(network, ip) for ip in seen.trackers), mdns=any(_in(network, ip) for ip in seen.mdns),
-                       snmp=any(_in(network, ip) for ip in seen.snmp), ha_ip=seen.own_ip, iface=seen.iface)
+                       snmp=any(_in(network, ip) for ip in seen.snmp), ha_ip=seen.own_ip, iface=seen.iface,
+                       ha_leg=not direct and host_read.has_leg(network.cidr, seen.host))
     return {"name": name, "vlan": vlan, "on": life["on"], "mute": life["mute"], "caps": caps.judge(facts)}

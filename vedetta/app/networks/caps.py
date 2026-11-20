@@ -40,6 +40,7 @@ class Facts:
     snmp: bool = False            # the router's ARP table (SNMP) gave MACs of the network
     ha_ip: str | None = None      # Home Assistant's own address (the origin of the firewall rule)
     iface: str | None = None      # Home Assistant's main interface (the example command)
+    ha_leg: bool = False          # Home Assistant already has an interface in this network (behind the router: Vedetta does not use it yet)
 
 
 # ---- the ways: who does what, where (crumb keys; "net" stands for this network: its VLAN or its name) ----
@@ -134,13 +135,16 @@ def _routed_deep(facts: Facts) -> dict:
 
 
 def _routed(facts: Facts) -> dict:
+    """Behind the router. When Home Assistant already has an interface in the network (a VLAN shared with it), the way "put Home Assistant
+    inside" is not offered (it is done): what only that interface would give is "coming", as Vedetta does not listen on it yet (20/11)."""
     tracked = _on("ha", "router_integration") if facts.trackers else None
+    inside = [] if facts.ha_leg else [_way("ha_inside", facts)]
     return {"pres": _on("ved", "ping"), "name": _routed_name(facts),
-            "mac": tracked or (_on("router", "snmp") if facts.snmp else None) or _how(_way("router_integration", facts, best=True), _way("snmp", facts), _way("ha_inside", facts)),
+            "mac": tracked or (_on("router", "snmp") if facts.snmp else None) or _how(_way("router_integration", facts, best=True), _way("snmp", facts), *inside),
             "port": _routed_port(facts),
             "deep": _routed_deep(facts),
-            "quiet": tracked or _how(_way("router_integration", facts, best=True), _way("ha_inside", facts)),
-            "stray": _how(_way("ha_inside", facts, best=True))}
+            "quiet": tracked or (SOON if facts.ha_leg else _how(_way("router_integration", facts, best=True), *inside)),
+            "stray": SOON if facts.ha_leg else _how(_way("ha_inside", facts, best=True))}
 
 
 def judge(facts: Facts) -> dict:

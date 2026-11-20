@@ -4,7 +4,9 @@
 # read its digest (the header docker-content-digest of the manifest), change both here, build on the debug copy and run tests/check_docker_pins.py.
 FROM ghcr.io/home-assistant/base:3.24-2026.11.0@sha256:58422480a299b16b6ea376c2167463206d430619ed02b40cd687c8bd6875519e
 
-RUN apk add --no-cache python3 py3-pip arp-scan nmap nmap-scripts iputils curl bash
+# Nmap and arp-scan are NOT installed here: run.sh installs them from Alpine when the app starts on Home Assistant, so the published image
+# never carries them (the Nmap licence, NPSL section 3, binds a program made to run Nmap that is distributed WITH Nmap; decision C, 20/11).
+RUN apk add --no-cache python3 py3-pip iputils curl bash
 
 WORKDIR /app
 

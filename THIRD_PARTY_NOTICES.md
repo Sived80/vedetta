@@ -46,10 +46,10 @@ versions pinned there and everything they pull in. Licenses were read from the i
 
 ## Programs run by the app (not included)
 
-- **Nmap** and **arp-scan** are installed from the Alpine Linux package repository when the app image is
-  built on your own Home Assistant. Vedetta runs them as separate programs and reads their output. They are
-  not part of this repository, and Vedetta does not publish a ready-made image that contains them. Nmap is
-  covered by the [Nmap Public Source License](https://nmap.org/npsl/); arp-scan by the GNU GPL.
+- **Nmap** and **arp-scan** are installed from the Alpine Linux package repository by your own Home Assistant
+  when the app starts. Vedetta runs them as separate programs and reads their output. They are not part of
+  this repository and not part of the published image. Nmap is covered by the
+  [Nmap Public Source License](https://nmap.org/npsl/); arp-scan by the GNU GPL.
 - The app image is built on the Home Assistant base image
   (<https://github.com/home-assistant/docker-base>).
 

@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from app.networks import registry  # noqa: E402
-from app.routes import device_routes, scan_routes  # noqa: E402
+from app.routes import bodies, device_routes, scan_routes  # noqa: E402
 from app.scan import pipeline, scan_common  # noqa: E402
 from app.storage import devices_config  # noqa: E402
 
@@ -44,11 +44,15 @@ BAD = [
     ("/api/devices/rescan", {"ids": [[1]]}), ("/api/devices/rescan", {"ids": 5}), ("/api/devices/rescan", {"ids": [{"a": 1}]}),
     ("/api/scan/deep", {"ips": 5}), ("/api/scan/deep", {"ips": [[1]]}), ("/api/scan/deep", {"ips": [], "hints": ["x"]}),
 ]
+# a list longer than any network Vedetta walks through (a hostile or broken client): the same 400, before any work
+LIST_MAX = getattr(bodies, "LIST_MAX", 4096)
+BAD += [("/api/scan/deep", {"ips": ["10.70.0.1"] * (LIST_MAX + 1)}), ("/api/devices/rescan", {"ids": ["x"] * (LIST_MAX + 1)}),
+        ("/api/devices/add", {"devices": [{}] * (LIST_MAX + 1)})]
 failures = []
 for path, body in BAD:
     r = client.post(path, json=body)
     if r.status_code != 400 or r.json().get("detail") != "Invalid request":
-        failures.append((path, body, r.status_code, r.text[:80]))
+        failures.append((path, str(body)[:80], r.status_code, r.text[:80]))
 assert not failures, failures
 assert not started, started
 
@@ -62,5 +66,9 @@ r = client.post("/api/scan/deep", json={"ips": ["192.0.2.7", "not-an-ip"], "hint
 assert r.status_code == 200, (r.status_code, r.text)
 assert started == [(["192.0.2.7"], {"192.0.2.7": "lamp"})], started
 assert client.post("/api/devices/rescan", json={"ids": []}).status_code == 200
+# a whole /22 behind the router (1022 addresses) is still a legitimate list
+started.clear()
+wide = [f"10.70.{n >> 8}.{n & 0xFF}" for n in range(1, 1023)]
+assert client.post("/api/scan/deep", json={"ips": wide}).status_code == 200 and started[0][0] == wide
 assert client.post("/api/devices/add", json={}).json() == {"added": []}
 print("check_body_shapes: ok")

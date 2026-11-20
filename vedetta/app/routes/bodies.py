@@ -3,6 +3,10 @@ from fastapi import HTTPException, Request
 
 from .. import i18n
 
+# The longest list a route takes (addresses of a deep search, cards to add, ids to search again): far above the devices of any network
+# Vedetta walks through (a whole /22 behind the router is 1022 addresses), far below a body meant to keep the service busy.
+LIST_MAX = 4096
+
 
 async def json_dict(request: Request, message_key: str = "error.invalid_body") -> dict:
     """The JSON object of the request; 400 with a translated message when the body is not valid JSON or not an object."""
@@ -17,9 +21,9 @@ async def json_dict(request: Request, message_key: str = "error.invalid_body") -
 
 
 def list_field(body: dict, key: str, item_type: type) -> list:
-    """body[key], an empty list when absent, when it is a list of item_type; otherwise the same translated 400 (a number or a list of lists used
-    to give a 500 with a traceback, deep inside the route)."""
+    """body[key], an empty list when absent, when it is a list of at most LIST_MAX item_type; otherwise the same translated 400 (a number or a
+    list of lists used to give a 500 with a traceback, deep inside the route)."""
     value = body.get(key, [])
-    if not isinstance(value, list) or not all(isinstance(v, item_type) for v in value):
+    if not isinstance(value, list) or len(value) > LIST_MAX or not all(isinstance(v, item_type) for v in value):
         raise HTTPException(400, i18n.t("error.invalid_body"))
     return value

@@ -118,3 +118,20 @@ def is_valid_ipv4(value: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def trim_oldest(memory: dict, cap: int, when) -> None:
+    """Keeps a listener's memory bounded (anyone on the segment can announce invented addresses): beyond `cap` entries the oldest, by
+    `when(value)`, go until 90% of the cap is left (so that a flood does not sort the memory at every packet)."""
+    if len(memory) <= cap:
+        return
+    for key in sorted(memory, key=lambda k: when(memory[k]))[:len(memory) - cap * 9 // 10]:
+        del memory[key]
+
+
+def seen_time(card) -> float:
+    """The "seen" time of a remembered card, 0 when missing or unreadable."""
+    try:
+        return float((card or {}).get("seen") or 0)
+    except (AttributeError, TypeError, ValueError):
+        return 0.0

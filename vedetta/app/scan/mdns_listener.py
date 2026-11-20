@@ -23,6 +23,8 @@ import contextlib
 
 STORE_PATH = paths.data_path("mdns_seen.json")
 IP_TTL_S = 14 * 86400
+MAC_TTL_S = 90 * 86400   # a card by MAC not heard for this long is forgotten (the presence history keeps 90 days too)
+CARDS_MAX = 2000         # cards by MAC and by IP, each: anyone on the segment can announce from invented addresses (the oldest go first)
 _NAME_STRONG = 3   # score of a user-chosen name (friendly_name / service with a user name)
 
 by_mac: dict[str, dict] = {}   # lowercase mac -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"}
@@ -64,8 +66,10 @@ def record(ip: str, stype: str, instance: str, txt: str, now: float | None = Non
     if mac:
         by_mac[mac] = card
         by_ip.pop(ip, None)
+        scan_common.trim_oldest(by_mac, CARDS_MAX, scan_common.seen_time)
     else:
         by_ip[ip] = card
+        scan_common.trim_oldest(by_ip, CARDS_MAX, scan_common.seen_time)
     _dirty = True
 
 
@@ -149,8 +153,10 @@ def _load() -> None:
         data = json.loads(STORE_PATH.read_text(encoding="utf-8"))
         by_mac.update(data.get("by_mac") or {})
         by_ip.update(data.get("by_ip") or {})
-    except (OSError, ValueError):
+    except (OSError, ValueError, AttributeError, TypeError):
         pass
+    for memory in (by_mac, by_ip):
+        scan_common.trim_oldest(memory, CARDS_MAX, scan_common.seen_time)
 
 
 async def _listen() -> None:
@@ -190,9 +196,13 @@ def _save() -> None:
 
 
 def _housekeeping() -> None:
-    """Ties to the MAC the cards kept by IP (as soon as ARP knows it) and discards the old ones."""
+    """Ties to the MAC the cards kept by IP (as soon as ARP knows it) and discards the old ones (by IP after IP_TTL_S, by MAC after MAC_TTL_S)."""
     global _dirty
     now = time.time()
+    for mac, card in list(by_mac.items()):
+        if now - scan_common.seen_time(card) > MAC_TTL_S:
+            del by_mac[mac]
+            _dirty = True
     for ip, card in list(by_ip.items()):
         mac = _own_mac(ip)
         if mac:

@@ -28,27 +28,12 @@ seen: dict[str, dict] = {}
 servers: dict[str, float] = {}
 
 # Bounds: anyone on the segment can send requests with invented MACs. A home or office network has far fewer devices; beyond the cap
-# the cards seen least recently go first (trimmed to 90% so that a flood does not sort the memory at every packet).
+# the cards seen least recently go first (scan_common.trim_oldest).
 SEEN_MAX = 2000
 SERVERS_MAX = 64
 SAVE_DELAY_S = 30.0        # the file is written at most once in this time, never on the packet path
 _dirty = False
 _timer: asyncio.TimerHandle | None = None
-
-
-def _trim(memory: dict, cap: int, when) -> None:
-    """Keeps at most `cap` entries: when beyond it, the oldest (by `when(value)`) go until 90% of the cap is left."""
-    if len(memory) <= cap:
-        return
-    for key in sorted(memory, key=lambda k: when(memory[k]))[:len(memory) - cap * 9 // 10]:
-        del memory[key]
-
-
-def _card_time(card) -> float:
-    try:
-        return float((card or {}).get("seen") or 0)
-    except (AttributeError, TypeError, ValueError):
-        return 0.0
 
 
 def _save(snapshot: dict | None = None) -> None:
@@ -186,12 +171,12 @@ class _Listener(asyncio.DatagramProtocol):
         server = info.pop("server_id", None)
         if server:
             servers[server] = time.time()
-            _trim(servers, SERVERS_MAX, float)
+            scan_common.trim_oldest(servers, SERVERS_MAX, float)
         previous = seen.get(mac, {})
         entry = _merge_entry(previous, info)
         changed = _kept_fields(entry) != _kept_fields(previous)
         seen[mac] = entry
-        _trim(seen, SEEN_MAX, _card_time)
+        scan_common.trim_oldest(seen, SEEN_MAX, scan_common.seen_time)
         if changed:
             logger.info("DHCP: %s hostname=%s prl=%s classe=%s", mac, entry.get("hostname") or "-",
                         entry.get("prl") or "-", entry.get("vendor_class") or "-")
@@ -218,7 +203,7 @@ async def start() -> asyncio.BaseTransport | None:
 def _load() -> None:
     with contextlib.suppress(OSError, ValueError, TypeError):
         seen.update(json.loads(STORE_PATH.read_text(encoding="utf-8")))
-    _trim(seen, SEEN_MAX, _card_time)
+    scan_common.trim_oldest(seen, SEEN_MAX, scan_common.seen_time)
 
 
 # ---- classification ----

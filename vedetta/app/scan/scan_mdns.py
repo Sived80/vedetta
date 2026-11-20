@@ -13,8 +13,9 @@ from .mdns_browsing import Browsing
 # Model and manufacturer announced in the mDNS TXT records, per IP: {"model", "manufacturer"}.
 # Keys by priority: "model" (_device-info: MacBookPro18,1, iPhone15,2), "am" (AirPlay:
 # AppleTV6,2), "md" (Chromecast/HomeKit). It is filled at every mdns_scan; a device that stays silent keeps
-# its last known value (the network is a home LAN: a few dozen entries).
+# its last known value. At most META_MAX addresses: the ones heard first go first (a flood of invented announcements).
 mdns_meta: dict[str, dict] = {}
+META_MAX = 2000
 
 
 _MDNS_BUDGET = 6.0     # total seconds for the whole LAN (as with avahi-browse)
@@ -113,6 +114,8 @@ def _store_meta(seen_meta: dict[str, dict]) -> None:
         if "services" in meta:
             meta["services"] = sorted(meta["services"])
         mdns_meta.setdefault(ip, {}).update(meta)
+    while len(mdns_meta) > META_MAX:
+        del mdns_meta[next(iter(mdns_meta))]
 
 
 class _PtrProtocol(asyncio.DatagramProtocol):

@@ -3,11 +3,13 @@
 "poll_interval" = seconds between one check and the next (fixed values).
 Unknown keys are ignored: the file contains only the known ones."""
 from ..atomic import write_atomic
+import functools
 import ipaddress
 import json
 import logging
 import re
 import shutil
+import threading
 import time
 
 from ..scan import flows
@@ -17,6 +19,17 @@ from ..paths import DATA_DIR as CONFIG_DIR
 SETTINGS_PATH = CONFIG_DIR / "settings.json"
 
 logger = logging.getLogger("dashboard")
+
+_LOCK = threading.RLock()   # one lock for every read - modify - write of settings.json (as devices_config): each change re-reads the other keys and writes the whole file
+
+
+def _locked(function):
+    """The whole sequence of a modifying function (read, change, save) runs under the lock; reentrant, so a function may call another."""
+    @functools.wraps(function)
+    def run(*args, **kwargs):
+        with _LOCK:
+            return function(*args, **kwargs)
+    return run
 
 # Allowed check interval (seconds). Note: with MISS_LIMIT (state.py)
 # a device is reported offline after 3 failed checks, so the
@@ -235,6 +248,7 @@ def _save(data: dict) -> None:
         _damaged["saved_over"] = True     # the damage is over: a new one later gets its own copy
 
 
+@_locked
 def update(changes: dict) -> dict:
     """Applies only the known keys with the right type, saves, returns everything.
     ValueError if a known key has a value of the wrong type."""
@@ -277,6 +291,7 @@ def mqtt_public() -> dict:
     return data
 
 
+@_locked
 def mqtt_update(changes: dict) -> dict:
     """Applies only the known mqtt_* keys with the right type (ValueError if
     wrong: in that case nothing is saved), atomic write."""
@@ -298,6 +313,7 @@ def flows_load() -> dict[str, list[str]]:
     return result
 
 
+@_locked
 def flows_update(changes: dict) -> dict[str, list[str]]:
     """Validates (even only some profiles), saves, returns the complete flows.
     flows.FlowError (ValueError) if something is not valid: in that case
@@ -309,6 +325,7 @@ def flows_update(changes: dict) -> dict[str, list[str]]:
     return flows_load()
 
 
+@_locked
 def flows_reset() -> dict[str, list[str]]:
     """Restores the defaults (removes the "flows" key from the file)."""
     _save_all(load(), {})
@@ -327,6 +344,7 @@ def _with_order(cfg: dict) -> dict:
     return {**cfg, "notify_service": ""}
 
 
+@_locked
 def sentinel_update(changes: dict) -> dict:
     """Applies only the known keys with the right value (ValueError if wrong: then nothing is saved), atomic write. A single
     "notify_service" (a page of 0.99.x) is taken as an order of one."""
@@ -353,6 +371,7 @@ def snmp_public() -> dict:
     return {"snmp_router": data["snmp_router"], "snmp_community_set": bool(data["snmp_community"])}
 
 
+@_locked
 def snmp_update(changes: dict) -> dict:
     """Applies only the known keys with the right value (ValueError if wrong: then nothing is saved); a community left out is kept."""
     wrong = [key for key in SNMP_DEFAULTS if key in changes and not snmp_valid(key, changes[key])]

@@ -258,7 +258,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/scan_protocols.py` | scan_protocols: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scan_web.py` | scan_web: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scanner.py` | Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define, so callers and tests keep writing scanner.name. |
-| `scan/snmp.py` | A small SNMP v2c reader, read-only, for ONE thing: the ARP table of the router the person names, with the community the person writes. |
+| `scan/snmp.py` | A small SNMP v2c reader, read-only, for the router the person names, with the community the person writes: its ARP table and its own addresses. |
 | `scan/touch_policy.py` | The touch policy: how much a device is contacted. |
 | `scan/upnp_wan.py` | The address of the router on its internet side, asked to the router itself over UPnP (IGD): the only sure way to tell a double NAT. |
 | `scan/wol.py` | Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC = 102 bytes) sent as a UDP broadcast. |

@@ -21,6 +21,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app.applog import logger  # noqa: E402
 from app.routes import device_routes  # noqa: E402
 from app.routes.scan_routes import SCAN_INFO_KEYS  # noqa: E402
+GOLDEN_KEYS = [k for k in SCAN_INFO_KEYS if k != "tls_fp"]      # the keys the golden was written with (tls_fp, 1.0.1: check_tls_fingerprint.py)
 from app.scan import pipeline, scanner, wol  # noqa: E402
 from app.state import state  # noqa: E402
 from app.storage import blocklist, devices_config, journal  # noqa: E402
@@ -178,7 +179,7 @@ def case_add():
         if rng.random() < 0.4:
             c["port"] = pick(["8080", 0, None, 22, "x"])
         if rng.random() < 0.5:
-            c["scan_info"] = pick([{k: pick(["v", "T" * 300, "", None]) for k in rng.sample(list(SCAN_INFO_KEYS) + ["evil"], rng.randrange(0, 4))}, "text", None, []])
+            c["scan_info"] = pick([{k: pick(["v", "T" * 300, "", None]) for k in rng.sample(GOLDEN_KEYS + ["evil"], rng.randrange(0, 4))}, "text", None, []])
         cands.append(c)
     body = pick([{"devices": cands}] * 8 + [{}, []])
     mode = pick(["ok", "ok", "ok", "empty", "raise"])

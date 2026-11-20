@@ -31,4 +31,4 @@ EXPECTED = {
 }
 missing = sorted(EXPECTED - set(routes))
 assert not missing, "a route is not mounted: %s" % missing
-print("TUTTO OK", len(routes), "routes")
+print("ALL OK", len(routes), "routes")

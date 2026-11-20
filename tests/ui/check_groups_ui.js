@@ -77,7 +77,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(30); };
 const rows = () => qa("#card-new .nd-row");
 const label = (c) => (c.getAttribute("aria-label") || c.textContent).trim();
@@ -107,6 +107,6 @@ let PRESET_DONE = true;
   await click(head(groups().filter((g) => g.dataset.type === PRESET)[0]));
   check(JSON.parse(win.localStorage.getItem("vedetta-ha-groups")).closed.length === 0, "riaperti tutti: nessun gruppo ricordato come chiuso");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

@@ -131,4 +131,4 @@ events = [json.loads(l[6:]) for l in txt.splitlines() if l.startswith("data: ")]
 assert events[0]["type"] == "total" and events[-1] == {"type": "complete", "rescanned": events[0]["total"]}, events
 assert seen["batch"] == 1 and all(p == "deep" for _, p in seen["scanned"]) and len(seen["scanned"]) == events[0]["total"]
 assert events[0]["total"] == len([i for i in ids if ips[i] != "10.0.1.1"])
-print("TUTTO OK")
+print("ALL OK")

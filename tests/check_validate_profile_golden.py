@@ -94,4 +94,4 @@ for k in ("ok", "flow.error.unknown_profile", "flow.error.not_a_list", "flow.err
     assert keys.get(k, 0) > 40, "scenarios too uniform: %s %s" % (k, keys)
 assert any(isinstance(v.get("ok"), list) and len(v["ok"]) > 5 for v in res)
 assert any(isinstance(v.get("ok"), dict) and len(v["ok"]) > 1 for v in res)
-print("TUTTO OK")
+print("ALL OK")

@@ -21,8 +21,10 @@ class Registry:
         self._literal: dict[str, str] = {}   # other forms of a mac: 12 hex, last 6 hex
         self._public_known: set[str] = set()
         self._emails: dict[str, str] = {}
+        self._notify: dict[str, int] = {}    # notify service name (lower) -> number
         self._dns: dict[str, int] = {}       # domain name (lower) -> number
         self._v6: dict[str, int] = {}        # IPv6 address (compressed) -> number
+        self._ssh: dict[str, int] = {}       # SSH key fingerprint (lower) -> number
         self._name_re: re.Pattern | None = None
 
     def add_public_ip(self, ip: str | None) -> None:
@@ -39,7 +41,10 @@ class Registry:
         if not re.fullmatch(r"(?:[0-9a-f]{2}:){5}[0-9a-f]{2}", m) or m in self._macs:
             return
         n = len(self._macs) + 1
-        fake = m[:8] + ":" + ":".join(f"{n:06x}"[i:i + 2] for i in (0, 2, 4))
+        # the first half of a MAC is kept when it is a manufacturer's prefix (it shows the brand); a PRIVATE MAC (the "locally administered"
+        # bit on: a phone's made-up address, a router's own) has no manufacturer, its first half is part of the real address: 02:00:00
+        prefix = "02:00:00" if int(m[:2], 16) & 2 else m[:8]
+        fake = prefix + ":" + ":".join(f"{n:06x}"[i:i + 2] for i in (0, 2, 4))
         self._macs[m] = fake
         flat, tail = m.replace(":", ""), m[9:].replace(":", "")
         self._literal[flat] = fake.replace(":", "")

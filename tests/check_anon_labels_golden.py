@@ -215,4 +215,4 @@ assert any(v >= 3 for o in out for _k, v in o["state"]["_counts"]["d"]), "no lab
 assert sum(1 for o in out if o["state"]["_names"]["d"]) > 2000
 assert sum(1 for o in out for r in o["rets"] if r[0] == "dev" and r[1] is None) > 300
 assert sum(1 for o in out for r in o["rets"] if r[0] == "dev" and r[1] is not None) > 1000
-print("TUTTO OK")
+print("ALL OK")

@@ -103,4 +103,4 @@ for k in range(30):
     t += STEP_S
 res, ev = judge(h, t)
 assert res["conflicts"] == [{"ip": IP, "macs": [CAM, RELAY]}] and ev[0]["last_evidence"] == t - STEP_S
-print("TUTTO OK")
+print("ALL OK")

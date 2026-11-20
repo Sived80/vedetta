@@ -130,4 +130,4 @@ try:
 finally:
     scan_nmap._run_nmap = real_run
 assert seen and seen[0][seen[0].index("-p") + 1].split(",") == ["443"], seen
-print("TUTTO OK")
+print("ALL OK")

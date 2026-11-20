@@ -102,4 +102,4 @@ kept = [m for m in records if "online together" in m]
 assert len(kept) == 1 and "10800" in kept[0] and NAME not in kept[0], records       # 3 hours = 10800 s; no name in the log
 # and it tells when each card was first seen (hours ago, older first) and whether each is online now: who it is and where the overlap can come from
 assert "first seen 5.0 h and 5.0 h ago" in kept[0] and "online now: no, yes" in kept[0], kept[0]
-print("TUTTO OK")
+print("ALL OK")

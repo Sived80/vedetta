@@ -25,7 +25,7 @@ const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 // A page with the given answer of the server about the update; `inHA` puts a host window above it (the page is in an iframe of Home Assistant).
 function open(update, inHA) {
@@ -132,6 +132,6 @@ function open(update, inHA) {
   check(!doc.querySelector("button[data-update]"), "ma la freccia no: non c'e' una pagina Aggiornamenti da aprire");
   p.dom.window.close();
 
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

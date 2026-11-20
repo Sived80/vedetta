@@ -51,4 +51,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 res = [r[1] for r in out]
 assert sum(1 for r in res if isinstance(r, dict)) < N / 8, "too many exceptions"
 assert len({r for r in res if isinstance(r, int)}) >= 8 and sum(1 for r in res if r == 80) > 300 and sum(1 for r in res if r not in (80, 443) and isinstance(r, int)) > 500, "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

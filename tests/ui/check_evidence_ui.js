@@ -64,7 +64,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const ev = (type, target, init) => target.dispatchEvent(new win.Event(type, Object.assign({ bubbles: true, cancelable: true }, init || {})));
 const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, bubbles: true, cancelable: true }));
 
@@ -154,6 +154,6 @@ const key = (k) => doc.dispatchEvent(new win.KeyboardEvent("keydown", { key: k, 
   console.log("richieste di prove al server:", evCalls);
   check(evCalls >= 1 && evCalls <= 4, "poche richieste al server (" + evCalls + ")");
   check(errors.length === 0, errors.length ? errors.join("\n") : "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

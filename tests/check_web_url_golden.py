@@ -60,4 +60,4 @@ assert not any(isinstance(u, dict) for u in urls), [u for u in urls if isinstanc
 assert sum(1 for u in urls if u.startswith("https://")) > 200 and sum(1 for u in urls if u.startswith("http://")) > 800 and len(set(urls)) > 500, "scenarios too uniform"
 others = sum(1 for r in out if r[3] != "http://%s:%s" % (r[0], r[1]))
 assert others > 600, others
-print("TUTTO OK")
+print("ALL OK")

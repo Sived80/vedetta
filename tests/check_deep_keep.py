@@ -106,4 +106,4 @@ info = run_ports({"ports": ANALYSIS_PORTS, "scanned_at": 1.0, "ports_unseen": 1}
 assert "ports" not in info and "ports_unseen" not in info, info                                  # the second one in a row is true: now none is open
 info = run_ports({"ports": ANALYSIS_PORTS}, {"ports": [{"port": 22, "service": "ssh", "confirmed": True}]})
 assert [p["label"][:2] for p in info["ports"]] == ["22"], info                                   # a deep search that finds ports replaces the list
-print("TUTTO OK")
+print("ALL OK")

@@ -123,4 +123,4 @@ ns._read_home_assistant = real_read
 
 # --- what Home Assistant is ever asked: only reads (the registries it already read, and the template)
 assert set(ha_registry._COMMANDS.values()) == {"config/device_registry/list", "config/entity_registry/list", "config/area_registry/list", "config_entries/get"}
-print("TUTTO OK")
+print("ALL OK")

@@ -10,4 +10,4 @@ from app.export import network_survey as ns  # noqa: E402
 assert isinstance(ns.REVIEW_BY, datetime.date)
 if ns.ENABLED and datetime.date.today() > ns.REVIEW_BY:
     sys.exit(f"the network survey is still on after its review date {ns.REVIEW_BY}: turn it off or move the date (and say why in DECISIONI.md)")
-print("TUTTO OK")
+print("ALL OK")

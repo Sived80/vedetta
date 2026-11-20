@@ -31,4 +31,11 @@ for domain in ("my.dyn.nu", "family.example.su", "home.example.tk", "casa.exampl
 # what is not a domain stays: file names, versions, the public infrastructure
 for same in ("dashboard.log", "devices.yaml", "run.sh", "app.js", "lib.rs", "setup.py", "state.json", "version 0.6.3", "see github.com for it", "cache.pyc"):
     assert Anonymizer().text(same) == same, (same, Anonymizer().text(same))
-print("TUTTO OK")
+
+# the recipients of the alerts (notify services of Home Assistant) carry the name of a person or a phone: masked, the same one always the same;
+# the generic services stay (18/11: a recipient that was not also a card name went out as it was)
+a = Anonymizer()
+got = a.text('[{"service": "notify.mobile_app_marcos_iphone", "delay_s": 0}, {"service": "notify.tv_salotto"}] notify.mobile_app_marcos_iphone notify.notify')
+assert "marcos" not in got and "salotto" not in got and got.count("notify.recipient_1") == 2 and "notify.recipient_2" in got and "notify.notify" in got, got
+assert a.text(got) == got and a.mapping()["notify_services"]["notify.recipient_1"] == "notify.mobile_app_marcos_iphone"
+print("ALL OK")

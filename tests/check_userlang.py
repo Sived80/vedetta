@@ -108,4 +108,4 @@ exp.mkdir()
 skipped = [f.name for f in exp.iterdir() if any(w in f.name.lower() for w in export_zip.SKIP_WORDS)]
 assert skipped == ["user_lang.json"], skipped
 
-print("TUTTO OK")
+print("ALL OK")

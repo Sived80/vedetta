@@ -59,4 +59,4 @@ assert with_also > 1000 and with_hosts > 3000 and any(len(h.get("also", [])) > 1
     and any(sum("also" in h for h in o["hosts"]) > 1 for o in out), "scenarios too uniform (%d, %d)" % (with_also, with_hosts)
 assert all(h["mac"] not in h.get("also", []) and len(set(h.get("also", []))) == len(h.get("also", [])) and h.get("also", True) for o in out for h in o["hosts"])
 assert any(h["vendor"] is None for o in out for h in o["hosts"]) and any(h["vendor"] for o in out for h in o["hosts"])
-print("TUTTO OK")
+print("ALL OK")

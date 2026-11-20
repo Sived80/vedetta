@@ -133,4 +133,4 @@ assert refreshers == ["maclayer.py"], "one module fills the snapshot: " + repr(r
 assert old == [], "a rule still counts the addresses of a MAC by itself: " + repr(old)
 assert "macverdict.shared(" in (APP / "scan" / "mdns_listener.py").read_text(encoding="utf-8")
 assert "lenders=macverdict.lenders()" in (APP / "recognition" / "roles.py").read_text(encoding="utf-8")
-print("TUTTO OK")
+print("ALL OK")

@@ -65,4 +65,4 @@ try:
     assert ha_data.infer_type({"ip": "10.0.0.1"}, None) == "router"
 finally:
     T.type_evidence = original
-print("TUTTO OK")
+print("ALL OK")

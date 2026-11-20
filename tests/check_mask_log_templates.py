@@ -73,4 +73,4 @@ for template in sorted(templates):
             assert secret.lower() not in out.lower(), (template, line, out, secret)
         checked += 1
 print(f"{len(templates)} messaggi, {checked} combinazioni controllate")
-print("TUTTO OK")
+print("ALL OK")

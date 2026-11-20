@@ -34,6 +34,16 @@
   },
   "fixed": 6,
   "manifest": {
+   "card_links": {
+    "held": {},
+    "linked": 0,
+    "source": {},
+    "successions": {
+     "moved": 0,
+     "seen": 0
+    },
+    "unlinked": {}
+   },
    "deep_search": {
     "devices": 2,
     "never_analysed": 2
@@ -68,7 +78,24 @@
     },
     "samples": []
    },
+   "inventory": {
+    "added_from_inventory": 0,
+    "cycles": 0,
+    "macs": 0,
+    "sources": {},
+    "states": {}
+   },
    "lines_removed": [],
+   "mac_presence": {
+    "cycles": 0,
+    "found_elsewhere": 0,
+    "moved": 0,
+    "other_at_address": 0,
+    "pushed": 0,
+    "two_private": 0,
+    "unused": {},
+    "used": 0
+   },
    "mqtt": {
     "connected": false,
     "enabled": false
@@ -85,7 +112,16 @@
     "from": null,
     "until": null
    },
-   "phone_merge": null
+   "phone_merge": null,
+   "routed": {
+    "answered": 0,
+    "asked": 0,
+    "networks": 0,
+    "new": 0,
+    "seconds": 0.0,
+    "sweeps": 0,
+    "with_mac": 0
+   }
   },
   "pending": [],
   "steps": [
@@ -124,6 +160,16 @@
   },
   "fixed": 0,
   "manifest": {
+   "card_links": {
+    "held": {},
+    "linked": 0,
+    "source": {},
+    "successions": {
+     "moved": 0,
+     "seen": 0
+    },
+    "unlinked": {}
+   },
    "deep_search": {
     "devices": 2,
     "never_analysed": 2
@@ -158,7 +204,24 @@
     },
     "samples": []
    },
+   "inventory": {
+    "added_from_inventory": 0,
+    "cycles": 0,
+    "macs": 0,
+    "sources": {},
+    "states": {}
+   },
    "lines_removed": [],
+   "mac_presence": {
+    "cycles": 0,
+    "found_elsewhere": 0,
+    "moved": 0,
+    "other_at_address": 0,
+    "pushed": 0,
+    "two_private": 0,
+    "unused": {},
+    "used": 0
+   },
    "mqtt": {
     "connected": false,
     "enabled": false
@@ -175,7 +238,16 @@
     "from": null,
     "until": null
    },
-   "phone_merge": null
+   "phone_merge": null,
+   "routed": {
+    "answered": 0,
+    "asked": 0,
+    "networks": 0,
+    "new": 0,
+    "seconds": 0.0,
+    "sweeps": 0,
+    "with_mac": 0
+   }
   },
   "pending": [],
   "steps": [
@@ -213,6 +285,16 @@
   },
   "fixed": 0,
   "manifest": {
+   "card_links": {
+    "held": {},
+    "linked": 0,
+    "source": {},
+    "successions": {
+     "moved": 0,
+     "seen": 0
+    },
+    "unlinked": {}
+   },
    "deep_search": {
     "devices": 2,
     "never_analysed": 2
@@ -247,7 +329,24 @@
     },
     "samples": []
    },
+   "inventory": {
+    "added_from_inventory": 0,
+    "cycles": 0,
+    "macs": 0,
+    "sources": {},
+    "states": {}
+   },
    "lines_removed": [],
+   "mac_presence": {
+    "cycles": 0,
+    "found_elsewhere": 0,
+    "moved": 0,
+    "other_at_address": 0,
+    "pushed": 0,
+    "two_private": 0,
+    "unused": {},
+    "used": 0
+   },
    "mqtt": {
     "connected": false,
     "enabled": false
@@ -264,7 +363,16 @@
     "from": null,
     "until": null
    },
-   "phone_merge": null
+   "phone_merge": null,
+   "routed": {
+    "answered": 0,
+    "asked": 0,
+    "networks": 0,
+    "new": 0,
+    "seconds": 0.0,
+    "sweeps": 0,
+    "with_mac": 0
+   }
   },
   "pending": [],
   "steps": [
@@ -300,6 +408,16 @@
   },
   "fixed": 5,
   "manifest": {
+   "card_links": {
+    "held": {},
+    "linked": 0,
+    "source": {},
+    "successions": {
+     "moved": 0,
+     "seen": 0
+    },
+    "unlinked": {}
+   },
    "deep_search": {
     "devices": 2,
     "never_analysed": 2
@@ -334,7 +452,24 @@
     },
     "samples": []
    },
+   "inventory": {
+    "added_from_inventory": 0,
+    "cycles": 0,
+    "macs": 0,
+    "sources": {},
+    "states": {}
+   },
    "lines_removed": [],
+   "mac_presence": {
+    "cycles": 0,
+    "found_elsewhere": 0,
+    "moved": 0,
+    "other_at_address": 0,
+    "pushed": 0,
+    "two_private": 0,
+    "unused": {},
+    "used": 0
+   },
    "mqtt": {
     "connected": false,
     "enabled": false
@@ -351,7 +486,16 @@
     "from": null,
     "until": null
    },
-   "phone_merge": null
+   "phone_merge": null,
+   "routed": {
+    "answered": 0,
+    "asked": 0,
+    "networks": 0,
+    "new": 0,
+    "seconds": 0.0,
+    "sweeps": 0,
+    "with_mac": 0
+   }
   },
   "pending": [],
   "steps": [
@@ -390,6 +534,16 @@
   },
   "fixed": 0,
   "manifest": {
+   "card_links": {
+    "held": {},
+    "linked": 0,
+    "source": {},
+    "successions": {
+     "moved": 0,
+     "seen": 0
+    },
+    "unlinked": {}
+   },
    "deep_search": {
     "devices": 2,
     "never_analysed": 2
@@ -424,7 +578,24 @@
     },
     "samples": []
    },
+   "inventory": {
+    "added_from_inventory": 0,
+    "cycles": 0,
+    "macs": 0,
+    "sources": {},
+    "states": {}
+   },
    "lines_removed": [],
+   "mac_presence": {
+    "cycles": 0,
+    "found_elsewhere": 0,
+    "moved": 0,
+    "other_at_address": 0,
+    "pushed": 0,
+    "two_private": 0,
+    "unused": {},
+    "used": 0
+   },
    "mqtt": {
     "connected": false,
     "enabled": false
@@ -441,7 +612,16 @@
     "from": null,
     "until": null
    },
-   "phone_merge": null
+   "phone_merge": null,
+   "routed": {
+    "answered": 0,
+    "asked": 0,
+    "networks": 0,
+    "new": 0,
+    "seconds": 0.0,
+    "sweeps": 0,
+    "with_mac": 0
+   }
   },
   "pending": [
    {

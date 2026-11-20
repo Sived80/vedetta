@@ -6,11 +6,32 @@ Sending the events and the alerts is left to the caller through two callbacks, s
 import asyncio
 from collections.abc import Callable
 
-from . import inventory_view
+from . import inventory_view, maclayer, sentinel_view
 from .applog import logger
 from .networks import registry
 from .scan import dhcp
 from .storage import blocklist, devices_config, newdevices, settings
+from .storage.history import history
+
+
+def _successors_of(macs: set) -> dict[str, str]:
+    """{new MAC: old MAC} of the MACs never seen before that are a private MAC rotated (1.0 step P10, maclayer.successions)."""
+    return maclayer.successions(history, only=macs)
+
+
+def warn_new(fresh: list[dict], emit_alert: Callable[..., None]) -> None:
+    """One alert (or, with the alerts off, one log line) for each new device; the same words for a device behind the router (routedwatch),
+    with "MAC -" when the MAC is not known."""
+    alerts_on = settings.alerts_enabled()
+    for dev in fresh:
+        label = newdevices.readable_label(dev)
+        ip = dev["ip"] or "-"
+        message = f"Nuovo dispositivo in rete: {label} ({ip}) MAC {dev['mac'] or '-'}"
+        if alerts_on:
+            emit_alert(message, "alert.new_device", label=label, ip=ip)
+            sentinel_view.on_new_device(dev["mac"] or ip, label, ip)
+        else:
+            logger.info(message)
 
 
 class NewDeviceWatch:
@@ -24,8 +45,9 @@ class NewDeviceWatch:
         self._lock = asyncio.Lock()
 
     def set(self, devices: list[dict]) -> None:
-        """Stores the list of 'new' devices and emits the event only if the set of MACs has changed."""
-        macs = frozenset(d["mac"] for d in devices)
+        """Stores the list of 'new' devices and emits the event only if the set of MACs has changed (a device behind the router without a
+        MAC counts by its address)."""
+        macs = frozenset(d["mac"] or d["ip"] for d in devices)
         changed = macs != self.macs
         self.macs = macs
         if changed:
@@ -58,20 +80,11 @@ class NewDeviceWatch:
         baseline, self.baseline_blocks = self.baseline_blocks, ()
         return await asyncio.to_thread(
             newdevices.evaluate, observed, inventory_view.unlinked_ips(configs), configured_macs, newdevices.own_macs(),
-            baseline_blocks=baseline,
+            baseline_blocks=baseline, predecessor=_successors_of,
         )
 
     def _warn_new(self, fresh: list[dict]) -> None:
-        """One alert (or, with the alerts off, one log line) for each new device."""
-        alerts_on = settings.alerts_enabled()
-        for dev in fresh:
-            label = newdevices.readable_label(dev)
-            ip = dev["ip"] or "-"
-            message = f"Nuovo dispositivo in rete: {label} ({ip}) MAC {dev['mac']}"
-            if alerts_on:
-                self._emit_alert(message, "alert.new_device", label=label, ip=ip)
-            else:
-                logger.info(message)
+        warn_new(fresh, self._emit_alert)
 
     async def check(self, arp: dict[str, dict]) -> None:
         """Compares the seen MACs (ARP already available, no new scan) with the known ones; warns about never-seen ones."""

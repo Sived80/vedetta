@@ -34,4 +34,4 @@ seen = []
 write_atomic(target, lambda f: (seen.append([p.name for p in other.iterdir()]), f.write("z"))[1], ".tmpfolder-", folder=other)
 assert seen and seen[0][0].startswith(".tmpfolder-") and seen[0][0].endswith(".tmp"), "the temporary file is in the folder asked for, with the prefix: %r" % seen
 assert target.read_text(encoding="utf-8") == "z" and list(other.iterdir()) == []
-print("TUTTO OK")
+print("ALL OK")

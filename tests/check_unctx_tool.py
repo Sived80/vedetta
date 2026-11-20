@@ -482,4 +482,4 @@ for label, src in REFUSED.items():
     except unctx.Refuse:
         continue
     raise AssertionError(f"not refused: {label}")
-print("TUTTO OK")
+print("ALL OK")

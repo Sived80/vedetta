@@ -1,7 +1,8 @@
 import { $, ago, analysisText, canWake, devIcon, dlg, esc, fmtStamp, fmtUptime, icon, logoVar, t } from "./core.js";
 import { S, raiseSnacks, snacksEl } from "./core-ui.js";
-import { miActions, miAttrs, miDebug } from "./more-attrs.js";
+import { miActions, miAttrs, miDebug, relinkFresh } from "./more-attrs.js";
 import { loadGraph } from "./more-graph.js";
+import { loadMonth } from "./more-month.js";
 import { renderBrandEdit, renderDeep, renderFocus, renderIgnore, renderRename } from "./more-edit.js";
 
 // ------------------------------------------------- "More info" dialog
@@ -22,8 +23,9 @@ export function openMore(id) {
 export function closeMore() {
   if (dlg.open && typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open");
   S.open = null;
+  relinkFresh();
 }
-dlg.addEventListener("close", function () { S.open = null; });
+dlg.addEventListener("close", function () { S.open = null; relinkFresh(); });      // the next opening asks again; a redraw of the open card does not (18/11)
 dlg.addEventListener("click", function (e) { if (e.target === dlg) closeMore(); });
 
 export function miHeader(d, title, back) {
@@ -50,6 +52,7 @@ export function renderMore() {
     '<button type="button" class="rp" data-range="24" aria-pressed="true">' + esc(t("js.ha.more.range24")) + "</button>" +
     '<button type="button" class="rp" data-range="168" aria-pressed="false">' + esc(t("js.ha.more.range7")) + "</button></div></div>" +
     '<div class="mi-graph" id="mi-graph"><div class="skeleton sk-graph"></div></div></section>' +
+    '<section class="mi-section mi-month" id="mi-month" hidden></section>' +
     '<section class="mi-section attrs"><dl class="attr-list" id="mi-attrs"></dl></section><div id="mi-debug"></div></div>' +
     '<div class="mi-actions" id="mi-actions"></div></div>';
   miHero(d);
@@ -57,6 +60,7 @@ export function renderMore() {
   miDebug(d);
   miActions(d);
   loadGraph();
+  loadMonth();
 }
 
 export function miHero(d) {

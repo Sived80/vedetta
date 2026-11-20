@@ -91,11 +91,11 @@ assert res["name"] == "Amazon streaming" and res["brand_evidence"] == "confirmed
 res = asyncio.run(probe.probe_device({**fire, "name_source": "user"}))
 assert res["name"] == "Android"   # chosen by hand: never changed
 
-# Zigbee/Matter gateway (Tasmota): a network bridge, not just any device -> Network devices.
+# Zigbee/Matter gateway (Tasmota): a bridge of the smart home, not just any device -> Smart home (18/11: before, Network devices).
 gw = {"id": "gw", "name": "Tasmota_gateway_zigbee", "name_source": "dhcp", "ip": "10.0.0.101", "port": 80, "adapter": "generic",
       "scan_info": {"http_server": "Tasmota/13.0.0 (ESP8266EX)", "ports": [p("80 · http", cat="web")]}, "last_mac": "48:3F:DA:00:00:AE"}
 res = asyncio.run(probe.probe_device(gw))
-assert ha_data.infer_type(res) == "router", ha_data.type_scores(res)
+assert ha_data.infer_type(res) == "iot", ha_data.type_scores(res)
 # the operating system estimated by nmap is no longer a device datum
 assert "os" not in res["extra"] and not hasattr(naming, "os_name")
 
@@ -152,11 +152,11 @@ cam = {"name": "Camera giardino", "name_by_user": True, "manufacturer": "IPCAM",
        "domains": ["onvif"], "entry_titles": [], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "00:AD:11:00:00:B1", cam)
 assert ha_data.infer_type(res) == "camera" and ha_data.icon_for(res) == "cctv"
-# Zigbee gateway with Tasmota integration: the platform (Tasmota) does not decide, it stays "network device"
+# Zigbee gateway with Tasmota integration (the user's Sonoff ZbBridge): a Zigbee hub is smart home (18/11: before, "network device")
 zb = {"name": "Gateway Zigbee", "name_by_user": True, "manufacturer": "Tasmota", "model": "Sonoff ZbBridge", "area": "Corridoio",
       "domains": ["tasmota"], "entry_titles": [], "entity_names": []}
 res = probe_ha("10.0.0.50", None, "48:3F:DA:00:00:AE", zb)
-assert res["name"] == "Gateway Zigbee" and ha_data.infer_type(res) == "router", (res["name"], ha_data.type_scores(res))
+assert res["name"] == "Gateway Zigbee" and ha_data.infer_type(res) == "iot", (res["name"], ha_data.type_scores(res))
 # specific integration (Shelly gate called "Cancello"): stays smart-home
 CARDS.clear()
 
@@ -202,4 +202,4 @@ if shutil.which("openssl"):
     subject = scanner.cert_subject(ssl.PEM_cert_to_DER_cert(open(d + "/c.pem").read()))
     assert subject == "commonName=pve.local/organizationName=Proxmox Virtual Environment", subject
 assert scanner.cert_subject(b"") is None
-print("TUTTO OK")
+print("ALL OK")

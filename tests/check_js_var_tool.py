@@ -60,4 +60,4 @@ joined = run(part1 + part2 + part3)
 assert "const a = 1" in joined and "const b = a + 1" in joined
 alone = run(part2)
 assert alone == part2, "a part alone has no function around it: nothing is changed"
-print("TUTTO OK")
+print("ALL OK")

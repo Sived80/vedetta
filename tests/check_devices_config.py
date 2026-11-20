@@ -92,4 +92,4 @@ except OSError:
 finally:
     os.replace = real_replace
 assert dc.DEVICES_PATH.read_text(encoding="utf-8") == before and not list(tmp.glob(".devices-*.tmp"))
-print("TUTTO OK")
+print("ALL OK")

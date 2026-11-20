@@ -53,4 +53,4 @@ finally:
     except subprocess.TimeoutExpired:
         server.kill()
     shutil.rmtree(profile, ignore_errors=True)
-print("TUTTO OK")
+print("ALL OK")

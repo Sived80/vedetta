@@ -13,7 +13,7 @@
   "flow.step.reverse_names.description": "Asks unnamed devices for their name.",
   "flow.step.ssdp.label": "SSDP/UPnP",
   "flow.step.ssdp.description": "Name, maker and model via UPnP.",
-  "flow.step.netbios_snmp.label": "NetBIOS and SNMP",
+  "flow.step.netbios_snmp.label": "NetBIOS",
   "flow.step.netbios_snmp.description": "For PCs, printers and NAS.",
   "flow.step.ports_fast.label": "Ports (fast)",
   "flow.step.ports_fast.description": "Looks for open ports, fast.",

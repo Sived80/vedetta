@@ -39,4 +39,4 @@ assert maintenance.last_deep_attempt(after) == info["deep_empty_at"]    # the ni
 compact = ha_data.compact_device({"id": after["id"], "ip": "10.0.0.8", "name": "Phone", "extra": {}, "scanned_ports": [],
                                   "deep_empty_at": info["deep_empty_at"]}, after)
 assert compact["deep_empty_at"] == info["deep_empty_at"] and not compact["scanned_at"]
-print("TUTTO OK")
+print("ALL OK")

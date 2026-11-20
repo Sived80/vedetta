@@ -121,4 +121,4 @@ for lang in ("en", "it", "de", "cs"):
     assert all((texts.get(k) or "").strip() for k in KEYS), (lang, [k for k in KEYS if not texts.get(k)])
 JS = (Path(__file__).resolve().parent.parent / "vedetta" / "app" / "frontend" / "ha" / "js" / "more-attrs.js").read_text(encoding="utf-8")
 assert "/relink" in JS and 'data-act="relink"' in JS, "the card offers the gesture"
-print("TUTTO OK")
+print("ALL OK")

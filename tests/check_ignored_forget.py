@@ -68,4 +68,4 @@ assert c.post("/api/ignored/forget", json={"id": "nope"}).status_code == 404
 assert c.post("/api/ignored/forget", json={"mac": "zz"}).status_code == 400
 assert c.post("/api/ignored/forget", json={}).status_code == 400
 journal._entries.clear()
-print("TUTTO OK")
+print("ALL OK")

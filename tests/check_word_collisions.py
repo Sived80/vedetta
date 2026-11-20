@@ -28,4 +28,4 @@ different = {name: row for name, row in decided.items() if row["meaning"] == "di
 assert different, "no homonym in the data: the matrix would prove nothing"
 for name, row in different.items():
     assert row.get("fence") == "dual" and name in dual, "the homonym %s is not fenced by the role dual of data/brands.json: %s" % (name, row)
-print("TUTTO OK", {m: sum(1 for r in decided.values() if r["meaning"] == m) for m in ("same", "multi", "different")})
+print("ALL OK", {m: sum(1 for r in decided.values() if r["meaning"] == m) for m in ("same", "multi", "different")})

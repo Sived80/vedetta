@@ -108,4 +108,4 @@ assert [x for x in got if x[0] != "record"] == [x for x in want if x[0] != "reco
 assert sorted(map(json.dumps, [x for x in got if x[0] == "record"])) == sorted(map(json.dumps, [x for x in want if x[0] == "record"])), "the records are not what they were"
 assert ["save"] in got and got.index(["save"]) > got.index(["zeroconf closed"]), "the memory is saved last, after the browsing is closed"
 assert got[-1] == ["cancelled"] and ["zeroconf closed"] in got and sum(1 for x in got if x[0] == "record") == 3
-print("TUTTO OK")
+print("ALL OK")

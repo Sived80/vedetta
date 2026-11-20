@@ -132,3 +132,18 @@ def read_host(sys_net: Path = SYS_NET, proc: Path = PROC, ipv4_of=None) -> dict:
     paths = sorted(sys_net.iterdir()) if sys_net.is_dir() else []
     return {"interfaces": [_interface(p, vlans, ipv4_of or _ipv4_addresses) for p in paths],
             "default_interface": parse_default_route(route), "gateway": default_route_gateway(route)}
+
+
+def vlan_for(network: ipaddress.IPv4Network, host: dict) -> int | None:
+    """The VLAN id of the host's interface that has an IPv4 address in `network` (read_host), or None: no such interface, or it is not a VLAN."""
+    for item in host.get("interfaces") or []:
+        if item.get("vlan") and any(_inside(a.get("address"), network) for a in item.get("ipv4") or []):
+            return item["vlan"].get("id")
+    return None
+
+
+def _inside(address, network: ipaddress.IPv4Network) -> bool:
+    try:
+        return ipaddress.IPv4Address(address) in network
+    except (ValueError, TypeError):
+        return False

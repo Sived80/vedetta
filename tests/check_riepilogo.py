@@ -44,4 +44,4 @@ assert R.card(z, "iPhone-1")["matches"][0]["card"]["brand"] == "Apple" and R.car
 big = zipfile.ZipFile(io.BytesIO(buf.getvalue()))
 R.MAX_FILE = 10
 assert R.read(big, "state/devices_compact.json") is None          # a file above the limit is not read
-print("TUTTO OK")
+print("ALL OK")

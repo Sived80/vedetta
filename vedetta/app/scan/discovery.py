@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import unquote
 
 from ..applog import logger
-from . import scan_common
+from . import httpcap, scan_common
 import contextlib
 
 WSD_ADDR = ("239.255.255.250", 3702)
@@ -238,7 +238,7 @@ async def _describe_ssdp(client, ip, urls):
     merged: dict = {"types": []}
     for url in urls:
         try:
-            resp = await client.get(url)
+            resp = await httpcap.get(client, url)
             info = parse_description(resp.text)
         except Exception:  # noqa: S112  a datagram that is not a valid answer is skipped
             continue

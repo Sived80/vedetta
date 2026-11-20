@@ -91,4 +91,4 @@ for s in skipped:
     print("  skipped", s)
 assert len(patterns) > 60, "too few patterns found: the walk of the modules is broken"
 assert not slow, "slow patterns:\n" + "\n".join(slow)
-print("TUTTO OK")
+print("ALL OK")

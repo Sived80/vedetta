@@ -69,4 +69,4 @@ assert set(src) == {"ha_user", "ha", None} and min(src.values()) > 200, src
 assert any(r == [None, "ha_user"] for r in res) and any(isinstance(r, dict) for r in res) and sum(1 for r in res if isinstance(r, dict)) < 100
 c_title = [o for o in out if isinstance(o[1], list) and o[1][1] == "ha" and o[0].get("name") != o[1][0]]
 assert len(c_title) > 300, "titles are never the source of the name"
-print("TUTTO OK")
+print("ALL OK")

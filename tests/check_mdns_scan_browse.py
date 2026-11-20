@@ -130,4 +130,4 @@ for name in got:
 found = [x for x in got["completed"] if x[0] == "found"][0][1]
 assert len(found) == 3 and found[0][0] == "_http._tcp" and ["browser", "_late._tcp.local."] not in got["completed"]
 assert got["cancelled"][-1] == ["cancelled"] and ["zeroconf closed"] in got["cancelled"]
-print("TUTTO OK")
+print("ALL OK")

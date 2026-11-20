@@ -148,6 +148,20 @@ async def limits():
     s = fresh()
     s._apply(CONFIG, mk(True), {"d1": {**CONFIG, "name": "Rinominato"}})
     assert s.devices == {} and s.rev == 0 and drain(s) == []
+    # the mark a cycle puts on a card of a network behind the router (it allows only the ping, K1) is never saved: it does not make the result
+    # stale. It did: every card of a network behind the router kept its first state for ever, so a watched device of a VLAN never went offline
+    # and never gave its alert (the user's microwave, 17/11). A card that may not be asked at all (off_limits: a paused network) keeps its state.
+    s = fresh(limit=1)
+    s._apply({**CONFIG, "net_touch": "presence"}, mk(True), CURRENT)
+    s._apply({**CONFIG, "net_touch": "presence"}, mk(False), CURRENT)
+    await settle(s)
+    assert s.devices["d1"]["online"] is False
+    s = fresh(limit=1)
+    s._apply({**CONFIG, "off_limits": True}, mk(False), CURRENT)
+    assert s.devices == {}, "a card that may not be asked: its result is not applied (as before)"
+    s = fresh()
+    s._apply({**CONFIG, "net_touch": "presence"}, mk(True), {"d1": {**CONFIG, "name": "Rinominato"}})
+    assert s.devices == {}, "a real change of the card still makes the result stale"
     # the automatic name goes to the configuration before the card is built
     named.clear()
     s = fresh()
@@ -163,4 +177,4 @@ async def limits():
 
 
 run(limits())
-print("TUTTO OK")
+print("ALL OK")

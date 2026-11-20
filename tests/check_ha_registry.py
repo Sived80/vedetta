@@ -60,4 +60,4 @@ assert ha_registry.lookup("8C-AA-B5-00-00-A2")["name"] == "Cancello" and ha_regi
 os.environ.pop("SUPERVISOR_TOKEN", None)
 assert ha_registry.status()["enabled"] is False
 assert asyncio.run(ha_registry.refresh()) is False and "SUPERVISOR_TOKEN" in ha_registry.status()["error"]
-print("TUTTO OK")
+print("ALL OK")

@@ -68,4 +68,4 @@ assert sorted(set(readers)) == ["ha/health_view.py", "identity_upkeep.py"], read
 upkeep = (APP / "identity_upkeep.py").read_text(encoding="utf-8")
 body = upkeep[upkeep.index("def report_ip_conflicts"):upkeep.index("    @staticmethod", upkeep.index("def report_ip_conflicts"))]
 assert "macverdict.conflicts(" in body, "the alert reads the single verdict"
-print("TUTTO OK")
+print("ALL OK")

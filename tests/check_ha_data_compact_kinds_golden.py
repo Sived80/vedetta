@@ -254,4 +254,4 @@ assert len(ok) > 600 and sum(1 for k in kin if k["cache_is_none"]) > 20
 assert sum(1 for k in ok if k["res"][0] == []) > 20 and sum(1 for k in ok if k["res"][0]) > 400 and sum(1 for k in kin if k["same"] == "identical") > 600
 assert any(e["group"] == "iot" for k in ok for e in k["res"][0]) and any(e["subs"] for k in ok for e in k["res"][0]) and any(e["toks"][0] == "__set__" and len(e["toks"]) > 3 for k in ok for e in k["res"][0])
 assert sum(1 for k in kin if len(k["log"]) == 1) > 600 and sum(1 for k in kin if len(k["log"]) == 2) > 20
-print("TUTTO OK")
+print("ALL OK")

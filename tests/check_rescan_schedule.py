@@ -39,4 +39,4 @@ assert runs(True, {"full_ports_at": NOW - 60}), "slow, scanned recently but the 
 assert runs(True, {"full_ports_at": NOW - 60, "services_at": NOW - 5, "full_ports_next": 8193}), "slow, the scan by blocks is in progress"
 assert not runs(True, {"full_ports_next": 8193, "full_ports_retry_at": NOW + 3600}), "slow, a block timed out and the card waits"
 assert not runs(True, {"full_ports_retry_at": NOW + 3600}), "slow, never scanned but waiting after a failure"
-print("TUTTO OK")
+print("ALL OK")

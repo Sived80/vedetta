@@ -7,6 +7,7 @@
   "brands.error.save_failed": "Salvataggio della regola non riuscito",
   "brands.error.locked": "Questa impostazione e' decisa dalla configurazione dell'add-on (internet_mac_database)",
   "brands.error.update_running": "Un aggiornamento e' gia' in corso",
+  "brands.error.update_off": "Lo scaricamento dell'elenco dei prefissi MAC è spento nelle opzioni dell'app (internet_mac_database)",
   "brands.error.update_network": "Download non riuscito, controlla la connessione a internet ({detail})",
   "brands.error.update_invalid": "Il file scaricato non e' un elenco di prefissi MAC valido",
   "brands.error.update_too_small": "L'elenco scaricato sembra incompleto ({detail} voci), aggiornamento annullato",

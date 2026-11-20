@@ -110,4 +110,4 @@ assert got == {"10.0.0.1": "one", "10.0.0.2": "two"} and asked == ["10.0.0.2", "
 passive = {"10.0.0.1": "one"}
 run(sm.resolve_names(["10.0.0.1"], passive))
 assert passive == {"10.0.0.1": "one"} and asked == ["10.0.0.2", "10.0.0.3"], "nothing missing: no active query, and the caller's dict is not touched"
-print("TUTTO OK")
+print("ALL OK")

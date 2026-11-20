@@ -4,6 +4,7 @@ import { showDebugBadge } from "./debug.js";
 import { updateScan } from "./filters.js";
 import { fetchHist, fetchLog } from "./log.js";
 import { connect, load, tick } from "./live.js";
+import "./night.js";
 
 function start() {
   buildToolbar();

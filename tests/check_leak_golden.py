@@ -43,4 +43,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 kinds = {k for o in out if isinstance(o, list) for k, _ in o}
 assert len(kinds) >= 8, kinds
 assert not any(isinstance(o, dict) for o in out)
-print("TUTTO OK", sorted(kinds))
+print("ALL OK", sorted(kinds))

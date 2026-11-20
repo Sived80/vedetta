@@ -70,4 +70,4 @@ for i, (a, b) in enumerate(zip(out, want)):
     assert a == b, "scenario %d differs: %s" % (i, json.dumps([a, b], default=str)[:600])
 assert len(out) == len(want) == N
 assert sum(1 for o in out if o["ev"]) > 150 and sum(1 for o in out if o["kinds"]) > 50 and len({e["group"] for o in out for e in o["ev"]}) >= 4, "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

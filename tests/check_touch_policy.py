@@ -121,4 +121,11 @@ try:
 finally:
     asyncio.open_connection = real
 assert CONNECTED == [80], CONNECTED
-print("TUTTO OK")
+
+# behind the router (touch "ports", decision «B» of 14/11): the steps that cannot cross the router, or that ask more than ports and model, are left out
+ALL = list(pipeline.flows.STEP_IDS)
+kept = tp.routed_steps(ALL)
+assert [s for s in ALL if s not in kept] == ["arp", "ssdp", "onvif", "netbios_snmp", "igmp"], kept
+assert {"ports_fast", "ports_all", "service_os", "http_title", "tls_ssh", "local_api", "adapter_probe", "mdns", "ha_registry"} <= set(kept), kept
+assert tp.routed_steps(["ports_fast", "netbios_snmp"]) == ["ports_fast"]
+print("ALL OK")

@@ -66,4 +66,4 @@ a.resume()
 assert DeviceState().paused_remaining() is None and not (settings.CONFIG_DIR / "pause.json").exists()
 (settings.CONFIG_DIR / "pause.json").write_text(json.dumps({"until": time.time() - 5}))
 assert DeviceState().paused_remaining() is None, "una pausa scaduta non si riattiva"
-print("TUTTO OK")
+print("ALL OK")

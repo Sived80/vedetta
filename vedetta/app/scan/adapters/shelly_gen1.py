@@ -2,6 +2,7 @@
 The caller accepts the answer only if it has the shape of the Shelly API (MAC and uptime), otherwise any web server would be taken for a Shelly."""
 import httpx
 
+from .. import httpcap
 from ..scan_common import NO_REQUEST_PORTS
 
 
@@ -11,8 +12,8 @@ async def probe(ip: str, port: int = 80) -> dict:
     base = f"http://{ip}:{port}"
     try:
         async with httpx.AsyncClient(timeout=3) as client:
-            status = (await client.get(f"{base}/status")).json()
-            settings = (await client.get(f"{base}/settings")).json()
+            status = (await httpcap.get(client, f"{base}/status")).json()
+            settings = (await httpcap.get(client, f"{base}/settings")).json()
     except (httpx.RequestError, ValueError):
         return {"online": False}
 

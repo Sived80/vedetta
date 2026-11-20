@@ -46,4 +46,4 @@ cut = T._without_dual_maker(w, {"vendor": "Doorbell Corp", "vendor_role": "dual"
 assert "doorbell" not in cut.text and "corp" not in cut.text and "printer" in cut.text and cut.tokens == {"1", "printer"}, cut
 assert T._without_dual_maker(w, {"vendor": "Doorbell Corp", "vendor_role": "brand"}) is w, "a maker of another role is left as it is"
 assert T._without_dual_maker(w, {"vendor": None, "vendor_role": "dual"}) is w, "no vendor: nothing to take out"
-print("TUTTO OK")
+print("ALL OK")

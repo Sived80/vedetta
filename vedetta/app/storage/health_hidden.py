@@ -4,6 +4,7 @@ The choice is about the network, not about a screen: it lives on the server, so 
 ids (rule and device key, never a name) are kept, at most MAX_HIDDEN of them (the oldest choice goes first)."""
 from ..atomic import write_atomic
 import json
+import threading
 
 from ..paths import DATA_DIR as CONFIG_DIR
 
@@ -12,6 +13,7 @@ MAX_HIDDEN = 500
 MAX_ID_LEN = 200
 
 _cache: list[str] | None = None
+_lock = threading.Lock()          # apply reads, changes and writes in a worker thread: two choices made together must not lose one
 
 
 def _valid(finding_id) -> bool:
@@ -31,13 +33,19 @@ def load() -> list[str]:
 
 def apply(hide, show) -> list[str]:
     """Hides the ids in `hide`, shows again the ones in `show`; returns the list now kept. Anything that is not a short text is ignored."""
+    with _lock:
+        return _apply(hide, show)
+
+
+def _apply(hide, show) -> list[str]:
     global _cache
-    current = load()
     gone = {x for x in show if _valid(x)}
-    current = [x for x in current if x not in gone]
+    current = [x for x in load() if x not in gone]
+    seen = gone | set(current)                    # a set: the lookup stays quick on a long list
     for finding_id in hide:
-        if _valid(finding_id) and finding_id not in current and finding_id not in gone:
+        if _valid(finding_id) and finding_id not in seen:
             current.append(finding_id)
+            seen.add(finding_id)
     current = current[-MAX_HIDDEN:]
     write_atomic(PATH, lambda f: json.dump({"hidden": current}, f, ensure_ascii=False), ".health-hidden-")
     _cache = current

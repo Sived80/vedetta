@@ -73,4 +73,4 @@ device_id = r.json()["added"][0]["id"]
 for port in (9100, 502, 0, 70000):
     r = client.post(f"/api/devices/{device_id}/rename", json={"name": "Printer", "port": port})
     assert r.status_code == 400, (port, r.status_code)
-print("TUTTO OK")
+print("ALL OK")

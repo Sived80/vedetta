@@ -57,4 +57,4 @@ assert len(sent) == 1, sent
 questions = sent[0].questions
 assert [qq.name for qq in questions] == ["_services._dns-sd._udp.local."], questions
 assert not questions[0].unicast, "the question must be multicast (QM): the answers reach every listener"
-print("TUTTO OK")
+print("ALL OK")

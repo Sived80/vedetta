@@ -40,4 +40,4 @@ assert tv["brand"] == "Sony" and tv["brand_evidence"] in ("confirmed", "plausibl
 nvr = identify_brand("1C:C3:16:00:00:AA")
 print("nvr:", nvr)
 print("tv:", tv)
-print("TUTTO OK")
+print("ALL OK")

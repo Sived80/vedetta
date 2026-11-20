@@ -35,7 +35,7 @@ const EVERY10 = tx("js.ha.health.every", { every: tx("js.ha.health.every_min", {
 const SIM_ON = (k) => tx("js.ha.health.sim.on", { name: tx("js.ha.health.sim." + k) });
 
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 const NOW = Date.now() / 1000;
 const D = data.devices.devices;                                       // d1, d2, d3: the cards of the page
@@ -70,6 +70,8 @@ function boot(debug, health, stored, serverHidden, preview) {
         let b = {};
         if (url.startsWith("/api/ha/health/hidden")) {
           const body = JSON.parse(opts.body);
+          if (body.hide.length > 500 || body.show.length > 500)          // the server refuses a list longer than health_hidden.MAX_HIDDEN (routes/ha.py)
+            return Promise.resolve({ ok: false, status: 400, headers: { get: () => null }, json: () => Promise.resolve({ detail: "Invalid request" }) });
           body.show.forEach((id) => { const i = hidden.indexOf(id); if (i >= 0) hidden.splice(i, 1); });
           body.hide.forEach((id) => { if (hidden.indexOf(id) < 0) hidden.push(id); });
           b = { hidden: hidden.slice() };
@@ -279,6 +281,13 @@ async function openHealth(p) {
   check(p.hidden.join() === "H05:" + D[1].id && p.win.localStorage.getItem("vedetta-health-hidden") === null, "la scelta vecchia del browser passa al server e poi sparisce dal browser");
   await openHealth(p);
   check(p.qa(".hs-tile").map((t) => t.querySelector(".stat-box-val").textContent.trim()).join() === "1,1,0/1,0", "dopo il passaggio il nascosto vale ancora");
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+
+  // --- a very long old list (more than the server keeps): the newest 500 go, the rest is dropped as the server would drop it, and the browser forgets it
+  const many = Array.from({ length: 600 }, (_, i) => "H05:old" + i);
+  p = boot(true, running(FINDINGS), many);
+  await wait(1500);
+  check(p.hidden.length === 500 && p.hidden[0] === "H05:old100" && p.hidden[499] === "H05:old599" && p.win.localStorage.getItem("vedetta-health-hidden") === null,
+    "una lista vecchia di 600 passa al server con le 500 piu' recenti e poi sparisce dal browser (prima: rifiutata a ogni giro)");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

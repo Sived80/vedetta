@@ -185,6 +185,15 @@ def roles_for(ip: str | None) -> list[str]:
     return list((_rt.roles["by_ip"].get(ip or "") or {}).keys())
 
 
+def is_gateway(ip: str | None, mac: str | None) -> bool:
+    """The router of the house: the address of the default route, or another address with its MAC (the same router on a network behind it,
+    a VLAN: its MAC read from the router's own table)."""
+    if ip and "gateway" in roles_for(ip):
+        return True
+    own = _rt.roles.get("gateway_mac")
+    return bool(own) and normalize_mac(mac) == own
+
+
 def upnp_types(ip: str | None) -> list[str]:
     """UPnP device types declared by that IP (e.g. MediaRenderer, dial)."""
     return list((_rt.roles.get("types") or {}).get(ip or "") or [])
@@ -334,6 +343,7 @@ async def _compute_roles_snapshot(upnp, arp, own_ip):
     candidates = _dns_askable(arp, own_ip) + ([gateway] if gateway else [])
     dns = await dns_servers(c for c in candidates if _is_ipv4(c))
     result = compute(gateway=gateway, dhcp_servers=servers, dns_servers=dns, upnp=upnp, arp=arp, lenders=macverdict.lenders(), offers=_rt.offers["list"])
+    result["gateway_mac"] = normalize_mac((arp.get(gateway) or {}).get("mac")) if gateway else None
     before, keys = snapshot(), ("by_ip", "via", "names", "dhcp", "types")
     return now, result, before, keys
 

@@ -61,5 +61,5 @@ check([e["mac"] for e in fresh] == [GUEST], "the guest back after being forgotte
 fresh, _ = newdevices.evaluate({CARD: {"ip": "192.168.1.13", "hostname": None, "vendor": None}}, set(), {CARD}, hist=hist, now=now)
 check(fresh == [], "a card back is not new")
 
-print("FALLITO: %d" % failed if failed else "TUTTO OK")
+print("FAILED: %d" % failed if failed else "ALL OK")
 sys.exit(1 if failed else 0)

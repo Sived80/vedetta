@@ -97,4 +97,4 @@ calls.clear()
 assert c.post("/api/export/survey/check").status_code == 404 and calls == []     # off: no answer and Home Assistant is not even asked
 ns.ENABLED = True
 ns._read_home_assistant = real
-print("TUTTO OK")
+print("ALL OK")

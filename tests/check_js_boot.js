@@ -60,6 +60,6 @@ define("Vedetta", fake());
   if (process.argv.includes("--write")) { fs.mkdirSync(path.dirname(golden), { recursive: true }); fs.writeFileSync(golden, out + "\n"); console.log("written " + golden); process.exit(0); }
   const want = fs.existsSync(golden) ? fs.readFileSync(golden, "utf8").trim() : null;
   if (want !== out) { console.log("ERRORE: the boot of the page changed\n" + out + "\nwanted:\n" + want); process.exit(1); }
-  console.log("TUTTO OK");
+  console.log("ALL OK");
   process.exit(0);
 })();

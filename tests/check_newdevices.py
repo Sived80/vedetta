@@ -123,4 +123,4 @@ for bad in (None, "", "AA:BB", "GG:BB:CC:DD:EE:FF", "AABBCCDDEEFF"):
     assert not wol.is_valid_mac(bad)
 print("ok: magic packet (102 byte)")
 
-print("TUTTO OK")
+print("ALL OK")

@@ -64,4 +64,4 @@ assert routes_ha.asyncio.run(routes_ha._star_hint()) is False, "dopo il POST non
 starhint._done = None
 assert routes_ha.asyncio.run(routes_ha._star_hint()) is False, "nemmeno dopo un riavvio"
 
-print("TUTTO OK")
+print("ALL OK")

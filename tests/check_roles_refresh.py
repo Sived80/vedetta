@@ -99,4 +99,4 @@ assert len(alerts) == 1 and alerts[0][0] == "alert.dhcp_multiple" and "192.168.1
 # main really gives roles its two active checks (roles no longer imports the scanner)
 _main_src = (pathlib.Path(__file__).parent.parent / "vedetta" / "app" / "main.py").read_text(encoding="utf-8")
 assert "dhcp_discover=scanner.dhcp_discover" in _main_src and "internet_check=internet.check" in _main_src, "main must give roles its active checks"
-print("TUTTO OK")
+print("ALL OK")

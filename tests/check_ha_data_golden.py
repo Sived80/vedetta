@@ -80,4 +80,4 @@ for key, n in (("sum", N_SUM),):
         assert x == y, "%s case %d differs: %s" % (key, i, json.dumps([x, y])[:900])
 assert all(v > 100 for v in sum_stats.values()), sum_stats
 assert sum(1 for o in out["sum"] if '"exception"' in o[11]) == 0
-print("TUTTO OK")
+print("ALL OK")

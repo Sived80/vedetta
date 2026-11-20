@@ -150,4 +150,4 @@ async def refresh_case():
 
 got = asyncio.run(refresh_case())
 assert got and got[0]["link"] is None and got[0]["links_of_others"] == frozenset({M_LAPTOP.lower()}), got
-print("TUTTO OK")
+print("ALL OK")

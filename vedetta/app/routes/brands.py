@@ -7,7 +7,7 @@ import time
 from fastapi import APIRouter, HTTPException, Request
 
 from ..recognition import brands, oui_update, vendor_lookup
-from .. import i18n
+from .. import external, i18n
 from .bodies import json_dict
 
 logger = logging.getLogger("dashboard")
@@ -86,6 +86,8 @@ async def api_brands_preview(request: Request):
 @router.post("/api/brands/update")
 async def api_brands_update(request: Request):
     i18n.use_request(request)
+    if external.mac_database_setting() is False:      # the option of the app says nothing goes out for this list: nothing does
+        raise HTTPException(403, i18n.t("brands.error.update_off"))
     if _update_lock.locked():
         raise HTTPException(409, i18n.t("brands.error.update_running"))
     async with _update_lock:

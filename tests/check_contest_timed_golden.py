@@ -95,4 +95,4 @@ exc = sum(1 for r in res if isinstance(r, dict))
 assert 0 < exc < 250, exc
 assert sum(1 for r in res if r is True) > 350 and sum(1 for r in res if r is False) > 2000, "scenarios too uniform"
 assert len({len(o[5].get("10.0.0.5", [])) for o in out}) >= 8
-print("TUTTO OK")
+print("ALL OK")

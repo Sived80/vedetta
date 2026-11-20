@@ -243,4 +243,4 @@ async def slow_case():
     PILOT.update(slow=False, elapsed=0.8)
 asyncio.run(slow_case())
 print("ok: pipeline con primitive finte")
-print("TUTTO OK")
+print("ALL OK")

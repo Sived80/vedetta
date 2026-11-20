@@ -217,4 +217,4 @@ for _ in range(2000):
         ip = next(c["ip"] for c in cards if c["id"] == r["device_id"])
         answered = {s["mac"] for s in sessions if s["ip"] == ip and kinds.get(s["mac"]) not in ("lender", "virtual")}
         assert answered == {r["mac"]}, ("never a link when two MACs that are not lent answered", answered, r)
-print("TUTTO OK")
+print("ALL OK")

@@ -17,5 +17,7 @@
   "journal.unignored": "{name} is no longer ignored",
   "journal.forgotten": "{name} forgotten",
   "journal.fullports": "{ip}: full background scan finished ({ports} ports, {added} more)",
-  "journal.fullports_failed": "{ip}: full background scan did not finish (device too slow), targeted ports kept"
+  "journal.fullports_failed": "{ip}: full background scan did not finish (device too slow), targeted ports kept",
+  "journal.settings_damaged": "Settings file damaged: a copy is kept as {copy}, the settings start again from the defaults",
+  "journal.settings_damaged_kept": "Settings file damaged and not copied: it is not saved over until it can be read"
 }

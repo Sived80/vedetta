@@ -7,6 +7,7 @@
   "brands.error.save_failed": "Pravidlo se nepodařilo uložit",
   "brands.error.locked": "Toto nastavení určuje konfigurace doplňku (internet_mac_database)",
   "brands.error.update_running": "Aktualizace již probíhá",
+  "brands.error.update_off": "Stahování seznamu prefixů MAC je v možnostech aplikace vypnuté (internet_mac_database)",
   "brands.error.update_network": "Stahování selhalo, zkontrolujte připojení k internetu ({detail})",
   "brands.error.update_invalid": "Stažený soubor není platným seznamem předpon MAC adres",
   "brands.error.update_too_small": "Stažený seznam vypadá neúplně ({detail} záznamů), aktualizace zrušena",

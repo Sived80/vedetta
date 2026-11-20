@@ -135,4 +135,4 @@ stats = {"sleeps": c(lambda e: e[0] == "sleep"), "polls": c(lambda e: e[0] == "p
 for key, low in (("sleeps", 300), ("polls", 3000), ("failed", 500), ("forced_note", 150), ("event_note", 800), ("timer_note", 800), ("timeouts", 1500), ("wakes", 1500), ("cancelled_poll", 100),
                  ("paused_ready", 150), ("short_wait", 150)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

@@ -41,4 +41,4 @@ for label, device, group, kind in CASES:
     if got != (group, kind):
         failed.append((label, got, (group, kind)))
 assert not failed, failed
-print("TUTTO OK")
+print("ALL OK")

@@ -22,4 +22,4 @@ def _flat_routes(routes, prefix=""):
 now = sorted(f"{sorted(getattr(r, 'methods', None) or [])} {pre}{r.path}" for pre, r in _flat_routes(main.app.routes))
 want = [l for l in Path(__file__).parent.joinpath("golden", "routes.txt").read_text(encoding="utf-8").splitlines() if l.strip()]
 assert now == want, "routes changed: +%s -%s" % (sorted(set(now) - set(want)), sorted(set(want) - set(now)))
-print("TUTTO OK")
+print("ALL OK")

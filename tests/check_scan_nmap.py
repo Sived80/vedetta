@@ -144,4 +144,4 @@ async def cancelled():
 
 
 assert asyncio.new_event_loop().run_until_complete(cancelled()) is True
-print("TUTTO OK")
+print("ALL OK")

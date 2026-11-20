@@ -72,4 +72,4 @@ devs = [device(i) for i in range(30)]
 devices_config.DEVICES_PATH.write_text(yaml.safe_dump({"devices": devs}, allow_unicode=True, sort_keys=False), encoding="utf-8")
 assert devices_config.load_devices() == yaml.safe_load(devices_config.DEVICES_PATH.read_text(encoding="utf-8"))["devices"]
 assert devices_config._LOADER is (yaml.CSafeLoader if getattr(yaml, "__with_libyaml__", False) else yaml.SafeLoader), "devices_config must use the C loader when this PyYAML has it"
-print("TUTTO OK (C loader %s)" % ("in use" if devices_config._LOADER is getattr(yaml, "CSafeLoader", None) else "not available: pure Python"))
+print("ALL OK (C loader %s)" % ("in use" if devices_config._LOADER is getattr(yaml, "CSafeLoader", None) else "not available: pure Python"))

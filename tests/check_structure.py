@@ -99,13 +99,13 @@ assert count <= LATE_OK, "more imports inside functions than before (%d > %d): %
 
 # Layers, lowest first: an import may go to the same layer or a lower one. The imports that go UP today are listed in UP_OK; the list can only
 # shrink (delete a line when its import is gone). Why and how to remove them: VEDETTA - MEMORIA PROGETTO/PROPOSTA_CONFINI_MODULI.md.
-ROOT_LAYER = {"paths": 0, "atomic": 0, "applog": 0, "netutil": 0, "iface": 0, "external": 0, "formatters": 0, "eventbus": 0, "assets": 0, "sse": 0, "cyclestats": 0, "procfs": 0, "datafile": 0, "macverdict": 0,
-              "i18n": 1, "frontend_serving": 1, "lifecycle": 1, "pause": 1, "macclassify": 1, "macidentity": 1, "maclayer": 1, "linkview": 1, "macpresence": 1, "inventory": 1, "cardlink": 2,
-              "arpview": 4, "identity_upkeep": 4, "newdevicewatch": 4, "maintenance": 4, "state": 4, "name_origin": 4, "state_cycle": 4, "cardlink_cycle": 4, "inventory_view": 4, "state_support": 4, "ingress": 6, "main": 7}
+ROOT_LAYER = {"paths": 0, "atomic": 0, "applog": 0, "netutil": 0, "iface": 0, "external": 0, "formatters": 0, "eventbus": 0, "assets": 0, "sse": 0, "cyclestats": 0, "procfs": 0, "datafile": 0, "macverdict": 0, "sentinel": 0, "identity_changes": 0,
+              "i18n": 1, "frontend_serving": 1, "lifecycle": 1, "pause": 1, "macclassify": 1, "macidentity": 1, "maclayer": 1, "linkview": 1, "macpresence": 1, "inventory": 1, "routedinv": 1, "twins": 1, "cardlink": 2,
+              "arpview": 4, "identity_upkeep": 4, "newdevicewatch": 4, "maintenance": 4, "state": 4, "name_origin": 4, "state_cycle": 4, "sentinel_view": 4, "cardlink_cycle": 4, "inventory_view": 4, "routedwatch": 4, "state_support": 4, "ingress": 6, "main": 7}
 PKG_LAYER = {"storage": 1, "topology": 2, "analysis": 2, "health": 2, "recognition": 2, "scan": 3, "ha": 4, "export": 5, "routes": 6, "networks": 1}
 MOD_LAYER = {"ha.device_debug": 5, "ha.analysis_view": 5,
              # base modules: small, widely used, they import nothing above themselves (a stable foundation; they still live in the package they grew in)
-             "scan.scan_common": 0, "scan.touch_policy": 1, "networks.host_read": 0,
+             "scan.scan_common": 0, "scan.httpcap": 0, "scan.snmp": 0, "scan.router_arp": 1, "scan.arpplan": 0, "scan.touch_policy": 1, "networks.host_read": 0,
              "recognition.naming": 1, "recognition.vendor_lookup": 1, "recognition.brands": 1, "scan.flows": 1, "scan.dhcp": 1,
              "scan.mdns_listener": 1, "scan.mdns_parse": 1, "scan.mdns_browsing": 1, "scan.discovery": 1,
              # assembly modules: they put together a whole device record or a background job from all the sources
@@ -160,4 +160,4 @@ for n in names:
 assert not unresolved, "imports that point at nothing: " + "; ".join(unresolved)
 
 print("ok: %d modules import, no cycle at module level, %d imports inside functions, %d going up the layers" % (len(names), count, len(UP_OK)))
-print("TUTTO OK")
+print("ALL OK")

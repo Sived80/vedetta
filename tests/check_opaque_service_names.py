@@ -50,4 +50,4 @@ assert [c["source"] for c in word_clues(named)] == ["parola: monitor"] and ha_da
 hp = card("_http._tcp, _ipp._tcp, _ipps._tcp, _pdl-datastream._tcp, _scanner._tcp", brand="HP")
 kinds = kinds_of(hp)
 assert ha_data.infer_type(hp, None) == "printer" and kinds.get("printer", 0) > kinds.get("scanner", 0) > 0, (ha_data.infer_type(hp, None), kinds)
-print("TUTTO OK")
+print("ALL OK")

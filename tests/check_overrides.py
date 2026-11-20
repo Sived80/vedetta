@@ -39,4 +39,4 @@ devices_config.set_override(did, "brand_user", None)
 cfg = devices_config.load_devices()[0]
 assert "type_user" not in cfg and "brand_user" not in cfg
 assert ha_data.effective_type(dev, cfg) != "printer"
-print("TUTTO OK")
+print("ALL OK")

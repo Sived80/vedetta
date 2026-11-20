@@ -164,4 +164,15 @@ except Stop:
 finally:
     av.asyncio.sleep = real_sleep
 assert SLEPT == [av.FIRST_AFTER_S] and av.FIRST_AFTER_S >= 300, SLEPT
-print("TUTTO OK")
+
+# --- an offline card is not analysed (18/11: a phone seen one evening kept the badge for days): no badge, and its clock stands still while it is away
+low = {"group": group(30, value="generic"), "scores": {}, "chosen": "generic", "age_s": 30 * DAY}
+since = {"z": NOW - 3 * DAY}
+out = av.assess_all({"z": {**low, "online": False}}, {"z": st.Status(st.ANALYSING, ["low_certainty"])}, since, NOW, paused_s=DAY)
+assert out["z"].state == st.IDENTIFIED and av.snapshot(out) == {} and since["z"] == NOW - 2 * DAY, (out, since)
+out = av.assess_all({"z": {**low, "online": True}}, out, since, NOW + DAY)
+assert out["z"].state == st.ANALYSING and since["z"] == NOW - 2 * DAY, (out, since)                 # back: the same clock, not a new week
+out = av.assess_all({"z": {**low, "online": True}}, out, since, NOW + 6 * DAY)
+assert out["z"].state == st.UNRESOLVED, out                                                           # 8 days in analysis, the 1 away left out
+assert av.assess_all({"y": low}, {}, {}, NOW)["y"].state == st.ANALYSING                             # no "online" known: judged as before
+print("ALL OK")

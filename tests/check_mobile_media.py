@@ -19,4 +19,4 @@ assert not mobile_assess(mac="F8:54:B8:00:00:AB", name_is_mobile=False, name_wea
 assert mobile_assess(mac="3E:E3:41:00:00:AF", name_is_mobile=False, name_weak=True, has_ports=True)["mobile"]
 # Phone name: mobile.
 assert mobile_assess(mac="3E:E3:41:00:00:AF", name_is_mobile=True, has_ports=True)["mobile"]
-print("TUTTO OK")
+print("ALL OK")

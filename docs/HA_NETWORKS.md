@@ -1,12 +1,12 @@
 # Networks seen by Home Assistant
 
-Vedetta scans the network it is on. A device on another network (a VLAN for smart-home devices, a guest network) is out of its reach, but your router or controller usually knows it, and Home Assistant already lists it through the integration of that router. This function lets Vedetta show those devices **without touching them**.
+Vedetta scans the network it is on, and the networks behind the router you write in *Networks*. A network it cannot or should not reach (a guest network, a VLAN closed by a firewall) is still known to your router or controller, and Home Assistant already lists it through the integration of that router. This function lets Vedetta show those devices **without touching them**.
 
 [← Back to the README](../README.md) · [Home Assistant integration](HOME_ASSISTANT.md) · [Privacy](PRIVACY.md)
 
 ## What it does
 
-Menu → **Networks seen by Home Assistant**. Turn the function on (it reads once by itself; **Read now** reads again), tick the devices you want and press **Adopt**. An adopted device becomes a card like the others: a tile in the group of its type, and the same device card with its history, its name, brand and type rows and its *Other attributes*. The history starts when you adopt the device: Vedetta had no earlier readings.
+Menu → **Networks seen by Home Assistant**. Turn the function on (it reads every minute while it is on; **Read now** reads again), tick the devices you want and press **Adopt**. An adopted device becomes a card like the others: a tile in the group of its type, and the same device card with its history, its name, brand and type rows and its *More attributes*. The history starts when you adopt the device: Vedetta had no earlier readings.
 
 What a card of this kind does **not** have, because Vedetta never talks to the device: ports, response time, uptime, the analysis state, *Search in depth*, *Share with HA* and the report flag. Its online or offline state is what Home Assistant says, with the delay of its integration (the UniFi integration, for example, waits 300 seconds by default before it calls a client away).
 
@@ -31,7 +31,7 @@ These cards are sure about what Home Assistant tells: a name set in your router 
 
 ## The list
 
-Clients are grouped by network, in the order Home Assistant lists them, with the addresses ascending inside each one; the ones without an address come last. The network is the `/24` of the address: the VLAN itself is not part of what Home Assistant gives. On the page, a card sits among the others of its group, in address order.
+Clients are grouped by network, in the order Home Assistant lists them, with the addresses ascending inside each one; the ones without an address come last. The network is Vedetta's own network when the address is inside it (whatever its size), otherwise the `/24` of the address: the size of a VLAN is not part of what Home Assistant gives. On the page, a card sits among the others of its group, in address order.
 
 After **Adopt** the panel closes by itself; reopen it from the menu. The cross in its header closes it at any time without turning anything on. The number next to the menu entry is how many clients can still be adopted.
 
@@ -45,6 +45,6 @@ After **Adopt** the panel closes by itself; reopen it from the menu. The cross i
 
 ## If it does not work
 
-- *Only available inside Home Assistant*: the app has no access to Home Assistant (outside the add-on, or `homeassistant_api` off).
+- *Only available inside Home Assistant*: the app has no access to Home Assistant (outside the app, or `homeassistant_api` off).
 - *Home Assistant does not answer*: it is busy or restarting; the cards keep their last state and the next reading is in a minute.
 - The list is empty: the integration of your router does not track those clients, or Vedetta already has them all.

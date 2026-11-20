@@ -20,4 +20,4 @@ def streamer(domains, services="_airplay._tcp, _googlecast._tcp, _googlezone._tc
 assert ha_data.infer_type(streamer(["linkplay"]), None) == "audio", ha_data.infer_type(streamer(["linkplay"]), None)
 assert ha_data.infer_type(streamer(["sonos"]), None) == "audio", "the control: a known audio platform"
 assert ha_data.infer_type(streamer(["cast"], "_googlecast._tcp"), None) == "media", "Cast alone is still a media device"
-print("TUTTO OK")
+print("ALL OK")

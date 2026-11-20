@@ -120,4 +120,4 @@ for sc in want:
     assert out[sc] == want[sc], "%s differs: %s" % (sc, json.dumps([out[sc], want[sc]], default=str)[:700])
 assert out["text_left"]["fixed"] > 0 and out["db_left"]["fixed"] > 0 and out["unfixable"]["pending"] and not out["dev"]["pending"], "scenarios too uniform"
 assert out["me"]["steps"] == ["collect"] and out["dev"]["steps"][:3] == ["collect", "mask", "check"] and "fix" in out["text_left"]["steps"], out["me"]["steps"]
-print("TUTTO OK")
+print("ALL OK")

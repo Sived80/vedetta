@@ -95,4 +95,4 @@ assert text_out == GOLDEN.read_text(encoding="utf-8"), "key order or formatting 
 assert stats["none"] > 200 and stats["blocks"] > 600 and stats["known_only"] > 100 and stats["two_blocks"] > 400 and stats["fresh"] > 200, "too uniform: %s" % stats
 assert stats["max_known"] > 5 and stats["singles"] > 300 and stats["done"] > 300 and stats["force"] > 20, "too uniform: %s" % stats
 assert 0 <= stats["exc"] < 50, stats
-print("TUTTO OK")
+print("ALL OK")

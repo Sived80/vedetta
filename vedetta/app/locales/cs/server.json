@@ -110,6 +110,7 @@
   "settings.alerts": "Upozornění na nová zařízení",
   "settings.alerts_hint": "Oznámení při připojení neznámého zařízení k síti",
   "settings.new_devices_one": "{n} nové zařízení v síti",
+  "settings.new_devices_few": "{n} nová zařízení v síti",
   "settings.new_devices_other": "{n} nových zařízení v síti",
   "settings.ignore_all": "Ignorovat",
   "settings.rescan": "Spustit hloubkové skenování znovu",

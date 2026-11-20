@@ -81,7 +81,7 @@ def features_for_linking(rows: list[dict], sessions: list[dict], dhcp_seen: dict
     """What the identity linker needs about each MAC: when it was active (sessions, else first/last), where, and its DHCP name and fingerprint."""
     feats = _activity_by_mac(rows)
     by_mac = _sessions_by_mac(sessions)
-    seen = {k.upper(): v for k, v in (dhcp_seen or {}).items()}
+    seen = {k.upper(): v for k, v in dict(dhcp_seen or {}).items()}      # a copy first: this runs in a thread while the DHCP listener adds on the loop
     for mac, f in feats.items():
         if by_mac.get(mac):
             f["sessions"] = by_mac[mac]
@@ -145,6 +145,22 @@ def observation_report(history, dhcp_seen: dict, window_days: int = VERDICT_WIND
     return {"kinds": dict(Counter(v["kind"] for v in res["macs"].values())), "conflicts": len(res["conflicts"]),
             "lenders_with_clients": sum(1 for v in res["macs"].values() if v["kind"] == "lender" and v["behind"]),
             "pairs_by_zone": {z: n for z, n in zones.items() if z != "unrelated"}, "pairs_unrelated": zones.get("unrelated", 0), "flips": len(flips)}
+
+
+def successions(history, now: float | None = None, only=None, dhcp_seen: dict | None = None) -> dict[str, str]:
+    """1.0 step P10: {new MAC: old MAC} of the private MACs that rotated (macidentity.successions) over the last VERDICT_WINDOW_DAYS. A MAC of
+    `only` that the layer has not recorded yet but DHCP has heard counts as started now. Reads only."""
+    now = time.time() if now is None else now
+    since = now - VERDICT_WINDOW_DAYS * 86400
+    seen = dict(dhcp.seen if dhcp_seen is None else dhcp_seen)      # a copy (one step, under the GIL): read from a thread, written on the loop
+    feats = features_for_linking(history.rows(since), history.sessions(since), seen)
+    for mac in _heard_only_by_dhcp(only or (), feats, seen):
+        feats[mac] = {"first": now, "last": now, "ips": set(), **_dhcp_features(seen[mac.lower()])}
+    return macidentity.successions(feats, only)
+
+
+def _heard_only_by_dhcp(macs, feats: dict, seen: dict) -> list[str]:
+    return [m for m in macs if m not in feats and seen.get(m.lower())]
 
 
 def only_new(observations: list, memory: dict) -> list:
@@ -217,7 +233,7 @@ async def _run_after_verdict(history) -> None:
 
 
 async def observe_pass(arp: dict[str, dict], history) -> None:
-    """1.0 step P9: what the pass of the "Search devices" button heard, written in ip_mac like an ARP answer of the cycle (the inventory
+    """1.0 step P9: what the pass of the "Scan network" button heard, written in ip_mac like an ARP answer of the cycle (the inventory
     reads it at the next cycle); no verdict, that stays with the cycle. Never disturbs the search."""
     try:
         await asyncio.to_thread(history.observe, from_arp(arp, time.time()))

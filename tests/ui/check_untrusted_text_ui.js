@@ -41,6 +41,9 @@ const EV = {
 const HOSTS = [0, 1, 2, 3].map((i) => ({ ip: "192.0.2." + (201 + i), mac: "B8:27:EB:3A:91:C" + i, hostname: BAD[i] }));
 const NEW = [{ ip: "192.0.2.211", mac: "3C:61:05:4F:20:7D", hostname: BAD[1], vendor: BAD[2] }];
 const IGN = { items: [{ id: "a1", kind: "name", value: BAD[0], label: BAD[1] }], macs: [{ mac: "AA:BB:CC:00:00:01", ip: "192.0.2.50", hostname: BAD[2], vendor: BAD[3] }] };
+const cap = { state: "on", source: "ved", by: "arp" };
+const PANEL = { main: { id: "main", cidr: "192.0.2.0/24", via: ["direct"], touch: "full", state: "confirmed", cards: 1, fits: true, name: "Home", vlan: null, on: 1, mute: false,
+  caps: { pres: cap, name: cap, mac: cap, port: cap, deep: cap, quiet: cap, stray: { state: "soon" } } }, networks: [], left_out: [], limits: {} };
 const NETS = { enabled: true, available: true, read_at: 1700000000, error: null, adopted: 1,
   adopted_list: [{ mac: "02:00:5e:10:00:21", ip: "198.51.100.21", host: BAD[0], name: BAD[1], online: true, net: "198.51.100.0/24", same_net: false, type: "iot", id: "ha-02005e100021" }],
   candidates: [{ mac: "02:00:5e:10:00:31", ip: "198.51.100.31", host: BAD[2], name: BAD[3], online: false, net: "198.51.100.0/24", same_net: false, type: "iot", id: "ha-02005e100031" }] };
@@ -63,6 +66,7 @@ const dom = new JSDOM(html, {
       else if (u === "/api/new-devices/ignored") body = IGN.macs;
       else if (u === "/api/ignored") body = { items: IGN.items };
       else if (u === "/api/ha/networks") body = NETS;
+      else if (u === "/api/networks") body = PANEL;
       else if (url.includes("/evidence")) body = EV;
       else if (url.startsWith("/api/ha/devices") && !url.includes("/debug")) body = data.devices;
       else if (url.startsWith("/api/ha/summary")) body = data.summary;
@@ -82,7 +86,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 // An element made by the text: any img with src "x", any svg or element with an on... attribute that holds "__ran".
 const injected = () => qa("img[src='x'], [onerror], [onload], [onmouseover]").filter((el) => /__ran/.test(el.outerHTML)).length + qa("script").filter((s) => /__ran/.test(s.textContent)).length;
 
@@ -105,11 +109,13 @@ const injected = () => qa("img[src='x'], [onerror], [onload], [onmouseover]").fi
   check(BAD.every((b) => hosts.includes(b)), "the names a search found stay whole inside the attributes of the list of new devices (" + hosts.length + ")");
   check(injected() === 0, "the list of new devices builds no element from them");
   q("#btn-menu").click(); await wait(120);
-  const ign = q("#menu [data-ignored]");
-  check(!!ign, "the menu has the ignored devices");
-  if (ign) { ign.click(); await wait(300); }
-  check(shown("dialog[open]", BAD[1]) && shown("dialog[open]", BAD[2]), "the ignored ones are shown as characters (label, and name from the network)");
-  check(injected() === 0, "the window of the ignored ones builds no element from them");
+  const panel = q("#menu [data-netpanel]");
+  check(!!panel, "the menu has the panel «Networks», where the ignored devices are");
+  if (panel) { panel.click(); await wait(300); }
+  check(shown("#np-ign-all", BAD[1]), "the ignored ones in every network are shown as characters (label)");
+  q('[data-np-open="main"]').click(); await wait(100);
+  check(shown("#np-ign-net", BAD[2]), "the ignored ones of the main network are shown as characters (name from the network)");
+  check(injected() === 0, "the panel «Networks» builds no element from the ignored ones");
   qa("dialog[open]").forEach((d) => d.close());
   q("#btn-menu").click(); await wait(120);
   const nets = q("[data-nets]");
@@ -121,6 +127,6 @@ const injected = () => qa("img[src='x'], [onerror], [onload], [onmouseover]").fi
   await wait(50);
   check(win.__ran === undefined, "nothing the devices announced has run (" + win.__ran + ")");
   check(errors.length === 0, "no error on the page" + (errors.length ? ": " + errors[0] : ""));
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

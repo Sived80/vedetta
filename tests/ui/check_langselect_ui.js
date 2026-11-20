@@ -52,7 +52,7 @@ const dom = new JSDOM(html, {
 const doc = dom.window.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"] .tile-icon'); return t && t.style.getPropertyValue("--bc"); };
 
 (async () => {
@@ -102,6 +102,6 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   check(!list(), "e l'elenco si chiude");
   const real = errors.filter((e) => !/Not implemented: navigation/.test(e));   // the pick reloads the page: jsdom cannot navigate
   check(real.length === 0, "nessun errore nella pagina " + real.join(" ; ").slice(0, 400));
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

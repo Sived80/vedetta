@@ -132,4 +132,4 @@ stats = {"network": c(lambda r: "network" in r), "blocks": c(lambda r: "blocks_t
          "logged": sum(1 for o in out if any(e[0] == "logger.exception" for e in o["log"]))}
 for key, low in (("network", 800), ("blocks", 150), ("whole", 150), ("mac", 800), ("mac_empty", 40), ("no_mac", 150), ("rss", 400), ("threads_no_rss", 100), ("paused", 400), ("exc", 20), ("logged", 150)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

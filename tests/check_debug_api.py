@@ -32,7 +32,7 @@ assert out["brand"]["brand"] == "Milesight" and out["brand"]["evidence"] == "con
 assert out["name"]["shown"] == "Milesight telecamera" and out["name"]["placeholder"] is False
 assert any(c["source"] == "web" for c in out["name"]["candidates"]) or out["name"]["candidates"] == []
 assert out["mobile"]["is_mobile"] is False and set(out) >= {"type", "name", "brand", "mobile", "dhcp", "roles", "scan", "wol"}
-print("TUTTO OK")
+print("ALL OK")
 
 # ---- export: zip with data and state, without credentials
 import io, json, sqlite3, zipfile  # noqa: E402
@@ -74,4 +74,4 @@ assert isinstance(man["health"]["enabled"], bool) and isinstance(man["health"]["
 # what the export says about the load of the system: limits, last reading, deferrals and samples (numbers only)
 assert set(man["host_load"]) == {"available", "limits", "last", "deferred", "samples"}, man.get("host_load")
 assert isinstance(man["host_load"]["available"], bool) and set(man["host_load"]["limits"]) == {"io", "cpu", "memory"}, man["host_load"]
-print("TUTTO OK (esportazione)")
+print("ALL OK (export)")

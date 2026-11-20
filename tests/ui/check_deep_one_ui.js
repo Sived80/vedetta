@@ -74,7 +74,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const badge = () => q("#deep-badge");
 const arrow = () => q("#btn-deepmenu");
 
@@ -129,6 +129,6 @@ const emit = (rescanning) => sources[sources.length - 1].emit("activity", { type
   check(sent().length === 4 && sent()[3] === a, "a ricerca finita lo stesso dispositivo si puo' cercare di nuovo");
 
   check(errors.length === 0, "nessun errore nella pagina: " + errors.join(" | ").slice(0, 200));
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

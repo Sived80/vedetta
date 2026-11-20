@@ -245,4 +245,4 @@ assert all(o["exc"][0] == "MaskingFailed" for o in exc)
 assert any("stub kind" in o["exc"][1] for o in exc) and any("stub kind" in o["out"] for o in ok if "out" in o) or True
 assert sum(1 for o in ok if "[line removed" in o["out"]) > 30
 assert any(o["report"] is None for o in out) and any(o["report"] == [] for o in out)
-print("TUTTO OK")
+print("ALL OK")

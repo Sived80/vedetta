@@ -73,6 +73,16 @@ for row in visible:
 assert visible[0]["last_seen"] > 1e9 and visible[2]["last_seen"] == 100.0 and visible[2]["hostname"] == "tv", visible
 assert [sorted(w) for w in WRITTEN] == [["10.0.0.10", "10.0.0.11", "10.0.0.12"]], WRITTEN      # never this computer
 
+# 2b) the sweep of the networks behind the router fails (the database, the router): the local search still answers, without those rows (19/11 review)
+async def broken_sweep():
+    raise RuntimeError("database is locked")
+
+
+real_sweep, scan_routes.routedwatch.sweep = scan_routes.routedwatch.sweep, broken_sweep
+again, _ = asyncio.run(scan_routes._run_quick_scan())
+assert [r["ip"] for r in again] == ["10.0.0.10", "10.0.0.2", "10.0.0.40"], again
+scan_routes.routedwatch.sweep = real_sweep
+
 # 3) today a host always has a MAC: a row without one stops the search (the work on more networks will allow mac: null for the hosts behind a router)
 async def no_mac():
     return [{"ip": "10.0.20.30", "hostname": None}]

@@ -12,7 +12,9 @@ import re
 import time
 from pathlib import Path
 
+from . import blocklist, devices_config
 from .history import History, history
+from .. import routedinv
 from ..recognition.vendor_lookup import lookup_vendor, resolve_vendor_info
 
 logger = logging.getLogger("dashboard")
@@ -82,17 +84,28 @@ def _brand_fields(mac: str, hostname: str | None) -> dict:
     return {"brand": info["brand"], "vendor_role": info["vendor_role"]}
 
 
+def routed_entry(row: dict) -> dict:
+    """A new device behind the router (routedwatch, routed_seen) in the shape of the list and of the alerts: the MAC only when Home
+    Assistant said it, and the maker of its prefix then; "network" names the network it was found in."""
+    mac = row.get("mac")
+    fields = _brand_fields(mac, row.get("hostname")) if mac else {"brand": None, "vendor_role": None}
+    return {"mac": mac, "ip": row["ip"], "vendor": lookup_vendor(mac) if mac else None, "hostname": row.get("hostname"),
+            "first_seen": row["first_seen"], "network": row["network"], **fields}
+
+
 def readable_label(row: dict) -> str:
     return row.get("hostname") or row.get("brand") or row.get("vendor") or row.get("ip") or row["mac"]
 
 
 def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_macs: set[str],
              ignore_macs: set[str] = frozenset(), hist: History = history, now: float | None = None,
-             baseline_blocks: tuple[str, ...] = ()) -> tuple[list[dict], list[dict]]:
+             baseline_blocks: tuple[str, ...] = (), predecessor=None) -> tuple[list[dict], list[dict]]:
     """Updates known_macs with the observed MACs. Returns (new_to_alert,
     full_list_of_the_new). A MAC that is already 'new' is not alerted again.
     baseline_blocks: blocks of a large network asked for the first time (scan/arpplan.py): what lives there now is the starting
-    point, like the first search of the network, not a flood of new devices."""
+    point, like the first search of the network, not a flood of new devices.
+    predecessor (1.0 step P10): f(set of MACs never seen before) -> {new MAC: old MAC} (maclayer.successions); a successor inherits the state of
+    the old MAC and is never alerted. Asked once, only when there are MACs never seen before; a failure counts as no succession."""
     global _present
     now = time.time() if now is None else now
     observed = {m: o for m, o in observed.items() if m not in ignore_macs}
@@ -102,12 +115,24 @@ def evaluate(observed: dict[str, dict], configured_ips: set[str], configured_mac
         _seed_baseline(observed, hist, now)
         return [], []
     this_round = _Round(hist, configured_ips, configured_macs, baseline_blocks, now)
+    this_round.inherit(rows, _successions(predecessor, [m for m in observed if m not in rows]))
     fresh: list[dict] = []
     for mac, obs in observed.items():
         entry = this_round.register(mac, obs, rows.get(mac))
         if entry is not None:
             fresh.append(entry)
     return fresh, list_new(hist)
+
+
+def _successions(predecessor, unseen: list[str]) -> dict[str, str]:
+    """{new: old} for the MACs never seen before (nothing to ask when there are none, or no callback); a failure is logged, never raised."""
+    if predecessor is None or not unseen:
+        return {}
+    try:
+        return predecessor(set(unseen)) or {}
+    except Exception:
+        logger.warning("Successioni dei MAC privati non lette: i MAC mai visti restano nuovi", exc_info=True)
+        return {}
 
 
 def _seed_baseline(observed: dict, hist: History, now: float) -> None:
@@ -125,6 +150,16 @@ class _Round:
 
     def __init__(self, hist: History, configured_ips: set, configured_macs: set, baseline_blocks: tuple, now: float):
         self.hist, self.configured_ips, self.configured_macs, self.baseline_blocks, self.now = hist, configured_ips, configured_macs, baseline_blocks, now
+        self.inherited: dict[str, str] = {}
+
+    def inherit(self, rows: dict, succ: dict[str, str]) -> None:
+        """The state each successor takes from its old MAC (1.0 step P10): known when the old one was configured, else the old one's own."""
+        for new, old in succ.items():
+            row = rows.get(old)
+            if old in self.configured_macs:
+                self.inherited[new] = "known"
+            elif row is not None:
+                self.inherited[new] = row["status"]
 
     def register(self, mac: str, obs: dict, row: dict | None) -> dict | None:
         """Registers one observed MAC; returns the alert entry if it is a new device."""
@@ -138,9 +173,10 @@ class _Round:
     def _register_new(self, mac: str, obs: dict, configured: bool, vendor: str | None) -> dict | None:
         """A MAC never seen before: recorded as known if it is configured or lives in a baseline block, otherwise as new.
         Returns the alert entry for a new one, None for a known one."""
-        status = "known" if (configured or _in_blocks(obs["ip"], self.baseline_blocks)) else "new"
+        inherited = self.inherited.get(mac)
+        status = "known" if (configured or _in_blocks(obs["ip"], self.baseline_blocks)) else (inherited or "new")
         self.hist.known_set(mac, self.now, obs["ip"], vendor, obs["hostname"], status)
-        if status != "new":
+        if status != "new" or inherited:
             return None
         return {"mac": mac, "ip": obs["ip"], "vendor": vendor, "hostname": obs["hostname"],
                 "first_seen": self.now, **_brand_fields(mac, obs["hostname"])}
@@ -183,12 +219,23 @@ def _seen_field(mac: str) -> dict:
 
 
 def list_new(hist: History = history) -> list[dict]:
-    """The 'new' devices, in the API format."""
+    """The 'new' devices, in the API format: the MACs of the home network and the addresses behind the router (step P11), by first sight."""
     out = [{
                 "mac": r["mac"], "ip": r["ip"], "vendor": lookup_vendor(r["mac"]) or r["vendor"],
                 "hostname": r["hostname"], "first_seen": r["first_seen"], **_seen_field(r["mac"]), **_brand_fields(r["mac"], r["hostname"]),
             } for r in hist.known_all().values() if r["status"] == "new" and (_present is None or r["mac"] in _present or r["mac"] in _asleep)]
-    return sorted(out, key=lambda d: d["first_seen"])
+    return sorted(out + _routed_new(hist), key=lambda d: d["first_seen"])
+
+
+def _routed_new(hist: History) -> list[dict]:
+    """The new devices behind the router (routed_seen) that answered within routedinv.LISTED_S: never one at the address of a card (just
+    added: the next sweep writes it as known), never an ignored one (by address, MAC or name)."""
+    rows = hist.routed_new(time.time() - routedinv.LISTED_S)
+    if not rows:
+        return []
+    cards = {d.get("ip") for d in devices_config.load_devices()}
+    return [{**routed_entry({**r, "hostname": r["host"]}), "last_seen": r["last_seen"]} for r in rows
+            if r["ip"] not in cards and not blocklist.matches(mac=r["mac"], ip=r["ip"], name=r["host"])]
 
 
 def ignore(macs: list[str] | None, hist: History = history) -> list[dict]:

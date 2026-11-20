@@ -54,4 +54,4 @@ assert run(folder_log, data) == (160, [])
 bad = tmp / "bad.log"
 bad.write_bytes(b"2026-10-11T08:00:00+00:00\tINFO\tx\xff\n")
 assert len(run(bad, tmp / "none")[1]) == 1
-print("TUTTO OK")
+print("ALL OK")

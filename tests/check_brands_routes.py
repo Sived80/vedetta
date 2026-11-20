@@ -68,4 +68,4 @@ routes_brands._update_lock = real_lock
 
 assert c.post("/api/brands/auto-update", json={"enabled": "yes"}).status_code == 400
 assert c.post("/api/brands/auto-update", json={"enabled": False}).json()["auto_update"] is False
-print("TUTTO OK")
+print("ALL OK")

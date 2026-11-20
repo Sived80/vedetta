@@ -22,6 +22,7 @@ FIRST_AFTER_S = 600      # the first time, when the evidence has settled: right 
 OLD_S = 10 ** 9          # a card with no presence event in the history counts as old: nothing says it just appeared
 
 RESULTS: dict[str, st.Status] = {}      # card id -> the last state
+_last_judged: list = []                  # when refresh last judged the cards (the time an offline card's clock stands still)
 SINCE_PATH = paths.data_path("analysis_since.json")
 _since: dict[str, float] = {}            # card id -> when it entered analysis, without a break (kept on disk: a restart must not give a card a new week)
 _task: asyncio.Task | None = None
@@ -39,19 +40,25 @@ def collect(ids, now: float, *, debug_of=device_debug, summarize=evidence.summar
             card = summarize(debug, devices[card_id])
             group = card.get("group") or {}
             out[card_id] = {"group": group, "scores": (debug.get("type") or {}).get("scores") or {}, "chosen": group.get("value"),
-                            "age_s": now - first[card_id] if card_id in first else OLD_S}
+                            "age_s": now - first[card_id] if card_id in first else OLD_S, "online": bool(devices[card_id].get("online", True))}
         except Exception:
             logger.debug("Analysis state not computed for %s", card_id, exc_info=True)
     return out
 
 
-def assess_all(inputs: dict[str, dict], previous: dict[str, st.Status], since: dict[str, float] | None = None, now: float | None = None) -> dict[str, st.Status]:
+def assess_all(inputs: dict[str, dict], previous: dict[str, st.Status], since: dict[str, float] | None = None, now: float | None = None,
+               paused_s: float = 0) -> dict[str, st.Status]:
     """The state of each card; a card that was under analysis must climb past the high threshold to leave it (previous). `since` holds when each card entered analysis (changed in place): a card
-    that is still under analysis after st.MAX_ANALYSIS_S becomes «unresolved»; a card that leaves analysis loses its clock."""
+    that is still under analysis after st.MAX_ANALYSIS_S becomes «unresolved»; a card that leaves analysis loses its clock.
+    A card that is offline is not analysed: nothing can be learned from it, so it shows no analysis badge and its clock stands still (moved on by
+    `paused_s`, the time since the last judgement) until it is back."""
     since = {} if since is None else since
     now = time.time() if now is None else now
     out = {}
     for card_id, i in inputs.items():
+        if not i.get("online", True):
+            out[card_id] = _away(card_id, since, paused_s)
+            continue
         prev = previous[card_id].state if card_id in previous else None
         result = st.assess(i["group"], age_s=i["age_s"], previous=prev, scores=i["scores"], chosen=i["chosen"])
         if result.state == st.ANALYSING:
@@ -60,6 +67,13 @@ def assess_all(inputs: dict[str, dict], previous: dict[str, st.Status], since: d
             since.pop(card_id, None)
         out[card_id] = result
     return out
+
+
+def _away(card_id: str, since: dict[str, float], paused_s: float) -> st.Status:
+    """An offline card: no analysis while it is away, and its clock (if it has one) moved on by the time it was away."""
+    if card_id in since:
+        since[card_id] += paused_s
+    return st.Status(st.IDENTIFIED, ["offline"])
 
 
 def _flags(status: st.Status) -> dict:
@@ -82,7 +96,9 @@ async def refresh() -> bool:
     now = time.time()
     inputs = await asyncio.to_thread(collect, list(state.devices), now)
     before = dict(_since)
-    new = assess_all(inputs, RESULTS, _since, now)
+    paused = now - _last_judged[0] if _last_judged else 0
+    _last_judged[:] = [now]
+    new = assess_all(inputs, RESULTS, _since, now, paused)
     for card_id in [c for c in _since if c not in state.devices]:       # a card that is gone loses its clock (one that could only not be read keeps it)
         del _since[card_id]
     if _since != before:

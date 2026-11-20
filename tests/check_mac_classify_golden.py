@@ -110,4 +110,4 @@ assert {"virtual", "lender", "multi_address", "private", "normal", "conflict"} <
 counts = (sum(1 for o in out if o["conflicts"]), sum(1 for o in out if o["possible_conflicts"]), sum(1 for o in out if o["clients"]))
 assert counts[0] > 12 and counts[1] > 4 and counts[2] > 200, "scenarios too uniform (cases with a conflict, with a possible one, with clients): %s" % (counts,)
 assert sum(1 for o in out for m in o["macs"].values() if m["behind"]) > 20
-print("TUTTO OK")
+print("ALL OK")

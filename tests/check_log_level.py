@@ -17,4 +17,4 @@ assert applog.logger.level == logging.WARNING
 del os.environ["VEDETTA_LOG_LEVEL"]
 applog.apply_level()
 assert applog.logger.level == logging.INFO
-print("TUTTO OK")
+print("ALL OK")

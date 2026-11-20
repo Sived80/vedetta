@@ -46,14 +46,24 @@ def normalize(code: str | None) -> str:
     return code if code in _tables else DEFAULT_LANG
 
 
+def plural_of(n, lang: str) -> str:
+    """The plural category of a count, as the page's Intl.PluralRules gives it for whole numbers (frontend/ha/js/core.js, pluralOf): Czech has
+    «few» for 2 to 4 ("3 zprávy", but "5 zpráv"); the other languages of the app only one and other."""
+    if n == 1:
+        return "one"
+    if lang == "cs" and n in (2, 3, 4):
+        return "few"
+    return "other"
+
+
 def translate(lang: str, key: str, **params) -> str:
     table = _tables.get(lang, {})
     fallback = _tables.get(DEFAULT_LANG, {})
     n = params.get("n")
     text = None
     if n is not None:
-        suffix = "_one" if n == 1 else "_other"
-        text = table.get(key + suffix) or fallback.get(key + suffix)
+        suffix = "_" + plural_of(n, lang)
+        text = table.get(key + suffix) or (table.get(key + "_one") if n == 1 else None) or fallback.get(key + suffix)
     if text is None:
         text = table.get(key) or fallback.get(key) or key
     return text.format(**params) if params else text

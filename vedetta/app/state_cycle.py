@@ -7,8 +7,9 @@ planned for the end of the cycle."""
 import asyncio
 import time
 
-from . import linkview, macpresence, macverdict, netutil
+from . import identity_changes, linkview, macpresence, macverdict, netutil, sentinel_view
 from .applog import logger
+from .storage.history import history
 from .formatters import update_generic_titles
 from .scan import latency, probe, touch_policy
 from .networks import registry
@@ -130,12 +131,18 @@ async def _after_cycle(state, arp: dict, moves: dict[str, str]) -> None:
     await state.follow_links(moves)
     await state.merge_duplicate_phones()
     state.report_ip_conflicts()
+    await state.name_twins()
     await state.check_new_devices(arp)
     await state._record_macs(arp)
 
 
+STALL_FLOOR_S = 300        # the loop counts as stalled only after max(STALL_FLOOR_S, STALL_INTERVALS x interval) without a turn
+STALL_INTERVALS = 5
+
+
 async def loop(state, min_gap: float) -> None:
     while True:
+        state._alive_at = time.monotonic()      # one turn of the loop: a cycle done, or a pause waited out (stalled() reads it)
         # clear at the start: a trigger that arrives during the cycle starts the next one immediately instead of being lost.
         state._wake.clear()
         if state.paused_remaining() is None or state._force:
@@ -151,14 +158,24 @@ async def _run_cycle(state, min_gap: float) -> None:
     await _wait_gap(state, forced, min_gap)
     state._last_start = time.monotonic()
     state._note_start(state._cause or ("force" if forced else ""))
+    polled = await _poll(state)
+    state._note_end(state._last_start)
+    if polled:
+        sentinel_view.after_cycle(state.devices, state.emit_alert)      # what is ready goes out, once per cycle
+
+
+async def _poll(state) -> bool:
+    """One check of the devices. True once a check has succeeded since the start: before that the cards are still empty (after a restart),
+    and the Sentinel's end of cycle would take every card as deleted and close the "down" events already sent, whose "back" would then never go out."""
     try:
         await state.poll_once()
+        state._polled_ok = True
     except asyncio.CancelledError:
         raise
     except Exception:
         logger.exception("Ciclo di aggiornamento fallito")
         state.ready.set()
-    state._note_end(state._last_start)
+    return state._polled_ok
 
 
 async def _wait_gap(state, forced: bool, min_gap: float) -> None:
@@ -229,14 +246,50 @@ def _fill_latency(device_id: str, result: dict) -> None:
     result["latency_color"] = latency.color(result["latency_ms"])
 
 
+_identity_tasks: set = set()
+
+
+def _remember_identity(rows: list[dict]) -> None:
+    """The changes of name and brand go to the history in the background (one small transaction), never in the way of the cycle."""
+    if not rows:
+        return
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:            # no loop (a test that drives the state by hand): nothing to remember, never an error for the cycle
+        return
+    task = loop.create_task(asyncio.to_thread(_write_identity, rows))
+    _identity_tasks.add(task)
+    task.add_done_callback(_identity_tasks.discard)
+
+
+def _write_identity(rows: list[dict]) -> None:
+    try:
+        history.identity_record(rows)
+    except Exception:
+        logger.exception("Storia del riconoscimento non salvata")
+
+
 def publish(state, result: dict, force: bool) -> None:
     """Stores the result and sends the event, unless nothing changed. force: after a search the event is sent anyway, even if the raw data are equal: category and icon are computed at
     send time (network roles, rules) and the page must redo them."""
-    if not force and state.devices.get(result["id"]) == result:
+    before = state.devices.get(result["id"])
+    if not force and before == result:
         return
+    _remember_identity(identity_changes.between(before, result, time.time()))
     state.devices[result["id"]] = result
     state.rev += 1
     state._rev_of[result["id"]] = state.rev
     state._removed.pop(result["id"], None)
     # The device travels raw: the card and HTML row are rendered by each browser's stream in its own language (see api_events in main.py).
     state.emit_event({"type": "device", "id": result["id"], "device": result})
+
+
+def stalled(alive_at: float | None, now: float, interval: float) -> tuple[bool, float | None]:
+    """Pure: is the loop of the checks stuck? (stuck, seconds since its last turn). A turn of the loop comes at least every interval,
+    a pause included (it waits at most one interval); a cycle that never ends (a probe that hangs) stops the turns. Before the
+    first turn nothing is judged: the start-up has its own grace in run.sh."""
+    if alive_at is None:
+        return False, None
+    age = now - alive_at
+    return age > max(STALL_FLOOR_S, STALL_INTERVALS * interval), age
+

@@ -236,4 +236,4 @@ assert all(stats[k] > 100 for k in ("none", "http", "https", "plain_kept_after_t
     "too uniform: %s" % stats
 assert stats["status_none"] > 10, stats
 assert all(pstats[k] > 100 for k in pstats), "too uniform: %s" % pstats
-print("TUTTO OK")
+print("ALL OK")

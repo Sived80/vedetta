@@ -72,11 +72,28 @@ try {
   }
 } catch (err) { /* storage not available: stay on the server's language */ }
 
-export function t(key, vars) {
-  const table = window.VEDETTA_I18N || {};
+// plural:start (checked on its own by tests/ui/check_plural_ui.js)
+// The plural forms of the texts, as each language counts (19/11 review: Czech says «3 zprávy» but «5 zpráv»): a text with a count {n}
+// is looked for as «key_one», «key_few», «key_many» or «key_other» (the category of the language, Intl.PluralRules), then as «key».
+export function pluralOf(n, lang) {
+  try {
+    return new Intl.PluralRules(lang || "en").select(n);
+  } catch (err) {
+    return n === 1 ? "one" : "other";
+  }
+}
+export function pluralText(table, key, vars, lang) {
   let text;
-  if (vars && typeof vars.n === "number") text = table[key + (vars.n === 1 ? "_one" : "_other")];
-  if (text === undefined) text = table[key];
+  if (vars && typeof vars.n === "number") {
+    text = table[key + "_" + pluralOf(vars.n, lang)];
+    if (text === undefined && vars.n === 1) text = table[key + "_one"];
+  }
+  return text === undefined ? table[key] : text;
+}
+// plural:end
+
+export function t(key, vars) {
+  const text = pluralText(window.VEDETTA_I18N || {}, key, vars, LANG);
   if (text === undefined) return key;
   if (!vars) return text;
   return text.replace(/\{(\w+)\}/g, function (m, name) {
@@ -216,6 +233,7 @@ export function api(path, opts) {
       return r.json().catch(function () { return {}; }).then(function (b) {
         const err = new Error(typeof b.detail === "string" ? b.detail : "HTTP " + r.status);
         err.status = r.status;
+        err.detail = b.detail;           // a refusal with a code says it here ({code, message}: the networks panel shows the message)
         throw err;
       });
     }

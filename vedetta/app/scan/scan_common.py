@@ -111,8 +111,10 @@ def clean_text(value, limit: int = 256) -> str | None:
 
 
 def is_valid_ipv4(value: str) -> bool:
+    """A dotted IPv4 address written as a text: the standard library also takes an integer, which then broke the saved card; as a text
+    ("3232235777") it is refused, like a list or an object."""
     try:
-        ipaddress.IPv4Address(value)
+        ipaddress.IPv4Address(str(value))
         return True
     except ValueError:
         return False

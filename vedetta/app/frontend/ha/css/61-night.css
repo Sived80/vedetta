@@ -1,0 +1,13 @@
+/* "Last 12 hours" (#card-night): the summary card, only when there is something to say; under the network card, above the log. */
+
+@layer overrides {
+  html[data-compact] #card-night { display: none; }
+  #card-night { padding: 12px 16px 14px; }
+  #card-night .ng-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  #card-night .ng-head h2 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; }
+  #card-night .ng-list { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  #card-night .ng-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.45; }
+  #card-night .ng-ic { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent); }
+  #card-night .ng-ic .mdi { width: 16px; height: 16px; }
+}

@@ -17,7 +17,7 @@ Brands, product signatures and logos live in plain data files. [Development](doc
 ## 3. A change to the code
 
 - Keep it small and about one thing.
-- Run the whole test suite from the repository root and make sure it ends with `TUTTO OK`:
+- Run the whole test suite from the repository root and make sure it ends with `ALL OK`:
   ```
   python tools/run_tests.py
   ```

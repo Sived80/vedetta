@@ -10,7 +10,7 @@ import gate_rules as g  # noqa: E402
 # 1) a skipped test is told apart from a passed one (the UI tests and the browser test print SKIP on the first line)
 assert g.is_skip("SKIP: jsdom is not installed (run `npm install` in tests/ui to enable this check)\n")
 assert g.is_skip("some warning\nSKIP: no Chrome or Edge found\n")
-assert not g.is_skip("TUTTO OK\n") and not g.is_skip("the word SKIP in a sentence is not a skip\n") and not g.is_skip("")
+assert not g.is_skip("ALL OK\n") and not g.is_skip("the word SKIP in a sentence is not a skip\n") and not g.is_skip("")
 
 # 2) a golden that changed or was created is a problem; other changes are not
 porcelain = " M tests/golden/full_ports.json\n?? tests/golden/new_one.json\n M vedetta/app/state.py\n?? tests/check_new.py\n D tests/golden/old.json\n"
@@ -61,4 +61,4 @@ assert g.worker_counts(2, False, 4, 3) == (1, 1), "a CI runner with 2 cores: 1 +
 assert g.worker_counts(4, False, 4, 3) == (1, 1) and g.worker_counts(8, False, 4, 3) == (2, 2)
 assert g.worker_counts(20, True, 4, 3) == (1, 1), "serial: one at a time"
 assert g.worker_counts(1, False, 4, 3) == (1, 1), "never fewer than one"
-print("TUTTO OK")
+print("ALL OK")

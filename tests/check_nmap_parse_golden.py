@@ -72,4 +72,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 hosts = [h for o in out if isinstance(o, list) for h in o]
 assert len(hosts) > 300 and any(h["mac"] for h in hosts) and any(h.get("tls_subject") for h in hosts) and any(h.get("ssh_hostkey") for h in hosts) and any(h["http_title"] for h in hosts), "scenarios too uniform"
 assert not any(isinstance(o, dict) for o in out)
-print("TUTTO OK")
+print("ALL OK")

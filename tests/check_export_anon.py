@@ -62,7 +62,7 @@ assert set(c.leaks("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna
 assert c.leaks("id deadf018 98aabbccdeadbeef and ab:f0:18:98:aa:bb:cc:dd") == []                  # part of a longer run of hex digits
 assert c.leaks("mac f0:18:98:aa:bb:cc") == ["MAC address"] and c.leaks("f01898aabbcc!") == ["MAC address"]
 assert c.leaks(c.text("ip 192.168.7.5, id scan-192-168-7-5, F0-18-98-AA-BB-CC, Anna's iPhone, 93.184.216.34, a@b.it, token=abcdefgh")) == []
-assert c.leaks_data({"brand": "Anna's iPhone", "ssh_hostkey": "192.168.7.5"}) == []                   # fields kept on purpose are not judged
+assert c.leaks_data({"brand": "Anna's iPhone", "model": "192.168.7.5"}) == []                         # fields kept on purpose are not judged
 # a file the masking cannot clean is never delivered as it is: a log loses only the lines, a JSON that would break is given up
 Broken = type("Broken", (anonymize.Anonymizer,), {"text": lambda self, s: s})
 bk = Broken()
@@ -190,4 +190,4 @@ assert n == 2 and left == [] and "rossi" not in fixed and "2a02" not in fixed, (
 m = w.mapping()
 assert m["domain_names"] and m["ipv6"], "the owner can decode the placeholders"
 
-print("TUTTO OK")
+print("ALL OK")

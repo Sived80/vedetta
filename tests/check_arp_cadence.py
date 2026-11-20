@@ -118,4 +118,4 @@ try:
 finally:
     asyncio.create_subprocess_exec = real_exec
 assert "--interval=20" in made[0] and "--interval=20" not in made[1] and not any(a.startswith("--interval") for a in made[2]), made
-print("TUTTO OK")
+print("ALL OK")

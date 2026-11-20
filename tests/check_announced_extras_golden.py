@@ -45,4 +45,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 assert not any("exception" in o for o in out)
 added = sum(1 for o in out if len(o["extra"]) > len(o["before"]))
 assert added > 1500 and any(k == "netbios" for o in out for k, _ in o["extra"]) and any(k == "mdns_model" for o in out for k, _ in o["extra"]), "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

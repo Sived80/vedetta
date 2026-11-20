@@ -9,13 +9,15 @@ needs (cardlink.judge: pure) and hands its answer to History.store_card_links, t
   - for the cards whose history holds more than one MAC, the profile of each MAC as the notice of another device behind a card builds it
     (ha/identity_shift.profile) and whether it belongs to a network role, for the name check of the rule (L9).
 The requests of step P5 (a link released when two cards of one phone are merged, the gesture "this is a new device") wait in linkview and are
-written here, by the one writer, at the next judgement (cardlink.requested). After every judgement the rows just stored are read back into
+written here, by the one writer, at the next judgement (cardlink.requested), and so are the links that follow a private MAC that rotated
+(step P10: maclayer.successions, cardlink.successors). After every judgement the rows just stored are read back into
 linkview, and at start the rows of the last run (load). A failure is only logged: the cycle never sees it, and linkview keeps its last answer.
 The export reads the counts (counts)."""
+import asyncio
 import time
 from collections import Counter
 
-from . import arpview, cardlink, linkview, macverdict, netutil
+from . import arpview, cardlink, linkview, maclayer, macverdict, netutil
 from .applog import logger
 from .ha import identity_shift
 from .networks import registry
@@ -28,6 +30,7 @@ RECENT_DAYS = 7          # decision 3B (12/11): the card's history counts for th
 _last = 0.0              # when the links were last judged (0: never in this run, so at the first cycle)
 _unlinked: Counter = Counter()      # the reasons of the cards left without a link at the last judgement (counts for the export)
 _two_private = 0                     # the links to a private MAC over another private MAC at the last judgement (decision 4A, for the export)
+_succession = {"seen": 0, "moved": 0}  # 1.0 step P10: rotated private MACs at the last judgement, links moved to them since the start (export)
 
 
 async def update(history, now: float | None = None) -> None:
@@ -38,7 +41,13 @@ async def update(history, now: float | None = None) -> None:
         return
     _last = now
     try:
-        _judge_and_store(history, now)
+        # the database work in a thread (a week of sessions: it must not stop the loop); what the cycle reads in memory (linkview) is changed back here
+        taken = linkview.requests()
+        args, kw, counts = await asyncio.to_thread(_judge_and_store, history, now, taken)
+        now_asked = linkview.requests()           # a request made while the thread ran (a newer gesture) stays for the next judgement
+        kw["done"] = [d for d in kw["done"] if now_asked.get(d) == taken.get(d)]
+        linkview.refresh(*args, **kw)
+        _keep_counts(counts)
     except Exception:
         logger.exception("Legami fra schede e MAC non aggiornati")
 
@@ -52,23 +61,45 @@ def load(history) -> None:
         logger.exception("Legami fra schede e MAC non letti")
 
 
-def _judge_and_store(history, now: float) -> None:
+def _keep_counts(counts: dict) -> None:
+    """The counts of a judgement for the export, set on the loop in one step (the export reads them from its own thread)."""
+    global _two_private
+    _succession["seen"] = counts["seen"]
+    _succession["moved"] += counts["moved"]
+    _unlinked.clear()
+    _unlinked.update(counts["unlinked"])
+    _two_private = counts["two_private"]
+
+
+def _judge_and_store(history, now: float, requests: dict) -> tuple[tuple, dict, dict]:
+    """The judgement and its writes (run in a thread, it changes no state in memory): the arguments of linkview.refresh and the counts for the
+    export, which the caller sets on the loop."""
     cards = _cards(devices_config.load_devices(), netutil.last_network)
-    asked = cardlink.requested(history.card_links(), linkview.requests(), cards, now)
-    links = asked["links"]
+    asked = cardlink.requested(history.card_links(), requests, cards, now)
+    rotated = _successions(history, now)
+    succ = cardlink.successors(asked["links"], rotated, cards, now)
+    links = succ["links"]
     facts = _facts(history, cards, links, now)
     seeding = history.meta_get(SEEDED_KEY) is None
     res = cardlink.judge(cards, facts, links, now, seeding=seeding)
-    write = list({r["device_id"]: r for r in asked["write"] + res["write"]}.values())
-    delete = sorted(set(asked["delete"] + res["delete"]))
+    write = list({r["device_id"]: r for r in asked["write"] + succ["write"] + res["write"]}.values())
+    delete = sorted(set(asked["delete"] + succ["delete"] + res["delete"]))
     if write or delete or seeding:
         history.store_card_links(write, delete, seeding)
-    _unlinked.clear()
-    _unlinked.update(res["unlinked"].values())
     stored = history.card_links()
-    global _two_private
-    _two_private = cardlink.two_private(stored, facts["history"], facts["kinds"])
-    linkview.refresh(stored, now, offers=cardlink.offers(cards, stored, facts["sessions"], facts["kinds"], now), done=asked["done"])
+    counts = {"seen": len(rotated), "moved": succ["moved"], "unlinked": list(res["unlinked"].values()),
+              "two_private": cardlink.two_private(stored, facts["history"], facts["kinds"])}
+    return (stored, now), {"offers": cardlink.offers(cards, stored, facts["sessions"], facts["kinds"], now), "done": asked["done"]}, counts
+
+
+def _successions(history, now: float) -> dict[str, str]:
+    """{new MAC: old MAC} of the private MACs that rotated (1.0 step P10); a failure is logged and counts as none (the links stay as they are)."""
+    try:
+        succ = maclayer.successions(history, now)
+    except Exception:
+        logger.exception("Successioni dei MAC privati non lette")
+        succ = {}
+    return succ
 
 
 def presence_counts() -> dict:
@@ -140,5 +171,5 @@ def counts(history=None) -> dict | None:
         logger.exception("Conteggio dei legami fra schede e MAC non riuscito")
         return None
     return {"linked": sum(1 for r in rows if r["state"] == "linked"), "held": dict(Counter(r["reason"] for r in rows if r["state"] == "held")),
-            "unlinked": dict(_unlinked), "source": dict(Counter(r["source"] for r in rows))}
+            "unlinked": dict(_unlinked), "source": dict(Counter(r["source"] for r in rows)), "successions": dict(_succession)}
 

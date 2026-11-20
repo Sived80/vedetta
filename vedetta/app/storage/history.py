@@ -1,5 +1,6 @@
 """The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer.
-History is one class assembled from mixins, one per theme (history_presence, history_known, history_macs, history_maclayer, history_scans)."""
+History is one class assembled from mixins, one per theme (history_presence, history_known, history_macs, history_maclayer, history_scans,
+history_health, history_routed, history_purge)."""
 import sqlite3
 import threading
 import time
@@ -12,6 +13,9 @@ from .history_macs import MacMemoryMixin
 from .history_scans import ScansMixin
 from .history_maclayer import MacLayerMixin, SCHEMA as _MACLAYER_SCHEMA
 from .history_health import HealthMixin, SCHEMA as _HEALTH_SCHEMA
+from .history_purge import PurgeMixin
+from .history_routed import RoutedMixin, SCHEMA as _ROUTED_SCHEMA
+from .history_identity import IdentityMixin, SCHEMA as _IDENTITY_SCHEMA
 DB_PATH = CONFIG_DIR / "vedetta.db"
 
 PRESENCE_RETENTION_DAYS = 90
@@ -102,7 +106,7 @@ CREATE INDEX IF NOT EXISTS idx_mac_takeover_ts ON mac_takeover (ts);
 """
 
 
-class History(HealthMixin, MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMixin):
+class History(PurgeMixin, IdentityMixin, RoutedMixin, HealthMixin, MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin, PresenceMixin):
     """SQLite history: online/offline transitions, deep scans and
     a few service values. devices.yaml remains the configuration chosen
     by the user; only what the program observes over time goes here.
@@ -119,7 +123,7 @@ class History(HealthMixin, MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin
         with self._lock:
             self._db.execute("PRAGMA journal_mode=WAL")
             self._db.execute("PRAGMA synchronous=NORMAL")
-            self._db.executescript(_SCHEMA + _MACLAYER_SCHEMA + _HEALTH_SCHEMA)
+            self._db.executescript(_SCHEMA + _MACLAYER_SCHEMA + _HEALTH_SCHEMA + _ROUTED_SCHEMA + _IDENTITY_SCHEMA)
             self._maclayer_migrate()
             self._db.commit()
 
@@ -174,6 +178,7 @@ class History(HealthMixin, MacLayerMixin, ScansMixin, MacMemoryMixin, KnownMixin
             removed = cur.rowcount
         self.prune_maclayer()
         self.prune_health()
+        self.prune_identity(time.time())
         return removed
 
 

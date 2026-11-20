@@ -51,4 +51,4 @@ for wf in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
         m = re.search(r"uses:\s*([^\s#]+)", ln)
         if m and not m.group(1).startswith("./"):
             assert re.search(r"@[0-9a-f]{40}$", m.group(1)), f"{wf.name}:{n} action not pinned by its commit: {m.group(1)}"
-print("TUTTO OK")
+print("ALL OK")

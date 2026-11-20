@@ -103,4 +103,4 @@ assert set(after) <= {"cycles", "used", "unused", "other_at_address", "found_els
 
 # the reasons a link is not used are a closed list (the export counts them)
 assert set(linkview.REASONS) == {"none", "held", "seq", "network", "young", "unjudged", "kind", "released"}, linkview.REASONS
-print("TUTTO OK")
+print("ALL OK")

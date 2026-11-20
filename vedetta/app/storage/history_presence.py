@@ -1,8 +1,13 @@
 """PresenceMixin: methods of History that belong together (moved out of history.py by tools/split_class.py)."""
+import json
 import time
 from itertools import product
 
 from . import overlap
+
+RUNS_KEY = "service_runs"     # meta: [[started, last beat], ...] of the runs of the service, the newest last
+RUNS_KEPT = 500
+GAP_MIN_S = 150              # a pause between two runs shorter than this is a restart, not a hole (a beat comes every 60 s)
 
 
 def _is_private(mac: str) -> bool:
@@ -80,7 +85,7 @@ class PresenceMixin:
     def reassign_device(self, source: str, target: str) -> None:
         """The history of a card that is merged into another one goes with it (presence, scans, latency)."""
         with self._lock:
-            for table in ("presence_events", "scans", "latency"):
+            for table in ("presence_events", "scans", "latency", "identity_change"):
                 self._db.execute(f"UPDATE {table} SET device_id = ? WHERE device_id = ?", (target, source))  # noqa: S608  table names from a fixed tuple
             self._db.commit()
 
@@ -89,8 +94,43 @@ class PresenceMixin:
         Before the first known event the state is unknown: no segment,
         so the chart shows it as "no data" and not as offline."""
         before, events = self._presence_window(device_id, since, until)
-        segments = _segments_from_events(before, events, since, until)
+        segments = cut_gaps(_segments_from_events(before, events, since, until), self.service_gaps(since, until))
         return _segments_report(segments, since, until)
+
+    def returns_after(self, since: float, until: float, min_off_s: float) -> list[tuple[str, float, float]]:
+        """The cards that came back online inside (since, until] after at least `min_off_s` offline: [(id, when, seconds away)]."""
+        with self._lock:
+            rows = self._db.execute(
+                """SELECT device_id, ts, ts - prev_ts AS away FROM (
+                       SELECT device_id, online, ts, LAG(online) OVER w AS prev_online, LAG(ts) OVER w AS prev_ts
+                       FROM presence_events WINDOW w AS (PARTITION BY device_id ORDER BY ts, id))
+                   WHERE online = 1 AND prev_online = 0 AND ts > ? AND ts <= ? AND ts - prev_ts >= ? ORDER BY ts""",
+                (since, until, min_off_s)).fetchall()
+        return [(r["device_id"], r["ts"], r["away"]) for r in rows]
+
+    # ---- the runs of the service: while Vedetta is off, nothing is known ----
+    def service_run_begin(self, now: float) -> None:
+        """A new run of the service starts (lifecycle.start)."""
+        runs = self._runs()
+        runs.append([now, now])
+        self.meta_set(RUNS_KEY, json.dumps(runs[-RUNS_KEPT:]))
+
+    def service_run_beat(self, now: float) -> None:
+        """A sign of life of the current run (lifecycle, every minute)."""
+        runs = self._runs() or [[now, now]]
+        runs[-1][1] = max(runs[-1][1], now)
+        self.meta_set(RUNS_KEY, json.dumps(runs[-RUNS_KEPT:]))
+
+    def service_gaps(self, since: float, until: float) -> list[tuple[float, float]]:
+        """The holes between two runs inside [since, until]: from the last sign of life of one run to the start of the next."""
+        return gaps_between(self._runs(), since, until)
+
+    def _runs(self) -> list[list[float]]:
+        try:
+            runs = json.loads(self.meta_get(RUNS_KEY) or "[]")
+            return [[float(a), float(b)] for a, b in runs]
+        except (TypeError, ValueError):
+            return []
 
     def _presence_window(self, device_id: str, since: float, until: float):
         """The last event at or before `since` (or None) and the events inside (since, until], oldest first."""
@@ -118,6 +158,27 @@ def _segments_from_events(before, events, since: float, until: float) -> list[di
     if state is not None and until > cursor:
         segments.append({"from": cursor, "to": until, "online": state})
     return segments
+
+
+def gaps_between(runs: list, since: float, until: float) -> list[tuple[float, float]]:
+    """Pure: the holes between consecutive runs (longer than GAP_MIN_S), clipped to [since, until]."""
+    gaps = []
+    for (_, last), (start, _) in zip(runs, runs[1:]):
+        a, b = max(last, since), min(start, until)
+        if start - last > GAP_MIN_S and b > a:
+            gaps.append((a, b))
+    return gaps
+
+
+def cut_gaps(segments: list[dict], gaps: list[tuple[float, float]]) -> list[dict]:
+    """Pure: the segments without the time Vedetta was off (it was not watching: unknown, not online and not offline)."""
+    out = []
+    for seg in segments:
+        pieces = [(seg["from"], seg["to"])]
+        for a, b in gaps:
+            pieces = [p for x0, x1 in pieces for p in ((x0, min(x1, a)), (max(x0, b), x1)) if p[1] > p[0]]
+        out += [{"from": x0, "to": x1, "online": seg["online"]} for x0, x1 in pieces]
+    return out
 
 
 def _segments_report(segments: list[dict], since: float, until: float) -> dict:

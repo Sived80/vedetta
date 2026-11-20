@@ -104,4 +104,4 @@ try:
         assert len(Tracked.opened) == 2 and all(c.closed for c in Tracked.opened), "a connection was left open (%s)" % folder.name
 finally:
     eg.sqlite3.connect = real_connect
-print("TUTTO OK")
+print("ALL OK")

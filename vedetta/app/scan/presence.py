@@ -8,7 +8,12 @@ Since 1.0 step P5 the probe is told the card's usable link (linkview: a link sta
   - a card without a usable link is online when somebody answers at its address, unless that MAC is another card's usable link (one guard,
     decision 3A of 12/11).
 Pure but for the verdict it asks (macverdict, in memory)."""
+import asyncio
+
 from .. import macpresence, macverdict
+from ..networks import registry
+from . import touch_policy
+from .adapters import ping
 
 
 def mac_key(mac) -> str:
@@ -47,3 +52,53 @@ async def complete_with_arp(result: dict, device: dict, ip: str, arp_task) -> di
     if not result.get("mac"):
         result["mac"] = _mac_here(device, arp_info)
     return result
+
+
+async def complete_with_ping(result: dict, ip: str, *, routed: bool, may_touch: bool, adapter, ask) -> dict:
+    """Behind the router ARP never answers, so a card whose port is closed (a UniFi without port 80, Home Assistant on 8123, a device with no
+    open port) would stay offline while it answers the ping of the sweep (decision A of 15/11): there, when the adapter said offline, one ICMP
+    echo (ask, the ping adapter) decides. Never on the home network, never for a card that may not be touched or whose adapter is the ping."""
+    if result.get("online") or not routed or not may_touch or adapter == "ping":
+        return result
+    if (await ask(ip))["online"]:
+        return {**result, "online": True}
+    return result
+
+
+_PORT_CLOSED: set[str] = set()   # cards behind the router whose adapter said offline at their last check (their port is closed)
+
+
+def _pingable(device: dict, ip: str) -> bool:
+    return registry.through_router(ip) and touch_policy.may_touch(device) and touch_policy.adapter_of(device) != "ping"
+
+
+def start_ping(device: dict, ip: str):
+    """For a card behind the router whose port was closed at the last check, the ping starts together with the adapter instead of after it:
+    a check waits for the slower of the two, not their sum (an offline card cost the adapter's timeout plus the ping's). None otherwise."""
+    if ip in _PORT_CLOSED and _pingable(device, ip):
+        return asyncio.ensure_future(ping.probe(ip))
+    return None
+
+
+def _remember_port(adapter_result: dict, device: dict, ip: str) -> None:
+    if adapter_result.get("online") or not _pingable(device, ip):
+        _PORT_CLOSED.discard(ip)
+    else:
+        _PORT_CLOSED.add(ip)
+
+
+async def complete(result: dict, device: dict, ip: str, arp_task, early=None) -> dict:
+    """The adapter's result completed by the ARP view and, for a card behind the router, by one ping (complete_with_ping): the ping started
+    early by start_ping when there is one, else a new one."""
+    _remember_port(result, device, ip)
+    result = await complete_with_arp(result, device, ip, arp_task)
+    ask = ping.probe
+    if early is not None:
+        async def ask(_ip):
+            return await early
+    try:
+        return await complete_with_ping(result, ip, routed=registry.through_router(ip), may_touch=touch_policy.may_touch(device),
+                                        adapter=touch_policy.adapter_of(device), ask=ask)
+    finally:
+        if early is not None and not early.done():
+            early.cancel()   # the adapter said online: the early ping is not needed

@@ -1,0 +1,190 @@
+/* The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel
+   (full screen on a phone). Same look as the final preview v10: rows on one grid shared by all of them (subgrid), each column as wide as its
+   widest content and the same space between all columns; the colours of the sources (Vedetta, Home Assistant, router) and of what is missing. */
+@layer overrides {
+  #netview {
+    --np-sunk: color-mix(in srgb, var(--primary-text-color) 6%, transparent); --np-c-ha: var(--light-blue-color); --np-c-router: var(--green-color);
+    --np-c-ved: var(--purple-color); --np-warn: var(--warning-color); --np-warn-text: var(--warning-text-color); --np-ok: var(--success-text-color);
+    --np-err: var(--error-color);
+    position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; overflow: auto;
+    background: var(--primary-background-color); color: var(--primary-text-color); font-family: var(--ha-font); font-size: 14px; line-height: 1.45;
+  }
+  #netview:not([open]) { display: none; }
+  #netview { overscroll-behavior: contain; }
+  #netview::backdrop { background: var(--primary-background-color); }
+  #netview svg { fill: currentColor; width: 20px; height: 20px; flex: none; }
+  #netview button:focus-visible, #netview input:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 2px; }
+  #netview .k-ha { --c: var(--np-c-ha); } #netview .k-router { --c: var(--np-c-router); } #netview .k-ved { --c: var(--np-c-ved); }
+
+  #netview .np-top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; min-height: 56px; background: var(--card-background-color);
+    border-bottom: 1px solid var(--divider-color); padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px)); }
+  #netview .np-top h2 { margin: 0; font-size: 20px; font-weight: 400; }
+  #netview .np-grow { flex: 1; }
+  #netview .np-wrap { max-width: 1100px; margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+
+  #netview .np-legend { background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; }
+  #netview .np-lg { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; min-width: 0; }
+  #netview .np-lg h3 { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--secondary-text-color); }
+  #netview .np-it { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+  #netview .np-sep { width: 1px; align-self: stretch; background: var(--divider-color); }
+  #netview .np-ico { width: 28px; height: 28px; border-radius: 50%; display: inline-grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); flex: none; }
+  #netview .np-ico svg { width: 18px; height: 18px; }
+  #netview .np-lk { --c: var(--np-warn); } #netview .np-sn { --c: var(--primary-color); }
+
+  #netview .np-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; background: var(--primary-color); color: var(--text-primary-color);
+    font-size: 14px; font-weight: 500; padding: 9px 14px; border-radius: 8px; white-space: nowrap; }
+  #netview .np-btn[disabled] { opacity: .5; cursor: default; }
+  #netview .np-btn.flat { background: transparent; color: var(--primary-color); }
+  #netview .np-btn.flat:hover { background: color-mix(in srgb, var(--primary-color) 10%, transparent); }
+  #netview .np-btn.red { background: var(--np-err); color: #fff; }
+  #netview .np-btn.ghost-red { background: transparent; color: var(--np-err); border: 1px solid color-mix(in srgb, var(--np-err) 40%, transparent); }
+  #netview .np-btn svg { width: 18px; height: 18px; }
+  #netview .np-ib { width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; display: inline-grid; place-items: center; color: var(--secondary-text-color); flex: none; padding: 0; }
+  #netview .np-ib:hover { background: var(--ha-hover); color: var(--primary-text-color); }
+  #netview .np-ib.go { color: var(--np-warn-text); background: color-mix(in srgb, var(--np-warn) 18%, transparent); }
+  #netview .np-ib.gear { color: var(--primary-text-color); }
+  #netview .np-ph { width: 36px; height: 36px; display: inline-block; }
+
+  /* the list: one grid shared by every row; every column as wide as its widest content, the same space between all of them */
+  #netview .np-list { background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: 12px; overflow: hidden; min-width: 0; }
+  #netview .np-tw { overflow-x: auto; }
+  #netview .np-grid { display: grid; grid-template-columns: repeat(8, max-content); justify-content: space-between; column-gap: 32px; min-width: max-content; font-variant-numeric: tabular-nums; }
+  #netview .np-gr { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--divider-color); }
+  #netview .np-gr > div { padding-block: 12px; white-space: nowrap; min-width: 0; }
+  #netview .np-hd > div { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--secondary-text-color); align-self: end; }
+  #netview .np-rw { min-height: 60px; }
+  #netview .np-rw:last-child { border-bottom: 0; }
+  #netview .np-rw:hover { background: var(--ha-hover); }
+  #netview .np-rw.need { background: color-mix(in srgb, var(--np-warn) 10%, transparent); }
+  #netview .np-rw.paused > div:not(.keep) { opacity: .45; }
+  /* a phone: the gear of each network stays on the right edge while the rest of the list scrolls (19/11, choice A: it was off screen) */
+  @media (max-width: 700px) {
+    #netview .np-gr > div:last-child { position: sticky; right: 0; z-index: 1; align-self: stretch; display: flex; align-items: center; justify-content: center;
+      padding-left: 12px; margin-right: -20px; padding-right: 20px; background: var(--card-background-color); box-shadow: -10px 0 10px -10px rgba(0, 0, 0, .45); }
+    #netview .np-rw:hover > div:last-child { background: linear-gradient(var(--ha-hover), var(--ha-hover)), var(--card-background-color); }
+    #netview .np-rw.need > div:last-child { background: linear-gradient(color-mix(in srgb, var(--np-warn) 10%, transparent), color-mix(in srgb, var(--np-warn) 10%, transparent)), var(--card-background-color); }
+  }
+  #netview .c-vlan { text-align: center; }
+  #netview .c-btn { justify-self: center; }
+  #netview .np-nm { display: block; font-size: 15px; font-weight: 500; min-width: 110px; }
+  #netview .np-mono { font-family: "Roboto Mono", ui-monospace, Consolas, monospace; font-size: 13px; }
+  @media (max-width: 1000px) { #netview .np-grid { column-gap: 20px; } #netview .np-gr { padding: 0 16px; } }
+  #netview .np-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  #netview .np-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  #netview .np-chip.ok { color: var(--np-ok); background: color-mix(in srgb, var(--success-color) 14%, transparent); }
+  #netview .np-chip.warn { color: var(--np-warn-text); background: color-mix(in srgb, var(--np-warn) 20%, transparent); }
+  #netview .np-chip.off { color: var(--secondary-text-color); background: var(--np-sunk); }
+  #netview .np-cov { display: flex; align-items: center; gap: 10px; }
+  #netview .np-bars { display: flex; gap: 3px; }
+  #netview .np-bars i { width: 8px; height: 18px; border-radius: 2px; background: color-mix(in srgb, var(--primary-text-color) 12%, transparent); }
+  #netview .np-bars i.on { background: var(--c); }
+  #netview .np-bars i.how { background: transparent; box-shadow: inset 0 0 0 1.5px var(--np-warn); }
+  #netview .np-cov span { font-size: 13px; color: var(--secondary-text-color); white-space: nowrap; }
+
+  /* the management panel, on the right, full height; the page under it stays still */
+  #netview .np-scrim { position: fixed; inset: 0; background: var(--ha-scrim); z-index: 10; }
+  #netview .np-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100%); background: var(--card-background-color); z-index: 11;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, .25); display: grid; grid-template-rows: auto 1fr;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) 0; }
+  #netview .np-ptop { display: flex; align-items: center; gap: 4px; padding: 10px 16px 10px 8px; border-bottom: 1px solid var(--divider-color); min-width: 0; }
+  #netview .np-ptop h2 { margin: 0 0 0 4px; font-size: 20px; font-weight: 400; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #netview .np-pbody { overflow-y: auto; overflow-x: hidden; padding: 4px 20px 28px; display: grid; gap: 20px; align-content: start; min-width: 0; }
+  #netview .np-sec { display: grid; gap: 10px; min-width: 0; }
+  #netview .np-sec h4 { margin: 16px 0 0; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--secondary-text-color); }
+  #netview .np-kv { display: grid; grid-template-columns: 112px 1fr; gap: 8px 12px; margin: 0; align-items: center; }
+  #netview .np-kv dt { color: var(--secondary-text-color); } #netview .np-kv dd { margin: 0; min-width: 0; }
+  #netview .np-field { display: grid; gap: 4px; }
+  #netview .np-field label { font-size: 12px; color: var(--secondary-text-color); }
+  #netview .np-in { font: inherit; font-size: 15px; height: 40px; border: 1px solid var(--divider-color); border-radius: 8px; padding: 0 12px; background: transparent; color: var(--primary-text-color); min-width: 0; width: 100%; }
+  #netview .np-in.np-mono { font-size: 14px; }
+  #netview .np-in.bad { border-color: var(--np-err); }
+  #netview .np-hint { font-size: 12px; color: var(--secondary-text-color); } #netview .np-hint.bad { color: var(--np-err); }
+  #netview .np-muted { font-size: 13px; color: var(--disabled-text-color); margin: 0; }
+
+  #netview .np-caps { display: grid; border: 1px solid var(--divider-color); border-radius: 12px; overflow: hidden; }
+  #netview .np-cap { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-top: 1px solid var(--divider-color); }
+  #netview .np-cap:first-child { border-top: 0; }
+  #netview .np-mid { min-width: 0; }
+  #netview .np-pair { display: inline-flex; align-items: center; gap: 8px; }
+  #netview .np-cic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: var(--secondary-text-color); background: var(--np-sunk); }
+  #netview .np-cap b { font-weight: 500; font-size: 15px; display: block; }
+  #netview .np-sub { font-size: 12.5px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; min-width: 0; }
+  #netview .np-sub.src { color: var(--c); }
+  #netview .np-sub svg { width: 14px; height: 14px; }
+  #netview .np-sub span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #netview .np-how { border: 0; background: color-mix(in srgb, var(--np-warn) 16%, transparent); color: var(--np-warn-text); font-weight: 500; font-size: 13px;
+    padding: 6px 10px 6px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+  #netview .np-how:hover { background: color-mix(in srgb, var(--np-warn) 26%, transparent); }
+  #netview .np-how svg { width: 18px; height: 18px; }
+  #netview .np-soon { font-size: 12px; font-weight: 500; color: var(--primary-color); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  #netview .np-soon svg { width: 16px; height: 16px; }
+  #netview .np-sw { width: 36px; height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--primary-text-color) 28%, transparent); position: relative; border: 0; padding: 0; transition: background .2s; }
+  #netview .np-sw::after { content: ""; position: absolute; top: -3px; left: -2px; width: 20px; height: 20px; border-radius: 50%; background: #fafafa; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); transition: left .2s, background .2s; }
+  #netview .np-sw[aria-checked="true"] { background: color-mix(in srgb, var(--c) 50%, transparent); }
+  #netview .np-sw[aria-checked="true"]::after { left: 18px; background: var(--c); }
+  #netview .np-btns { display: grid; gap: 8px; justify-items: start; }
+  #netview .np-danger { border: 1px solid color-mix(in srgb, var(--np-err) 35%, transparent); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+  #netview .np-danger p { margin: 0; font-size: 13px; color: var(--secondary-text-color); }
+  #netview .np-confirm { background: color-mix(in srgb, var(--np-err) 10%, transparent); border-radius: 10px; padding: 12px; display: grid; gap: 10px; font-size: 13px; }
+  #netview .np-two { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+  /* «How to turn it on»: a screen of the panel, one card per way, an «OR» between them */
+  #netview .np-lead { display: grid; gap: 8px; padding-top: 12px; }
+  #netview .np-lt { display: flex; align-items: center; gap: 12px; }
+  #netview .np-lead h3 { margin: 0; font-size: 20px; font-weight: 500; }
+  #netview .np-lead p { margin: 0; color: var(--secondary-text-color); }
+  #netview .np-ways { display: grid; gap: 12px; }
+  #netview .np-way { border: 1px solid var(--divider-color); border-radius: 14px; padding: 14px 16px 16px; display: grid; gap: 12px; min-width: 0; }
+  #netview .np-way.best { border-color: color-mix(in srgb, var(--success-color) 45%, transparent); }
+  #netview .np-way-top { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+  #netview .np-wt { display: grid; gap: 1px; min-width: 0; }
+  #netview .np-by { font-size: 12px; color: var(--secondary-text-color); }
+  #netview .np-wt b { font-size: 15px; font-weight: 500; }
+  #netview .np-pill { font-size: 11px; font-weight: 500; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+  #netview .np-pill.best { color: var(--np-ok); background: color-mix(in srgb, var(--success-color) 14%, transparent); }
+  #netview .np-pill.soon { color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 12%, transparent); }
+  #netview .np-snmp { display: grid; gap: 10px; padding-top: 4px; border-top: 1px solid var(--divider-color); }
+  #netview .np-snmp label { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 12px; color: var(--secondary-text-color); }
+  #netview .np-snmp input { min-width: 0; height: 36px; padding: 0 10px; border: 1px solid var(--divider-color); border-radius: 8px; background: none;
+    color: var(--primary-text-color); font: inherit; font-size: 14px; }
+  #netview .np-snmp-acts { display: flex; justify-content: flex-end; gap: 8px; }
+  #netview .np-snmp-msg { font-size: 13px; }
+  #netview .np-snmp-msg.ok { color: var(--success-color, #43a047); }
+  #netview .np-snmp-msg.fail { color: var(--error-color, #db4437); }
+  #netview .np-wrow { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: start; }
+  #netview .np-wrow > span:first-child { font-size: 12px; font-weight: 500; color: var(--secondary-text-color); padding-top: 3px; }
+  #netview .np-wrow > div { min-width: 0; font-size: 13.5px; display: grid; gap: 6px; overflow-wrap: break-word; }
+  #netview .np-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  #netview .np-crumbs span { background: var(--np-sunk); border-radius: 6px; padding: 2px 8px; font-size: 13px; }
+  #netview .np-crumbs i { font-style: normal; color: var(--disabled-text-color); }
+  #netview .np-ex { display: block; margin-top: 6px; font-size: 12.5px; color: var(--secondary-text-color); }
+  #netview .np-exc { font-family: "Roboto Mono", ui-monospace, Consolas, monospace; font-size: 12px; color: var(--primary-text-color); overflow-wrap: break-word; }
+  #netview .np-or { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; color: var(--secondary-text-color); font-size: 13px; font-weight: 500; }
+  #netview .np-or::before, #netview .np-or::after { content: ""; height: 1px; background: var(--divider-color); }
+  #netview .np-or span { min-width: 28px; height: 28px; padding: 0 6px; border-radius: 14px; display: grid; place-items: center; background: var(--np-sunk); }
+  #netview .np-foot { display: grid; gap: 6px; font-size: 12.5px; color: var(--secondary-text-color); border-top: 1px solid var(--divider-color); padding-top: 14px; }
+  #netview .np-foot p { margin: 0; }
+
+  #netview .np-panel.enter { animation: np-slidein .22s ease-out; }
+  @keyframes np-slidein { from { transform: translateX(32px); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { #netview .np-panel.enter { animation: none; } #netview .np-sw, #netview .np-sw::after { transition: none; } }
+  @media (max-width: 560px) {
+    #netview .np-legend { display: grid; gap: 12px; } #netview .np-lg h3 { flex-basis: 100%; } #netview .np-sep { display: none; }
+    #netview .np-kv { grid-template-columns: 1fr; gap: 2px; } #netview .np-kv dd { margin-bottom: 8px; }
+    #netview .np-wrow { grid-template-columns: 1fr; gap: 4px; } #netview .np-wrow > span:first-child { padding-top: 0; }
+    #netview .np-pbody { padding-inline: 16px; }
+    #netview .np-top .np-btn { padding: 9px 10px; }
+    /* «How to turn it on» goes under the description, which keeps the whole width (19/11 review: German cut it to one letter) */
+    #netview .np-cap > .np-how, #netview .np-cap > .np-pair { grid-column: 2 / -1; justify-self: start; }
+  }
+
+  /* The ignored devices (ignored.js): those of a network in its panel, the others in the box «In every network» under the list */
+  #netview .np-allign { margin-top: 20px; background: var(--card-background-color); border: 1px solid var(--divider-color); border-radius: 12px; padding: 12px 8px 0; min-width: 0; }
+  #netview .ig-top { display: flex; align-items: center; gap: 12px; padding: 0 8px 8px; }
+  #netview .ig-top .mi-title { font-size: 16px; line-height: 24px; margin: 0; }
+  #netview .ig-top .mi-sub { font-size: 13px; white-space: normal; }
+  #netview .np-ign .nd-row { padding-left: 0; }
+  #netview .np-ign .ig-empty { display: none; padding: 0; margin: 0; font-size: 13px; color: var(--secondary-text-color); text-align: left; animation: none; }
+  #netview .np-ign .ig-empty.on { display: block; }
+}

@@ -51,4 +51,4 @@ anon = anonymize.Anonymizer()
 export_zip._add_registry_names(anon)
 masked = json.dumps(anon.data(leo, "ha_registry"))
 assert "Leo" not in masked and "observer_titles" in masked, masked
-print("TUTTO OK")
+print("ALL OK")

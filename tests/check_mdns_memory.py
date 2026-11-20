@@ -66,4 +66,4 @@ mdns_listener.record("10.0.0.113", "_http._tcp", "web", "")
 assert mdns_listener.as_scan_info({"name": "web", "services": ["_amazon-expiscor._udp", "_http._tcp"]})["mdns_name"] == "web"   # another service: the name counts
 assert mdns_listener.as_scan_info({"name": "old", "services": []})["mdns_name"] == "old"                                         # a record with no services (older memory) keeps its name
 
-print("TUTTO OK")
+print("ALL OK")

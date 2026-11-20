@@ -17,5 +17,7 @@
   "journal.unignored": "{name} již není ignorováno",
   "journal.forgotten": "{name} zapomenuto",
   "journal.fullports": "{ip}: úplné skenování na pozadí dokončeno ({ports} portů, {added} dalších)",
-  "journal.fullports_failed": "{ip}: úplné skenování na pozadí nebylo dokončeno (zařízení je příliš pomalé), cílené porty zachovány"
+  "journal.fullports_failed": "{ip}: úplné skenování na pozadí nebylo dokončeno (zařízení je příliš pomalé), cílené porty zachovány",
+  "journal.settings_damaged": "Soubor nastavení je poškozený: kopie je uložena jako {copy}, nastavení začíná znovu od výchozích hodnot",
+  "journal.settings_damaged_kept": "Soubor nastavení je poškozený a nezkopírovaný: nepřepíše se, dokud nepůjde přečíst"
 }

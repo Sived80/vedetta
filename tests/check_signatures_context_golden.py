@@ -102,4 +102,4 @@ assert sum(1 for r in res if r["ports"]) > 2000 and sum(1 for r in res if r["por
 assert sum(1 for r in res if r["ha_domains"]) > 1000 and sum(1 for r in res if r["upnp_types"]) > 3000 and sum(1 for r in res if r["brand"]) > 2000
 assert any(r["ports"] and 0 in r["ports"] for r in res) is False and any(80 in r["ports"] for r in res) and any(123 in r["ports"] for r in res)
 assert sum(1 for r in res if r["mdns_model"] and r["upnp_model"] and r["api_source"] and r["title"]) > 20
-print("TUTTO OK")
+print("ALL OK")

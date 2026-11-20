@@ -74,4 +74,4 @@ assert all(c["model"] == "U6-Lite" for c in idx2.values()), idx2
 # 5) a single client of an observer is left as it was (no evidence of a shared placeholder)
 ONE = [device(40, "Some model")]
 assert next(iter(ha_registry.build_index(ONE, [], [], ENTRIES)["by_mac"].values()))["model"] == "Some model"
-print("TUTTO OK")
+print("ALL OK")

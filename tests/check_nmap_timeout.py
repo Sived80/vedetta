@@ -68,4 +68,4 @@ try:
     assert not made[-1].killed
 finally:
     asyncio.create_subprocess_exec = real
-print("TUTTO OK")
+print("ALL OK")

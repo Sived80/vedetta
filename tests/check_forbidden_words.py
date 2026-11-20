@@ -22,4 +22,4 @@ for path in candidates:
         if FORBIDDEN.search(line):
             hits.append(f"{path.relative_to(ROOT).as_posix()}:{number}")
 assert not hits, "the forbidden word «riscansione» is in %d places, say «ricerca approfondita»: %s" % (len(hits), ", ".join(hits[:8]))
-print("TUTTO OK")
+print("ALL OK")

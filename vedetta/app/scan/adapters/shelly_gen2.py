@@ -1,6 +1,7 @@
 """Second-generation Shelly devices (RPC API): tells whether the device runs on a battery, from the "devicepower:0" component of Shelly.GetStatus."""
 import httpx
 
+from .. import httpcap
 from ..scan_common import NO_REQUEST_PORTS
 
 
@@ -12,7 +13,7 @@ async def battery_probe(ip: str, port: int = 80) -> dict:
         return {}   # never a request to a printing or industrial control port
     try:
         async with httpx.AsyncClient(timeout=3) as client:
-            status = (await client.get(f"http://{ip}:{port}/rpc/Shelly.GetStatus")).json()
+            status = (await httpcap.get(client, f"http://{ip}:{port}/rpc/Shelly.GetStatus")).json()
     except (httpx.RequestError, ValueError):
         return {}
     if not isinstance(status, dict) or "sys" not in status:

@@ -108,4 +108,4 @@ assert sum(1 for c in cases if c[1]) > 300 and sum(1 for c in cases if len(c[0])
 assert sum(1 for c in cases if c[5]) > 200 and sum(1 for c in cases if c[2]) > 2000
 assert any(it.get("kind") == "ip" and it.get("value") == "192.168.1.5" for c in cases for it in c[0]) and any(len(it.get("label", "")) == 80 for c in cases for it in c[0])
 assert any(it["id"] == "12" for c in cases for it in c[0]) and any(it["id"] == "" for c in cases for it in c[0])
-print("TUTTO OK")
+print("ALL OK")

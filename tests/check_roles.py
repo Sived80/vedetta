@@ -71,4 +71,4 @@ assert r["dhcp"] == [{"server": "192.168.50.1", "router": ["192.168.50.1"], "dns
 # Two servers: two entries.
 two = scanner.parse_dhcp_offers(OUT + OUT.replace("Response 1 of 1", "Response 2 of 2").replace("Server Identifier: 192.168.50.1", "Server Identifier: 192.168.50.66"))
 assert sorted(o["server"] for o in two) == ["192.168.50.1", "192.168.50.66"]
-print("TUTTO OK")
+print("ALL OK")

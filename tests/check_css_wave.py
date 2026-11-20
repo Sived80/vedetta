@@ -35,6 +35,6 @@ bad = {f.name: offenders(f.read_text(encoding="utf-8")) for f in sorted(CSS_DIR.
 bad = {k: v for k, v in bad.items() if v}
 if bad:
     for name, sels in bad.items():
-        print("FALLITO:", name, sels)
+        print("FAILED:", name, sels)
     sys.exit(1)
-print("TUTTO OK")
+print("ALL OK")

@@ -171,4 +171,4 @@ rows20 = [row2("10.0.3.1", R, 0, 7200), row2("10.0.3.2", R, 0, 7200), row2("10.0
 ss20 = [sess("10.0.3.1", R, 0, 7200), sess("10.0.3.2", R, 0, 7200), sess("10.0.3.2", A, 0, 7200)]
 k, r = kinds2(rows20, ss20, flipset("10.0.3.2", R, A, 60))
 assert r["conflicts"] == [] and r["possible_conflicts"] == [{"ip": "10.0.3.2", "macs": [R, A]}] and k[R] == "multi_address" and k[A] == "normal", (k, r)
-print("TUTTO OK")
+print("ALL OK")

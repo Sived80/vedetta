@@ -79,4 +79,4 @@ assert 200 < (ha_tz.REFRESH_S - (time.time() - ha_tz._state["at"])) <= 300
 del os.environ["SUPERVISOR_TOKEN"]
 assert asyncio.run(ha_tz.refresh(force=True)) is False
 ha_tz._state["zone"] = ZoneInfo("Europe/Rome")
-print("TUTTO OK")
+print("ALL OK")

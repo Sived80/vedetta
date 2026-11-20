@@ -164,7 +164,7 @@ def update_device(device_id: str, new_name: str, new_port: int | None = None, mo
     return _edit_card(device_id, change)
 
 
-OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share", "focus", "focus_note")
+OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share", "focus", "focus_note", "watch")   # watch: "tell me if it disappears" (sentinel_view)
 FOCUS_MAX = 5           # devices that can be flagged for the report at the same time
 FOCUS_NOTE_MAX = 500
 
@@ -246,6 +246,32 @@ def update_auto_name(device_id: str, name: str, source: str, force: bool = False
             d["name_mac"] = mac.lower()
         else:
             d.pop("name_mac", None)
+    return _edit_card(device_id, change) is not None
+
+
+@_locked
+def set_twin_name(device_id: str, name: str) -> bool:
+    """The name of a twin card (twins.py): the main card's name and the network. Never over a name chosen by hand, here or in Home Assistant,
+    nor over a name with no origin that is not a placeholder (presumed chosen by hand, as naming.is_better says)."""
+    def change(d: dict) -> bool | None:
+        source, current = d.get("name_source"), d.get("name")
+        unsourced_hand = (source not in naming.PRIORITY and source != "twin" and current and current != d.get("ip")
+                          and not naming.is_placeholder(current))
+        if source in ("user", "ha", "ha_user") or unsourced_hand or (current == name and source == "twin"):
+            return False
+        d["name"], d["name_source"] = name, "twin"
+        d.pop("name_mac", None)
+    return _edit_card(device_id, change) is not None
+
+
+@_locked
+def release_twin_name(device_id: str, ip: str) -> bool:
+    """A card that is no longer a twin gives its twin name back: the address until the next check finds it a name of its own."""
+    def change(d: dict) -> bool | None:
+        if d.get("name_source") != "twin":
+            return False
+        d["name"] = ip
+        d.pop("name_source", None)
     return _edit_card(device_id, change) is not None
 
 

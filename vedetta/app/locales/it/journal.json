@@ -17,5 +17,7 @@
   "journal.unignored": "{name} non è più ignorato",
   "journal.forgotten": "{name} dimenticato",
   "journal.fullports": "{ip}: scansione completa in background terminata ({ports} porte, {added} in più)",
-  "journal.fullports_failed": "{ip}: scansione completa in background non finita (dispositivo troppo lento), restano le porte mirate"
+  "journal.fullports_failed": "{ip}: scansione completa in background non finita (dispositivo troppo lento), restano le porte mirate",
+  "journal.settings_damaged": "File delle impostazioni rovinato: copia tenuta come {copy}, le impostazioni ripartono dai valori predefiniti",
+  "journal.settings_damaged_kept": "File delle impostazioni rovinato e non copiato: non viene salvato sopra finché non si legge"
 }

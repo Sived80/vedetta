@@ -53,7 +53,7 @@ const dom = new JSDOM(html, {
 const doc = dom.window.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const tint = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"] .tile-icon'); return t && t.style.getPropertyValue("--bc"); };
 
 (async () => {
@@ -62,6 +62,6 @@ const tint = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"] 
   check(tint("t-apple") === "var(--primary-text-color)", "un logo nero (Apple) col colore del testo: si vede anche nel tema scuro");
   check(/^#4495d1$/i.test(tint("t-shelly")), "un logo colorato tiene il suo colore (" + tint("t-shelly") + ")");
   check(errors.length === 0, "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

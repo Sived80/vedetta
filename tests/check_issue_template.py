@@ -21,4 +21,4 @@ assert not re.search(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text.replace("0.3.9", "")),
 assert not re.search(r"[\w.+-]+@[\w-]+\.\w+", text), "no email in the template"
 privacy = next(b for b in form["body"] if b.get("id") == "privacy")
 assert all(o["required"] for o in privacy["attributes"]["options"])
-print("TUTTO OK")
+print("ALL OK")

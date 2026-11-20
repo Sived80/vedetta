@@ -91,4 +91,4 @@ for key in ("sessions", "hostname", "client_id", "fingerprint"):
 assert any(f.get("fingerprint") == "|1,3,6" for f in vals) and any(f.get("fingerprint") == "MSFT 5.0|" for f in vals)
 assert any(f["first"] == 1e18 for f in vals) and any(f["last"] == 0.0 for f in vals) and any(f["first"] < 0 for f in vals) and any(f["first"] == 5e17 for f in vals)
 assert any(len(f["ips"]) > 1 for f in vals) and any("sessions" in f and len(f["sessions"]) > 1 for f in vals) and sum(1 for o in out if not o) > 20
-print("TUTTO OK")
+print("ALL OK")

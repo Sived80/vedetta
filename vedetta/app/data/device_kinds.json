@@ -67,7 +67,8 @@
    "words": [
     "router",
     "firewall",
-    "mesh"
+    "mesh",
+    "gateway"
    ],
    "tokens": [],
    "w": 2,
@@ -82,15 +83,14 @@
   },
   {
    "id": "hub",
-   "group": "router",
+   "group": "iot",
    "icon": "hub",
    "words": [
     "bridge",
     "coordinator",
     "zigbee",
     "z-wave",
-    "zwave",
-    "gateway"
+    "zwave"
    ],
    "tokens": [
     "hub"

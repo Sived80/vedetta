@@ -9,7 +9,7 @@ Function -> primitive map in scanner.py:
   mdns           scanner.mdns_scan            passive Bonjour/Avahi names
   reverse_names  scanner.resolve_mdns_name    avahi reverse resolution, for IPs without a name
   ssdp           scanner.ssdp_scan            UPnP (once for the whole batch)
-  netbios_snmp   scanner.protocol_scan        NetBIOS/SNMP (light nmap -sU)
+  netbios_snmp   scanner.protocol_scan        NetBIOS (light nmap -sU; no SNMP: no community is ever tried)
   ports_fast     (nmap flag)                  -p- with host-timeout 30s
   ports_all      (nmap flag)                  -p- with host-timeout 150s
   service_os     (nmap flag)                  -sV --version-light
@@ -24,7 +24,7 @@ when the dependency is missing."""
 import asyncio
 import time
 
-from . import arpplan, dhcp, flows, scanner
+from . import arpplan, dhcp, flows, scanner, touch_policy
 from ..recognition import naming
 from .adapters import shelly_gen1
 from ..applog import logger
@@ -40,7 +40,9 @@ from .pipeline_probes import _EMPTY_HOST, _attach_adapter_result, _confirm_web_i
 async def scan_host(ip: str, batch: Batch, slow: bool = False) -> dict:
     """The profile's "per host" functions (composed nmap, NetBIOS/SNMP, web
     port confirmation, adapter) merged with the batch data. Returns the same dict that
-    full_scan produced (plus the 'adapter'/'adapter_extra' keys)."""
+    full_scan produced (plus the 'adapter'/'adapter_extra' keys). Behind the router only the steps of touch_policy.routed_steps."""
+    if registry.through_router(ip):
+        batch = touch_policy.routed_batch(batch)
     chosen, nmap_args, slow = await _plan_nmap_scan(batch, ip, slow)
     protocol_info, rtsp_info, info = await _run_parallel_probes(nmap_args, ip, slow, chosen)
     meta = _merge_mdns_and_upnp_info(info, ip, protocol_info, chosen, batch)

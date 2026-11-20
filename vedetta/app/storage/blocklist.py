@@ -97,6 +97,17 @@ def remove(item_id: str) -> bool:
         return True
 
 
+def remove_many(item_ids) -> int:
+    """Takes several entries out at once («delete this network»); how many were taken out."""
+    wanted = set(item_ids)
+    with _lock:
+        items = list(list_items())
+        kept = [i for i in items if i["id"] not in wanted]
+        if len(kept) != len(items):
+            _write(kept)
+        return len(items) - len(kept)
+
+
 def matches(*, mac: str | None = None, ip: str | None = None, name: str | None = None) -> bool:
     """True if the device is in the list. The name is also compared with
     the one announced via DHCP by the MAC, if known."""

@@ -51,4 +51,4 @@ for rel in filter(None, files):
     for label in personal_traces(path.read_bytes()):
         bad.append((rel, label))
 assert not bad, "files that carry the trace of a local machine (a home folder or a synced company folder): " + ", ".join(f"{r} ({w})" for r, w in bad[:8])
-print("TUTTO OK")
+print("ALL OK")

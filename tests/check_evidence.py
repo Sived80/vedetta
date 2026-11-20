@@ -67,4 +67,4 @@ try:
 except routes_ha.HTTPException as exc:
     assert exc.status_code == 404
 state.devices.clear()
-print("TUTTO OK")
+print("ALL OK")

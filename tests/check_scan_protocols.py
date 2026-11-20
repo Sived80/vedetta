@@ -94,8 +94,8 @@ answer["xml"] = pre("broadcast-dhcp-discover", "Response 1 of 1:&#10;Server Iden
 assert run(sp.dhcp_discover(8))[0]["server"] == "10.0.0.1" and "16s" in launched[-1]
 answer["xml"] = HOST
 assert run(sp.protocol_scan("10.0.0.5", 12))["netbios_name"] == "OFFICE-PC"
-assert launched[-1][:4] == ["-sU", "-p", "137,161", "-T4"] and launched[-1][-1] == "10.0.0.5" and "12s" in launched[-1]
+assert launched[-1][:6] == ["-sU", "-p", "137", "-T4", "--script", "nbstat"] and launched[-1][-1] == "10.0.0.5" and "12s" in launched[-1]
 for bad in ("garbage", "<nmaprun/>"):
     answer["xml"] = bad
     assert run(sp.ssdp_scan()) == {} and run(sp.igmp_scan()) == {} and run(sp.dhcp_discover()) == []
-print("TUTTO OK")
+print("ALL OK")

@@ -273,4 +273,4 @@ for kind in ha_data.TYPE_ORDER:
     assert re.search(r'\b"?%s"?:\s*"[a-z-]+"' % kind, icons), kind
 print("ok: icone per tipo")
 
-print("TUTTO OK")
+print("ALL OK")

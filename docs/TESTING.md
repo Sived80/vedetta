@@ -4,15 +4,15 @@ Vedetta looks at your home network, so a mistake is a wrong name on a card, or w
 
 [← Back to the README](../README.md)
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-numbers-dark.svg"><img src="images/testing-numbers-light.svg" alt="300+ automatic tests, 4,000+ hours of real home networks, 150+ real devices, 14 network scenarios" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-numbers-dark.svg"><img src="images/testing-numbers-light.svg" alt="400+ automatic tests, 4,000+ hours of real home networks, 150+ real devices, 30+ network scenarios" width="100%"></picture>
 
 ## The way of a change
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-pipeline-dark.svg"><img src="images/testing-pipeline-light.svg" alt="The way of a change: test first, 300+ tests, real networks, virtual LAN, CI, debug at home, release" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-pipeline-dark.svg"><img src="images/testing-pipeline-light.svg" alt="The way of a change: test first, 400+ tests, real networks, virtual LAN, CI, debug at home, release" width="100%"></picture>
 
 ### The virtual LAN, by problem
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-scenarios-dark.svg"><img src="images/testing-scenarios-light.svg" alt="Scenarios of the virtual LAN: doubled phone cards 5, names taken from another device 4, a camera hidden from the scan 1, the network doctor 4" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/testing-scenarios-dark.svg"><img src="images/testing-scenarios-light.svg" alt="Scenarios of the virtual LAN: phones and repeaters 6, an address taken by another device 11, new devices found and listed 5, networks behind the router 2, the network doctor 6, an update and the way back 1" width="100%"></picture>
 
 ## An example: the network doctor of 0.11.0
 

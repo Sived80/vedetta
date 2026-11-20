@@ -132,6 +132,8 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "name_source": cfg.get("name_source"),
         "wol_ok": bool(cfg.get("wol_ok")),
         "ha_share": bool(cfg.get("ha_share")),
+        **({"watch": True} if cfg.get("watch") else {}),
+        **({"twin_of": device["twin_of"]} if device.get("twin_of") else {}),   # the address of the main card of the same machine (twins.py): the page puts the twin next to it     # "tell me if it disappears" (sentinel_view): only when on, off is the absence
         "type_user": cfg.get("type_user"),
         "brand_user": cfg.get("brand_user"),
         "focus": bool(cfg.get("focus")),

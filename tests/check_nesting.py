@@ -74,4 +74,4 @@ assert "take them off the list: a.py:f" in gate_rules.deep_problem(set(), {"a.py
 assert gate_rules.deep_problem(set(), {}) is None
 assert nesting.deep_functions(pathlib.Path(__file__).resolve().parent.parent) == set(nesting.ALLOWED_DEEP), "the real project: exactly the allowed functions are deep"
 assert all(len(why) > 30 for why in nesting.ALLOWED_DEEP.values()), "every exception says why"
-print("TUTTO OK", real)
+print("ALL OK", real)

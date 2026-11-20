@@ -160,6 +160,8 @@ class _Clues:
         """Network roles, declared mDNS services and UPnP types, the interface that answered, ONVIF and RTSP."""
         if _has_network_role(roles, self.device.get("ip")):
             self.add("router", W_ROLE, "role", "ruolo di rete")
+        if roles.is_gateway(self.device.get("ip"), self.device.get("mac")):
+            self.add("router", W_ROLE, "gateway", "router di casa")      # the way out of the house: a router whatever else runs on it (a controller, a web page)
         self.table_hits(services, _MDNS_TYPE, _FAMILY_SERVICE, "svc:", "mDNS ")
         self.table_hits(upnp_types, _UPNP_TYPE, _FAMILY_UPNP, "upnp:", "UPnP ")
         self.api()

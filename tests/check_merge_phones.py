@@ -133,4 +133,4 @@ s, _ = setup([("a", "10.0.0.30", "Telefono di Luca", False, [(30, 20)]), ("b", "
 s.devices["b"]["is_mobile"] = False
 asyncio.run(s.merge_duplicate_phones())
 assert set(s.devices) == {"a", "b"}, "only mobile cards are merged"
-print("TUTTO OK")
+print("ALL OK")

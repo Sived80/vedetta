@@ -1,4 +1,5 @@
-"""API of the ignored devices."""
+"""API of the ignored devices. GET /api/ignored gives each entry by MAC its last known address ("ip"): the panel «Networks» shows it under its
+network (tests/check_ignored_last_ip.py)."""
 import asyncio
 
 from fastapi import APIRouter, HTTPException, Request
@@ -9,6 +10,7 @@ from ..storage.history import history
 from .. import i18n
 from .bodies import json_dict
 from ..applog import logger
+from ..storage.newdevices import normalize_mac
 
 router = APIRouter()
 
@@ -17,9 +19,21 @@ async def _json(request: Request) -> dict:
     return await json_dict(request, "ignored.error.invalid")
 
 
+def _last_ip(mac: str, known: dict) -> str | None:
+    """The most recent address the MAC layer saw the MAC at, otherwise the one of the new devices, otherwise None."""
+    norm = normalize_mac(mac)           # both tables keep the MAC as the MAC layer writes it (upper case, colons)
+    seen = history.ips_for_mac(norm) if norm else []
+    return seen[0]["ip"] if seen else (known.get(norm) or {}).get("ip")
+
+
+def _with_ip() -> list:
+    known = history.known_all()
+    return [{**i, "ip": _last_ip(i["value"], known)} if i["kind"] == "mac" else i for i in blocklist.list_items()]
+
+
 @router.get("/api/ignored")
 async def api_ignored():
-    return {"items": await asyncio.to_thread(blocklist.list_items)}
+    return {"items": await asyncio.to_thread(_with_ip)}
 
 
 @router.post("/api/ignored")

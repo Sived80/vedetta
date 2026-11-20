@@ -25,7 +25,7 @@ const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 function open(paused) {
   const calls = [], errors = [];
@@ -115,6 +115,6 @@ function open(paused) {
   check(p.errors.length === 0, "nessun errore nella pagina (in pausa)" + (p.errors.length ? ": " + p.errors[0] : ""));
   p.dom.window.close();
 
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

@@ -183,17 +183,40 @@ export function miActions(d) {
   const flagOn = !!(d && d.focus);
   const flag = '<button type="button" class="icon-btn small mi-flag rp' + (flagOn ? " on" : "") + '" data-act="focus" title="' + flagTip + '" aria-label="' + flagTip + '" aria-pressed="' + flagOn + '">' +
     icon("flag") + "</button>";
-  el.innerHTML = flag + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
+  // "Tell me if it disappears" (the Sentinel): a plain icon button next to the flag, the bell rings when it is on (aria-pressed tells the state).
+  const watchOn = !!(d && d.watch);
+  const watchTip = esc(t(watchOn ? "js.ha.watch.remove" : "js.ha.watch.add"));
+  const bell = '<button type="button" class="icon-btn small mi-watch rp' + (watchOn ? " on" : "") + '" data-act="watch" title="' + watchTip + '" aria-label="' + watchTip + '" aria-pressed="' + watchOn + '">' +
+    icon(watchOn ? "bell-ring" : "bell-outline") + "</button>";
+  el.innerHTML = flag + bell + html + '<button type="button" class="btn tonal rp" data-act="deep"' + (deepOneBusy(d && d.id) ? ' disabled title="' + esc(t("js.ha.deep.busy")) + '"' : "") + ">" + icon("magnify") + "<span>" + esc(t("js.ha.deep.title")) + "</span></button>";
   if (d && !d.online) relinkOffer(d.id, el);
 }
 
 // The gesture "this is a new device" (the device of the card was replaced and another one answers at its address): asked only for an offline
 // card, shown only when the service offers it.
+// The answer is kept a minute for the open card: every live update redraws the buttons, and asking again each time made the button flicker
+// (gone until the answer came back) and sent one request per update (18/11 review).
+var RELINK_KEEP_MS = 60000;
+var relinkSeen = { id: null, at: 0, offer: false };
+function relinkButton(el) {
+  if (el.querySelector('[data-act="relink"]')) return;
+  el.insertAdjacentHTML("beforeend", '<button type="button" class="btn tonal rp" data-act="relink" title="' + esc(t("js.ha.relink.hint")) + '">' +
+    icon("auto-fix") + "<span>" + esc(t("js.ha.relink.button")) + "</span></button>");
+}
+// After the gesture the offer is spent: no button for a minute, whatever the service still says until its next judgement.
+export function relinkTaken(id) { relinkSeen = { id: id, at: Date.now(), offer: false }; }
+// A card closed forgets the answer: the next opening asks again (the minute is only for the redraws of a card that stays open).
+export function relinkFresh() { relinkSeen = { id: null, at: 0, offer: false }; }
 function relinkOffer(id, el) {
+  if (relinkSeen.id === id && Date.now() - relinkSeen.at < RELINK_KEEP_MS) {
+    if (relinkSeen.offer) relinkButton(el);
+    return;
+  }
+  relinkSeen = { id: id, at: Date.now(), offer: false };
   api("/api/devices/" + encodeURIComponent(id) + "/relink").then(function (r) {
-    if (!r || !r.offer || S.open !== id || !el.isConnected || el.querySelector('[data-act="relink"]')) return;
-    el.insertAdjacentHTML("beforeend", '<button type="button" class="btn tonal rp" data-act="relink" title="' + esc(t("js.ha.relink.hint")) + '">' +
-      icon("auto-fix") + "<span>" + esc(t("js.ha.relink.button")) + "</span></button>");
+    relinkSeen = { id: id, at: Date.now(), offer: !!(r && r.offer) };
+    if (!relinkSeen.offer || S.open !== id || !el.isConnected) return;
+    relinkButton(el);
   }).catch(function () { /* nothing offered */ });
 }
 

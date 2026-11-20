@@ -21,7 +21,7 @@ if (built.status !== 0) { console.log("build_page.py failed:\n" + built.stdout +
 const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const base = fs.readFileSync(path.join(out, "data.json"), "utf8");
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 // The page with the three devices of build_page.py, the gateway at 192.168.1.1 and the third device moved to another /24 of a /22.
 function gatewayText(network) {
@@ -77,6 +77,6 @@ function gatewayText(network) {
   check(odd.text.includes("192.168.1.0/24"), "una sottorete che non contiene il gateway non viene usata: " + odd.text);
   const errors = [...wide.errors, ...old.errors, ...odd.errors];
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors.join(" | ") : ""));
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

@@ -156,4 +156,4 @@ assert sum(1 for o in out if any(e[0] == "log" and e[1].startswith("Fuso orario 
 assert sum(1 for o in out if any(e[0] == "log" and e[1].startswith("Fuso orario:") for e in o[4])) > 300, "no changes"
 assert sum(1 for o in out if not o[0] and o[4] == [["time"]]) > 300 and sum(1 for o in out if any(e[0] == "send" and "get_config" in e[1] for e in o[4])) > 1500
 assert any(o[1] is False and any(e[0] == "lang" for e in o[4]) and not any(e[0] == "log" for e in o[4]) for o in out), "no unknown zone"
-print("TUTTO OK")
+print("ALL OK")

@@ -135,4 +135,4 @@ stats = {"shadow": c(lambda e: e[0] == "shadow", logs), "auto": c(lambda e: e[0]
          "stale": sum(1 for o in out for a, b in zip(o["steps"], o["steps"][1:]) if b["events"] == a["events"] and b["calls"] == a["calls"] and b["devices"] == a["devices"])}
 for key, low in (("shadow", 800), ("auto", 400), ("auto_forced", 100), ("reset", 800), ("add", 800), ("rec_off", 400), ("rec_on", 800), ("events", 3000), ("tolerated", 300), ("noop", 300), ("stale", 100)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

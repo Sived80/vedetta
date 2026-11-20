@@ -38,6 +38,9 @@ class FakeHistory:
     def known_all(self):
         return self.rows
 
+    def routed_new(self, since):
+        return []           # no network behind the router here (step P11)
+
 
 def row(mac, status, ip, first):
     return {"mac": mac, "status": status, "ip": ip, "vendor": None, "hostname": None, "first_seen": first}

@@ -7,10 +7,10 @@ import ipaddress
 import re
 
 
-# JSON fields that describe the device or a fingerprint, not a person: never rewritten (an icon called like an area, an SSH
-# fingerprint that looks like a MAC...). IPs and MACs used as KEYS are still replaced.
+# JSON fields that describe the device, not a person: never rewritten (an icon called like an area, a netmask that looks like an
+# address...). IPs and MACs used as KEYS are still replaced. An SSH key fingerprint is NOT here: it is unique to one machine (_SSH_FP).
 _KEEP = {"icon", "type", "type_user", "adapter", "logo", "logo_color", "brand", "brand_source", "brand_confidence", "vendor",
-         "vendor_role", "name_source", "family", "category", "kind", "ssh_hostkey", "http_server",
+         "vendor_role", "name_source", "family", "category", "kind", "netmask", "http_server",
          "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains",
          "state", "reasons", "badges", "scores", "chosen", "group", "corner", "thresholds",
          "version", "generated", "since", "age_s", "analysing_for_s"}
@@ -45,16 +45,21 @@ _IPV4_SEP = re.compile(r"(?<![\d])(\d{1,3})([-_])(\d{1,3})\2(\d{1,3})\2(\d{1,3})
 
 
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# A notify service of Home Assistant ("notify.mobile_app_marcos_iphone"): its name is often a person's or a phone's (the Alerts recipients)
+_NOTIFY = re.compile(r"(?<![\w.])notify\.([A-Za-z0-9_]+)(?![\w-]|\.\w)")       # not a host name such as notify.example.com
+_NOTIFY_KEEP = frozenset({"notify", "persistent_notification", "send_message"})      # the generic services of Home Assistant: no name in them
 
 
-# "password=abc", "token": "abc", "Authorization: Bearer abc" -> the value is hidden
-_SECRET_PAIR = re.compile(r"(?i)\b(pass(?:word|wd)?|token|secret|api[_-]?key|authorization)(\W{0,3}[:=]\W{0,2})(?:bearer\s+)?([^\s\"',;&<>]{4,})")
+# "password=abc", "token": "abc", "Authorization: Bearer abc" -> the value is hidden; also inside a longer name or a query string
+# ("access_token=", "x_api_key:", "?pwd=", "&auth=", "?key="), never inside another word ("monkey=" is not "key=").
+_SECRET_PAIR = re.compile(r"(?i)(?<![a-z])((?:[a-z]+_)?(?:pass(?:word|wd)?|pwd|token|secret|api[_-]?key|key|auth|authorization|community))"
+                          r"(\W{0,3}[:=]\W{0,2})(?:bearer\s+)?([^\s\"',;&<>]{4,})")
 
 
 _URL_CREDS = re.compile(r"(://)[^/\s:@]+:[^/\s@]+@")
 
 
-_SECRET_KEY = re.compile(r"pass|token|secret|api_?key|credential|authorization", re.IGNORECASE)
+_SECRET_KEY = re.compile(r"pass|token|secret|api_?key|credential|authorization|community", re.IGNORECASE)
 
 
 _PRIVATE_KEYS = {"user", "username", "mqtt_user", "mqtt_username", "mqtt_host"}
@@ -64,6 +69,8 @@ _PRIVATE_KEYS = {"user", "username", "mqtt_user", "mqtt_username", "mqtt_host"}
 _HOME_DOT = re.compile(r"(?<![\d.])(?:192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}(?!\d|\.\d)")   # same edges as _IPV4: what the masking would have masked
 
 
+# An SSH key fingerprint (16 bytes with ":" as nmap writes it, or "SHA256:" and 43 characters): unique to one machine, masked as ssh-key-N.
+_SSH_FP = re.compile(r"(?<![0-9A-Za-z:])(?:[0-9A-Fa-f]{2}:){15}[0-9A-Fa-f]{2}(?![0-9A-Za-z:])|(?<![0-9A-Za-z])SHA256:[A-Za-z0-9+/]{43}=?(?![A-Za-z0-9+/=])")
 _MAC = re.compile(r"(?<![0-9A-Za-z])(?<![^0-9A-Za-z][0-9A-Fa-f]{2}[:\-])(?<!^[0-9A-Fa-f]{2}[:\-])([0-9A-Fa-f]{2})([:\-])(?:[0-9A-Fa-f]{2}\2){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])(?!\2[0-9A-Fa-f]{2}\2[0-9A-Fa-f]{2})")
 
 

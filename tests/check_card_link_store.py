@@ -83,7 +83,8 @@ run(maclayer.record({}, H))
 assert macverdict.kind(L) == "lender"
 assert rows(H) == {"scan-10-0-60-11": (1, "main", A, "linked", None, "seed", "10.0.60.11"),
                    "scan-10-0-60-12": (2, "main", B, "linked", None, "seed", "10.0.60.12")}, rows(H)
-assert cardlink_cycle.counts(H) == {"linked": 2, "held": {}, "unlinked": {"shared_kind": 1}, "source": {"seed": 2}}, cardlink_cycle.counts(H)
+assert cardlink_cycle.counts(H) == {"linked": 2, "held": {}, "unlinked": {"shared_kind": 1}, "source": {"seed": 2},
+                                     "successions": {"seen": 0, "moved": 0}}, cardlink_cycle.counts(H)   # P10: no private MAC rotated here
 
 # at most every FULL_SWEEP_S: a card removed meanwhile keeps its row until the next judgement
 write_cards([cardd(1, 11), cardd(3, 20), cardd(4, 13)])
@@ -228,4 +229,4 @@ importers = sorted(f.relative_to(APP).as_posix() for f in APP.rglob("*.py") if r
 assert "cardlink_cycle.py" in importers and set(importers) <= {"state_cycle.py", "cardlink_cycle.py", "identity_upkeep.py", "inventory_view.py"}, importers   # P7: the guard reads which cards are linked
 assert len(re.findall(r"cardlink_cycle\.load\b", (APP / "main.py").read_text(encoding="utf-8"))) == 1, "linkview filled at start"
 assert len(re.findall(r"cardlink_cycle\.counts\(", (APP / "export" / "export_zip.py").read_text(encoding="utf-8"))) == 1, "the export counts"
-print("TUTTO OK")
+print("ALL OK")

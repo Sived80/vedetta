@@ -78,4 +78,4 @@ out, _ = probe([80], {"/shelly": (200, J, "{broken")})
 assert out == {}, "a broken body is survived"
 out, _ = probe([80, 8008], {"/shelly": (200, J, '{"type": "SHSW-1", "mac": "AA", "name": null}')})
 assert "api_name" not in out and out["api_model"] == "SHSW-1", "empty fields are dropped"
-print("TUTTO OK")
+print("ALL OK")

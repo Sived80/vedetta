@@ -33,4 +33,4 @@ assert "Date.now() - S.conn.last > STREAM_STALE_MS) connect();" in app
 stale = int(re.search(r"STREAM_STALE_MS = (\d+);", read("core.js")).group(1))
 assert stale >= 2 * routes_ha.PING_SECONDS * 1000 + 5000, stale   # two lost pings and some margin before calling it dead
 
-print("TUTTO OK")
+print("ALL OK")

@@ -107,4 +107,4 @@ assert text_out == GOLDEN.read_text(encoding="utf-8"), "key order or formatting 
 assert all(stats[k] > 300 for k in ("invalid", "mac", "ip", "replaced_ip", "now", "dirty", "model", "manufacturer", "long")), "too uniform: %s" % stats
 n_exc = sum(1 for o in out for r in o["res"] if "exception" in r)
 assert 0 < n_exc < 400, n_exc
-print("TUTTO OK")
+print("ALL OK")

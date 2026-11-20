@@ -17,6 +17,8 @@ import math
 from collections import Counter
 from itertools import combinations
 
+from .macclassify import is_locally_administered
+
 # vendor class (opt 60) and parameter request list (opt 55) both describe the OS family, so they are ONE joint "fingerprint" (counting them as two
 # independent proofs would double the weight of the same fact).
 FIELDS = ("hostname", "fingerprint", "client_id")
@@ -167,3 +169,53 @@ def _handoff_rate(rels: dict) -> float:
         return 0.05
     near = sum(1 for _, gap in rels.values() if gap is not None and gap <= HANDOFF_GAP_S)
     return max((near + 1) / (len(rels) + 2), 0.001)
+
+
+# 1.0 step P10 (decisions 1A, 2A of 13/11): a private MAC that rotates. The chance that two random MACs hand over is fixed here, not estimated:
+# the pairs looked at are few (only private MACs) and a network with many handovers must not make the handover weigh less for a phone.
+SUCCESSION_U_HANDOFF = 0.05
+# The sources are timed differently (a DHCP packet at its own time, a neighbour entry at "now minus its age", ARP at the cycle): the old MAC may look
+# active a few seconds after the new one began. Up to this much (the length of a slow cycle) it is a handover, not two devices at once (S39: 8 s).
+SUCCESSION_OVERLAP_S = 60
+
+
+def successions(features: dict[str, dict], only=None) -> dict[str, str]:
+    """{new MAC: old MAC} for every private MAC that is the same device as a private MAC that stopped before it began: zone "same" (strong
+    evidence), never active together, the last session of the old one ended before the first of the new one started. A MAC with two possible
+    predecessors, or a predecessor with two possible successors, gives nothing (decision 2A: when in doubt, a new device as today).
+    `only`: keep just the successions whose new MAC is in it (all the private MACs are judged anyway, so that an ambiguity is always seen)."""
+    private = [m for m in sorted(features) if "first" in features[m] and is_locally_administered(m)]
+    found = _unambiguous(_succession_pairs(features, private)) if len(private) > 1 else {}
+    return found if only is None else {new: old for new, old in found.items() if new in only}
+
+
+def _unambiguous(pairs: list[tuple[str, str]]) -> dict[str, str]:
+    """{new: old} of the pairs whose old MAC has no other possible successor and whose new MAC has no other possible predecessor."""
+    olds, news = Counter(o for o, _ in pairs), Counter(n for _, n in pairs)
+    return {new: old for old, new in pairs if olds[old] == 1 and news[new] == 1}
+
+
+def _succession_pairs(features: dict[str, dict], private: list[str]) -> list[tuple[str, str]]:
+    """Every (old, new) of private MACs where the new one could follow the old one, ambiguous or not."""
+    u = estimate_u(features)
+    sess = {m: _sessions(features[m]) for m in private}
+    pairs = []
+    for old, new in ((o, n) for n in private for o in private if o != n):
+        if _follows(sess[old], sess[new]) and _same(features[old], features[new], u, _relation(_until(sess[old], sess[new][0][0]), sess[new])):
+            pairs.append((old, new))
+    return pairs
+
+
+def _follows(old: list, new: list) -> bool:
+    """The old MAC had ended every session before the new one started its first (give or take SUCCESSION_OVERLAP_S)."""
+    return max(e for _, e, _ in old) <= new[0][0] + SUCCESSION_OVERLAP_S
+
+
+def _until(sessions: list, cut: float) -> list:
+    """The sessions cut at `cut`: the few seconds of overlap that _follows forgives are not "active together"."""
+    return [(s, min(e, cut), ips) for s, e, ips in sessions if s < cut] or sessions
+
+
+def _same(a: dict, b: dict, u: dict, rel: tuple) -> bool:
+    s, _, evidence, against, strong = score(a, b, u, SUCCESSION_U_HANDOFF, rel)
+    return zone(s, evidence, against, strong) == "same"

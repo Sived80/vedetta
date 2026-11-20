@@ -53,9 +53,9 @@ ENTRIES = [{"entry_id": "e1", "domain": "unifi", "title": "Leo's router", "state
            {"entry_id": "e2", "domain": "mqtt", "title": "Mosquitto", "state": "loaded", "disabled_by": None}]
 REG = {"entities": ENTITIES, "devices": DEVICES, "entries": ENTRIES}
 ROWS = [
-    {"entity_id": "device_tracker.leo_phone", "state": "home", "ip": "192.168.3.40", "mac": "AA:BB:CC:12:34:56", "host_name": "Leo-iPhone.fritz.nu", "keys": ["ip", "mac", "host_name", "vlan", "essid"]},
+    {"entity_id": "device_tracker.leo_phone", "state": "home", "ip": "192.168.3.40", "mac": "B8:27:EB:12:34:56", "host_name": "Leo-iPhone.fritz.nu", "keys": ["ip", "mac", "host_name", "vlan", "essid"]},
     {"entity_id": "device_tracker.guest_tv", "state": "not_home", "ip": "192.168.50.7", "mac": "aa-bb-cc-65-43-21", "host_name": None, "keys": ["ip", "mac", "essid"]},
-    {"entity_id": "device_tracker.vedetta_nas", "state": "home", "ip": "192.168.100.9", "mac": "aa:bb:cc:00:00:03", "host_name": "nas", "keys": ["ip", "mac", "latency_ms"]},
+    {"entity_id": "device_tracker.vedetta_nas", "state": "home", "ip": "192.168.100.9", "mac": "b8:27:eb:00:00:03", "host_name": "nas", "keys": ["ip", "mac", "latency_ms"]},
     {"entity_id": "device_tracker.old_one", "state": "unavailable", "ip": None, "mac": None, "host_name": "x" * 500 + "‮\n", "keys": []},
 ]
 
@@ -64,7 +64,7 @@ assert clients["count"] == 3 and clients["truncated"] is False                  
 assert clients["states"] == {"home": 1, "not_home": 1, "other": 1}, clients["states"]
 assert clients["by_platform"] == {"unifi": 3} and clients["attribute_keys"] == {"unifi": ["essid", "host_name", "ip", "mac", "vlan"]}, clients
 leo = next(r for r in clients["rows"] if r["host_name"] == "Leo-iPhone.fritz.nu")
-assert leo == {"platform": "unifi", "state": "home", "ip": "192.168.3.40", "mac": "aa:bb:cc:12:34:56", "host_name": "Leo-iPhone.fritz.nu"}, leo
+assert leo == {"platform": "unifi", "state": "home", "ip": "192.168.3.40", "mac": "b8:27:eb:12:34:56", "host_name": "Leo-iPhone.fritz.nu"}, leo
 assert all(len(r["host_name"] or "") <= ns.MAX_TEXT and "\n" not in (r["host_name"] or "") and "‮" not in (r["host_name"] or "") for r in clients["rows"])
 cut = ns.clients_section(ROWS, ENTITIES, DEVICES, ENTRIES, limit=1)
 assert cut["count"] == 3 and len(cut["rows"]) == 1 and cut["truncated"] is True                    # the count stays true, the rows are limited
@@ -86,8 +86,9 @@ ns.register_for_masking(anon, survey)
 masked = anon.data(survey)
 out = json.dumps(masked)
 assert "Leo" not in out and "fritz.nu" not in out and "192.168.3." not in out and "192.168.50." not in out and "192.168.100." not in out, out
-assert "aa:bb:cc:12:34:56" not in out and "aa:bb:cc:65:43:21" not in out and "02:11:22:33:44:55" not in out
-assert "aa:bb:cc:" in out                                                                          # the maker (first three bytes) stays: it is the clue the debug needs
+assert "b8:27:eb:12:34:56" not in out and "b8:27:eb:65:43:21" not in out and "02:11:22:33:44:55" not in out
+assert "b8:27:eb:" in out                                                                          # the maker (first three bytes) stays: it is the clue the debug needs
+assert "02:11:22:" not in out                                                                       # a private MAC has no maker: nothing of it stays (19/11)
 assert not anon.leaks_data(masked), anon.leaks_data(masked)
 hosts = {r["host_name"] for r in masked["clients"]["rows"] if r["host_name"]}
 assert len(hosts) == 2 and not any("Leo" in h or "xxxx" in h for h in hosts), hosts                  # one label per client
@@ -122,4 +123,4 @@ assert ns.parse_template_result([{"ip": "1"}, "x"]) == [{"ip": "1"}] and ns.pars
 
 # --- the switch
 assert ns.ENABLED is True
-print("TUTTO OK")
+print("ALL OK")

@@ -20,12 +20,15 @@ BEFORE_AFTER = [("H05", "Restarts that repeat", 27, 1), ("H06", "Devices that dr
 # A fault added to the real history of 3 networks: minutes until the finding is raised (the slowest of the three) - tools/replay_health_engine.py --inject.
 DETECTION = [("H06", "6 devices drop together", 2, "1-2 min"), ("H07", "Gateway answers 3 ms slower", 13, "10-13 min"), ("H05", "A device restarts every 10 min", 44, "43-44 min")]
 # The way of a change: (label, icon of the app's own set). Blue from light to dark, one hue: the steps go one way, towards the release.
-STEPS = [("Test first", "pencil"), ("300+ tests", "check"), ("Real networks", "history"), ("Virtual LAN", "lan"), ("CI", "server"), ("Debug at home", "home"), ("Release", "star")]
+STEPS = [("Test first", "pencil"), ("400+ tests", "check"), ("Real networks", "history"), ("Virtual LAN", "lan"), ("CI", "server"), ("Debug at home", "home"), ("Release", "star")]
 RAMP = {"light": ["#5598e7", "#3987e5", "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281"], "dark": ["#104281", "#184f95", "#1c5cab", "#256abf", "#2a78d6", "#3987e5", "#5598e7"]}
 # The headline numbers (rounded down): tests of tools/gate.py, hours of presence history in the exports (different by content) and device cards of the largest export of each network, scenarios of tools/lansim/scenarios.py.
-NUMBERS = [("300+", "automatic tests"), ("4,000+", "hours of real home networks"), ("150+", "real devices"), ("14", "network scenarios")]
+NUMBERS = [("400+", "automatic tests"), ("4,000+", "hours of real home networks"), ("150+", "real devices"), ("30+", "network scenarios")]
 # The scenarios of the virtual LAN by the problem they reproduce (tools/lansim/scenarios.py): (label, icon, how many).
-SCENARIOS = [("Doubled phone cards", "cellphone", 5), ("Names taken from another device", "pencil", 4), ("A camera hidden from the scan", "cctv", 1), ("The network doctor", "wifi-arrow-up-down", 4)]
+SCENARIOS = [("Phones and repeaters", "cellphone", 6), ("An address taken by another device", "pencil", 11), ("New devices found and listed", "radar", 5),
+             ("Networks behind the router", "router-wireless", 2), ("The network doctor", "wifi-arrow-up-down", 6), ("An update and the way back", "history", 1)]
+# 19/11: the 31 scenarios of tools/lansim (S10D counted as a variant of S10). Phones: S1 S4 S10 S10D S39 S40; an address taken: S5 S11 S11B S11C S13 S13L S11L S31 S32 S33 S36;
+# new devices: S12 S35 S37 S38 S43; behind the router: S41 S42; the doctor: S14 S14B S14C S15 S16 S17; update: S30.
 ICONS = Path(__file__).resolve().parent.parent / "vedetta" / "app" / "static" / "ha" / "icons.js"
 
 
@@ -96,7 +99,7 @@ def pipeline(t: dict, theme: str) -> str:
         body += f"<circle cx='{cx}' cy='{cy}' r='{r + 5}' fill='{t['bg']}'/><circle cx='{cx}' cy='{cy}' r='{r}' fill='{ramp[i]}'/>"
         body += f"<path d='{icon_path(icon)}' fill='#ffffff' transform='translate({cx - 14},{cy - 14}) scale({28 / 24})'/>"
         body += text(cx, cy + r + 26, label, t["ink"], 14, "middle", 600 if i == len(STEPS) - 1 else 400)
-    return svg(w, cy + r + 44, t, body, "The way of a change: test first, 300+ tests, real networks, virtual LAN, CI, debug at home, release")
+    return svg(w, cy + r + 44, t, body, "The way of a change: test first, 400+ tests, real networks, virtual LAN, CI, debug at home, release")
 
 
 def numbers(t: dict, theme: str) -> str:
@@ -125,7 +128,7 @@ def main() -> None:
     themed = (pipeline, numbers, scenarios)          # the ones that take the theme too (the ramp of the blue)
     for name, draw in (("testing-before-after", before_after), ("testing-detection", detection), ("testing-pipeline", pipeline), ("testing-numbers", numbers), ("testing-scenarios", scenarios)):
         for theme, colours in THEMES.items():
-            (OUT / f"{name}-{theme}.svg").write_text(draw(colours, theme) if draw in themed else draw(colours), encoding="utf-8")
+            (OUT / f"{name}-{theme}.svg").write_text(draw(colours, theme) if draw in themed else draw(colours), encoding="utf-8", newline="\n")      # the same bytes on every system
             print("written", f"docs/images/{name}-{theme}.svg")
 
 

@@ -81,4 +81,4 @@ assert len(ok) > 3500, "too many exceptions"
 assert sum(1 for o in ok if o[2]) > 1500 and sum(1 for o in ok if not o[0]) > 20 and sum(1 for o in ok if "apple" in o[0]) > 500
 assert sum(1 for o in ok if "kitchen" in o[0]) < len(ok) // 2 and any("c200 camera" in o[0] for o in ok) and any("nas server" in o[0] for o in ok)
 assert any("mikrotik_router" in o[0] for o in ok) and any(len(o[2]) > 2 for o in ok)
-print("TUTTO OK")
+print("ALL OK")

@@ -42,4 +42,4 @@ assert [p for p in uc.compare_links(fl, {"links": {"a": [1, "02:00:00:00:00:09"]
 assert [p for p in uc.compare_links(fl, {"links": {"c": [3, "02:00:00:00:00:03"]}, "seqs": {}}, "again") if "c" in p and "no card" in p]
 assert [p for p in uc.compare_links(fl, {"links": {"a": [1, "02:00:00:00:00:01"], "c": [3, "02:00:00:00:00:01"]}, "seqs": {"a": 1, "c": 3}}, "again") if "two cards" in p]
 assert uc.compare_links({}, {}, "again") == [], "an old version on both sides: no links to compare"
-print("TUTTO OK")
+print("ALL OK")

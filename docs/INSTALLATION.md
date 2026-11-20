@@ -71,7 +71,7 @@ You copy the app folder into Home Assistant's `addons` folder, using the **Samba
 
 1. Open **Vedetta** from the sidebar. The first page may be empty: that is normal.
 2. Press **Scan network**. Within a few seconds the devices on your network appear; add the ones you want on your board.
-3. **Leave it running for at least 24 hours** (see the box at the top). Vedetta is not learning: it collects clues, and some only arrive with time. Phones that were asleep announce their names when they wake up, the history bars (24 h and 7 days) fill in, and a deeper search runs every night. Expect most names to settle within a day. Devices that announce nothing (an iPhone with a private Wi-Fi address, for example) stay generic: set their name once by hand and it stays.
+3. **Leave it running for at least 24 hours** (see [Troubleshooting](TROUBLESHOOTING.md#give-vedetta-24-hours-before-you-judge-it)). Vedetta is not learning: it collects clues, and some only arrive with time. Phones that were asleep announce their names when they wake up, the history bars (24 h and 7 days) fill in, and a deeper search runs every night. Expect most names to settle within a day. Devices that announce nothing (an iPhone with a private Wi-Fi address, for example) stay generic: set their name once by hand and it stays.
 4. Curious why it chose a name? The debug view lists every clue behind each name and brand.
 
 Want to share devices back into Home Assistant? That needs an MQTT broker: see [MQTT (optional)](MQTT.md). Everything else works without it.
@@ -84,7 +84,7 @@ Want to share devices back into Home Assistant? That needs an MQTT broker: see [
 | Permission | Why |
 |---|---|
 | Host network + `NET_ADMIN` / `NET_RAW` | `arp-scan`, `nmap`, ping, mDNS/SSDP, passive DHCP (UDP 67). Local requests only. |
-| `homeassistant_api` | **Read-only** registry lookups (devices, entities, areas, integrations). |
+| `homeassistant_api` | Registry lookups (devices, entities, areas, integrations); for *Alerts* only, an event on the bus and the notify services you choose. |
 | MQTT service *(optional)* | Publishes only what you choose to share, if a broker is available. |
 | Ingress | UI reachable only through Home Assistant. |
 

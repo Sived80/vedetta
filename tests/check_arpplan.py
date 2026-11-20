@@ -307,4 +307,4 @@ async def loop_test():
 
 
 run(loop_test())
-print("TUTTO OK")
+print("ALL OK")

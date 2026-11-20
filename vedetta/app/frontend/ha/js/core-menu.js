@@ -3,11 +3,13 @@ import { S } from "./core-ui.js";
 import { openExport } from "./export.js";
 import { deepMenuEl, toggleDeepMenu } from "./deep.js";
 import { pauseEl, togglePause } from "./network.js";
-import { ignoredCount, openIgnored, refreshIgnored } from "./ignored.js";
 import { openFlows } from "./flows.js";
+import { openAlerts } from "./alerts.js";
+import { openInventory } from "./inventory.js";
 import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
 import { netsCount, openNets } from "./ha-networks.js";
+import { openNetPanel } from "./netpanel.js";
 
 // ----------------------------------------------------------------- guided typing
 // Fields that ask for an address help the typing: in a MAC the colons appear by themselves (and the letters become capitals); in an IP address
@@ -169,11 +171,6 @@ function menuFoot() {
   return '<div class="menu-foot"><a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) +
     '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>";
 }
-// The number of ignored devices after the name of the entry, only when there are some.
-function ignoredCountHtml() {
-  const n = ignoredCount();
-  return n > 0 ? ' <span class="menu-count">' + n + "</span>" : "";
-}
 // The number of clients Home Assistant sees that can be adopted, after the name of the entry, only when there are some.
 function netsCountHtml() {
   const n = netsCount();
@@ -202,8 +199,10 @@ function buildMenu() {
   html += menuGroup(t("js.ha.menu.speed"), pills) +
     '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>";
   html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-alerts="1">' + esc(t("js.ha.alerts.menu")) + icon("bell-outline") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-netpanel="1">' + esc(t("js.networks.ui.title")) + icon("router-network") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-nets="1"><span class="menu-lbl">' + esc(t("js.ha.nets.menu")) + netsCountHtml() + "</span>" + icon("lan") + "</button>";
-  html += '<button type="button" class="menu-item menu-link next rp" data-ignored="1"><span class="menu-lbl">' + esc(t("js.ha.menu.ignored")) + ignoredCountHtml() + "</span>" + icon("eye-off") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-inventory="1">' + esc(t("js.ha.inv.menu")) + icon("format-list-bulleted-type") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
   html += menuFoot();
@@ -221,12 +220,6 @@ function toggleMenu(open) {
       api("/api/ha/star", { method: "POST" }).catch(function () { /* the next summary says again if it was not saved */ });
     }
     buildMenu();
-    // The number of ignored devices is asked now and put in place when it arrives (the menu does not wait for it).
-    refreshIgnored().then(function () {
-      const lbl = menuEl.querySelector("[data-ignored] .menu-lbl");
-      if (lbl) lbl.querySelectorAll(".menu-count").forEach(function (c) { c.remove(); });
-      if (lbl) lbl.insertAdjacentHTML("beforeend", ignoredCountHtml());
-    }).catch(function () { /* the entry stays without a number */ });
     // The menu sits inside a card that clips whatever goes past its edges: it is
     // positioned relative to the window, below the button, with a maximum height.
     var r = menuBtn.getBoundingClientRect();
@@ -257,7 +250,10 @@ menuEl.addEventListener("click", function (e) {
     return;
   }
   if (e.target.closest("[data-nets]")) { toggleMenu(false); openNets(); return; }
+  if (e.target.closest("[data-netpanel]")) { toggleMenu(false); openNetPanel(); return; }
   if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }
+  if (e.target.closest("[data-alerts]")) { toggleMenu(false); openAlerts(); return; }
+  if (e.target.closest("[data-inventory]")) { toggleMenu(false); openInventory(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   const item = e.target.closest(".menu-item");
   if (!item) return;
@@ -270,9 +266,6 @@ menuEl.addEventListener("click", function (e) {
     if (item.dataset.view === "list") ROOT.setAttribute("data-view", "list"); else ROOT.removeAttribute("data-view");
     try { localStorage.setItem("vedetta-ha-view", item.dataset.view); } catch (err) { /* ignore */ }
     toggleMenu(false);
-  } else if (item.dataset.ignored) {
-    toggleMenu(false);
-    openIgnored();
   } else if (item.dataset.flows) {
     toggleMenu(false);
     openFlows();

@@ -97,4 +97,4 @@ s = world()
 devices_config.set_ips = lambda changes: None
 asyncio.run(s.follow_links({"a": "10.0.0.50"}))
 assert not s.alerts and not s.triggers and s._misses["a"] == 2
-print("TUTTO OK")
+print("ALL OK")

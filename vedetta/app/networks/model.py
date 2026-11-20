@@ -16,11 +16,13 @@ WIDEST = {"direct": 16, "routed": 22}
 WIDEST_OTHER = 24
 NARROWEST = 30
 MAX_EXCLUDE = 32
+NAME_MAX = 32                                                 # the name the person gives a network: what the panel shows instead of its address
+VLAN_RANGE = (1, 4094)                                        # the VLAN ids a switch may carry (0 and 4095 are reserved by IEEE 802.1Q)
 VIA = ("direct", "routed", "controller", "mdns", "snmp")      # how the network is seen: the host's own interface, through the router, or only told by another device
-TOUCH = ("presence", "ports", "full")                         # the most a device of that network may be touched: answer or not, its ports, the whole search
+TOUCH = ("presence", "ports", "full")                         # the most a device of that network may be touched: answer or not, its ports and model (behind the router, B 14/11), the whole search
 STATES = ("proposed", "confirmed", "paused")
 CODES = ("E_SHAPE", "E_CIDR", "E_NOT_IPV4", "E_BAD_VIA", "E_BAD_TOUCH", "E_BAD_STATE", "E_BAD_ID", "E_PUBLIC", "E_CONTAINER_NET", "E_TOO_WIDE", "E_TOO_NARROW",
-         "E_TOUCH_NEEDS_DIRECT", "E_TOO_MANY", "E_DUP_ID", "E_OVERLAP", "E_BAD_EXCLUDE")
+         "E_TOUCH_NEEDS_DIRECT", "E_TOO_MANY", "E_DUP_ID", "E_OVERLAP", "E_BAD_EXCLUDE", "E_BAD_NAME", "E_BAD_VLAN")
 
 
 class Rejected(ValueError):
@@ -39,6 +41,8 @@ class Network:
     touch: str
     state: str
     exclude: tuple = ()           # ranges of addresses left out, as (first, last) integers
+    name: str | None = None       # what the person called it; None: no name (the panel shows the address)
+    vlan: int | None = None       # the VLAN number the person wrote (optional, only shown: Vedetta never tags a frame)
 
     def holds(self, address: ipaddress.IPv4Address) -> bool:
         """The address is in the network and not in one of its excluded ranges."""
@@ -84,6 +88,25 @@ def _range(item, net: ipaddress.IPv4Network) -> tuple[int, int]:
 def _id(value) -> str:
     if not isinstance(value, str) or not 1 <= len(value) <= 16 or not value.isascii() or not value.replace("-", "").replace("_", "").isalnum():
         raise Rejected("E_BAD_ID")
+    return value
+
+
+def name_of(value) -> str | None:
+    """The name of a network as written: text of 1 to NAME_MAX printable characters, with no space at either end (refused, not trimmed);
+    None or "" mean no name."""
+    if value is None or value == "":
+        return None
+    if not isinstance(value, str) or len(value) > NAME_MAX or not value.isprintable() or value != value.strip():
+        raise Rejected("E_BAD_NAME")
+    return value
+
+
+def _vlan(value) -> int | None:
+    """A VLAN number, 1-4094, or None; a number written as text, or a boolean, is refused."""
+    if value is None:
+        return None
+    if type(value) is not int or not VLAN_RANGE[0] <= value <= VLAN_RANGE[1]:
+        raise Rejected("E_BAD_VLAN")
     return value
 
 
@@ -139,6 +162,7 @@ def validate(candidate, existing) -> Network:
     touch = _choice(candidate.get("touch", "presence"), TOUCH, "E_BAD_TOUCH")
     state = _choice(candidate.get("state", "proposed"), STATES, "E_BAD_STATE")
     nid = _id(candidate.get("id"))
+    name, vlan = name_of(candidate.get("name")), _vlan(candidate.get("vlan"))
     _check_place(net, via, touch)
     _check_others(nid, net, list(existing))
-    return Network(nid, net, via, touch, state, _exclude(candidate.get("exclude", []), net))
+    return Network(nid, net, via, touch, state, _exclude(candidate.get("exclude", []), net), name, vlan)

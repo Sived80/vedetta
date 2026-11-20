@@ -115,6 +115,8 @@ def _name_certainty(debug_name: dict, device: dict, shown, source) -> tuple[int,
         return 0, "ip"
     if source == "user":
         return 100, "manual"
+    if source == "twin":
+        return 90, "source"     # the main card's name, the same machine on another network (twins.py)
     if _brand_stands_in(device, shown, source):
         return 10, "brand"      # no real name: the brand stands in
     if debug_name.get("placeholder"):

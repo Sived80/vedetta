@@ -55,4 +55,4 @@ con.executescript("CREATE TABLE t (a TEXT)")
 anon = anonymize.Anonymizer()
 masked = anon.text("old_mac aa:bb:cc:12:34:56 at 192.168.178.114")
 assert "aa:bb:cc:12:34:56" not in masked and "192.168.178.114" not in masked, masked
-print("TUTTO OK")
+print("ALL OK")

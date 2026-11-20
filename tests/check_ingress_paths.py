@@ -212,4 +212,4 @@ answer = (b"\x00\x00\x84\x00\x00\x00\x00\x01\x00\x00\x00\x00" + q[12:-4] + b"\x0
 assert scanner._parse_ptr_answer(answer) == "led-a.local"
 assert scanner._parse_ptr_answer(b"\x00") is None
 print("ok: pacchetti PTR")
-print("TUTTO OK")
+print("ALL OK")

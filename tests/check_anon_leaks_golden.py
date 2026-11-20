@@ -227,4 +227,4 @@ assert len({x for o in out for x in o["data_raw"]}) >= 5
 assert sum(1 for o in out for n in o["notes"] if n and "-" in n and "Anna" not in n) > 100
 changed = sum(1 for o in out for n in o["notes"] if n and re.search(r"(Area|[A-Za-z]+)-\d", n))
 assert changed > 300, "notes rarely masked: %d" % changed
-print("TUTTO OK")
+print("ALL OK")

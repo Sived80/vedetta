@@ -9,7 +9,7 @@ import asyncio
 import re
 from urllib.parse import urljoin
 
-from . import scan_common
+from . import httpcap, scan_common
 from .discovery import SSDP_ADDR, _collect, _Locations
 
 _SEARCH = ('M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: "ssdp:discover"\r\nMX: 2\r\n'
@@ -63,9 +63,9 @@ async def _ask_all(client, locations: list[str], gateway: str) -> list:
 
 async def _ask(client, location: str, gateway: str) -> str | None:
     """The SOAP answer of the WAN service described at `location`, or None when that description has no WAN service."""
-    service = wan_service((await client.get(location)).text, location, gateway)
+    service = wan_service((await httpcap.get(client, location)).text, location, gateway)
     if not service:
         return None
-    answer = await client.post(service[0], content=soap_body(service[1]), headers={
+    answer = await httpcap.post(client, service[0], content=soap_body(service[1]), headers={
         "Content-Type": 'text/xml; charset="utf-8"', "SOAPAction": '"%s#GetExternalIPAddress"' % service[1]})
     return answer.text

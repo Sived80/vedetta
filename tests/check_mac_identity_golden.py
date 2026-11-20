@@ -132,4 +132,4 @@ assert len(lk) > 1100 and sum(1 for r in lk if len(r) >= 3) > 400, "link scenari
 zones = {p["zone"] for r in lk for p in r}
 assert {"same", "possible", "different", "unrelated"} <= zones, zones
 assert any(w.startswith("uno inizia") for r in lk for p in r for w in p["why"]) and any(w.startswith("attivi insieme") for r in lk for p in r for w in p["why"])
-print("TUTTO OK")
+print("ALL OK")

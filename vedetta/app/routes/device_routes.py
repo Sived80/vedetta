@@ -17,7 +17,7 @@ from ..recognition import naming
 from ..scan import pipeline, touch_policy
 from ..scan.rescan import rescan_device
 from ..scan import scan_common, scanner, wol
-from .bodies import json_dict
+from .bodies import json_dict, list_field
 from ..state import state
 import time
 
@@ -28,7 +28,7 @@ router = APIRouter()
 @router.post("/api/devices/add")
 async def api_devices_add(request: Request):
     body = await json_dict(request)
-    to_add = [e for e in map(_new_device_entry, body.get("devices", [])) if e is not None]
+    to_add = [e for e in map(_new_device_entry, list_field(body, "devices", dict)) if e is not None]
     try:
         added = devices_config.add_devices(to_add)
     except Exception:
@@ -193,10 +193,12 @@ async def api_device_override(device_id: str, request: Request):
         mqtt_service.refresh()
     if "focus" in body:
         updated = _set_focus(device_id, body) or updated
+    if "watch" in body:      # "tell me if it disappears" (sentinel_view): true or false
+        updated = devices_config.set_override(device_id, "watch", "1" if body["watch"] is True else None) or updated
     updated = _set_brand_type(device_id, body) or updated
     if not updated:
         raise HTTPException(404, "Dispositivo non trovato")
-    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share", "focus") if k in body})
+    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share", "focus", "watch") if k in body})
     # The device is read again behind the answer (a probe over the network takes seconds): the page already shows the choice,
     # and the card is sent again to it (event) as soon as the reading is done.
     _bg(state.refresh_device(device_id))
@@ -279,7 +281,7 @@ async def api_devices_rescan(request: Request):
     not on every automatic refresh. Streaming (SSE): one event per completed
     device, to show the real progress in the pop-up."""
     body = await json_dict(request)
-    ids = set(body.get("ids", []))
+    ids = set(list_field(body, "ids", str))
     devices = await _local_devices_of(ids)
     logger.info("Scansione approfondita avviata su %d dispositivi: %s", len(devices), ", ".join(d["ip"] for d in devices))
     state.rescan_started([d["id"] for d in devices])

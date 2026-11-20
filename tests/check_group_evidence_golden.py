@@ -62,4 +62,4 @@ assert {"manual", "mobile", "none", "weak", "tie", "scored"} <= bases, bases
 assert not any("exception" in r for r in res), [r for r in res if "exception" in r][:2]
 whys = {x["why"] for r in res for x in r.get("rejected", [])}
 assert {"tie", "behind", "mobile", "weak"} <= whys, whys
-print("TUTTO OK")
+print("ALL OK")

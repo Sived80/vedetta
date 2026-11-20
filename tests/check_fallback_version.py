@@ -13,5 +13,5 @@ found = re.findall(r'var FALLBACK_VERSION = "([^"]*)";', page)
 assert len(found) == 1, "exactly one FALLBACK_VERSION in filters.js, found %r" % found
 assert config == version, "vedetta/config.yaml says %s and vedetta/VERSION says %s" % (config, version)
 assert found[0] == version, "FALLBACK_VERSION is %s and the release is %s: update it in vedetta/app/frontend/ha/js/filters.js" % (found[0], version)
-print("TUTTO OK")
+print("ALL OK")
 sys.exit(0)

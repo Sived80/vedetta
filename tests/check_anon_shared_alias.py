@@ -21,4 +21,4 @@ assert a.text("expiscor") not in (x, i) and "expiscor" not in a.text("_amazon-ex
 assert a.text("Apple mobile") == a.text("Apple mobile")
 for real in ("Xiaomi-14", "iPhone di Mario", "Mario", "Salotto", "expiscor"):
     assert not a.leaks(f"name {real}") or a.text(f"name {real}") != f"name {real}", real
-print("TUTTO OK")
+print("ALL OK")

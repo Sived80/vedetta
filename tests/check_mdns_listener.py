@@ -112,4 +112,4 @@ async def run():
 
 
 asyncio.new_event_loop().run_until_complete(run())
-print("TUTTO OK")
+print("ALL OK")

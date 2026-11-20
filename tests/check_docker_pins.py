@@ -36,4 +36,4 @@ assert problems("FROM ghcr.io/x/base:3.24@%s\n" % DIGEST, "fastapi>=0.1\n") and 
 
 real = problems((ROOT / "Dockerfile").read_text(encoding="utf-8"), (ROOT / "requirements.txt").read_text(encoding="utf-8"))
 assert not real, real
-print("TUTTO OK")
+print("ALL OK")

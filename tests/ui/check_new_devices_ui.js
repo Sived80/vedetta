@@ -27,6 +27,7 @@ vc.on("error", (e) => errors.push("console.error: " + e));
 const calls = [];
 const HOSTS = [["192.168.178.201", "B8:27:EB:3A:91:C2"], ["192.168.178.202", "3C:61:05:4F:20:7D"], ["192.168.178.203", "F0:18:98:5A:11:09"]].map(([ip, mac]) => ({ ip, mac, hostname: "h" + ip.split(".")[3] }));
 const sources = [];
+let newDevicesDown = false;                           // true: re-reading the list of new devices fails
 const streams = [];                                   // the deep searches started: the test says what each one has found, and when it ends
 function makeStream(ips, signal) {
   const q = [], waiters = []; let closed = false, aborted = false;
@@ -52,7 +53,7 @@ const dom = new JSDOM(html, {
       if (url === "/api/scan/quick") return ok(HOSTS);
       if (url === "/api/scan/deep") { const s = makeStream(body.ips, opts.signal); streams.push(s); return Promise.resolve({ ok: true, status: 200, body: { getReader: () => s.reader } }); }
       if (url === "/api/devices/add") return ok({ ok: true });
-      if (url.startsWith("/api/new-devices")) return ok([]);
+      if (url.startsWith("/api/new-devices")) return newDevicesDown ? Promise.resolve({ ok: false, status: 500, headers: { get: () => null }, json: () => Promise.resolve({ detail: "down" }) }) : ok([]);
       if (url === "/api/scan/cancel") return ok({ ok: true });
       let b = {};
       if (url.startsWith("/api/ha/devices") && !url.includes("/debug")) b = data.devices;
@@ -74,7 +75,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(30); };
 const rows = () => qa("#card-new .nd-row");
 const label = (c) => (c.getAttribute("aria-label") || c.textContent).trim();
@@ -89,6 +90,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(120);
   // --- 1. the list
   check(rows().length === 3 && !q("#card-new").hidden, "la scheda mostra i tre dispositivi trovati");
+  check(!q("#newdot").hidden && q("#newdot").textContent === "+3", "anche quelli trovati da una ricerca fanno il +N sull'anello: +3, come le righe");
   check(!!q("#rot") && !q("#rot").classList.contains("rp") && !q("#rot .wave"), "la tile rotante non ha l'onda al clic (nessun effetto di pressione)");
   await click("#rot");
   check(!q("#rot .wave"), "e dopo un clic ancora nessuna onda");
@@ -105,11 +107,13 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await click("#card-new [data-add-ip='192.168.178.201']");
   check(rowState(0) === "nd-run" && /Annulla|Cancel/.test(cells(0)[0]) && /In corso|In progress/.test(cells(0)[1]), "«Aggiungi» su una riga: «Annulla» al suo posto e «Ignora» diventa «In corso»");
   check(!!rows()[0].querySelector(".nd-ring .sp"), "nell'icona un anello gira");
+  check(q("#newdot").textContent === "+2", "la riga che si sta aggiungendo non conta piu' nel +N: +2");
   check(bar().length === 2 && bar()[1] === "" && !q("#card-new [data-ignore-all]"), "l'«Annulla» in alto e' sparito");
   check(streams.length === 1 && streams[0].ips.join() === "192.168.178.201", "parte la ricerca di quel solo dispositivo");
   await click("#card-new [data-add-cancel='192.168.178.201']");
   await wait(60);
   check(rowState(0) === "nd-idle" && /Aggiungi|Add/.test(cells(0)[0]), "«Annulla» sulla riga: il dispositivo torna com'era");
+  check(q("#newdot").textContent === "+3", "e torna nel +N: +3");
   check(streams[0].aborted() && calls.some((c) => c.url === "/api/scan/cancel" && c.body.ips[0] === "192.168.178.201"), "la ricerca e' fermata (anche sul server)");
   check(!calls.some((c) => c.url === "/api/devices/add"), "e non viene aggiunto niente");
   check(!!q("#card-new [data-ignore-all]") && !/Aggiunta|Adding/.test(title()), "la scheda e' tornata a riposo");
@@ -150,6 +154,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   HOSTS.forEach((h) => s.progress(h.ip)); s.push({ type: "complete", results: HOSTS.map((h) => ({ ip: h.ip, adapter: "generic" })) }); s.end();
   await wait(200);
   check(rows().length === 3 && rows().every((_, i) => rowState(i) === "nd-done"), "tutti aggiunti: tre righe verdi");
+  check(q("#newdot").hidden, "aggiunti: le righe verdi restano fino a «Chiudi», ma il +N sparisce subito");
   check(/^3 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «3 dispositivi aggiunti» e «Chiudi» in alto");
   await click("#card-new [data-add-close]");
   check(q("#card-new").hidden, "«Chiudi»: finito tutto la scheda sparisce");
@@ -165,12 +170,25 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await wait(60);
   check(!q("#card-new").hidden && rows().length === 2, "due dispositivi visti in rete dall'app: la scheda compare");
   check(!!q("#card-new [data-add-all]"), "con due dispositivi visti dall'app c'e' «Aggiungi tutti»");
+  const Z = Object.assign(seen("AA:AA:AA:00:00:09", "192.168.178.219"), { last_seen: Date.now() / 1000 - 9 * 3600 });
+  emitNew([A, B, Z]);
+  await wait(60);
+  check(rows().length === 2 && !q('#card-new [data-ip="192.168.178.219"]') && !/ fa| ago/.test(q("#card-new").textContent),
+    "un dispositivo sentito 9 ore fa non compare: la lista mostra solo chi risponde ora, senza «x ore fa»");
+  const dot = () => q("#newdot");
+  check(!dot().hidden && dot().textContent === "+2", "il +N sull'anello conta le stesse righe della lista: +2, non +3 (quello di 9 ore fa non conta)");
+  emitNew([Z]);
+  await wait(60);
+  check(dot().hidden, "solo dispositivi spariti da ore: niente +N (toccandolo non si vedrebbe niente)");
+  emitNew([A, B]);
+  await wait(60);
   const btnBefore = q("#card-new [data-add-all]");
   emitNew([A, B]);
   await wait(30);
   check(q("#card-new [data-add-all]") === btnBefore, "lo stesso elenco di nuovo (evento di rete): i tasti non vengono ricreati, un clic in corso non si perde");
   await click("#card-new [data-ignore-all]");
   check(q("#card-new").hidden, "«Annulla» chiude la scheda");
+  check(dot().hidden, "chiusi con «Annulla»: anche il +N sparisce");
   emitNew([A, B]);
   await wait(60);
   check(q("#card-new").hidden, "e non ricompare per gli stessi dispositivi quando l'app li rivede");
@@ -226,8 +244,29 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(!rows().some((r) => r.dataset.ip === F.ip) && rows().length === 1, "«Ignora» con una sola pressione: il dispositivo sparisce e non torna come «visto dall'app»");
   check(!q("#card-new button:disabled"), "nessun tasto resta spento dopo «Ignora»");
 
+  // --- 10. two additions in parallel, saved, but re-reading the list afterwards fails: the additions stay done, no error
+  await click("#card-new [data-ignore-all]");
+  HOSTS.length = 0;
+  [["192.168.178.241", "AA:AA:AA:00:00:41"], ["192.168.178.242", "AA:AA:AA:00:00:42"]].forEach(([ip, mac]) => HOSTS.push({ ip, mac, hostname: "h" + ip.split(".")[3] }));
+  await click("#btn-scan");
+  await wait(60);
+  newDevicesDown = true;
+  const before = streams.length;
+  await click("#card-new [data-add-ip='192.168.178.241']");
+  await click("#card-new [data-add-ip='192.168.178.242']");
+  streams.slice(before).forEach((st) => { st.ips.forEach((ip) => st.progress(ip)); st.push({ type: "complete", results: st.ips.map((ip) => ({ ip, adapter: "generic" })) }); st.end(); });
+  await wait(300);
+  const rowOf = (ip) => rows().filter((r) => r.dataset.ip === ip)[0];
+  const doneRow = (ip) => !!rowOf(ip) && rowOf(ip).classList.contains("nd-done");
+  check(streams.length - before === 2 && calls.filter((c) => c.url === "/api/devices/add").slice(-2).every((c) => c.body.devices.length === 1), "due aggiunte in parallelo, salvate tutte e due");
+  check(doneRow("192.168.178.241") && doneRow("192.168.178.242"), "la rilettura della lista fallisce: le due righe restano verdi (salvate)");
+  check(!qa(".snack.error").length, "e nessun «Errore»: l'aggiunta e' riuscita");
+  check(/^2 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «2 dispositivi aggiunti» e «Chiudi» in alto (il conto dei lavori non va sotto zero)");
+  newDevicesDown = false;
+  await click("#card-new [data-add-close]");
+
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

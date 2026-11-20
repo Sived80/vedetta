@@ -50,7 +50,7 @@ const dom = new JSDOM(html, {
 const doc = dom.window.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"] .tile-icon'); return t && t.style.getPropertyValue("--bc"); };
 
 (async () => {
@@ -60,7 +60,7 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   const menu = doc.getElementById("menu");
   const pills = () => Array.from(menu.querySelectorAll("[data-speed]"));
   check(!menu.hidden && pills().length === 3, "il menu e' aperto e ha i tre tasti di velocita'");
-  check(!!menu.querySelector("[data-ignored]") && !menu.querySelector("[data-ignored] .menu-count"), "senza dispositivi ignorati, accanto alla voce non c'e' nessun numero");
+  check(!menu.querySelector("[data-ignored]") && !!menu.querySelector("[data-netpanel]"), "i dispositivi ignorati non hanno piu' una voce nel menu: stanno nel pannello Reti");
   check(pills().map((p) => p.querySelector(".pill-sub").textContent).join("|") === "10 s|30 s|1 min", "il tempo e' scritto dentro ai tasti: 10 s, 30 s, 1 min (" + pills().map((p) => p.querySelector(".pill-sub").textContent).join("|") + ")");
   check(pills().every((p) => p.querySelector(".pill-main").textContent.length > 0), "e sopra il tempo c'e' il nome");
   const hint = () => menu.querySelector(".menu-hint").textContent;
@@ -79,6 +79,6 @@ const unused = (id) => { const t = doc.querySelector('.tile[data-id="' + id + '"
   // the card has no status text any more: the ring around the circle carries the cycle
   check(!doc.getElementById("scan-text") && !!doc.getElementById("cyc"), "niente testo di stato: il ciclo lo mostra l'anello");
   check(errors.length === 0, "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

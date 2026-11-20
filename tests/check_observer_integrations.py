@@ -50,4 +50,4 @@ assert [c["group"] for c in integration_clues(legacy)] == ["router"]
 
 # 4. the integrations that are not observers are not touched
 assert [c["group"] for c in integration_clues(card(["sonos"]))] == ["audio"]
-print("TUTTO OK")
+print("ALL OK")

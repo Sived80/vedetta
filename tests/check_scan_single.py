@@ -46,4 +46,4 @@ async def go():
 
 
 asyncio.run(go())
-print("TUTTO OK")
+print("ALL OK")

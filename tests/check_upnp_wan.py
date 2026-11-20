@@ -68,4 +68,4 @@ def broken(request):
 
 upnp_wan._collect = fake_collect({GW: {"http://192.168.50.1:5000/rootDesc.xml"}})
 assert asyncio.run(upnp_wan.wan_address(GW, http_transport=httpx.MockTransport(broken))) is None
-print("TUTTO OK")
+print("ALL OK")

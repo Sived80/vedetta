@@ -17,4 +17,4 @@ if "SKIPPED" in out:
     sys.exit(0)
 assert proc.returncode == 0, "names used and not defined:\n" + out[-1500:]
 assert "names used and not defined: 0" in out, out[-500:]
-print("TUTTO OK")
+print("ALL OK")

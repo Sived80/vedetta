@@ -100,7 +100,7 @@ def main() -> int:
                     skipped.append(f"{name}: {tail[5:]}")
                 if code:
                     failed.append(name)
-                    print("FALLITO", name, "\n", tail)
+                    print("FAILED", name, "\n", tail)
 
     ui = [j for j in work if ".js" in j[0]]
     py = [j for j in work if ".js" not in j[0]]
@@ -123,7 +123,7 @@ def main() -> int:
     if changed:      # also in the CI: a golden that a run creates or rewrites is a test that proved nothing (the file would be missing from the commit)
         print(changed)
         failed.append("golden cambiati")
-    print("TUTTO OK" if not failed else "FALLITI: " + ", ".join(sorted(failed)))
+    print("ALL OK" if not failed else "FAILED: " + ", ".join(sorted(failed)))
     return 1 if failed else 0
 
 

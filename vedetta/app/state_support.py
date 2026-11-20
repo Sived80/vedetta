@@ -7,7 +7,7 @@ from .export import mac_shadow
 from .ha import identity_shift
 from .storage import settings
 import ipaddress
-from . import lifecycle, maclayer, procfs
+from . import lifecycle, maclayer, procfs, sentinel_view
 from .scan import dhcp
 
 
@@ -76,7 +76,10 @@ class Presence:
         device_id = result["id"]
         if self.db_state.get(device_id) == online:
             return
+        known = device_id in self.db_state           # the first state of a card is not a change (a card just added)
         self.db_state[device_id] = online
+        if known:
+            sentinel_view.on_presence(result, online, ts)
         task = asyncio.create_task(self._write(history, device_id, result.get("ip"), result.get("mac"), online, ts))
         self._background.add(task)
         task.add_done_callback(self._background.discard)

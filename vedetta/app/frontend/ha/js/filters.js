@@ -223,7 +223,8 @@ export function doScan() {
   if (S.scanBusy || S.activity.search) return;
   S.scanBusy = true;
   updateScan();
-  api("/api/scan/quick", { method: "POST" }).then(function (list) {
+  // the networks behind the router are pinged in the same request (a /22 and the router's table take more than the usual 25 s)
+  api("/api/scan/quick", { method: "POST", timeout: 90000 }).then(function (list) {
     // An address appears only once in the acquisition list.
     const once = {};
     S.found = (Array.isArray(list) ? list : []).filter(function (h) {

@@ -111,4 +111,4 @@ try:
     assert c.post(f"/api/export/jobs/{s['id']}/choices", json={"choices": {}}).status_code == 409      # decided once
 finally:
     export.anonymize.Anonymizer = real
-print("TUTTO OK")
+print("ALL OK")

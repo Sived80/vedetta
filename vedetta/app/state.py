@@ -68,6 +68,8 @@ class DeviceState(IdentityUpkeep):
         self._cause = ""                  # why this cycle starts: "" = the timer, otherwise who woke the loop
         self._wake_reason = ""
         self._last_start = 0.0
+        self._polled_ok = False            # a check of the devices has succeeded since the start (state_cycle._poll)
+        self._alive_at: float | None = None   # last turn of the check loop (state_cycle.loop), for /healthz
         self._stats = CycleStats()
         self._bg: set[asyncio.Future] = set()
         self._presence = state_support.Presence(self._bg)      # who is online: misses, last seen, what the history last recorded (state_support.py)
@@ -250,8 +252,9 @@ class DeviceState(IdentityUpkeep):
         measurement got no response)."""
         # If the device configuration changed while the probe was
         # running (rename, new scan...), the result is already stale:
-        # applying it would briefly bring back the old name.
-        if current.get(config["id"]) != config:
+        # applying it would briefly bring back the old name. The mark of a network behind the router (touch_policy.NET_TOUCH) is never
+        # saved: it is not a change (with it every card behind the router kept its first state for ever).
+        if current.get(config["id"]) != touch_policy.saved_part(config):
             return
 
         device_id = result["id"]
@@ -265,7 +268,7 @@ class DeviceState(IdentityUpkeep):
             if result["online"]:
                 self._shadow(device_id, previous, result, now)
             self._last_mac[device_id] = result["mac"]
-        state_cycle.publish(self, state_cycle.settle(self, device_id, result, previous, now, sample), force)
+        state_cycle.publish(self, self.with_twin(state_cycle.settle(self, device_id, result, previous, now, sample)), force)
 
     def remove(self, device_id: str) -> None:
         if self.devices.pop(device_id, None) is None:
@@ -333,6 +336,11 @@ class DeviceState(IdentityUpkeep):
 
     async def _loop(self) -> None:
         await state_cycle.loop(self, MIN_GAP_S)
+
+    def health(self) -> dict:
+        """For /healthz: is the loop of the checks turning? {"ok", "loop_age_s", "paused"}."""
+        stuck, age = state_cycle.stalled(self._alive_at, time.monotonic(), self._interval())
+        return {"ok": not stuck, "loop_age_s": None if age is None else round(age), "paused": self.paused_remaining() is not None}
 
 
 state = DeviceState()

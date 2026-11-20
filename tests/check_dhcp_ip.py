@@ -71,4 +71,4 @@ assert [o.ts for o in legacy] == [77.0], "an entry written before ip_ts existed 
 
 obs = maclayer.from_dhcp({"be:11:22:33:44:55": {"ip": "192.168.1.77", "seen": 50}, "aa:aa:aa:00:00:01": {"hostname": "x", "seen": 5}, "bad": {"ip": "1.1.1.1"}}, 100.0)
 assert obs == [maclayer.Observation("192.168.1.77", "BE:11:22:33:44:55", "dhcp", 50.0)], obs
-print("TUTTO OK")
+print("ALL OK")

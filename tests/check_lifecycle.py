@@ -90,4 +90,4 @@ async def blocked():
 
 lag = asyncio.new_event_loop().run_until_complete(blocked())
 assert 0.3 <= lag < 1.5, lag
-print("TUTTO OK")
+print("ALL OK")

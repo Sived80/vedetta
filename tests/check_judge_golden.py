@@ -51,4 +51,4 @@ assert {"same", "different", "unknown"} <= verdicts, verdicts
 assert not any("exception" in r for r in res)
 assert sum(1 for r in res if r["verdict"] == "different") > 150 and sum(1 for r in res if r["verdict"] == "same") > 300 and sum(1 for r in res if r["vetoes"]) > 500, "scenarios too uniform"
 assert {len(r["reasons"]) for r in res if r["verdict"] == "different"} >= {2, 3}
-print("TUTTO OK")
+print("ALL OK")

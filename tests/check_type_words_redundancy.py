@@ -48,4 +48,4 @@ assert not weak, "types lighter than a rule word (%d points): the rule words the
 # the real tables
 real = redundant_rule_words(T.rules(), E._kinds(), E._PLATFORM_KINDS, T.W_WORD)
 assert not real, "rule words already said by a type of the same group (take them out of data/type_words.json): %s" % [("%s %s" % (g, w)) + " (by %s)" % k for g, _m, w, k in real]
-print("TUTTO OK")
+print("ALL OK")

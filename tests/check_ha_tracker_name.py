@@ -23,4 +23,4 @@ assert ha_registry.choose_name(card(name="Garage AP", by_user=True)) == ("Garage
 assert ha_registry.choose_name(card(entities=("device_tracker", "sensor"))) == ("Router Integration", "ha")
 # an export or registry that does not say which entities exist: nothing is assumed, as before
 assert ha_registry.choose_name(card(entities=None)) == ("Router Integration", "ha")
-print("TUTTO OK")
+print("ALL OK")

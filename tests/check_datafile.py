@@ -148,4 +148,4 @@ assert brands._read(brands._USER_PATH) == {} and not warnings(), "the user's fil
 assert brands._read(brands._DEFAULTS_PATH) == {} and brands._read(brands._DEFAULTS_PATH) == {}
 assert len(warnings()) == 1 and "no-brands.json" in warnings()[0].getMessage(), [r.getMessage() for r in records]
 brands._DEFAULTS_PATH, brands._USER_PATH = real_defaults, real_user
-print("TUTTO OK")
+print("ALL OK")

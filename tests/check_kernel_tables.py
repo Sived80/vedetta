@@ -77,4 +77,4 @@ assert process(b"Name:\tpython\n") == {}
 assert process(None) == {}, "no file (not Linux): nothing"
 assert process(b"Threads:\t7\nVmRSS:\tabc kB\n") == {"threads": 7}, "a bad number ends the reading and keeps what was read"
 assert process(b"VmRSS:\t2048 kB\n\xff\n") == {}, "a byte that is not ASCII: the reading ends with nothing"
-print("TUTTO OK")
+print("ALL OK")

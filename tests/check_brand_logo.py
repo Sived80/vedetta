@@ -65,4 +65,4 @@ assert ha_data.compact_device({**dev, "brand": "Apple"}, {})["logo"] == "apple"
 assert ha_data.compact_device({**dev, "brand": "Magic Home"}, {})["logo"] is None
 assert ha_data.compact_device({**dev, "brand": None}, {})["logo"] is None
 assert ha_data.compact_device(dev, {})["logo_color"] == "#4495D1"
-print("TUTTO OK")
+print("ALL OK")

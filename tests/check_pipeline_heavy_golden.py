@@ -145,4 +145,4 @@ stats = {"b_names": c(lambda o: b(o) and o["res"]["mdns_names"]), "b_ssdp": c(la
 for key, low in (("b_names", 150), ("b_ssdp", 100), ("b_wsd", 100), ("b_igmp", 100), ("b_err", 150), ("b_default", 40), ("b_nojobs", 20), ("p_timeout", 100), ("p_fast", 80), ("p_fastfail", 10), ("p_slow", 200),
                  ("p_nohost", 100), ("p_all3", 20), ("s_gen1", 80), ("s_gen2", 100), ("s_bat", 150), ("s_none", 100)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

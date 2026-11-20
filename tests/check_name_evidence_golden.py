@@ -94,4 +94,4 @@ assert all(basis.get(b, 0) > 150 for b in ("ip", "manual", "brand", "placeholder
 assert sum(1 for c in cases if "exc" in c["out"]) > 40 and sum(1 for r in res if r["rejected"]) > 1500
 assert {r["certainty"] for r in res} >= {0, 10, 15, 20, 56, 95, 100}, sorted({r["certainty"] for r in res})
 assert sum(1 for r in res if r["placeholder"]) > 500 and sum(1 for r in res if r["basis"] == "source" and r["rejected"]) > 300
-print("TUTTO OK")
+print("ALL OK")

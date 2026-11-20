@@ -1,7 +1,7 @@
 """scan_routes: moved out of main.py (see tools/split_module.py)."""
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse
-from fastapi import Request
+from fastapi import HTTPException, Request
 from ..sse import SSE_HEADERS, _sse
 import asyncio
 import time
@@ -9,9 +9,9 @@ from ..storage import blocklist, devices_config, journal, newdevices
 from ..networks import registry
 from ..applog import logger
 from ..scan import pipeline
-from .. import inventory_view, maclayer
+from .. import i18n, inventory_view, maclayer, routedwatch
 from ..storage.history import history
-from .bodies import json_dict
+from .bodies import json_dict, list_field
 from ..scan import scanner
 from ..state import state
 
@@ -39,16 +39,19 @@ async def api_scan_quick():
 async def _run_quick_scan() -> tuple[list[dict], int]:
     """1.0 step P9 (decisions 1A, 2A): a pass over the whole network now, written in the MAC layer like the pass of the cycle, then the
     inventory: what answered now and the devices confirmed or asleep that are not cards (inventory_view.listable), "seen X ago" for
-    the ones asleep. The counter of new devices is not narrowed to what the pass heard any more: it is the same inventory."""
+    the ones asleep. The counter of new devices is not narrowed to what the pass heard any more: it is the same inventory.
+    1.0 step P11: the networks behind the router get their ping sweep at the same time (routedwatch), and what answered there is listed too."""
     state.search_started()
     try:
-        hosts = await pipeline.run_initial()
+        hosts, routed = await asyncio.gather(pipeline.run_initial(), _routed_sweep())     # P11: the networks behind the router are swept too
         own = newdevices.own_macs()      # this computer is not a device of the network for the MAC layer
         await maclayer.observe_pass({h["ip"]: {"mac": h["mac"]} for h in hosts if newdevices.normalize_mac(h["mac"]) not in own}, history)
         rows = inventory_view.listable(hosts, devices_config.load_devices(), time.time())
         names = await asyncio.to_thread(_known_names)
         found = [{"ip": r["ip"], "mac": r["mac"], "hostname": r["hostname"] or names.get(str(r["mac"]).upper()),
                   "already_added": False, "last_seen": r["last_seen"]} for r in rows]
+        heard = {f["ip"] for f in found}
+        found += [{**r, "already_added": False} for r in routed if r["ip"] not in heard]       # behind the router: the MAC only if Home Assistant said it
         logger.info("Ricerca rapida: %d host visti, %d da mostrare", len(hosts), len(found))
         journal.add("detail", "journal.quick", icon="magnify", seen=len(hosts), new=len(found))
         state.set_new_devices(await asyncio.to_thread(newdevices.list_new))
@@ -57,6 +60,15 @@ async def _run_quick_scan() -> tuple[list[dict], int]:
         return visible, len(found) - len(visible)
     finally:
         state.search_finished()
+
+
+async def _routed_sweep() -> list[dict]:
+    """The sweep behind the router for the button: when it fails (the router, the database) the local search still answers, without those rows."""
+    try:
+        return await routedwatch.sweep()
+    except Exception as exc:
+        logger.warning("Ricerca rapida: reti dietro il router non lette (%s)", exc)
+        return []
 
 
 def _known_names() -> dict[str, str]:
@@ -70,8 +82,8 @@ async def api_scan_deep(request: Request):
     being analyzed in depth, so the pop-up can show the real progress
     instead of a blind wait."""
     body = await json_dict(request)
-    ips = await registry.allowed([ip for ip in body.get("ips", []) if scanner.is_valid_ipv4(ip)])
-    hints = body.get("hints") or {}
+    ips = await registry.allowed([ip for ip in list_field(body, "ips", str) if scanner.is_valid_ipv4(ip)])
+    hints = _name_hints(body)
 
     # The jobs start here, not inside the generator: if the browser changes page
     # the stream is interrupted but the scans continue, and the activity stays
@@ -100,6 +112,14 @@ async def api_scan_deep(request: Request):
         yield _sse({"type": "complete", "results": results})
 
     return StreamingResponse(stream(), media_type="text/event-stream", headers=SSE_HEADERS)
+
+
+def _name_hints(body: dict) -> dict[str, str]:
+    """The names already found, by address (an object; a list used to make every search fail in silence): only the text values are kept."""
+    hints = body.get("hints") or {}
+    if not isinstance(hints, dict):
+        raise HTTPException(400, i18n.t("error.invalid_body"))
+    return {ip: name for ip, name in hints.items() if isinstance(name, str)}
 
 
 _NO_RESULT = object()

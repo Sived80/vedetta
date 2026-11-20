@@ -71,4 +71,4 @@ brands._USER_PATH.write_text(json.dumps({"mobile_name_words": ["Quux", "Plugh"]}
 os.utime(brands._USER_PATH, (1, 99999))      # another modification time, as an edit a moment later would give
 assert brands.mobile_name_words()[-2:] == ("quux", "plugh") and not naming.model_like("Zorblat 9")
 brands._USER_PATH = real_user
-print("TUTTO OK")
+print("ALL OK")

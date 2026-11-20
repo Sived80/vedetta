@@ -9,8 +9,8 @@ import asyncio
 import logging
 import time
 
-from . import linkview, macpresence, macverdict, netutil
-from .networks import registry
+from . import linkview, macpresence, macverdict, netutil, twins
+from .networks import host_read, registry
 from .recognition import brands, naming
 from .storage import devices_config
 from .storage.overlap import SAME_MOMENT_S
@@ -22,10 +22,95 @@ MERGE_MAX_OVERLAP_S = SAME_MOMENT_S
 _OVERLAP_LOG_STEP_S = 600          # a pair that stays unmerged is logged again only when its overlap grows by this much
 logger = logging.getLogger("dashboard")
 _overlap_logged: dict[tuple[str, str], float] = {}     # (older id, newer id) -> overlap at the last line written
+TWIN_KEEP_S = 86400              # a twin that is off keeps its pair this long on its last MAC (then its address on the other network counts as gone)
 _GENERIC_PHONE_NAMES = {"iphone", "ipad", "android", "phone", "tablet", "galaxy", "pixel", "smartphone", "telefono", "cellulare"}
 
 
 class IdentityUpkeep:
+    _twin_of: dict = {}     # twin card id -> the address of its main card; name_twins replaces it as a whole on the instance (this one is only read)
+
+    def with_twin(self, result: dict) -> dict:
+        """A probe result with its twin mark put back (a probe never has it: without it every twin card would differ at every cycle)."""
+        if self._twin_of.get(result["id"]):
+            result["twin_of"] = self._twin_of[result["id"]]
+        return result
+
+    async def name_twins(self) -> None:
+        """One machine with an address on two networks (twins.py): the card on the other network takes the main card's name and the network after it,
+        and carries the main card's address (`twin_of`) so that the page puts it next to it. A card that stops being a twin gives its name back."""
+        seen = await self._twin_inputs()
+        if seen is None:
+            return
+        scope, own_ip, host_ips = seen
+        try:
+            self._judge_twins(scope, own_ip, host_ips, await asyncio.to_thread(devices_config.load_devices))
+        except Exception:                      # the steps after this one in the cycle (new devices, the MAC layer) must run whatever happens here
+            logger.exception("Schede gemelle non aggiornate")
+
+    def _judge_twins(self, scope, own_ip, host_ips: set, saved_cards: list) -> None:
+        cards = [{**c, "mac": self._twin_mac(c, scope)} for c in self.devices.values()]
+        pairs = twins.find(cards, host_ips, own_ip, macverdict.lenders(), scope.network_of)
+        saved = {c["id"]: c for c in saved_cards}
+        self._twin_of = {tid: self.devices[mid].get("ip") for tid, mid in pairs.items() if mid in self.devices}
+        for card in list(self.devices.values()):
+            self._twin_card(card, self.devices.get(pairs.get(card.get("id"))), (saved.get(card["id"]) or {}).get("name_source"), scope)
+
+    def _twin_mac(self, card: dict, scope) -> str | None:
+        """The MAC a card is paired by (18/11 reviews). Its live MAC; else its last MAC when it is a card of the main network (a main card that is
+        off still has its twin: after a restart too), or a twin seen in the last day (an outage does not undo the pair). A card on another network
+        that is off and was no twin (the old card of a device that moved to the main network), or a twin gone for more than a day (its address on
+        the VLAN was removed), is paired by nothing."""
+        mac = card.get("mac")
+        if mac:
+            return mac
+        network = scope.network_of(card.get("ip"))
+        recent = card.get("id") in self._twin_of and time.time() - (card.get("last_seen") or 0) <= TWIN_KEEP_S
+        return self._last_mac.get(card.get("id")) if getattr(network, "id", None) == twins.MAIN_NETWORK or recent else None
+
+    @staticmethod
+    async def _twin_inputs():
+        """(the networks, the host's own address, all the host's addresses), or None when they cannot be read (nothing is judged this cycle)."""
+        try:
+            scope = await registry.current()
+            _, own_ip = await registry.main()
+            host = await asyncio.to_thread(host_read.read_host)
+        except (OSError, RuntimeError, ValueError) as exc:
+            logger.debug("Twin cards not judged: %r", exc)
+            return None
+        return scope, own_ip, {a["address"] for i in host["interfaces"] for a in i.get("ipv4") or []}
+
+    def _twin_card(self, card: dict, main: dict | None, source: str | None, scope) -> None:
+        name = self._twin_name(card, main, source, scope)
+        if name != card.get("name") or self._twin_of.get(card["id"]) != card.get("twin_of"):
+            self._republish(card, name)
+
+    def _republish(self, card: dict, name: str | None) -> None:
+        """The card with its new name or its new twin mark, sent to the page once (the stored card is replaced, never changed in place: a page may be serialising it)."""
+        updated = {**card, "name": name}
+        updated.pop("twin_of", None)
+        if self._twin_of.get(card["id"]):
+            updated["twin_of"] = self._twin_of[card["id"]]
+        self.devices[card["id"]] = updated
+        self.rev += 1
+        self._rev_of[card["id"]] = self.rev
+        self.emit_event({"type": "device", "id": card["id"], "device": updated})
+
+    @staticmethod
+    def _twin_name(card: dict, main: dict | None, source: str | None, scope) -> str | None:
+        """The name the card should show now: the twin name for a twin, the address for a card that stops being one (the cards file is touched
+        only when something changes); a name chosen by hand stays."""
+        if main is None:
+            # given back only by a card that answers now: an offline one cannot tell (after a restart its pair is born again when both answer)
+            if source == twins.SOURCE and card.get("online") and devices_config.release_twin_name(card["id"], card.get("ip")):
+                return card.get("ip")
+            return card.get("name")
+        if source in ("user", "ha", "ha_user"):
+            return card.get("name")
+        want = twins.name(main.get("name"), scope.network_of(card.get("ip")))
+        if want and card.get("name") != want and devices_config.set_twin_name(card["id"], want):
+            return want
+        return card.get("name")
+
     def report_ip_conflicts(self) -> None:
         """Warns once for each IP contested by different MACs, and each set of them, while the app runs: the conflicts going on of the single verdict
         (macverdict, judged in time by macclassify; since 1.0 step P3, before it was the last ARP scan)."""

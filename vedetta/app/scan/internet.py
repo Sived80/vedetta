@@ -17,6 +17,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from .. import external
+from ..networks import registry
 from . import upnp_wan
 from ..applog import logger
 
@@ -100,9 +101,10 @@ def parse_trace(xml_text: str) -> list[str]:
     return [ip for _, ip in sorted(hops) if ip]
 
 
-def classify(hops: list[str], wan: str | None = None) -> dict:
+def classify(hops: list[str], wan: str | None = None, home: tuple = ()) -> dict:
     """Hops up to the first public one: how many are private, whether CGNAT is present. `wan` = the internet-side address the
-    router declared over UPnP, when it answered: it decides the double NAT; without it two private hops are only "possible"."""
+    router declared over UPnP, when it answered: it decides the double NAT; without it two private steps are only "possible".
+    `home` = the networks of the house (the main one and the written ones): the hops inside them count as one step (home_steps)."""
     private, cgnat = [], False
     for ip in hops:
         try:
@@ -117,8 +119,25 @@ def classify(hops: list[str], wan: str | None = None) -> dict:
             continue
         break
     side = _wan_side(wan)
-    return {"private_hops": private, "double_nat": side == "private", "maybe_double_nat": side is None and len(private) >= 2,
+    return {"private_hops": private, "double_nat": side == "private", "maybe_double_nat": side is None and home_steps(private, home) >= 2,
             "cgnat": cgnat or side == "cgnat", "wan_checked": side is not None}
+
+
+def home_steps(private: list[str], home: tuple) -> int:
+    """The private hops as routers of the way out: those inside the networks of the house are one (a router between the VLANs of the
+    house and the main router is no NAT of its own), each one outside them is one more."""
+    inside = [ip for ip in private if any(ipaddress.ip_address(ip) in net for net in home)]
+    return (1 if inside else 0) + len(private) - len(inside)
+
+
+async def _home() -> tuple:
+    """The confirmed networks of the house, the main one first; none when they cannot be read (the check of the way out goes on)."""
+    try:
+        scope = await registry.current()
+    except Exception as exc:  # noqa: BLE001  (the check of the way out must not fail for the networks)
+        logger.info("Reti di casa non lette per il doppio NAT (%r)", exc)
+        return ()
+    return tuple(n.cidr for n in scope.networks if n.state == "confirmed")
 
 
 def _wan_side(wan: str | None) -> str | None:
@@ -145,8 +164,8 @@ async def check() -> dict:
                   semaphore=_LIGHT_NMAP_SEMAPHORE) if want_path else _nothing(),
         public_ip() if want_ip else _nothing(), return_exceptions=True)
     hops = parse_trace(trace_xml) if isinstance(trace_xml, str) else []
-    wan = await _router_wan(hops) if want_path else None
-    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops, wan), "ts": time.time(),
+    wan, home = (await _router_wan(hops), await _home()) if want_path else (None, ())
+    result = {"public_ip": ip if isinstance(ip, str) else None, "hops": hops[:5], **classify(hops, wan, home), "ts": time.time(),
               "checks": {"public_ip": want_ip, "path": want_path}}
     _log(result)
     return result

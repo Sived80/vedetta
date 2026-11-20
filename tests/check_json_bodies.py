@@ -42,4 +42,4 @@ for path in ("/api/scan/cancel", "/api/new-devices/ignore", "/api/brands/preview
     for body in BAD_BODIES:
         r = client.post(path, content=body, headers={"content-type": "application/json"})
         assert r.status_code != 500, (path, body, r.status_code)
-print("TUTTO OK")
+print("ALL OK")

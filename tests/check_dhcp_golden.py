@@ -163,4 +163,4 @@ assert all(scores.get(s, 0) > 20 for s in (-2, -1, 0, 1, 2, 3, 4, 5)) and any(s 
 assert not any(isinstance(r, dict) for r in mob_out)
 assert flags["none"] > 150 and flags["changed"] > 1000 and flags["unchanged"] > 150 and flags["server"] > 300 and flags["ip"] > 500, flags
 assert not any("exception" in r for r in lis_out)
-print("TUTTO OK")
+print("ALL OK")

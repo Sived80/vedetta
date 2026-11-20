@@ -7,6 +7,7 @@
   "brands.error.save_failed": "Could not save the rule",
   "brands.error.locked": "This setting is decided by the add-on configuration (internet_mac_database)",
   "brands.error.update_running": "An update is already in progress",
+  "brands.error.update_off": "The download of the MAC prefix list is off in the options of the app (internet_mac_database)",
   "brands.error.update_network": "Download failed, check the internet connection ({detail})",
   "brands.error.update_invalid": "The downloaded file is not a valid MAC prefix list",
   "brands.error.update_too_small": "The downloaded list looks incomplete ({detail} entries), update cancelled",

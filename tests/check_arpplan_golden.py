@@ -64,4 +64,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 none = sum(1 for o in out if o is None)
 assert [len(o["targets"]) for o in out[-3:]] == [2 + arpplan.MAX_KNOWN - 1 + 255, 2 + arpplan.MAX_KNOWN + 255, 2 + arpplan.MAX_KNOWN + 255] or True
 assert 40 < none < N - 40 and sum(1 for o in out if o and o.get("blocks")) > 40 and sum(1 for o in out if o and o.get("fresh")) > 5, (none,)
-print("TUTTO OK")
+print("ALL OK")

@@ -110,4 +110,4 @@ from app.routes import ha as routes_ha  # noqa: E402
 info = routes_ha._external_info()
 assert info["public_ip"] == {"on": False} and info["path"] == {"on": True, "target": "9.9.9.9"} and info["mac_database"]["on"] is True and "updated" in info["mac_database"], info
 assert set(info) == {"public_ip", "path", "mac_database"}, "only these: nothing else of the configuration (no credential) goes to the page"
-print("TUTTO OK")
+print("ALL OK")

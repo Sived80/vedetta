@@ -90,4 +90,4 @@ if os.name == "nt":
     assert out == ["True", "MemoryError"], out
 else:
     assert out[0] == "False", out
-print("TUTTO OK")
+print("ALL OK")

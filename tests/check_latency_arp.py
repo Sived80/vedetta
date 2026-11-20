@@ -59,4 +59,4 @@ assert asyncio.run(latency.measure("10.0.0.118")) is None                       
 # without nmap the real function gives None and does not run anything
 latency._NMAP = None
 assert asyncio.run(real_arp_ms("10.0.0.117")) is None
-print("TUTTO OK")
+print("ALL OK")

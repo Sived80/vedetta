@@ -96,4 +96,4 @@ finally:
 assert seen_args, "tls_ssh_scan did not run nmap for the TLS ports"
 listed = seen_args[0][seen_args[0].index("-p") + 1].split(",")
 assert listed == ["22", "443", "9443"], "the certificate scripts were pointed at: %s" % listed
-print("TUTTO OK")
+print("ALL OK")

@@ -28,4 +28,4 @@ assert hh.load() == []
 hh.PATH.write_text('{"hidden": "oops"}', encoding="utf-8")
 hh._cache = None
 assert hh.load() == []
-print("TUTTO OK")
+print("ALL OK")

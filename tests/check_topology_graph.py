@@ -33,4 +33,4 @@ assert quiet.conflicts == [] and quiet.links[("a", "r1")].confidence == "high"
 # nothing at all
 empty = graph.build([], [], [])
 assert empty.links == {} and empty.unknown == [] and empty.conflicts == [] and graph.coverage(empty, []) == 0.0
-print("TUTTO OK")
+print("ALL OK")

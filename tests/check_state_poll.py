@@ -77,4 +77,4 @@ tail = kinds[kinds.index("remove"):]
 assert tail == ["remove", "save_latency", "follow", "merge", "conflicts", "new_devices", "record_macs"], tail
 assert ("follow", {}) in log and ("new_devices", True) in log and ("record_macs", True) in log
 assert st.ready.is_set()
-print("TUTTO OK")
+print("ALL OK")

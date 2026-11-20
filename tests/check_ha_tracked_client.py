@@ -50,4 +50,4 @@ room = {"id": "j", "ip": "10.0.0.8", "name": "Camera da letto", "extra": {}}    
 assert ha_data.infer_type(room) != "media", ha_data.type_scores(room)
 speaker = {"id": "k", "ip": "10.0.0.9", "name": "Box", "extra": {"mdns_model": "HomePod"}, "scanned_ports": [{"label": "7000 · rtsp", "confirmed": False}]}
 assert ha_data.infer_type(speaker) == "audio", ha_data.type_scores(speaker)
-print("TUTTO OK")
+print("ALL OK")

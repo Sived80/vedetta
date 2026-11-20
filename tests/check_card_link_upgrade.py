@@ -106,4 +106,4 @@ assert got["lamp"] == (seq["lamp"], LAMP, "linked", "seed") and got["tv"] == (se
 assert got["phone"] == (seq["phone"], PHONE, "linked", "seed")
 judge(now + 1200)
 assert links()["scan-10-0-70-16"] == (added[0]["seq"], CAM, "linked", "rule"), "judged as a new card, by itself"
-print("TUTTO OK")
+print("ALL OK")

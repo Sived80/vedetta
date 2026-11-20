@@ -51,4 +51,4 @@ labels = [p["label"] for p in info["ports"]]
 assert any("40027" in l and "Amazon FireTV Stick" in l for l in labels), labels
 assert "os" not in info          # the operating system is neither read nor saved
 assert len(calls) == 2
-print("TUTTO OK")
+print("ALL OK")

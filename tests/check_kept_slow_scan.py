@@ -22,4 +22,4 @@ assert kept({"ports": "80"}) == {} and kept({"ports": []}) == {} and kept({"port
 assert len(kept({"ports": [{"label": str(n)} for n in range(1, 500)]})["ports"]) == 100                     # a bounded list
 assert len(kept({"ports": [{"label": "8" * 300}]})["ports"][0]["label"]) == 80
 assert "scanned_at" not in kept({"ports": ports, "scanned_at": 1.0})                                         # «ports and services really read» stays for the deep search
-print("TUTTO OK")
+print("ALL OK")

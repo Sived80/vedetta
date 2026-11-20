@@ -48,7 +48,7 @@ def main():
     clean_bytecode()
     real_data = gate_rules.folder_state(ROOT / "vedetta" / "config")
     t = sh(sys.executable, "tools/run_tests.py", *[a for a in sys.argv if a == "--allow-golden-update"])      # the test runner checks the goldens itself (the CI does too)
-    ok = t.returncode == 0 and "TUTTO OK" in t.stdout
+    ok = t.returncode == 0 and "ALL OK" in t.stdout
     tail = "\n".join(t.stdout.splitlines()[-25:])
     snap = snapshot()
     problems = [] if ok else ["tests failed"]

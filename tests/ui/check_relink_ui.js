@@ -23,7 +23,7 @@ const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const TEXTS = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "locales", lang, "ha.json"), "utf8"));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 data.devices.devices.forEach((d) => { if (d.id === "d2") { d.online = false; d.last_seen = Date.now() / 1000 - 900; } });
 const errors = [], asked = [], sent = [];
@@ -51,7 +51,11 @@ const dom = new JSDOM(html, {
       else if (url.startsWith("/api/ha/history?")) b = data.history_all;
       return ok(b);
     };
-    win.EventSource = class { constructor() { setTimeout(() => this.onopen && this.onopen(), 5); } addEventListener() {} close() {} };
+    win.EventSource = class {
+      constructor() { this.on = {}; win.__stream = this; setTimeout(() => this.onopen && this.onopen(), 5); }
+      addEventListener(name, fn) { (this.on[name] = this.on[name] || []).push(fn); }
+      close() {}
+    };
     win.requestAnimationFrame = (f) => setTimeout(() => f(win.performance.now()), 0);
   },
 });
@@ -72,11 +76,25 @@ const closeCard = () => { const c = q('#more [data-act="close"]'); if (c) c.clic
   await wait(300);
   check(asked.length === 1 && asked[0].startsWith("/api/devices/d2/relink"), "an offline card asks whether the gesture applies");
   check(!!button() && button().textContent.trim() === TEXTS["js.ha.relink.button"] && button().title === TEXTS["js.ha.relink.hint"], "the gesture is shown, in " + lang);
+  // a live update of the open card (18/11 review): the button stays without a gap and nothing is asked again
+  const d2 = data.devices.devices.find((d) => d.id === "d2");
+  let gap = false;
+  const watch = new win.MutationObserver(() => { if (!button()) gap = true; });
+  watch.observe(q("#more"), { childList: true, subtree: true });
+  for (const fn of (win.__stream.on.device || [])) fn({ data: JSON.stringify({ type: "device", id: "d2", rev: 999, device: Object.assign({}, d2, { last_seen: (d2.last_seen || 0) + 30 }) }) });
+  await wait(300);
+  watch.disconnect();
+  check(asked.length === 1 && !!button() && !gap, "a live update: the button stays, no second request (asked " + asked.length + ", gap " + gap + ")");
   button().click();
   await wait(300);
   check(sent.length === 1 && sent[0] === "/api/devices/d2/relink", "a tap sends it once");
   const snacks = Array.from(doc.querySelectorAll(".snack .snack-text")).map((n) => n.textContent);
   check(snacks.includes(TEXTS["js.ha.relink.done"]) && !button(), "it says what happens, and the button goes");
+  // the card drawn again (rename and back): the gesture is spent, the button does not come back and nothing is asked (18/11 review 3)
+  const askedBefore = asked.length;
+  const ren = q('#more [data-act="rename"]');
+  if (ren) { ren.click(); await wait(100); const back = q('#more [data-act="back"]'); if (back) back.click(); await wait(300); }
+  check(!!ren && !button() && asked.length === askedBefore, "rename and back: no button again, nothing asked (asked " + (asked.length - askedBefore) + ")");
   closeCard();
   // not offered: nothing shown
   offer = false;
@@ -84,6 +102,6 @@ const closeCard = () => { const c = q('#more [data-act="close"]'); if (c) c.clic
   await wait(300);
   check(asked.length === 2 && !button(), "not offered: no gesture");
   check(errors.length === 0, "no page errors" + (errors.length ? ": " + errors.join(" | ") : ""));
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

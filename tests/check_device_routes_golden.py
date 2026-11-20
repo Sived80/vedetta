@@ -272,4 +272,4 @@ stats = {"add200": st("add", 200), "add500": st("add", 500), "wake200": st("wake
 for key, low in (("add200", 400), ("add500", 30), ("wake200", 150), ("wake400", 100), ("wake404", 100), ("wake500", 20), ("del200", 200), ("del404", 80), ("del500", 30), ("resc200", 100), ("resc500", 15),
                  ("added", 60), ("blocked", 40), ("targets2", 80), ("streamed", 100), ("via_history", 100)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

@@ -5,14 +5,14 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from .storage import devices_config, journal
+from .storage import devices_config, journal, settings as settings_store
 from .storage.history import history
-from .ha import analysis_view, health_view, ha_registry, ha_tz, ha_update, passive_service
+from .ha import analysis_view, health_view, ha_notify, ha_registry, ha_tz, ha_update, passive_service
 from .scan import mdns_listener, dhcp, host_load, internet, scanner
-from . import cardlink_cycle, external, i18n, lifecycle, maclayer, paths
+from . import cardlink_cycle, external, i18n, lifecycle, maclayer, paths, routedwatch, sentinel_view
 from .state_support import _process_info
 from .recognition import roles
 from .applog import logger
@@ -37,10 +37,19 @@ from .routes import settings_routes as routes_settings_routes
 BASE_DIR = Path(__file__).resolve().parent
 
 
+def _journal_damaged_settings() -> None:
+    """A damaged settings.json found at start-up goes in the journal too, not only in the log: the person sees that the settings were reset."""
+    damaged = settings_store.damaged()
+    if damaged:
+        key = "journal.settings_damaged" if damaged.get("copy") else "journal.settings_damaged_kept"
+        journal.add("normal", key, icon="alert", copy=damaged.get("copy") or "")
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     await asyncio.to_thread(devices_config.ensure_seq_safely)   # the cards of an older file get their number, once (a copy of the old file is kept)
-    heartbeat = lifecycle.start(paths.data_path("run.json"), lambda: _process_info().get("rss_mb"), logger.info)   # how the previous run ended, and the record of this one
+    heartbeat = lifecycle.start(paths.data_path("run.json"), lambda: _process_info().get("rss_mb"), logger.info,
+                                on_begin=history.service_run_begin, on_beat=history.service_run_beat)   # how the previous run ended, and the record of this one
     await state.load_history()
     state.start()
     asyncio.create_task(ha_tz.refresh(force=True))   # the user's time zone, from Home Assistant
@@ -59,6 +68,9 @@ async def lifespan(_: FastAPI):
     analysis_view.start(on_change=state.emit_event)   # the state of each card: identified, settling or under analysis (read-only)
     host_load.start()   # the pressure of the system (kernel PSI): a traffic light for the heavy background scans, and one line of the log each hour
     health_view.start(on_change=state.emit_event)   # network health: judged in shadow (only counted in the log) unless VEDETTA_HEALTH=off
+    routedwatch.start()   # the ping sweep of the networks behind the router, every 15 minutes (step P11)
+    sentinel_view.add_sender(ha_notify.sender)   # the Sentinel's messages reach Home Assistant: events and the chosen notify service
+    _journal_damaged_settings()
     logger.info("Servizio avviato")
     yield
     if dhcp_transport:
@@ -71,6 +83,7 @@ async def lifespan(_: FastAPI):
     await analysis_view.stop()
     await health_view.stop()
     await host_load.stop()
+    await routedwatch.stop()
     await roles.stop()
     await mqtt_service.stop()
     await state.stop()
@@ -111,8 +124,11 @@ async def root(request: Request):
 
 @app.get("/healthz")
 async def healthz():
-    """Health check for the Supervisor watchdog: it answers only if the service is alive."""
-    return {"ok": True}
+    """Health check for the watch loop of run.sh: 200 while the loop of the checks turns, 503 when it is stuck (a probe that never
+    ends): the web server answering is not enough, the service must be doing its work. After three 503 in a row run.sh stops the
+    service and the Supervisor starts it again."""
+    health = state.health()
+    return health if health["ok"] else JSONResponse(health, status_code=503)
 
 
 @app.post("/api/refresh")

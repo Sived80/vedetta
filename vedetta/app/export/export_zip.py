@@ -11,12 +11,12 @@ import zipfile
 from itertools import chain
 from pathlib import Path
 
-from . import anonymize, export_db
-from ..storage import journal, settings
+from . import anonymize, export_db, export_names
+from ..storage import journal, network_store, passive_store, settings
 from ..scan import dhcp, mdns_listener
 from ..recognition import evidence, roles
 from ..ha import ha_registry, ha_tz, mqtt_ha
-from .. import cardlink_cycle, inventory_view, maintenance, paths
+from .. import cardlink_cycle, inventory_view, maintenance, paths, routedwatch
 from ..state import state
 from ..ha import ha_data, health_view
 from ..scan import host_load
@@ -27,7 +27,7 @@ MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by t
 MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
 MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
 FOCUS_DAYS = 14                    # history of a flagged device that goes in the export
-SKIP_WORDS = ("key", "token", "secret", "pass", "user_lang")   # files that might contain credentials, or the ids of the Home Assistant users
+SKIP_WORDS = ("key", "token", "secret", "pass", "community", "user_lang")   # files or fields that might hold credentials (the SNMP community is one), or the ids of the Home Assistant users
 
 
 def _redact(obj):
@@ -159,6 +159,7 @@ def _collect(devices: list[dict]) -> anonymize.Anonymizer:
     anon = anonymize.Anonymizer()
     _add_board_devices(anon, devices)
     _add_registry_names(anon)
+    _add_kept_names(anon)
     _add_public_addresses(anon)
     return anon
 
@@ -183,7 +184,7 @@ def _board_card(anon: anonymize.Anonymizer, d: dict) -> tuple:
     icon = _safe_call(ha_data.icon_for, d, None, hint)
     name = d.get("name")
     aliases = [name if name != ip else None, (dhcp.seen.get(str(mac or "").lower()) or {}).get("hostname"),
-               mdns.get("name"), reg.get("name")]
+               mdns.get("name"), reg.get("name")] + export_names.scan_names(d.get("scan_info"))
     return aliases, hint, d.get("brand"), icon
 
 
@@ -208,6 +209,29 @@ def _add_registry_names(anon: anonymize.Anonymizer) -> None:
         anon.add_area(area)
     for ip in chain(mdns_listener.by_ip, ha_registry._state["by_ip"]):
         anon.add_ip(ip)
+
+
+def _add_kept_names(anon: anonymize.Anonymizer) -> None:
+    """Names kept only in the stores of 1.0: the names of the networks (the main one too), the former names of the cards, the names that the
+    devices behind the router gave and those Home Assistant gives the devices it sees; the names in the history database (export_names). Each source on its own: one that fails takes nothing away."""
+    from ..storage.history import history
+    _safe_call(lambda: anon.add_names([network_store.main_name()] + [r.get("name") for r in network_store.rows()]))
+    _safe_call(lambda: anon.add_names([r.get("host") for r in history.routed_rows()]))
+    _safe_call(lambda: anon.add_names(_former_names(history)))
+    _safe_call(lambda: anon.add_names(export_names.history_names(history)))     # past searches, removed cards, guests
+    passive = _safe_call(passive_store.snapshot) or {}
+    for group in ("candidates", "adopted"):
+        for item in (passive.get(group) or {}).values():
+            row = item.get("row", item) if isinstance(item, dict) else {}
+            edit = item.get("edit") or {} if isinstance(item, dict) else {}
+            anon.add_names([row.get("name"), row.get("host"), edit.get("name")])
+
+
+def _former_names(history) -> list:
+    """Every name a card had in the change history (old and new)."""
+    with history._lock:
+        rows = history._db.execute("SELECT DISTINCT old, new FROM identity_change WHERE field = 'name'").fetchall()
+    return [v for r in rows for v in (r[0], r[1])]
 
 
 def _add_public_addresses(anon: anonymize.Anonymizer) -> None:
@@ -237,6 +261,14 @@ def _never_analysed():
         return None
 
 
+def step_counts() -> dict:
+    """The counts of the 1.0 steps, the same in both exports (this zip and the export window, export_gather): numbers only, no MAC, no address."""
+    return {"card_links": cardlink_cycle.counts(),            # the card -> MAC links (step P4)
+            "mac_presence": cardlink_cycle.presence_counts(),  # presence by MAC (step P5)
+            "inventory": inventory_view.counts(),               # the single inventory (step P7)
+            "routed": routedwatch.counts()}                     # the ping sweep of the networks behind the router (step P11)
+
+
 def _describe_service(manifest: dict, pending) -> None:
     """Facts that explain the behaviour of the app and say nothing about the person: the hour offset (not the name of the zone),
     whether it came from Home Assistant, and how many devices never had a deep search."""
@@ -246,9 +278,7 @@ def _describe_service(manifest: dict, pending) -> None:
         manifest["service"] = state.diagnostics()      # sizes, times and counts of the service: no address, no name
     except Exception as exc:
         manifest["notes"].append(f"service: {exc!r}")
-    manifest["card_links"] = cardlink_cycle.counts()   # counts of the card -> MAC links (step P4): no MAC, no address
-    manifest["mac_presence"] = cardlink_cycle.presence_counts()   # counts of presence by MAC (step P5): no MAC, no address
-    manifest["inventory"] = inventory_view.counts()   # counts of the single inventory (step P7): no MAC, no address
+    manifest.update(step_counts())
     manifest["phone_merge"] = state.merge_report         # counts: why two cards of the same phone were (not) merged, without any name
     try:
         manifest["health"] = health_view.manifest_part()  # counts and seconds of the health judge: no address, no name

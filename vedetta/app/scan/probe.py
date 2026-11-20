@@ -49,6 +49,7 @@ async def _probe_device_gather(device, arp_task):
     adapter_fn = ADAPTERS.get(touch_policy.adapter_of(device))
 
     result = {"online": False}
+    early = presence.start_ping(device, ip)   # behind the router, a card whose port was closed: the ping runs together with the adapter
     if adapter_fn and touch_policy.may_touch(device):   # a device that must not be touched is not asked: ARP alone says if it is there
         try:
             result = await adapter_fn(ip, port)
@@ -69,7 +70,7 @@ async def _probe_device_gather(device, arp_task):
     # with all the checks instead of before them in sequence (otherwise
     # every page refresh cost the sum of the two, not the slower of the two -
     # verified: 4.2s in sequence versus 2.2s in parallel).
-    result = await presence.complete_with_arp(result, device, ip, arp_task)
+    result = await presence.complete(result, device, ip, arp_task, early)   # ARP, and behind the router the ping (decision A of 15/11)
     return ip, port, result
 
 

@@ -175,4 +175,4 @@ stats = {"exc": c(lambda o: "exception" in o["record"]), "online": c(lambda o: r
 for key, low in (("exc", 0), ("online", 1500), ("named_ip", 40), ("generated", 100), ("mobile", 500), ("scored", 1500), ("ha_card", 400), ("brand_ha", 60), ("brand_user", 300), ("auto_name", 600), ("arp_rescue", 100),
                  ("role_name", 15), ("signal", 400), ("title", 300), ("kept", 1500)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

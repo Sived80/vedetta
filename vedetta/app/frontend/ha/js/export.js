@@ -9,7 +9,7 @@ import { vlanClick, vlanEscape, vlanGuide, vlanInit, vlanSection, vlanWanted } f
 // -> the file. The size is estimated from what the server says each day weighs.
 var exportDlg = $("exportdlg");
 var X = null;                                             // state of the open window (null = closed)
-var XP = { MIN: 2, MAXN: 20, W: 20, HOR: 90, SHOWN: 10, TRIES: 3, RETRY_MS: 1500 };
+var XP = { MIN: 2, MAXN: 20, W: 20, HOR: 90, SHOWN: 10, TRIES: 3, RETRY_MS: 1500, INFO_MS: 90000 };
 function xpT(key, vars) { const v = t(key, vars); return v === key ? "" : v; }          // a text that may not exist
 function xpDay(a) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - a); return d; }
 function xpFmt(d, o) { try { return d.toLocaleDateString(LANG, o); } catch (e) { return d.toDateString(); } }
@@ -17,16 +17,16 @@ function xpShort(a) { return xpFmt(xpDay(a), { day: "numeric", month: "short" })
 function xpLong(a) { return xpFmt(xpDay(a), { day: "numeric", month: "long" }); }
 function xpSize(bytes) { const mb = bytes / 1048576; return (mb < 0.1 ? "0.1" : mb.toFixed(1)).replace(".", LANG === "it" ? "," : ".") + " MB"; }
 function xpDays() { return X.from - X.to; }
-function xpIn(a) { return X.all || (a >= X.to && a <= X.from - 1); }
-function xpBytes(all) {
+function xpIn(a) { return a >= X.to && a <= X.from - 1; }
+function xpBytes() {
   const i = X.info;
   if (!i) return 0;
-  let a0 = all || X.all ? i.horizon - 1 : X.from - 1, a1 = all || X.all ? 0 : X.to, sum = i.base;
+  let a0 = X.from - 1, a1 = X.to, sum = i.base;
   for (var a = a1; a <= a0; a++) sum += i.daily[a] || 0;
   return sum * i.ratio * (X.dest === "dev" ? i.seal_factor : 1);
 }
 function xpLimited() { return X.dest !== "me"; }
-function xpOver(all) { return !!(X.info && xpLimited() && xpBytes(all) > X.info.limit); }
+function xpOver() { return !!(X.info && xpLimited() && xpBytes() > X.info.limit); }
 function xpClose() {
   if (X && X.job) { api("/api/export/jobs/" + X.job, { method: "DELETE" }).catch(function () {}); }
   if (X) clearTimeout(X.timer);
@@ -43,7 +43,7 @@ function xpChart() {
     a = off + w - 1 - k;
     var d = xpDay(a), nod = a >= XP.HOR, weekend = d.getDay() === 0 || d.getDay() === 6, isIn = xpIn(a);
     var height = nod ? 12 : Math.round(66 + 24 * (((i && i.daily[a]) || 0) / max) + 10 * Math.sin(k * 0.9));   // always full (easy to click), a light wave
-    var edge = !X.all && (a === X.from - 1 || a === X.to);
+    var edge = a === X.from - 1 || a === X.to;
     h += '<button type="button" class="xp-col' + (nod ? " nod" : "") + (isIn ? " in" : "") + (edge ? " edge" : "") + (X.pend === a ? " pend" : "") + '" data-xa="' + a + '"' + (nod ? " disabled" : "") +
       ' style="height:' + height + '%" aria-label="' + esc(xpFmt(d, { weekday: "long", day: "numeric", month: "long" })) + '"></button>';
     var cls = (isIn ? "in " : "") + (weekend ? "we " : "") + (a === 0 ? "today" : "");
@@ -52,7 +52,7 @@ function xpChart() {
   }
   lab = '<div class="xp-lab">' + rows[0].join("") + '</div><div class="xp-lab">' + rows[1].join("") + "</div>";
   let i1 = off + w - 1 - (X.from - 1), i2 = off + w - 1 - X.to, finger = "";
-  if (X.intro && !X.all) {
+  if (X.intro) {
     var x1 = (i1 >= 0 && i1 < w ? (i1 + 0.5) / w : 0.15) * 100, x2 = (i2 >= 0 && i2 < w ? (i2 + 0.5) / w : 0.85) * 100;
     finger = '<span class="xp-finger" style="--x1:' + x1 + "%;--x2:" + x2 + '%"><i></i>' + icon("gesture-tap") + "</span>";
   }
@@ -63,17 +63,15 @@ function xpChart() {
 }
 function xpSummary() {
   const bytes = xpBytes(), over = xpOver(), lim = X.info ? xpSize(X.info.limit) : "";
-  const head = X.all ? t("js.ha.export.sum_all")
-    : X.to === 0 ? t("js.ha.export.sum_to_today", { from: xpLong(X.from - 1) }) : t("js.ha.export.sum_from_to", { from: xpLong(X.from - 1), to: xpLong(X.to) });
+  const head = X.to === 0 ? t("js.ha.export.sum_to_today", { from: xpLong(X.from - 1) }) : t("js.ha.export.sum_from_to", { from: xpLong(X.from - 1), to: xpLong(X.to) });
   const meter = xpLimited() && X.info ? '<div class="xp-meter' + (over ? " over" : "") + '"><i style="width:' + Math.min(100, bytes / X.info.limit * 100).toFixed(1) + '%"></i></div><div class="xp-sub">' +
     esc(over ? t("js.ha.export.limit_over", { size: lim }) : t("js.ha.export.limit_ok", { size: lim })) + "</div>" : "";
-  return '<div><div class="xp-read"><b>' + esc(head) + "</b><span>" + esc(t("js.ha.export.sum_size", { n: X.all ? XP.HOR : xpDays(), size: X.info ? xpSize(bytes) : "…" })) + "</span></div>" + meter +
+  return '<div><div class="xp-read"><b>' + esc(head) + "</b><span>" + esc(t("js.ha.export.sum_size", { n: xpDays(), size: X.info ? xpSize(bytes) : "…" })) + "</span></div>" + meter +
     (X.note ? '<div class="xp-sub warn">' + esc(X.note) + "</div>" : "") + "</div>";
 }
 function xpPresets() {
-  function p(n) { return '<button type="button" data-xp="p:' + n + '" aria-pressed="' + (!X.all && X.to === 0 && xpDays() === n) + '">' + esc(t("js.ha.export.days", { n: n })) + "</button>"; }
-  const dis = xpOver(true);
-  return '<div class="xp-segm" role="group">' + p(2) + p(7) + p(20) + '<button type="button" data-xp="all" aria-pressed="' + X.all + '"' + (dis ? ' disabled title="' + esc(t("js.ha.export.limit_over", { size: xpSize(X.info.limit) })) + '"' : "") + ">" + esc(t("js.ha.export.all")) + "</button></div>";
+  function p(n) { return '<button type="button" data-xp="p:' + n + '" aria-pressed="' + (X.to === 0 && xpDays() === n) + '">' + esc(t("js.ha.export.days", { n: n })) + "</button>"; }
+  return '<div class="xp-segm" role="group">' + p(2) + p(7) + "</div>";
 }
 function xpDestCards() {
   function card(d, ic, title, text, tag) {
@@ -121,7 +119,7 @@ function xpFocusLine() {
   return n ? '<div class="xp-flag">' + icon("flag") + "<span><b>" + esc(t("js.ha.export.focus_title", { n: n })) + "</b> " + esc(t("js.ha.export.focus_text")) + "</span></div>" : "";
 }
 function xpView() {
-  const title = '<div class="mi-header"><div class="mi-titles"><h2 class="mi-title" id="exportdlg-title">' + esc(t("js.ha.export.title")) + "</h2></div></div>";
+  const title = '<div class="mi-header"><button type="button" class="icon-btn touch rp" data-xp="close" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + '</button><div class="mi-titles"><h2 class="mi-title" id="exportdlg-title">' + esc(t("js.ha.export.title")) + "</h2></div></div>";
   const cancel = '<button type="button" class="btn text rp" data-xp="cancel">' + esc(t("js.ha.cancel")) + "</button>";
   let body, acts;
   if (X.stage === "dest") {
@@ -140,7 +138,7 @@ function xpView() {
     acts = cancel.replace("data-xp=\"cancel\"", "data-xp=\"stop\"") + '<button type="button" class="btn filled rp" data-xp="apply"' + (ready ? "" : " disabled") + "><span>" + esc(t("js.ha.export.continue")) + "</span></button>";
   } else if (X.stage === "done") {
     body = xpSteps() + xpDone();
-    acts = '<button type="button" class="btn text rp" data-xp="finish">' + esc(t("js.ha.export.close")) + '</button><button type="button" class="btn filled rp" data-xp="save"' + (X.saved ? " disabled" : "") + ">" + icon("download") + "<span>" + esc(t(X.saved ? "js.ha.export.saved" : "js.ha.export.save")) + "</span></button>";
+    acts = '<button type="button" class="btn text rp" data-xp="finish">' + esc(t("js.ha.export.close")) + '</button><button type="button" class="btn filled rp" data-xp="save"' + (X.saved || X.saving ? " disabled" : "") + ">" + icon("download") + "<span>" + esc(t(X.saved ? "js.ha.export.saved" : "js.ha.export.save")) + "</span></button>";
   } else {
     var code = X.error || "export_failed";
     body = '<div class="xp-tone bad"><span>' + icon("alert") + "</span><div>" + esc(code === "too_big" ? t("js.ha.export.err_too_big", { size: X.info ? xpSize(X.info.limit) : "20 MB" }) : code === "encryption_unavailable" ? t("js.ha.export.no_crypto") : code === "busy" ? t("js.ha.export.err_busy") : t("js.ha.export.failed")) + "</div></div>";
@@ -159,17 +157,17 @@ export function openExport() {
   if (typeof exportDlg.showModal === "function") exportDlg.showModal(); else exportDlg.setAttribute("open", "");
   xpInfo(X, 1);
 }
-// The estimate of the sizes: it only informs, and for the developer it also gives the limit. If the request fails it is asked again (a few times, a little later);
-// "for me" does not wait for it, so the button never stays off because of it.
+// The estimate of the sizes: it only informs, and for the developer it also gives the limit. It may take a while on a long history
+// (XP.INFO_MS); if the request fails it is asked again, a little later each time, for as long as the window is open (after three
+// tries the encrypted export used to stay off for good). "For me" does not wait for it, so that button never stays off because of it.
 function xpInfo(mine, attempt) {
-  api("/api/export/info").then(function (i) { if (X === mine) { X.info = i; xpRender(); } }).catch(function (e) {
+  api("/api/export/info", { timeout: XP.INFO_MS }).then(function (i) { if (X === mine) { X.info = i; xpRender(); } }).catch(function (e) {
     console.warn("export info failed (attempt " + attempt + "):", e && e.message);
-    if (attempt < XP.TRIES) setTimeout(function () { if (X === mine && !X.info) xpInfo(mine, attempt + 1); }, XP.RETRY_MS * attempt);
+    setTimeout(function () { if (X === mine && !X.info) xpInfo(mine, attempt + 1); }, XP.RETRY_MS * Math.min(attempt, XP.TRIES));
   });
 }
 function xpPick(a) {
   X.note = "";
-  if (X.all) { X.all = false; X.pend = null; X.from = 7; X.to = 0; }
   if (X.pend === null) { X.pend = a; return; }
   let lo = Math.min(X.pend, a), hi = Math.max(X.pend, a);
   if (hi - lo + 1 > XP.MAXN) { X.note = t("js.ha.export.note_max", { n: XP.MAXN }); if (a > X.pend) hi = lo + XP.MAXN - 1; else lo = hi - XP.MAXN + 1; }
@@ -196,7 +194,7 @@ function xpPoll() {
 }
 function xpGo() {
   const body = { dest: X.dest };
-  if (X.all) body.all = true; else { body.from_day = X.from - 1; body.to_day = X.to; }
+  body.from_day = X.from - 1; body.to_day = X.to;
   if (vlanWanted(X)) body.survey = true;                       // the network option, only when its button is green
   const mine = X;
   mine.stage = "run"; mine.snap = { steps: [], status: "running", items: [], items_total: 0 }; mine.decided = null; mine.saved = false;
@@ -208,6 +206,10 @@ function xpGo() {
 }
 function xpSave() {
   const mine = X, id = mine.job;
+  // One request at a time: the server hands the file out once, a second click would be refused and look like a failure.
+  if (mine.saving || mine.saved || !id) return;
+  mine.saving = true;
+  xpRender();
   fetch("/api/export/jobs/" + id + "/file", { method: "POST", headers: { "X-Lang": LANG }, cache: "no-store" }).then(function (r) {
     if (!r.ok) throw new Error("HTTP " + r.status);
     const m = /filename="([^"]+)"/.exec(r.headers.get("Content-Disposition") || "");
@@ -217,10 +219,14 @@ function xpSave() {
     a.href = URL.createObjectURL(f.blob); a.download = f.name;
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
-    mine.job = null; mine.saved = true;
+    mine.job = null; mine.saved = true; mine.saving = false;
     snack(t(mine.dest === "me" ? "js.ha.export.done_plain" : "js.ha.export.done"), { kind: "success" });
     if (X === mine) xpRender();
-  }).catch(function () { snack(t("js.ha.export.failed"), { kind: "error" }); });
+  }).catch(function () {
+    mine.saving = false;
+    snack(t("js.ha.export.failed"), { kind: "error" });
+    if (X === mine) xpRender();
+  });
 }
 exportDlg.addEventListener("click", function (e) {
   if (!X) return;
@@ -230,12 +236,12 @@ exportDlg.addEventListener("click", function (e) {
   const b = e.target.closest("[data-xp]");
   if (!b || b.disabled) return;
   const act = b.dataset.xp;
-  if (act.indexOf("dest:") === 0) { X.dest = act.slice(5); X.stage = "pick"; X.intro = true; X.all = false; X.pend = null; X.note = ""; }
+  if (act.indexOf("dest:") === 0) { X.dest = act.slice(5); X.stage = "pick"; X.intro = true; X.pend = null; X.note = ""; }
   else if (act === "cancel") { if (X.stage === "pick") { X.stage = "dest"; X.pend = null; X.note = ""; } else return xpClose(); }
   else if (act === "older") X.off = Math.min(XP.HOR - XP.W, X.off + 10);
   else if (act === "newer") X.off = Math.max(0, X.off - 10);
-  else if (act.indexOf("p:") === 0) { X.all = false; X.from = parseInt(act.slice(2), 10); X.to = 0; X.off = 0; X.pend = null; X.note = ""; }
-  else if (act === "all") { X.all = true; X.from = XP.HOR; X.to = 0; X.pend = null; X.note = ""; }
+  else if (act.indexOf("p:") === 0) { X.from = parseInt(act.slice(2), 10); X.to = 0; X.off = 0; X.pend = null; X.note = ""; }
+  else if (act === "close") return xpClose();
   else if (act === "go") return xpGo();
   else if (act === "stop" || act === "back") {
     if (X.job) { api("/api/export/jobs/" + X.job, { method: "DELETE" }).catch(function () {}); X.job = null; }

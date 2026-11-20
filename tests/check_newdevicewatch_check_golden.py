@@ -89,8 +89,9 @@ def fake_matches(*, mac=None, ip=None, name=None):
     return mac[-1] in SET["ignored_digits"]
 
 
-def fake_evaluate(observed, configured_ips, configured_macs, ignore_macs=frozenset(), baseline_blocks=()):
+def fake_evaluate(observed, configured_ips, configured_macs, ignore_macs=frozenset(), baseline_blocks=(), predecessor=None):
     log("evaluate", observed, configured_ips, configured_macs, ignore_macs, list(baseline_blocks))
+    assert predecessor is newdevicewatch._successors_of, "1.0 step P10: the watch passes the successions of the private MACs"      # not logged: the golden stays as it was
     if SET["evaluate_fails"]:
         raise RuntimeError("evaluate")
     return SET["fresh"], SET["current"]
@@ -197,4 +198,4 @@ assert sum(1 for L in names if L.count("matches") >= 2) > 600 and sum(1 for c in
 assert sum(1 for c in cases if any(e[0] == "evaluate" and e[5] for e in c["log"])) > 500
 assert sum(1 for c in cases if any(e[0] == "emit_alert" and e[3].get("ip") == "-" for e in c["log"])) > 100 and sum(1 for c in cases if c["state"][3]) > 300
 assert sum(1 for k in kinds if "evaluate" in k and "alerts_enabled" not in k) > 50
-print("TUTTO OK")
+print("ALL OK")

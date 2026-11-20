@@ -67,4 +67,4 @@ for text in ("", "devices:\n", "devices: []\n", "just text\n", "- a\n- b\n", "de
     write(text)
     assert dc.ensure_seq_safely() == 0, text
     assert dc.DEVICES_PATH.read_text(encoding="utf-8") == text, "a file that cannot be numbered must stay as it was: %r" % text
-print("TUTTO OK")
+print("ALL OK")

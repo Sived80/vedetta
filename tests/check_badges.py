@@ -34,4 +34,4 @@ assert shown(no_touch=False, new=None, mystery=True) == []
 assert shown(unresolved=True) == [("unresolved", "top_right")]
 assert shown(no_touch=True, unresolved=True) == [("no_touch", "top_right")] and shown(fragile=True, unresolved=True) == [("fragile", "top_right")]
 assert shown(unresolved=True, new=True) == [("unresolved", "top_right"), ("new", "bottom_right")]
-print("TUTTO OK")
+print("ALL OK")

@@ -184,4 +184,4 @@ async def scenario():
 
 
 asyncio.new_event_loop().run_until_complete(scenario())
-print("TUTTO OK")
+print("ALL OK")

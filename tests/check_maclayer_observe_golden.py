@@ -74,5 +74,5 @@ assert sum(1 for c in cases if len(c[1][1]) > len(c[1][0])) > 20, "sessions neve
 assert sum(1 for c in cases if c[1][0] and any(r[5] >= 2 for r in c[1][0])) > 800 and any(n == 0 for c in cases for n in c[0]) and any(n >= 4 for c in cases for n in c[0])
 assert not any(c[2] for c in cases)
 assert any(r[4] > 0 for c in cases for r in c[1][2]) and any(r[4] == 0 for c in cases for r in c[1][2]), "gap values"
-print("TUTTO OK")
+print("ALL OK")
 

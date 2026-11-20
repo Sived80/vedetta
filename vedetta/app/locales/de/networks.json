@@ -15,5 +15,8 @@
   "networks.error.E_DUP_ID": "Ein Netzwerk mit diesem Namen existiert bereits",
   "networks.error.E_OVERLAP": "Überschneidet sich mit einem anderen Netzwerk",
   "networks.error.E_BAD_EXCLUDE": "Ungültige ausgeschlossene Adressen",
-  "networks.error.not_found": "Netzwerk nicht gefunden"
+  "networks.error.E_BAD_NAME": "Schreibe einen Namen mit höchstens 32 Zeichen, ohne Leerzeichen am Anfang oder Ende",
+  "networks.error.E_BAD_VLAN": "Die VLAN-ID ist eine Zahl von 1 bis 4094",
+  "networks.error.not_found": "Netzwerk nicht gefunden",
+  "networks.main_name": "Zuhause"
 }

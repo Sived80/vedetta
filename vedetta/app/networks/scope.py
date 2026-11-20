@@ -41,6 +41,12 @@ class Scope:
         return [ip for ip in ips if (n := self.network_of(ip)) is not None and "direct" in n.via]
 
     def searchable(self, ips) -> list:
-        """The addresses that may be searched in depth (ports, names, the whole search): those of a confirmed network whose touch is "full",
-        in the order given. A network seen through the router is at most "ports" (model.validate): its devices are never searched in depth."""
-        return [ip for ip in ips if (n := self.network_of(ip)) is not None and n.touch == "full"]
+        """The addresses that may be searched in depth, in the order given: those of a confirmed network whose touch is "full", or "ports".
+        A network seen through the router is at most "ports" (model.validate): its devices are searched for their ports and their model only
+        (decision «B» of 14/11), with the steps of touch_policy.routed_steps (through_router says which ones)."""
+        return [ip for ip in ips if (n := self.network_of(ip)) is not None and n.touch in ("ports", "full")]
+
+    def through_router(self, ip) -> bool:
+        """The address is in a confirmed network not reached through the host's own interface: its search keeps to touch_policy.routed_steps."""
+        network = self.network_of(ip)
+        return network is not None and "direct" not in network.via

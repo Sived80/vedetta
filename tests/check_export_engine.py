@@ -93,6 +93,7 @@ assert len(rows(full, "presence_events")) == 4 and b"three days" in full["data/d
 # --- for the developer: masked
 f = zip_of(E.build("dev", 1, 0))
 man = json.loads(f["manifest.json"])
+assert {"card_links", "mac_presence", "inventory"} <= set(man), "the counts of the 1.0 steps reach the export of the window too"
 assert man["dest"] == "dev" and man["check"]["fixed"] == 0 and man["period"]["all"] is False and (tmp / export.MAPPING_FILE).exists()
 for name, raw in f.items():
     if name == "data/vedetta.db":
@@ -149,4 +150,4 @@ finally:
 est = E.estimate()
 assert len(est["daily"]) == E.HORIZON_DAYS and est["limit"] == E.LIMIT_BYTES and est["base"] > 0 and est["flagged"] == 0
 assert est["daily"][0] > 0 and est["daily"][1] > 0 and est["daily"][2] > 0 and sum(est["daily"][4:]) == 0, est["daily"][:6]    # the log and the events of those days
-print("TUTTO OK")
+print("ALL OK")

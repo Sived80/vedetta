@@ -50,7 +50,7 @@ vedetta/app/frontend/ha/   the page /ha, in parts joined by the app (js/ and css
 ```
 
 ```bash
-python tools/run_tests.py     # everything, from the vedetta/ folder
+python tools/run_tests.py     # everything, from the root of the repository (the checks run in vedetta/)
 ```
 
 **New to the code?** Start with [ARCHITECTURE.md](ARCHITECTURE.md): what to read first, how one check of the network flows, where to change what, and an index of every module (generated from the code).
@@ -65,12 +65,16 @@ recognition/  what a device is: identity, naming, brands, roles, signatures, evi
 ha/           Home Assistant: registry, time zone, the data of the page, the debug card, MQTT
 export/       export for analysis: masking, checks, jobs, encryption
 storage/      what is kept: history (SQLite), devices, ignored, new devices, settings, journal
+networks/     the networks: what the host says, those written behind the router, what each one shows (the Networks panel)
+health/       the network doctor: rules kept as data (matrix.json), small detectors, the findings
+analysis/     the devices not yet certain: badges, quality, recurrence, the summary of the last hours
+topology/     what is attached to what, with the proof of each link
 routes/       the HTTP routes (only main.py imports them)
 ```
 
 `python tests/check_structure.py` keeps it honest: every module imports, no import cycle at the top of a file, no route used outside `main.py`, and the count of imports inside functions (the few mutual dependencies between `scan`, `recognition` and `ha`) cannot grow.
 
-**The page, in parts.** The style (`ha.css`) is not a file you edit: the source is in `vedetta/app/frontend/ha/css/`, one file per part of the page, joined in the order of their names (`app/assets.py`) into the one style that the browser receives. The script is a set of ES modules in `vedetta/app/frontend/ha/js/` (`core`, `export`, `deep`, `network`, `tile`, `new-devices`, `log`, `more-info`, `app`, ...): each one imports what it uses of the others and exports what the others use; the page loads `app.js` and the browser follows the imports. `core.js` is the base of everything and imports nothing; the page starts in `app.js`. The files are served one by one and always checked again (ETag, a 304 when nothing changed). A new part is a new file that another module imports. `tests/check_frontend_bundle.py` checks the graph of imports, `tests/check_js_modules.py` the names used and not imported (the parser of Node, nothing to install) and `tests/check_js_boot.js` starts the whole page in Node. No build step and nothing to install.
+**The page, in parts.** The style (`ha.css`) is not a file you edit: the source is in `vedetta/app/frontend/ha/css/`, one file per part of the page, joined in the order of their names (`app/assets.py`) into the one style that the browser receives. The script is a set of ES modules in `vedetta/app/frontend/ha/js/` (`core`, `export`, `deep`, `network`, `tile`, `new-devices`, `log`, `more-info`, `app`, ...): each one imports what it uses of the others and exports what the others use; the page loads `app.js` and the browser follows the imports. `core.js` is the base of everything and imports nothing (the plural forms of the texts live in it too); the page starts in `app.js`. The files are served one by one and always checked again (ETag, a 304 when nothing changed). A new part is a new file that another module imports. `tests/check_frontend_bundle.py` checks the graph of imports, `tests/check_js_modules.py` the names used and not imported (the parser of Node, nothing to install) and `tests/check_js_boot.js` starts the whole page in Node. No build step and nothing to install.
 
 **Changing the style safely.** `node tools/css_compare.js` compares the computed style of every element of the page, in 18 states (dialogs, menus, cards, list view...), light and dark, at 1280 and 390 px, between the committed CSS and your working copy; exit 0 means nothing changed. `python tools/asset_fingerprint.py` prints the length and fingerprint of the joined files, to compare with the files an installed app serves. `python tools/replay_exports.py` replays real exports through the recognition rules, old code against new (the exports are not in the repository).
 
@@ -78,5 +82,5 @@ routes/       the HTTP routes (only main.py imports them)
 build step).
 
 > [!TIP]
-> For developers: `tools/deploy_addon.sh` does steps 4-6 over SSH.
+> For developers: `tools/deploy_addon.sh` copies `vedetta/` to your Home Assistant over SSH and rebuilds it as a local app.
 > `VEDETTA_HA_HOST=<your-ha-address> VEDETTA_HA_KEY=<ssh-key> tools/deploy_addon.sh`

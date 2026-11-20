@@ -49,4 +49,4 @@ for path in (tmp / "broken.json", tmp / "nokey.json", tmp / "missing.json"):
 
 signatures.DATA_PATH = real_path
 signatures._cache["sigs"] = None
-print("TUTTO OK")
+print("ALL OK")

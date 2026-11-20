@@ -184,4 +184,4 @@ for x in (0, 3, 12):
     assert before["uses_twice"](x) == after["uses_twice"](x)
     assert before["uses_clash"](x) == after["uses_clash"](x)
     assert before["uses_call_argument"](x) == after["uses_call_argument"](x)
-print("TUTTO OK")
+print("ALL OK")

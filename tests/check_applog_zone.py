@@ -22,4 +22,4 @@ applog.set_zone_provider(lambda: 1 / 0)
 assert applog._display_time(0) == "1970-01-01 01:00:00"                               # a failing provider falls back to Europe/Rome
 applog.set_zone_provider(None)
 assert applog._display_time(0) == "1970-01-01 01:00:00"
-print("TUTTO OK")
+print("ALL OK")

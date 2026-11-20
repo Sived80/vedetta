@@ -174,4 +174,4 @@ assert any(dict(o["res"][0]["dict"])["places"]["set"] and dict(o["res"][0]["dict
 assert any(dict(o["res"][0]["dict"])["os_family_brand"]["dict"] for o in real) and any(dict(o["res"][0]["dict"])["name_hints"]["tuple"] for o in real)
 assert any(any(v["tuple"] for _, v in dict(o["res"][0]["dict"])["model_hints"]["dict"]) for o in real)
 assert any(any(v["tuple"] for _, v in dict(o["res"][0]["dict"])["vendor_roles"]["dict"]) for o in real)
-print("TUTTO OK")
+print("ALL OK")

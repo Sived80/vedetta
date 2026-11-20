@@ -37,4 +37,4 @@ assert edges.lent_mac_edges(moved, {"9a:42:31:00:00:01": ["old"]}, NOW) == []
 # coverage: how many cards have a known place
 cards = ["rep", "p1", "p2", "p3", "tv", "nas"]
 assert edges.clients_placed(cards, list(found.values())) == 3 / 6
-print("TUTTO OK")
+print("ALL OK")

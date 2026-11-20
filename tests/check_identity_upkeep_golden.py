@@ -322,4 +322,4 @@ assert sum(1 for o in mcd if any(l[0] == "update_scan_info" for l in o["log"])) 
 assert sum(1 for o in mcd if any(l[0] == "update_ip" for l in o["log"]) and any(l[0] == "update_ip" for l in o["log"]) and not any(l[0] == "reassign_device" for l in o["log"])) > 10
 assert sum(1 for o in mcd if any(l[0] == "remove_device" for l in o["log"]) and not any(l[0] == "update_ip" for l in o["log"]) and any(l[0] == "alert" for l in o["log"])) > 100
 assert sum(1 for o in mcd if o["log"] == [["load_devices"]]) > 10
-print("TUTTO OK")
+print("ALL OK")

@@ -76,4 +76,4 @@ try:
     assert ran == ["10.0.0.2"], ran
 finally:
     rescan_background._background_nmap, rescan_background.state.refresh_device = real_bg, real_refresh
-print("TUTTO OK")
+print("ALL OK")

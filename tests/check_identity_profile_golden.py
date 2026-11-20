@@ -129,4 +129,4 @@ assert sum(1 for r in ok if r["dhcp_name"]) > 300 and sum(1 for r in ok if r["dh
 assert sum(1 for r in ok if r["ha"]) > 300 and sum(1 for r in ok if r["ha"] is None) > 300 and any(r["ha"] == (None, None, None) for r in ok)
 assert sum(1 for r in ok if r["first_seen"] == 0) > 300 and sum(1 for r in ok if r["first_seen"]) > 300 and sum(1 for r in ok if r["dhcp_class"]) > 300
 assert sum(1 for r in ok if r["dhcp_class"] == "MSFT 5.0") > 100 and sum(1 for r in ok if r["dhcp_name"] == "host-x") > 20 and sum(1 for r in ok if r["dhcp_name"] == "pc-one") > 20
-print("TUTTO OK")
+print("ALL OK")

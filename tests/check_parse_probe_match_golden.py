@@ -105,4 +105,4 @@ assert text_out == GOLDEN.read_text(encoding="utf-8"), "key order or formatting 
 assert stats["none"] > 300 and stats["ok"] > 2000 and stats["onvif"] > 800 and stats["onvif_types_only"] > 50, "too uniform: %s" % stats
 assert all(stats[k] > 150 for k in ("name", "hardware", "manufacturer", "model", "location")), "too uniform: %s" % stats
 assert 0 < stats["exc"] < 100, stats
-print("TUTTO OK")
+print("ALL OK")

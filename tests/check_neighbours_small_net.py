@@ -89,4 +89,4 @@ async def main() -> None:
 
 
 asyncio.run(main())
-print("TUTTO OK")
+print("ALL OK")

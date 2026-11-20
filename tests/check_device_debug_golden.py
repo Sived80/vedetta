@@ -159,4 +159,4 @@ s = STATS
 assert s["none"] > 100 and s["full"] > 2000 and s.get("exc", 0) == 0, s
 for k in ("cands", "ties", "tls", "dhcp", "scan", "extra", "wol"):
     assert s[k] > 150, (k, s)
-print("TUTTO OK")
+print("ALL OK")

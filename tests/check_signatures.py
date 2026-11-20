@@ -92,4 +92,4 @@ scores = ha_data.type_scores(tie)
 assert scores.get("printer") == scores.get("server") == 4 and ha_data.infer_type(tie) == "generic", scores
 strong = {"ip": "x", "name": "x", "extra": {"mdns_services": "_googlecast._tcp"}, "scanned_ports": [port("22 · ssh", True)]}
 assert ha_data.infer_type(strong) == "media"   # a declared hint always wins
-print("TUTTO OK")
+print("ALL OK")

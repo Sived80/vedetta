@@ -86,4 +86,4 @@ assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", now) is None, "a virt
 macverdict.refresh({"1C:AA:00:00:00:98": "multi_address"})
 assert ids.evaluate("scan-10-0-0-50", "1c:aa:00:00:00:98", now)["verdict"] == "different"
 assert "_shared_macs" not in vars(ids), "the old rule (the last MAC of two cards) is gone"
-print("TUTTO OK")
+print("ALL OK")

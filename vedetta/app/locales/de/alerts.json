@@ -5,5 +5,8 @@
   "alert.dhcp_multiple": "Mehr als ein DHCP-Server im Netzwerk: {servers}. Einer davon ist möglicherweise unerwünscht.",
   "alert.ip_conflict": "Doppelte IP: {ip} antwortet von mehr als einem Gerät ({macs})",
   "alert.duplicate_merged": "{label}: Zwei Karten desselben Handys wurden zusammengeführt ({old} → {new})",
-  "alert.other_device": "Hinter {name} antworten jetzt zwei verschiedene Geräte: {other}"
+  "alert.other_device": "Hinter {name} antworten jetzt zwei verschiedene Geräte: {other}",
+  "alert.device_down": "{label} ({ip}) antwortet nicht",
+  "alert.device_back": "{label} ({ip}) ist nach {minutes} Min. zurück",
+  "notify.test": "Test von Vedetta: Benachrichtigungen funktionieren"
 }

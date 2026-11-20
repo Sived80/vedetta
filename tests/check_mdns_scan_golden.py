@@ -116,4 +116,4 @@ assert sum(1 for o in out if isinstance(o["res"], dict) and len(o["res"]) > 2) >
 assert any(v == "Cucina" for o in out if isinstance(o["res"], dict) for v in o["res"].values())
 assert any("services" in m and len(m["services"]) > 1 for o in out for m in o["meta"].values())
 assert any("model" in m and "services" in m for o in out for m in o["meta"].values())
-print("TUTTO OK")
+print("ALL OK")

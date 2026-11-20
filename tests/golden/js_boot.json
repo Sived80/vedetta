@@ -1,9 +1,10 @@
 {
- "listeners": 78,
- "timers": 3,
- "intervals": 6,
+ "listeners": 89,
+ "timers": 4,
+ "intervals": 7,
  "requests": [
   "/api/ha/devices",
+  "/api/ha/digest",
   "/api/ha/summary"
  ],
  "created": 5,

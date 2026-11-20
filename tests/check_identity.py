@@ -137,4 +137,4 @@ hist.record_presence("old", "10.0.0.7", None, True, now - 30 * 86400)
 flaps = hist.presence_flaps(now - 7 * 86400)
 assert flaps == {"phone": 14, "nas": 1}, flaps
 print("ok: presenza")
-print("TUTTO OK")
+print("ALL OK")

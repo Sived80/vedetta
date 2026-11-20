@@ -109,4 +109,4 @@ async def main():
 
 asyncio.run(main())
 asyncio.wait_for = real_wait_for
-print("TUTTO OK")
+print("ALL OK")

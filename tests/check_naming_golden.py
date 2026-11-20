@@ -57,4 +57,4 @@ assert not any(isinstance(o[k], dict) for o in out for k in ("clean_name", "titl
 ok_clean = sum(1 for o in out if o["clean_name"])
 ok_title = sum(1 for o in out if o["title_name"])
 assert 1200 < ok_clean < 5000 and 300 < ok_title < 4000, "scenarios too uniform (%d, %d)" % (ok_clean, ok_title)
-print("TUTTO OK")
+print("ALL OK")

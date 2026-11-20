@@ -294,4 +294,4 @@ assert sum(1 for o in sto if o["log"] == []) > 100
 assert sum(1 for o in sto if o["res"] == {"exc": "KeyError"}) >= 1
 assert sum(1 for o in bld if isinstance(o["res"], dict) and "d" in o["res"] and o["res"]["d"][3][1]["d"] == []) > 20
 assert sum(1 for o in bld if o["res"] == {"exc": "AttributeError"}) >= 1
-print("TUTTO OK")
+print("ALL OK")

@@ -4,6 +4,7 @@ import { closePopups } from "./core-menu.js";
 import { SKIP_DEEP_KEY, deepOneBusy, runDeep, skipDeepConfirm } from "./deep.js";
 import { closeMore, miHeader, renderMore } from "./more-info.js";
 import { loadGraph } from "./more-graph.js";
+import { relinkTaken } from "./more-attrs.js";
 import { schedule } from "./live.js";
 
 export function renderRename(d) {
@@ -44,17 +45,36 @@ export function renderBrandEdit(d) {
   if (input) { input.focus(); input.select(); }
 }
 // Manual choice of brand or type: stays until switching back to automatic.
-function saveOverride(d, body) {
-  return api("/api/devices/" + encodeURIComponent(d.id) + "/override", { method: "POST", json: body }).then(function () {
-    // the choice is shown at once (the server sends the card again when it has re-read the device); no full reload, which
-    // rebuilt every tile and played all their animations again
-    Object.assign(d, body);
-    S.dirty.ids.add(d.id);
-    S.dirty.more = true;
-    S.dirty.net = true;
-    schedule();
-    return true;
-  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); return false; });
+function showOverride(d, body) {
+  // the choice is shown at once (the server sends the card again when it has re-read the device); no full reload, which
+  // rebuilt every tile and played all their animations again
+  Object.assign(d, body);
+  S.dirty.ids.add(d.id);
+  S.dirty.more = true;
+  S.dirty.net = true;
+  schedule();
+}
+// A switch of the card (the bell, the share) changes at the touch, before the server answers (it took up to a second on a small
+// Home Assistant: the card looked slow); if the save fails it goes back as it was.
+// One save at a time (19/11 review: a quick double tap on the bell or «Share» sent two requests that could cross): each waits for the one before.
+var overrideChain = Promise.resolve();
+function saveOverride(d, body, atOnce) {
+  const before = {};
+  Object.keys(body).forEach(function (k) { before[k] = d[k]; });
+  if (atOnce) showOverride(d, body);
+  const run = function () {
+    return api("/api/devices/" + encodeURIComponent(d.id) + "/override", { method: "POST", json: body }).then(function () {
+      if (!atOnce) showOverride(d, body);
+      return true;
+    }).catch(function () {
+      if (atOnce) showOverride(d, before);
+      snack(t("js.ha.toast.error"), { kind: "error" });
+      return false;
+    });
+  };
+  const done = overrideChain.then(run);
+  overrideChain = done;
+  return done;
 }
 // Type dropdown menu: inside the dialog (it is modal), with the same rules as the other
 // menus (closes with Esc, click outside and scroll; opening one closes the others).
@@ -165,6 +185,7 @@ export function relinkDevice(id, btn) {
   if (btn) btn.disabled = true;
   api("/api/devices/" + encodeURIComponent(id) + "/relink", { method: "POST" }).then(function () {
     snack(t("js.ha.relink.done"), { kind: "success" });
+    relinkTaken(id);
     if (btn) btn.remove();
   }).catch(function () {
     snack(t("js.ha.relink.failed"), { kind: "error" });
@@ -271,10 +292,18 @@ dlg.addEventListener("click", function (e) {
       S.mi.view = "main"; closeMore(); break;
     case "wake": if (d) wakeDevice(d.id); break;
     case "relink": if (d) relinkDevice(d.id, act); break;
-    case "share": if (d) { const share = !d.ha_share; saveOverride(d, { ha_share: share }).then(function (saved) { if (saved) snack(t(share ? "js.ha.share.added" : "js.ha.share.removed"), { kind: "success" }); }); } break;
+    case "watch": if (d) { const watch = !d.watch; saveOverride(d, { watch: watch }, true).then(function (saved) { if (saved) watchSaid(watch); }); } break;
+    case "share": if (d) { const share = !d.ha_share; saveOverride(d, { ha_share: share }, true).then(function (saved) { if (saved) snack(t(share ? "js.ha.share.added" : "js.ha.share.removed"), { kind: "success" }); }); } break;
     case "ignore-confirm": if (d) ignoreDevice(d, act); break;
   }
 });
+// The bell on: it promises an alert only when someone gets the alerts (a recipient in Alerts, or the events on); after the install nobody
+// does, and the notice says where to choose (19/11 review). If the settings cannot be read, the usual notice.
+function watchSaid(watch) {
+  if (!watch) { snack(t("js.ha.watch.removed"), { kind: "success" }); return; }
+  api("/api/sentinel").then(function (c) { return !(c && (c.ha_events || (c.notify_order || []).length)); }, function () { return false; })
+    .then(function (nobody) { snack(t(nobody ? "js.ha.watch.added_nobody" : "js.ha.watch.added"), { kind: nobody ? "warning" : "success" }); });
+}
 dlg.addEventListener("submit", function (e) {
   e.preventDefault();
   const d = S.devices.get(S.open);

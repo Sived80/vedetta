@@ -93,4 +93,4 @@ finally:
     asyncio.open_connection, httpx.AsyncClient.send = real_open, real_send
 assert 80 in WRITES, "the spy saw no request to the web port: it is not watching"
 assert not TOUCHED, "a probe touched a forbidden port: %s" % sorted(set(TOUCHED))
-print("TUTTO OK")
+print("ALL OK")

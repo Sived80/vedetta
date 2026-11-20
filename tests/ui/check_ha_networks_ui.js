@@ -81,7 +81,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(40); };
 
 (async () => {
@@ -167,6 +167,6 @@ const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel
   if (action) { action.click(); await wait(100); }
   check(calls.some((c) => c.url === "/api/ha/networks/remove" && c.body.all === true) && server.adopted_list.length === 0, "the offer takes them all out");
   check(errors.length === 0, "no error in the page" + (errors.length ? ": " + errors[0] : ""));
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
-})().catch((e) => { console.log("FALLITO: " + (e && e.stack || e)); process.exit(1); });
+})().catch((e) => { console.log("FAILED: " + (e && e.stack || e)); process.exit(1); });

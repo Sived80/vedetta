@@ -258,4 +258,4 @@ assert count(lambda lg: not has(lg, "plan")) > 5, "sequences with only cache hit
 assert sum(1 for o in res_all for s in o["out"] if s[0] == "remember" and isinstance(s[1], dict) and "d" in s[1] and s[1]["d"]) > 100
 assert sum(1 for o in res_all for s in o["out"] if s[0] == "remember" and isinstance(s[1], dict) and "exc" in s[1]) > 10
 assert sum(1 for o in res_all if o["state"]["cache"] is not None and any(len(v) for v in [o["state"]["mem"]["d"]])) > 100
-print("TUTTO OK")
+print("ALL OK")

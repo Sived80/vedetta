@@ -119,4 +119,4 @@ want = json.loads(GOLDEN.read_text(encoding="utf-8"))
 for name in SCENARIOS:
     assert got[name] == want[name], name + ": the stream is not what it was\n" + json.dumps(got[name], indent=1)[:1500]
 assert any(e["type"] == "complete" for e in got["mixed"]["events"]) and len(got["mixed"]["events"]) >= 5
-print("TUTTO OK")
+print("ALL OK")

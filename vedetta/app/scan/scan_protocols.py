@@ -148,14 +148,12 @@ _SNMP_DESCR_RE = re.compile(r"(?:System description|sysDescr)\s*:\s*(.+)")
 
 
 async def protocol_scan(ip: str, timeout: int = 12) -> dict:
-    """Queries additional standard protocols, very low-level and open
-    (NetBIOS Name Service and SNMP, the same way printers, managed switches
-    and NAS use to make themselves recognized), instead of proprietary APIs tied to
-    a router brand. On many IoT/consumer devices nothing answers
-    (SNMP community disabled by default, NetBIOS not implemented): in that
-    case it returns an empty dict without errors, which is normal."""
+    """Queries the NetBIOS Name Service (UDP 137), very low-level and open, the way Windows PCs, NAS and printers make themselves
+    recognized. SNMP is not asked here: the SNMP scripts of nmap try the community "public" on their own, and Vedetta never tries a
+    credential on a device. On many IoT/consumer devices nothing answers (NetBIOS not implemented): then it returns an empty dict
+    without errors, which is normal. A "snmp_descr" found by an earlier version stays on its card (rescan keeps the port clues)."""
     xml_text = await _run_nmap([
-        "-sU", "-p", "137,161", "-T4", "--script", "nbstat,snmp-sysdescr,snmp-info",
+        "-sU", "-p", "137", "-T4", "--script", "nbstat",
         "--host-timeout", f"{timeout}s", ip,
     ], semaphore=_LIGHT_NMAP_SEMAPHORE)
     return _parse_protocol_scripts(xml_text)

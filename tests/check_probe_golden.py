@@ -97,4 +97,4 @@ for i, (a, b) in enumerate(zip(out, want)):
         raise AssertionError("scenario %d differs: %s" % (i, json.dumps(diff, default=str)[:800]))
 names = {o["name"] for o in out}
 assert len(names) > 20 and len({o["brand"] for o in out}) > 4 and any(o["is_mobile"] for o in out) and any(o["online"] for o in out), "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

@@ -120,6 +120,7 @@ async def one_case():
     st.follow_links = async_recorder("follow_links")          # 1.0 step P5: the linked cards found elsewhere follow their MAC (none in these worlds)
     st.merge_duplicate_phones = async_recorder("merge_duplicate_phones")
     st.report_ip_conflicts = recorder("report_ip_conflicts")
+    st.name_twins = async_recorder("name_twins")              # 18/11: the twin cards (their own test: check_twins.py); here only its place in the cycle
     st.check_new_devices = async_recorder("check_new_devices")
     st._record_macs = async_recorder("_record_macs")
     for i in rng.sample(IDS + ["old1", "old2"], rng.randrange(0, 5)):
@@ -162,4 +163,4 @@ stats = {"applied": c(lambda e: e[0] == "_apply"), "removed": c(lambda e: e[0] =
          "after_steps": c(lambda e: e[0] == "_record_macs"), "stale_ip": c(lambda e: e[0] == "_apply" and e[1][2].get(e[1][0]["id"]) != e[1][0])}
 for key, low in (("applied", 1500), ("removed", 400), ("probe_fail", 400), ("ready", 2000), ("empty", 150), ("ports", 300), ("after_steps", 2000), ("stale_ip", 100)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

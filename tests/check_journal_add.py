@@ -79,4 +79,4 @@ folder.mkdir()
 reset(folder)
 journal.add("normal", "journal.added")
 assert len(journal._entries) == 1
-print("TUTTO OK")
+print("ALL OK")

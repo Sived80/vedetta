@@ -167,4 +167,4 @@ assert H.macs_for_ip("10.1.0.60")[0]["source"] == "arp" and H.macs_for_ip("10.1.
 assert H.macs_for_ip("10.1.0.63")[0]["source"] == "dhcp" and H.macs_for_ip("10.1.0.63")[0]["mac"] == "AA:BB:CC:00:00:63"
 state_mod.history = maclayer_history = type("Broken", (), {"observe": staticmethod(lambda rows: (_ for _ in ()).throw(RuntimeError("disk")))})()
 asyncio.new_event_loop().run_until_complete(st._record_macs({"10.1.0.62": {"mac": "aa:bb:cc:00:00:62"}}))      # logged, not raised
-print("TUTTO OK")
+print("ALL OK")

@@ -10,12 +10,15 @@ import time
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, Response, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 
 from .. import applog, external, i18n
-from ..ha import analysis_view, ha_data, ha_update, health_view, passive_view
+from ..analysis import digest, quality, recurrence
+from ..networks import registry
+from ..export import inventory
+from ..ha import analysis_view, ha_data, ha_tz, ha_update, health_view, passive_view
 from ..ha.device_debug import device_debug
 from ..storage import health_hidden, journal, passive_store, starhint
 from ..scan import latency
@@ -118,7 +121,14 @@ async def api_ha_health_hidden(request: Request):
     hide, show = body.get("hide", []), body.get("show", [])
     if not isinstance(hide, list) or not isinstance(show, list):
         raise HTTPException(400, "hide and show must be lists")
+    _refuse_too_long(hide, show)
     return {"hidden": await asyncio.to_thread(health_hidden.apply, hide, show)}
+
+
+def _refuse_too_long(*lists: list) -> None:
+    """More ids than the most ever kept is not a choice made on the page: a 400 at once, before a worker thread goes through them."""
+    if any(len(ids) > health_hidden.MAX_HIDDEN for ids in lists):
+        raise HTTPException(400, i18n.t("error.invalid_body"))
 
 
 @router.get("/api/ha/registry/status")
@@ -243,6 +253,82 @@ def _windows(device_ids: list[str], hours: int) -> dict[str, dict]:
 def _is_adopted(device_id: str) -> bool:
     mac = passive_store.mac_of(device_id)
     return bool(mac) and mac in passive_store.snapshot()["adopted"]
+
+
+@router.get("/api/ha/recurrence/{device_id}")
+async def api_ha_recurrence(device_id: str):
+    """How the device comes and goes over the last 30 days (analysis/recurrence.py): its class, the active days and the strip."""
+    if device_id not in state.devices and not _is_adopted(device_id):
+        raise HTTPException(404, "Dispositivo non trovato")
+    return await asyncio.to_thread(_recurrence, device_id)
+
+
+def _recurrence(device_id: str) -> dict:
+    now, tz = time.time(), ha_tz.zone()
+    segments = history.presence_segments(device_id, recurrence.window_start(now, tz), now)["segments"]
+    return recurrence.recurrence(segments, history.first_presence([device_id]).get(device_id), now, tz)
+
+
+@router.get("/api/ha/quality/{device_id}")
+async def api_ha_quality(device_id: str):
+    """The quality of the link over 7 days (analysis/quality.py): typical time and spread, the last value against them, the trend,
+    the changes in 24 hours and the longest outage."""
+    if device_id not in state.devices and not _is_adopted(device_id):
+        raise HTTPException(404, "Dispositivo non trovato")
+    return await asyncio.to_thread(_quality, device_id)
+
+
+def _quality(device_id: str) -> dict:
+    now = time.time()
+    since = now - 7 * 86400
+    return quality.quality(history.latency_points(device_id, since, now), history.presence_segments(device_id, since, now)["segments"], now)
+
+
+@router.get("/api/ha/identity/{device_id}")
+async def api_ha_identity(device_id: str):
+    """What Vedetta called the card over the last 90 days: the changes of name and brand, newest first, with their source."""
+    if device_id not in state.devices and not _is_adopted(device_id):
+        raise HTTPException(404, "Dispositivo non trovato")
+    return {"changes": await asyncio.to_thread(history.identity_changes, device_id)}
+
+
+@router.get("/api/ha/digest")
+async def api_ha_digest(hours: int = 12):
+    """The summary of the last hours (analysis/digest.py): new, back after a long absence, gone silent; only the changes of the window."""
+    hours = _hours(hours)
+    return await asyncio.to_thread(_digest, hours, dict(state.devices))      # a copy taken on the loop: the cycle adds and removes cards meanwhile
+
+
+def _digest(hours: int, devices: dict) -> dict:
+    now = time.time()
+    start = now - hours * 3600
+    ids = list(devices)
+    first = history.first_presence(ids)
+    cards = {i: {"first_seen": first.get(i), "online": bool(d.get("online")), "last_seen": now if d.get("online") else d.get("last_seen"),
+                 "is_mobile": bool(d.get("is_mobile")), "watched": registry.may_add(d.get("ip"))} for i, d in devices.items()}
+    out = digest.digest(cards, history.returns_after(start, now, digest.DEFAULT_BACK_S), start, now, installed_at=history.first_event_ts())
+    out["labels"] = {i: (devices[i].get("name") or devices[i].get("ip") or i) if i in devices else i
+                     for i in {*out["new"], *out["silent"], *(b["id"] for b in out["back"])}}
+    return out
+
+
+@router.get("/api/ha/inventory")
+async def api_ha_inventory(request: Request, format: str = "csv", hide: int = 0):  # noqa: A002  the name of the query parameter
+    """The person's inventory (export/inventory.py): CSV or JSON, with «hide MAC and IP» (hide=1)."""
+    if format not in ("csv", "json"):
+        raise HTTPException(400, "Valore non valido: format")
+    i18n.use_request(request)
+    body = await asyncio.to_thread(_inventory, format, bool(hide), state.sorted_devices())     # the cards read on the loop
+    media = "text/csv; charset=utf-8" if format == "csv" else "application/json; charset=utf-8"
+    name = time.strftime("vedetta-inventory-%Y%m%d.") + format
+    return Response(body, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+def _inventory(fmt: str, hide: bool, devices: list[dict]) -> str:
+    cards = [{**c, "area": ((d.get("ha_registry") or {}).get("area"))} for c, d in zip(ha_data.compact_all(devices), devices)]
+    table = inventory.rows(cards, history.first_presence([c["id"] for c in cards]), time.time())
+    table = inventory.hidden(table) if hide else table
+    return inventory.to_csv(table) if fmt == "csv" else inventory.to_json(table)
 
 
 @router.get("/api/ha/history/{device_id}")

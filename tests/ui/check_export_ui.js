@@ -28,7 +28,7 @@ const calls = [];                                    // what the window asked of
 // the server of the test: the estimate, and a job whose answers the test decides
 const INFO = { daily: Array.from({ length: 90 }, (_, i) => 200000 + (i % 7) * 50000), base: 800000, ratio: 0.3, seal_factor: 1.34, limit: 20 * 1024 * 1024, horizon: 90, flagged: 0 };
 let job = null;                                      // the snapshot the server answers while polling
-let allSizeBig = false;
+let fileOpen = false;                     // a request for the file is open
 let infoMode = "ok";                                 // what the estimate does: "ok", "fail" (the request is refused) or "hang" (it never answers)
 const dom = new JSDOM(html, {
   runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc, url: "http://localhost/ha?lang=" + lang,
@@ -45,9 +45,14 @@ const dom = new JSDOM(html, {
       const ok = (b, headers) => Promise.resolve({ ok: true, status: 200, headers: { get: (k) => (headers || {})[k] || null }, blob: () => Promise.resolve(new win.Blob(["x"])), json: () => Promise.resolve(b) });
       if (url.startsWith("/api/export/info") && infoMode === "fail") return Promise.reject(new Error("offline"));
       if (url.startsWith("/api/export/info") && infoMode === "hang") return new Promise(() => {});
-      if (url.startsWith("/api/export/info")) { const i = JSON.parse(JSON.stringify(INFO)); if (allSizeBig) i.daily = i.daily.map((v) => v * 40); return ok(i); }
+      if (url.startsWith("/api/export/info")) { return ok(JSON.parse(JSON.stringify(INFO))); }
       if (url === "/api/export/jobs" && method === "POST") return ok(job = Object.assign({ id: "j1", status: "running", steps: ["collect"], items: [], items_total: 0, fixed: 0 }, { dest: body.dest }));
-      if (/^\/api\/export\/jobs\/j1\/file/.test(url)) return ok({}, { "Content-Disposition": 'attachment; filename="vedetta-report-ab12cd.txt"' });
+      if (/^\/api\/export\/jobs\/j1\/file/.test(url)) {
+        // Like the server: the file is handed out once; a second request while the first is open is refused (409).
+        if (fileOpen) return Promise.resolve({ ok: false, status: 409, headers: { get: () => null }, json: () => Promise.resolve({ detail: "busy" }) });
+        fileOpen = true;
+        return new Promise((r) => setTimeout(r, 80)).then(() => { fileOpen = false; return ok({}, { "Content-Disposition": 'attachment; filename="vedetta-report-ab12cd.txt"' }); });
+      }
       if (/^\/api\/export\/jobs\/j1\/choices/.test(url)) { job = Object.assign({}, job, { status: "running", steps: job.steps.concat(["seal"]) }); return ok(job); }
       if (/^\/api\/export\/jobs\/j1/.test(url) && method === "DELETE") return ok({ ok: true });
       if (/^\/api\/export\/jobs\/j1/.test(url)) return ok(job);
@@ -67,7 +72,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(20); };
 const dlg = () => q("#exportdlg");
 const text = () => dlg().textContent;
@@ -88,11 +93,13 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   check(qa(".xp-col").length === 20 && !!q(".xp-days.intro") && !!q(".xp-finger"), "venti colonne e il dito che mostra come toccarle");
   check(qa(".xp-col.in").length === 7, "di partenza: gli ultimi 7 giorni");
   check(!!q(".xp-meter") && /20/.test(q(".xp-meter + .xp-sub").textContent), "per lo sviluppatore c'e' il limite di 20 MB");
-  check(qa(".xp-segm button").length === 4 && q("[data-xp='p:7']").getAttribute("aria-pressed") === "true", "tasti 2 / 7 / 20 giorni e Tutto, con il 7 premuto");
-  await click("[data-xp='p:20']");
-  check(!q(".xp-finger") && !q(".xp-days.intro"), "il dito si vede una volta sola: dal disegno successivo non c'e' piu'");
-  check(qa(".xp-col.in").length === 20 && /20/.test(q(".xp-read span").textContent), "20 giorni: tutte le colonne e il riepilogo lo dice");
+  check(qa(".xp-segm button").length === 2 && q("[data-xp='p:7']").getAttribute("aria-pressed") === "true" && !q("[data-xp='p:20'], [data-xp='all']"),
+    "solo i tasti 2 e 7 giorni (niente 20 ne' Tutto: pesano troppo per un HA piccolo), con il 7 premuto");
   const col = (n) => qa(".xp-col")[n];                 // the columns are drawn again after every tap
+  await click(col(0));
+  await click(col(19));
+  check(!q(".xp-finger") && !q(".xp-days.intro"), "il dito si vede una volta sola: dal disegno successivo non c'e' piu'");
+  check(qa(".xp-col.in").length === 20 && /20/.test(q(".xp-read span").textContent), "20 giorni toccando le colonne: tutte le colonne e il riepilogo lo dice");
   await click(col(10));
   check(!!q(".xp-col.pend"), "il primo tocco: la colonna lampeggia finche' non tocchi la seconda");
   await click(col(14));
@@ -108,8 +115,6 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   check(q("[data-xp='older']").disabled && qa(".xp-col.nod").length >= 0, "il grafico non va oltre i 90 giorni");
   await click("[data-xp='p:7']");
   check(q("[data-xp='newer']").disabled, "un tasto dei periodi riporta il grafico a oggi");
-  await click("[data-xp='all']");
-  check(q("[data-xp='all']").getAttribute("aria-pressed") === "true" && /Tutto|whole/.test(q(".xp-read b").textContent) && !q(".xp-popup, .ovl"), "Tutto: si seleziona e basta, nessun pop-up; poi si preme Esporta");
   await click("[data-xp='p:2']");
 
   // --- 3. Annulla goes back one step, "for me" has no limit
@@ -118,16 +123,10 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   await click("[data-xp='dest:me']");
   check(!q(".xp-meter") && /chiaro|plain/i.test(q(".xp-chosen").textContent), "per me: in chiaro, nessun limite di dimensione");
   await click("[data-xp='cancel']");
-  allSizeBig = true;
   await click("[data-xp='cancel']");                   // closes: the first screen
   check(!dlg().hasAttribute("open"), "Annulla nella prima schermata chiude");
   await openWindow();
-  await click("[data-xp='dest:dev']");
-  check(q("[data-xp='all']").disabled, "per lo sviluppatore, se tutto lo storico supera il limite 'Tutto' e' spento");
-  await click("[data-xp='cancel']");
   await click("[data-xp='dest:me']");
-  check(!q("[data-xp='all']").disabled, "per me 'Tutto' e' sempre disponibile");
-  allSizeBig = false;
 
   // --- 4. for me: three steps, the file
   await click("[data-xp='p:7']");
@@ -140,8 +139,11 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   await wait(700);
   check(qa(".xp-step.done").length === 3 && /non mascherati|not masked/.test(q(".xp-res").textContent), "per me: tre passi fatti, in chiaro e non mascherato");
   await click("[data-xp='save']");
-  await wait(60);
-  check(reqs("/api/export/jobs/j1/file").length === 1 && calls.some((c) => c.url === "download:vedetta-report-ab12cd.txt"), "'Salva il file' scarica il file una volta");
+  check(q("[data-xp='save']").disabled, "mentre il file arriva il tasto «Salva» e' spento");
+  q("[data-xp='save']").click();                 // a double click: the second one arrives before the answer
+  await wait(160);
+  check(reqs("/api/export/jobs/j1/file").length === 1 && calls.filter((c) => c.url === "download:vedetta-report-ab12cd.txt").length === 1, "'Salva il file' (anche con un doppio clic) chiede e scarica il file una volta");
+  check(!qa(".snack.error").length, "e nessun «Esportazione non riuscita» accanto al file scaricato");
   check(q("[data-xp='save']").disabled, "dopo il salvataggio il tasto e' spento");
   await click("[data-xp='finish']");
   check(!dlg().hasAttribute("open"), "Chiudi chiude la finestra");
@@ -208,6 +210,6 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

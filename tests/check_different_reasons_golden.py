@@ -59,4 +59,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 res = [o[2] for o in out]
 assert set(counts) == {"dhcp_family", "group", "dhcp_name", "mdns_name", "ha_model"} and min(counts.values()) > 300, counts
 assert sum(1 for r in res if r == []) > 300 and sum(1 for r in res if isinstance(r, list) and len(r) >= 3) > 100, "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

@@ -1,130 +1,75 @@
 <div align="center">
 
-<img src="docs/images/banner.svg" alt="Vedetta — know every device on your network" width="100%">
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/radar-dark.svg"><img src="docs/images/radar-light.svg" alt="Vedetta: your router sees addresses, Vedetta sees devices. A radar finds and names the devices of every network and VLAN, and checks the health of the network" width="100%"></picture>
 
-# Your router says “Unknown device”.<br>Vedetta tells you what it is — and shows you why.
-
-**A Home Assistant app that finds the devices on your LAN, works out what each one is, and shows the evidence.**
-
-<a href="docs/PRIVACY.md"><img src="docs/images/icon-no-cloud.svg" alt="No cloud" title="No cloud" width="96"><img src="docs/images/icon-no-accounts.svg" alt="No accounts" title="No accounts" width="96"><img src="docs/images/icon-no-telemetry.svg" alt="No telemetry" title="No telemetry" width="96"><img src="docs/images/icon-read-only.svg" alt="Read-only access to Home Assistant" title="Read-only access to Home Assistant" width="96"><img src="docs/images/icon-masked-exports.svg" alt="Exports masked before they are created" title="Exports masked before they are created" width="96"><img src="docs/images/icon-open-source.svg" alt="Open source (MIT)" title="Open source (MIT)" width="96"></a>
+**A Home Assistant app that finds, names and follows every device on your network, and keeps an eye on its health.**
 
 <a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.13.2-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-607d8b?style=for-the-badge" alt="License" height="20"></a> <a href="https://scorecard.dev/viewer/?uri=github.com/Sived80/vedetta"><img src="https://api.scorecard.dev/projects/github.com/Sived80/vedetta/badge?style=for-the-badge" alt="OpenSSF Scorecard" height="20"></a> <a href="https://sived80.github.io/vedetta/"><img src="https://img.shields.io/badge/%F0%9F%8C%90%20Live%20Demo-try%20it%20in%20your%20browser-ff9800?style=for-the-badge" alt="Live Demo" height="20"></a>
 
-**[🌐 Try Live Demo](https://sived80.github.io/vedetta/) · [Install in 2 minutes](#install) · [How it explains itself](#show-your-work) · [Report a device](https://github.com/Sived80/vedetta/issues/new/choose) · [Docs](#documentation) · [Roadmap](docs/ROADMAP.md)**
+**[Live demo](https://sived80.github.io/vedetta/) · [Install](#install) · [What's new](vedetta/CHANGELOG.md) · [Docs](#docs)**
 
-> 🌐 **[Try the live interactive demo](https://sived80.github.io/vedetta/)** — experience Vedetta with 39 household devices directly in your browser. No installation or setup required.
+🌐 **[Live demo](https://sived80.github.io/vedetta/)**: 39 household devices in your browser, nothing to install.
+
+<a href="docs/PRIVACY.md"><img src="docs/images/icon-no-cloud.svg" alt="No cloud" title="No cloud" width="96"><img src="docs/images/icon-no-accounts.svg" alt="No accounts" title="No accounts" width="96"><img src="docs/images/icon-no-telemetry.svg" alt="No telemetry" title="No telemetry" width="96"><img src="docs/images/icon-read-only.svg" alt="Read-only access to Home Assistant by default" title="Read-only access to Home Assistant by default: it writes only when you turn on alerts" width="96"><img src="docs/images/icon-masked-exports.svg" alt="Exports masked before they are created" title="Exports masked before they are created" width="96"><img src="docs/images/icon-never-logs-in.svg" alt="Never logs in to your devices" title="Never logs in to your devices or tries a password; SNMP reads your router only with the community you write" width="96"></a>
 
 </div>
 
-<p align="center"><img src="docs/images/hero.png" alt="Vedetta dashboard on a computer in tile view, dark theme, with the phone list view in light theme in front of it" width="100%"></p>
-<p align="center"><sub>Tiles or list · light or dark · one tap to the evidence behind every name</sub></p>
+<table width="100%">
+<tr><td width="33%"><b>Names every device</b><br>Name, brand, model, type. Your names are never overwritten.</td><td width="33%"><b>Follows it, not its address</b> · <i>new</i><br>A new address keeps the same card.</td><td width="33%"><b>Its own web page</b><br>One tap to the device's page.</td></tr>
+<tr><td><b>Network doctor</b><br>Conflicts, drops, restarts, a slow router.</td><td><b>Every network and VLAN</b> · <i>new</i><br>What it sees on each, and how to see more.</td><td><b>Shows its work</b><br>Every clue behind a name. Doubt stays doubt.</td></tr>
+</table>
 
----
+## How it recognizes a device
 
-## What is Vedetta
-
-You have a few dozen devices on your network. Your router lists their IP addresses and, if you are lucky, a name like `Android_7F3A` or “Unknown device”. Home Assistant knows some of them. The rest are a guess.
-
-Vedetta is the lookout of your LAN. It does three things, in this order:
-
-| 🔭 Discover | 🧠 Recognize | 🔎 Explain |
-|---|---|---|
-| Finds every device on your network, with presence and latency history. | Works out name, brand, model and category from many weak clues, and stays honest when it does not know. | For every answer, shows the clues behind it and how much each one counted. |
-
-It is a Home Assistant **app** (not a custom integration): install it from the App store, no YAML. It reads Home Assistant’s registry to learn the names and rooms you already chose, and publishes back **only what you decide to share**.
-
-## Not another network scanner
-
-A scanner gives you a list. Vedetta gives you an *answer* and the *reason*. The same device, seen two ways (an example):
-
-| | A typical scanner | Vedetta |
-|---|---|---|
-| **What you see** | `192.168.1.23` · `AA:BB:CC:…` · Espressif Inc. | **Kitchen light** · Shelly · smart switch |
-| **When it is not sure** | “Unknown device”, `Android_7F3A` | It says so and keeps the device in *Other* |
-| **Why that name** | Not explained | Every clue behind it is one tap away, with its weight |
-| **What you set by hand** | Can be lost at the next scan | Is never overwritten |
-
-## Show your work
-
-Every clue is weak on its own. Vedetta weighs them together, counts a repeated fact once, and shows doubt as doubt. The weights are public.
+Many weak clues, weighed together. A repeated fact counts once.
 
 <p align="center"><img src="docs/images/how-it-works.svg" alt="Ten weak clues are fused by family into name, brand, model, category and area; your own choice is never overwritten, and debug mode shows the reason" width="100%"></p>
 
-<p align="center"><img src="docs/images/evidence-popup.png" alt="The pop-up of the Type shows each clue with its weight and the hypotheses that were rejected" width="560"></p>
-<p align="center"><sub>Tap the (i) next to a name, brand or type: every clue, its weight, and what was ruled out</sub></p>
-
 Sources, weights and certainty bars: [Recognition](docs/RECOGNITION.md).
-<div align="center">
 
-## 🐞 A device is wrong or unknown? Tell me.
+## See it
 
-<a href="https://github.com/Sived80/vedetta/issues/new/choose"><img src="docs/images/report-device.svg" alt="Report a device" height="40"></a>
+<p align="center"><img src="docs/images/hero.png" alt="Vedetta dashboard on a computer in tile view, dark theme, with the phone list view in light theme in front of it" width="100%"></p>
+<p align="center"><sub>Tiles or list · light or dark · computer or phone · <a href="https://sived80.github.io/vedetta/">Live demo</a></sub></p>
 
-Every report is read and becomes a fix or a new recognition rule, and Vedetta is updated. Attach the encrypted export: it is safe to post.
-
-<sub>Want to do more? [Teach it a device](docs/DEVELOPMENT.md).</sub>
-
-</div>
-
-> [!IMPORTANT]
-> **Give it a day or two.** Right after the install Vedetta only knows what it could see in the first minutes. Phones sleep, names are announced now and then, and the presence history is what tells a phone with a changing MAC from a fixed device. A deep search also runs by itself every night at 03:00. Please leave it running for **24 hours (48 is better)** before judging a device. [Why, and what to do if one is still wrong](docs/TROUBLESHOOTING.md).
+Also inside: sleeping phones remembered · presence and latency history · three search levels, you choose the risk · Home Assistant and optional MQTT. [How it works](docs/HOW_IT_WORKS.md)
 
 ## Install
 
+1. **Add** the repository:<br><a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta"><img src="docs/images/button-add.svg" alt="Add to my Home Assistant" height="40"></a>
+2. **Install**: find **Vedetta** in the App store.
+3. **Start**: press **Start**, then **Scan network**.
+
+Or add `https://github.com/Sived80/vedetta` by hand in the App store. [Step by step](docs/INSTALLATION.md)
+
 > [!NOTE]
-> Needs **Home Assistant OS** or **Supervised** (Settings shows **Apps**). Home Assistant *Container* or *Core* has no app store.
+> Needs **Home Assistant OS** or **Supervised**. *Container* and *Core* have no App store.
 
-1. Add the repository with this button, or add `https://github.com/Sived80/vedetta` by hand in the App store:
+> [!IMPORTANT]
+> **Give it a day or two**: phones sleep and names are announced now and then. [Why](docs/TROUBLESHOOTING.md)
 
-   [![Add the Vedetta repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta)
-2. Search **Vedetta** in the App store and press **Install**.
-3. Switch on **Show in sidebar**, press **Start**, open **Vedetta** and press **Scan network**.
+⭐ Names your devices right? A star helps others find it. *Watch › Custom › Releases* tells you about new versions.
 
-Step by step, the local-app option and the first launch: [Installation](docs/INSTALLATION.md).
+<a href="https://github.com/Sived80/vedetta/issues/new/choose"><img src="docs/images/button-report.svg" alt="Report a device" height="40"></a><br>
+A device is wrong or unknown? Every report becomes a fix. Want to do more? [Teach it a device](docs/DEVELOPMENT.md)
 
-⭐ If Vedetta names your devices right, a star helps others find it. *Watch → Custom → Releases* tells you when a new version comes out.
+<a href="https://ko-fi.com/B8D228NOWZ"><img src="docs/images/button-kofi.svg" alt="Support on Ko-fi" height="40"></a><br>
+Free and open source, and it stays that way.
 
-## ☕ Support the project
+## Tested
 
-Vedetta is free and open source, and it stays that way. If it saved you time, you can help to keep it going:
+Real exports replayed and a virtual LAN, every release. [How](docs/TESTING.md)
 
-<p align="center"><a href="https://ko-fi.com/B8D228NOWZ"><img height="36" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Vedetta on Ko-fi"></a></p>
+## Docs
 
-## Gallery
+**Start** · [Installation](docs/INSTALLATION.md) · [How it works](docs/HOW_IT_WORKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)<br>
+**Inside** · [Recognition](docs/RECOGNITION.md) · [Networks and VLANs](docs/NETWORKS.md) · [Network doctor](docs/NETWORK_DOCTOR.md) · [Home Assistant](docs/HOME_ASSISTANT.md) · [MQTT](docs/MQTT.md)<br>
+**About** · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md) · [How it is tested](docs/TESTING.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](vedetta/CHANGELOG.md)
 
-<p align="center"><img src="docs/images/rotation.svg" alt="Vedetta dashboard on a computer with the phone view in front of it, in light and dark theme and in tile and list view, changing one after the other" width="100%"></p>
-<p align="center"><sub>Tiles or list · light or dark · computer or phone</sub></p>
+## Your language?
 
-## Also inside
+English · Italiano · Deutsch · Čeština (thanks to the community). Adding yours takes no code: copy the `en` folder. [How](docs/DEVELOPMENT.md#add-a-language)
 
-📱 Sleeping phones remembered · 📊 Presence and latency history · 🔭 Three search levels, you choose the risk · 🏠 Home Assistant and optional MQTT · 🌐 [Devices on other networks](docs/HA_NETWORKS.md), seen through Home Assistant · 🩺 A network doctor: duplicate addresses, repeated restarts, devices that drop together, a slower gateway
+## License and credits
 
-All the details: [How Vedetta works](docs/HOW_IT_WORKS.md).
-
-## 🌍 Your language?
-
-Vedetta speaks **English, Italian, Czech and German** (thanks to the community for the Czech; the German is a first translation, not yet read by a native speaker). Adding yours takes no code: copy the `en` folder, translate the texts, open a pull request. [Step by step →](docs/DEVELOPMENT.md#add-a-language)
-
-## Documentation
-
-| Page | What it covers |
-|---|---|
-| [Installation](docs/INSTALLATION.md) | Both install options, first launch, updating, permissions |
-| [How Vedetta works](docs/HOW_IT_WORKS.md) | What it is, features, search methods |
-| [Recognition](docs/RECOGNITION.md) | Sources, weights, certainty bars, phones |
-| [Home Assistant](docs/HOME_ASSISTANT.md) · [MQTT](docs/MQTT.md) | The two directions of the integration, MQTT setup |
-| [Networks seen by Home Assistant](docs/HA_NETWORKS.md) | Showing the devices of other networks (VLANs) through your router integration, without probing them |
-| [Privacy and safety](docs/PRIVACY.md) | What stays local, exports, reporting a mistake |
-| [Troubleshooting](docs/TROUBLESHOOTING.md) | The first 24 hours, common problems |
-| [Roadmap](docs/ROADMAP.md) | What is done, with date and version, and what is planned |
-| [How Vedetta is tested](docs/TESTING.md) | Real exports replayed, a virtual LAN, the numbers of the last release |
-| [Development](docs/DEVELOPMENT.md) | Teach it a new device or logo, tests, stack |
-| [Changelog](vedetta/CHANGELOG.md) | Every version |
-
-## 📜 License and credits
-
-Vedetta is open source under the **[MIT License](LICENSE)**. Everything it builds on is listed, with its license, in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-- 🧰 **Nmap** and **arp-scan** are installed from the Alpine package repository when the app is built on *your* Home Assistant. They are **not included** in this repository; Vedetta runs them as separate programs.
-- 🏭 MAC vendor names come from the public **IEEE registries**; icons from **Material Design Icons** (Apache-2.0).
-- ™️ Brand and product names are used only to describe the devices Vedetta recognizes. This project is not affiliated with or endorsed by any of them.
+[MIT License](LICENSE). Everything it builds on, with its license: [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). Nmap and arp-scan are installed from Alpine on your Home Assistant, not shipped here. MAC vendors from the IEEE registries, icons from Material Design Icons. Brand names only describe devices; not affiliated with any of them.

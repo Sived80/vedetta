@@ -44,7 +44,7 @@ def _link_counts(r: dict) -> dict | None:
 
 def _extra(r: dict) -> dict | None:
     """What a run measured besides its verdict (P5): the share of time online of the phones behind the extenders, how long a card took to follow its device."""
-    got = {k: r[k] for k in ("online_share", "followed_s", "alerts") if isinstance(r, dict) and k in r}
+    got = {k: r[k] for k in ("online_share", "followed_s", "alerts", "tv_in_button", "cam_in_button", "tv_listed_new", "rows") if isinstance(r, dict) and k in r}
     return got or None
 
 
@@ -114,6 +114,28 @@ def _s37(r: dict) -> tuple[str, str]:
     return ("pass", "") if r["listed_s"] <= r["round_s"] + 60 else ("fail", "listed after %s s" % r["listed_s"])
 
 
+def _s39(r: dict) -> tuple[str, str]:
+    """P10: the linked phone rotates its MAC: the link passes to the new MAC (identity), the card follows, the new MAC is never a new device."""
+    if not r["usable"]:
+        return "fail", "the phone's link never became usable"
+    if r["listed_new"]:
+        return "fail", "the new MAC was listed as a new device"
+    if r["link"] != [r["new_mac"], "identity"]:
+        return "fail", "the link did not pass to the new MAC: %s" % r["link"]
+    return ("pass", "") if r["followed_s"] is not None else ("fail", "the card did not follow the phone to its new address")
+
+
+def _s40(r: dict) -> tuple[str, str]:
+    """P10: two phones of the same model are never one device: Anna's link and card stay, Luca's phone is new."""
+    if not r["usable"]:
+        return "fail", "the phone's link never became usable"
+    if not r["link"] or r["link"][0] != r["old_mac"]:
+        return "fail", "Anna's link moved: %s" % r["link"]
+    if r["card_end"] and r["card_end"]["ip"] == r["luca_address"]:
+        return "fail", "Anna's card moved to Luca's phone"
+    return ("pass", "") if r["luca_listed_s"] is not None else ("fail", "Luca's phone was never listed as new")
+
+
 def _s38(r: dict) -> tuple[str, str]:
     """P9: the TV that stopped answering is still in the list of the button, seen before the press (from the inventory)."""
     if r["first_listed_s"] is None:
@@ -121,6 +143,46 @@ def _s38(r: dict) -> tuple[str, str]:
     if not r["in_button"]:
         return "fail", "the button does not list the quiet TV"
     return ("pass", "") if (r["seen_before_press_s"] or 0) > 0 else ("fail", "no time of the last sight")
+
+
+def _s41(r: dict) -> tuple[str, str]:
+    """P11: the network behind the router. The devices answering at the start listed without alerts (starting point), the newcomer listed and alerted exactly
+    once (also after one more sweep), the device that never answers ping never listed. ICMP must cross the router of the simulator, or the run says nothing."""
+    if not (r["crossing"]["ping"] and not r["crossing"]["silent_ping"]):
+        return "fail", "the simulated router: ping %s, silent device answered %s" % (r["crossing"]["ping"], r["crossing"]["silent_ping"])
+    if r["start_listed_s"] is None:
+        return "fail", "never listed as new: the devices behind the router at the start (%s)" % ",".join(r["start_ips"])
+    early = {ip: n for ip, n in r["alerts"].items() if ip != r["new_ip"]}
+    if early:
+        return "fail", "the starting point was alerted: %s" % early
+    if r["new_listed_s"] is None:
+        return "fail", "never listed as new: the device that joined behind the router"
+    if r["silent_ip"] in r["ever_listed"]:
+        return "fail", "the device that never answers ping was listed"
+    got = r["alerts"].get(r["new_ip"], 0)
+    return ("pass", "") if got == 1 else ("fail", "%d new-device alerts for the device that joined" % got)
+
+
+def _s43(r: dict) -> tuple[str, str]:
+    """Issue #35: the devices on at install (the starting point, no card) are in the list of the button "Scan network", the one silent to
+    broadcast ARP too (heard by the system when it talks to Home Assistant); no card was made by itself."""
+    if r["cards"]:
+        return "fail", "%d cards made without the person" % r["cards"]
+    if not r["tv_in_button"]:
+        return "fail", "the device on at install is not in the list of the button (%d rows)" % r["rows"]
+    return ("pass", "") if r["cam_in_button"] else ("fail", "the device silent to broadcast (issue #35) is not in the list of the button")
+
+
+def _s42(r: dict) -> tuple[str, str]:
+    """K1: the card behind the router online, offline when its device is unplugged, online again when it is back. Ping must cross the router of the simulator."""
+    if not r["crossing"]:
+        return "fail", "ping does not cross the simulated router"
+    if r["card"] is None:
+        return "fail", "the card behind the router was not added"
+    for key, what in (("online_s", "online at the start"), ("offline_s", "offline once unplugged"), ("back_s", "online again once plugged back")):
+        if r[key] is None:
+            return "fail", "never %s (the card kept its state: %s)" % (what, r["card_end"])
+    return "pass", ""
 
 
 def _s33(r: dict) -> tuple[str, str]:
@@ -182,6 +244,11 @@ CHECKS = {
     "S36": _s36,
     "S37": _s37,
     "S38": _s38,
+    "S39": _s39,
+    "S40": _s40,
+    "S41": _s41,
+    "S42": _s42,
+    "S43": _s43,
     "S30": _s30,
     "S4": lambda r: ("fail", _no_conflict_stored(r)) if _no_conflict_stored(r) else
           ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
@@ -212,7 +279,8 @@ PLAN = [
     ("S13", 2, lambda n: {}), ("S15", 3, lambda n: {}), ("S16", 3, lambda n: {}), ("S17", 1, lambda n: {}),
     ("S13L", 2, lambda n: {}), ("S30", 1, lambda n: {"old_code_dir": OLD_CODE_DIR}),
     ("S11L", 2, lambda n: {}), ("S31", 2, lambda n: {}), ("S32", 2, lambda n: {}), ("S33", 1, lambda n: {}),
-    ("S35", 2, lambda n: {}), ("S36", 2, lambda n: {}), ("S37", 2, lambda n: {}), ("S38", 2, lambda n: {}),
+    ("S35", 2, lambda n: {}), ("S36", 2, lambda n: {}), ("S37", 2, lambda n: {}), ("S38", 2, lambda n: {}), ("S39", 2, lambda n: {}), ("S40", 2, lambda n: {}),
+    ("S41", 1, lambda n: {}), ("S42", 1, lambda n: {}), ("S43", 1, lambda n: {}),
 ]
 OLD_CODE_DIR: str | None = None        # set by --old-code-dir (S30)
 FUNCTIONS = {"S10D": sc.s10_two_extenders, **{k: v for k, v in sc.SCENARIOS.items() if k != "S10D"}}
@@ -242,7 +310,7 @@ def _with_links(row: tuple, result: dict) -> tuple:
     return name, verdict, note, _link_counts(result)
 
 
-SLOW_FIRST = ("S17", "S15", "S16")       # about 95, 20 and 18 minutes: started first, so the campaign does not end waiting on one long run
+SLOW_FIRST = ("S17", "S41", "S15", "S16")       # about 95, 35-50, 20 and 18 minutes: started first, so the campaign does not end waiting on one long run
 LETTERS = "abcdefghijklmnop"
 # The ceiling: never more runs at once than half the processor threads, and never more than 8, so the PC stays usable; every run also has a lower priority (nice 10).
 MAX_JOBS = max(1, min(8, (os.cpu_count() or 2) // 2))

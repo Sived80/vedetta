@@ -153,4 +153,4 @@ assert all(sources.get(s, 0) > 150 for s in ("dhcp", "name", "web", "declared", 
 assert confs.get("low", 0) > 50 and confs.get("medium", 0) > 150 and confs.get("high", 0) > 500 and confs.get(None, 0) > 100, confs
 assert all(roles.get(r, 0) > 100 for r in ("brand", "dual", "component", "virtual", None)), roles
 assert any(r["brand"] == "" and r["source"] == "name" for r in res_out) and any(r["brand"] == "" and r["source"] == "dhcp" for r in res_out)
-print("TUTTO OK")
+print("ALL OK")

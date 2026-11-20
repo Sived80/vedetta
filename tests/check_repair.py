@@ -40,4 +40,4 @@ class Stubborn(anonymize.Anonymizer):
 s = Stubborn()
 text, n, left = s.repair("mail a.b@example.com")
 assert text == "mail a.b@example.com" and n == 0 and left == [("email address", "a.b@example.com")], (text, n, left)
-print("TUTTO OK")
+print("ALL OK")

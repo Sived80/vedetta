@@ -1,7 +1,7 @@
-import { COMPACT, LANG, REDUCED, ago, api, esc, icon, ipKey, nowSec, t } from "./core.js";
+import { COMPACT, LANG, REDUCED, api, esc, icon, ipKey, nowSec, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
-import { ign } from "./ignored.js";
 import { schedule } from "./live.js";
+import { paintNewDot } from "./net-gauge.js";
 
 // ---------------------------------------------------- new devices
 // The list is not a card of its own: it is a panel of the network card (filters.js puts it between the badges and the brands),
@@ -13,6 +13,19 @@ newEl.hidden = true;
 // Rows of the card: the devices found by the last scan (S.found, with
 // Add) and the never-seen MACs detected on the network (S.newDevices); no duplicates by IP.
 // The rows being added (S.adding) stay in the card until "Close", even when the server no longer lists them as new.
+// A device not heard for 15 minutes is asleep: the list shows only the devices that answer now (the user, 17/11, in place of P7
+// decision 3A that kept them with "seen 9 h ago"). The server still remembers them for 7 days; they come back as soon as they answer.
+const ASLEEP_S = 900;
+function asleep(d) { return !!(d.lastSeen && nowSec() - d.lastSeen > ASLEEP_S); }
+// A device the app saw by itself that the card would show: not closed with «Cancel», answering now.
+function shownNew(d) { return !S.dismissedNew[String(d.mac || d.ip).toUpperCase()] && !asleep({ lastSeen: d.last_seen }); }
+// The +N on the ring: the rows of the card still to be decided, whatever brought them (a search, or the app by itself); not the ones being
+// added or added (they stay green until "Close"). The user, 17/11: it counted 5 devices gone for days (touching it showed nothing), not
+// the one a search had found, and then still counted it after it was added.
+export function newWaitingCount() {
+  const ad = S.adding;
+  return newRows().filter(function (r) { return !(ad && r.ip && ad.ips[r.ip]); }).length;
+}
 function newRows() {
   const seen = {}, rows = [];
   // The same device appears only once: by IP or by MAC.
@@ -29,13 +42,14 @@ function newRows() {
     rows.push(row);
   }
   S.found.forEach(function (h) {
-    take({ src: "found", ip: h.ip, mac: h.mac, name: h.hostname || "", lastSeen: h.last_seen });     // P9: the button lists the asleep too
+    if (asleep({ lastSeen: h.last_seen })) return;
+    take({ src: "found", ip: h.ip, mac: h.mac, name: h.hostname || "", lastSeen: h.last_seen });
   });
   // Never-seen MACs detected on the network are added only after a completed scan.
   const list = (S.scanDone || S.newReady) ? S.newDevices.devices : [];
   list.forEach(function (d) {
-    if (S.dismissedNew[String(d.mac || d.ip).toUpperCase()]) return;     // closed with "Cancel": it comes back only for a device not seen before
-    take({ src: "new", ip: d.ip, mac: d.mac, name: d.hostname || "", lastSeen: d.last_seen });
+    if (!shownNew(d)) return;     // closed with "Cancel" (it comes back only for a device not seen before), or not answering now
+    take({ src: "new", ip: d.ip, mac: d.mac, name: d.hostname || "", lastSeen: d.last_seen, net: d.network });     // P11: "network" behind the router
   });
   const ad = S.adding;
   if (ad) Object.keys(ad.ips).forEach(function (ip) { if (ad.meta[ip]) take(ad.meta[ip]); });
@@ -59,13 +73,12 @@ function redrawNew() {
   newEl._markup = "";
   renderNew();
 }
-// 1.0 step P7 (decision 3A): a new device that has not been heard for a while stays in the list, with when it was last seen.
-const ASLEEP_S = 900;
-function asleep(d) {
-  return d.lastSeen && nowSec() - d.lastSeen > ASLEEP_S ? " · " + ago(d.lastSeen) : "";
-}
 
 export function renderNew() {
+  renderNewCard();
+  paintNewDot();                                                              // the +N follows the card, every time it is drawn
+}
+function renderNewCard() {
   if (COMPACT) { newEl.hidden = true; return; }
   const list = newRows();
   if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; newEl._markup = ""; return; }
@@ -81,7 +94,8 @@ export function renderNew() {
     const label = d.ip || d.mac;  // only IP and MAC: names are found later, by analyzing the device
     let cells;
     if (state === "idle") {
-      const ignAttrs = d.src === "found"
+      // A device found by a search, or one behind the router (no MAC, or a MAC Home Assistant said), is ignored by the list of ignored devices.
+      const ignAttrs = d.src === "found" || !d.mac || d.net
         ? ' data-ign-ip="' + esc(d.ip) + '" data-ign-mac="' + esc(d.mac || "") + '" data-ign-host="' + esc(d.name || "") + '"'
         : ' data-ignore-mac="' + esc(d.mac) + '"';
       const ignoreBtn = sym("eye-off", t("js.ha.new.ignore"), ignAttrs);
@@ -94,7 +108,7 @@ export function renderNew() {
     }
     const fresh = state === "done" && ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900;
     return '<div class="nd-row nd-' + state + '" data-ip="' + esc(d.ip || "") + '"><span class="nd-ic">' + (state === "idle" ? icon("devices") : ndRing(state, fresh)) + '</span><div class="nd-text"><div class="nd-name">' + esc(label) +
-      '</div><div class="nd-sub">' + esc((d.ip && d.mac ? d.mac : "") + asleep(d)) + '</div></div><div class="nd-actions">' + cells + "</div></div>";
+      '</div><div class="nd-sub">' + esc(d.ip && d.mac ? d.mac : "") + '</div></div><div class="nd-actions">' + cells + "</div></div>";
   }).join("");
   let title, sub;
   if (active) { title = t("js.ha.new.run_title", { done: saved, total: total }); sub = t("js.ha.new.run_sub"); }
@@ -168,8 +182,11 @@ function toDevice(ip, host, r) {
 function afterAdd(ips) {
   // The rows added stay in the card (green) until "Close"; without the card (nothing in progress) they leave the list at once.
   if (!S.adding) S.found = S.found.filter(function (h) { return ips.indexOf(h.ip) < 0; });
+  // The devices are already saved: a failed re-read must not reach the addition (it would undo rows that were added and
+  // show an error); the list of new devices simply stays as it was until the next update from the server.
   return api("/api/new-devices").then(function (list) {
     if (Array.isArray(list)) S.newDevices = { count: list.length, devices: list, init: true };
+  }, function () { /* see above: the next update brings the list */ }).then(function () {
     renderNew();
     S.dirty.net = true;
     schedule();
@@ -299,6 +316,8 @@ newEl.addEventListener("click", function (e) {
         // The app may have seen the same device by itself: it must not come back as a "seen" row (the second press of the eye).
         S.dismissedNew[String(ign.dataset.ignMac || ign.dataset.ignIp).toUpperCase()] = true;
         redrawNew();
+        S.dirty.net = true;                                                   // the +N on the ring follows the card
+        schedule();
       }).catch(function () {
         ign.disabled = false;
         redrawNew();
@@ -317,6 +336,8 @@ newEl.addEventListener("click", function (e) {
     S.found = [];
     S.scanDone = false;
     renderNew();
+    S.dirty.net = true;                                                       // the +N on the ring follows the card
+    schedule();
     return;
   }
   const b = e.target.closest("[data-ignore-mac]");

@@ -1,4 +1,5 @@
 """Internet (public IP, double NAT, CGNAT), local interfaces, TLS/SSH, ARP conflicts, IGMP."""
+import ipaddress
 import os
 import struct
 import sys
@@ -30,6 +31,17 @@ assert internet.classify(two, "100.70.3.4")["cgnat"] and not internet.classify(t
 for odd in ("0.0.0.0", "nonsense", "", None, "fe80::1"):
     assert internet.classify(two, odd)["maybe_double_nat"], odd
 assert internet.classify(["192.168.50.1", "100.70.0.1", "9.9.9.21"])["cgnat"]
+# The hops inside the networks of the house (the main one and the written ones) are one router: a VLAN of the house in front of the
+# main router is no "possible" double NAT; a private hop outside them still is.
+house = (ipaddress.ip_network("192.168.50.0/24"), ipaddress.ip_network("192.168.1.0/24"))
+r = internet.classify(two, home=house)
+assert not r["maybe_double_nat"] and not r["double_nat"] and r["private_hops"] == ["192.168.50.1", "192.168.1.1"], r
+r = internet.classify(["192.168.50.1", "192.168.1.1", "192.168.0.1", "9.9.9.21"], home=house)
+assert r["maybe_double_nat"], r
+r = internet.classify(["192.168.50.1", "192.168.0.1", "9.9.9.21"], home=house[:1])
+assert r["maybe_double_nat"], r
+assert internet.classify(two, "192.168.1.20", home=house)["double_nat"]          # the router's own answer still decides
+assert internet.home_steps(two[:2], house) == 1 and internet.home_steps(two[:2], ()) == 2
 X = "<nmaprun><host><trace><hop ttl='2' ipaddr='9.9.9.21'/><hop ttl='1' ipaddr='192.168.50.1'/></trace></host></nmaprun>"
 assert internet.parse_trace(X) == ["192.168.50.1", "9.9.9.21"]
 
@@ -82,4 +94,4 @@ assert naming.clean_name("AFTMM@ES(192.168.50.103)") is None
 assert naming.clean_name("CCCCFE0000B7@SONY XR-55X92K+") == "SONY XR-55X92K+"
 assert naming.clean_name("192.168.50.103") is None
 assert naming.PRIORITY["web"] < naming.PRIORITY["onvif"] < naming.PRIORITY["tls"] < naming.PRIORITY["nmap"]
-print("TUTTO OK")
+print("ALL OK")

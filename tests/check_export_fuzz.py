@@ -134,4 +134,4 @@ for seed, name, secret in problems:
     by_kind.setdefault(kind, []).append((seed, name, secret))
 assert not problems, "valori casuali rimasti nell'export per lo sviluppatore: " + "; ".join(
     f"{k}: {len(v)} (es. {v[0][2]} in {v[0][1]})" for k, v in sorted(by_kind.items()))
-print("TUTTO OK")
+print("ALL OK")

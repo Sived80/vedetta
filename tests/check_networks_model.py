@@ -54,12 +54,26 @@ KNOWN = {
     "via as text": ({**BASE, "via": "routed"}, "E_BAD_VIA"),
     "no via": ({**BASE, "via": []}, "E_BAD_VIA"),
     "not a dictionary": (["192.168.60.0/24"], "E_SHAPE"),
+    "a name that is not text": ({**BASE, "name": 7}, "E_BAD_NAME"),
+    "a name too long": ({**BASE, "name": "x" * 33}, "E_BAD_NAME"),
+    "a name with spaces around (refused, not trimmed)": ({**BASE, "name": " IoT"}, "E_BAD_NAME"),
+    "a name with a control character": ({**BASE, "name": "Io\nT"}, "E_BAD_NAME"),
+    "a VLAN as text": ({**BASE, "vlan": "60"}, "E_BAD_VLAN"),
+    "a VLAN as a boolean": ({**BASE, "vlan": True}, "E_BAD_VLAN"),
+    "VLAN 0": ({**BASE, "vlan": 0}, "E_BAD_VLAN"),
+    "VLAN 4095": ({**BASE, "vlan": 4095}, "E_BAD_VLAN"),
 }
 for name, (cand, expected) in KNOWN.items():
     assert code(cand) == expected, (name, code(cand), expected)
 assert code({**BASE, "cidr": "10.1.0.0/16", "via": ["direct"]}) is None, "a wide network on the own interface is fine"
 assert code({**BASE, "cidr": "10.1.0.0/22"}) is None and code({**BASE, "cidr": "192.168.60.0/30"}) is None, "the limits themselves are allowed"
 assert code(BASE, existing=()) is None, "empty world: no network yet"
+named = m.validate({**BASE, "name": "Cameras", "vlan": 60}, [MAIN])
+assert named.name == "Cameras" and named.vlan == 60, named
+assert m.validate(BASE, [MAIN]).name is None and m.validate(BASE, [MAIN]).vlan is None, "name and VLAN are optional"
+assert m.validate({**BASE, "name": "", "vlan": None}, [MAIN]).name is None, "an empty name is no name"
+assert m.validate({**BASE, "name": "Telecamere è ok", "vlan": 4094}, [MAIN]).vlan == 4094 and code({**BASE, "vlan": 1}) is None
+assert m.Network("main", MAIN.cidr, MAIN.via, "full", "confirmed") == MAIN, "the fields that came later have defaults: a Network built as before is the same"
 
 # 2) at most MAX_NETWORKS, the main one counted
 nets = [MAIN]
@@ -91,7 +105,8 @@ def hostile():
     quad = "%d.%d.%d.%d/%d" % (tuple(rng.randrange(256) for _ in range(4)) + (rng.randrange(33),))
     return {"id": pick(["a", junk, "x" * 40, "ok-1", None, 7]), "cidr": pick(["192.168.%d.0/24" % rng.randrange(256), junk, quad, rng.randrange(99), None]),
             "via": pick([["routed"], ["direct"], ["x"], [], "routed", None, ["routed", "snmp"], [junk]]), "touch": pick(["presence", "ports", "full", junk, None]),
-            "state": pick(["proposed", "confirmed", "paused", junk]), "exclude": pick([[], [junk], ["192.168.60.1"], "x", None, [junk] * 40])}
+            "state": pick(["proposed", "confirmed", "paused", junk]), "exclude": pick([[], [junk], ["192.168.60.1"], "x", None, [junk] * 40]),
+            "name": pick([None] * 4 + ["", "IoT", junk, 5, "x" * 40]), "vlan": pick([None] * 4 + [60, 0, 5000, "60", junk, True])}
 
 
 accepted = 0
@@ -113,7 +128,8 @@ def valid():
     prefix = rng.choice([22, 23, 24, 26, 30])
     cidr = str(ipaddress.ip_network("192.168.%d.0/%d" % (third - third % 4 if prefix == 22 else third - third % 2 if prefix == 23 else third, prefix), strict=False))
     return {"id": rng.choice(["iot", "media", "cams-2", "x_y"]), "cidr": cidr, "via": rng.choice([["routed"], ["routed", "snmp"], ["direct"]]),
-            "touch": rng.choice(["presence", "ports"]), "state": rng.choice(list(m.STATES)), "exclude": []}
+            "touch": rng.choice(["presence", "ports"]), "state": rng.choice(list(m.STATES)), "exclude": [],
+            "name": rng.choice([None, "IoT", "Cameras 2"]), "vlan": rng.choice([None, 1, 60, 4094])}
 
 
 BREAKS = [
@@ -132,6 +148,8 @@ BREAKS = [
     (lambda c: c.update(cidr="192.168.50.%d/30" % (4 * rng.randrange(64))), "E_OVERLAP"),
     (lambda c: c.update(exclude=["192.168.%d.1" % rng.randrange(100, 200)]), "E_BAD_EXCLUDE"),
     (lambda c: c.update(exclude=["192.168.60.1"] * (m.MAX_EXCLUDE + 1)), "E_BAD_EXCLUDE"),
+    (lambda c: c.update(name=rng.choice([3, "y" * 33, "a\tb", " x", []])), "E_BAD_NAME"),
+    (lambda c: c.update(vlan=rng.choice([0, 4095, -1, "7", 2.0, False])), "E_BAD_VLAN"),
 ]
 reached = set()
 for _ in range(3000):

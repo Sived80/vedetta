@@ -108,4 +108,4 @@ for i, (x, y) in enumerate(zip(out, want)):
     assert x == y, "case %d differs: %s" % (i, json.dumps([x, y], default=str)[:600])
 assert not any("exception" in o for o in out), [o for o in out if "exception" in o][:2]
 assert sum(1 for o in out if o["state"]["_macs"]) > 100 and sum(1 for o in out if o["state"]["_areas"]) > 60 and sum(1 for o in out if o["state"]["_public_known"]) > 40, "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

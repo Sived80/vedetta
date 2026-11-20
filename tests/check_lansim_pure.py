@@ -241,6 +241,75 @@ check("S38 fails when the button does not list it", run_campaign.CHECKS["S38"]({
 check("S38 fails without the time of the last sight", run_campaign.CHECKS["S38"]({**base38, "seen_before_press_s": None})[0], "fail")
 check("S38 is in the campaign", "S38" in scenarios.SCENARIOS and "S38" in {k for k, _, _ in run_campaign.PLAN}, True)
 
+# --- 9d. a private MAC that rotates (1.0 step P10): the linked phone is followed (S39), two phones of the same model never merged (S40)
+b39 = {"usable": True, "listed_new": False, "link": ["DA:00:00:00:00:A2", "identity"], "new_mac": "DA:00:00:00:00:A2", "followed_s": 320}
+check("S39 passes: link on the new MAC, card followed, never new", run_campaign.CHECKS["S39"](b39)[0], "pass")
+check("S39 fails when the new MAC is listed as new", run_campaign.CHECKS["S39"]({**b39, "listed_new": True})[0], "fail")
+check("S39 fails when the link stays on the old MAC", run_campaign.CHECKS["S39"]({**b39, "link": ["DA:00:00:00:00:A1", "rule"]})[0], "fail")
+check("S39 fails when the card does not follow", run_campaign.CHECKS["S39"]({**b39, "followed_s": None})[0], "fail")
+b40 = {"usable": True, "luca_listed_s": 200, "link": ["DA:00:00:00:00:A1", "rule"], "old_mac": "DA:00:00:00:00:A1",
+       "card_end": {"ip": "10.99.0.40"}, "luca_address": "10.99.0.42"}
+check("S40 passes: Anna's link stays, Luca's phone is new", run_campaign.CHECKS["S40"](b40)[0], "pass")
+check("S40 fails when Anna's link moves to Luca", run_campaign.CHECKS["S40"]({**b40, "link": ["DA:00:00:00:00:A3", "identity"]})[0], "fail")
+check("S40 fails when Anna's card goes to Luca's address", run_campaign.CHECKS["S40"]({**b40, "card_end": {"ip": "10.99.0.42"}})[0], "fail")
+check("S40 fails when Luca is never listed", run_campaign.CHECKS["S40"]({**b40, "luca_listed_s": None})[0], "fail")
+check("S39 and S40 are in the campaign", all(k in scenarios.SCENARIOS and k in {x for x, _, _ in run_campaign.PLAN} for k in ("S39", "S40")), True)
+
+# --- 9f. the network behind the router (1.0 step P11, S41): the networks.json Vedetta starts with, the rows and alerts behind the router, the judge
+import json  # noqa: E402
+import tempfile  # noqa: E402
+from tools.lansim import lan as sim_lan  # noqa: E402
+from tools.lansim import routed  # noqa: E402
+from app.networks import model as net_model  # noqa: E402
+import ipaddress  # noqa: E402
+nf = routed.networks_file(sim_lan.ROUTED_CIDR)
+row = nf["networks"][0]
+main_net = net_model.Network("main", ipaddress.ip_network(sim_lan.SUBNET + ".0/24"), frozenset({"direct"}), "full", "confirmed")
+got = net_model.validate(row, [main_net])
+check("S41 network: accepted by Vedetta's own check, routed, confirmed, presence", (str(got.cidr), set(got.via), got.state, got.touch),
+      (sim_lan.ROUTED_CIDR, {"routed"}, "confirmed", "presence"))
+check("the network behind the router does not touch the flat LAN", ipaddress.ip_network(sim_lan.ROUTED_CIDR).overlaps(ipaddress.ip_network(sim_lan.SUBNET + ".0/24")), False)
+with tempfile.TemporaryDirectory() as tmp:
+    with open(routed.write_networks(tmp, nf), encoding="utf-8") as f:
+        check("networks.json written as given", json.load(f), nf)
+rows_new = [{"mac": None, "ip": "10.0.20.10"}, {"mac": "3C:00:00:00:00:91", "ip": "10.9.0.230"}, {"mac": None, "ip": None}, {"ip": "nonsense"}, {"ip": "10.0.20.40"}]
+check("listed behind the router: only the addresses inside it, with or without a MAC", routed.listed_in(rows_new, sim_lan.ROUTED_CIDR), {"10.0.20.10", "10.0.20.40"})
+check("listed behind the router: no rows", routed.listed_in(None, sim_lan.ROUTED_CIDR), set())
+journal_lines = [json.dumps({"key": "alert.new_device", "params": {"label": "x", "ip": "10.0.20.40"}}), "not json",
+                 json.dumps({"key": "alert.new_device", "params": {"label": "y", "ip": "10.0.20.40"}}), json.dumps({"key": "alert.ip_changed", "params": {"ip": "10.0.20.10"}}),
+                 json.dumps({"key": "alert.new_device", "params": {"label": "z"}})]
+check("alerts by address: only new-device alerts, a missing address as -", routed.alerts_by_ip(journal_lines), {"10.0.20.40": 2, "-": 1})
+with tempfile.TemporaryDirectory() as tmp:
+    check("sweep: the default without routedwatch.py", routed.sweep_seconds(tmp), 900)
+    os.makedirs(os.path.join(tmp, "app"))
+    with open(os.path.join(tmp, "app", "routedwatch.py"), "w", encoding="utf-8") as f:
+        f.write('"""x"""\nROUTED_SWEEP_S = 600          # every 10 minutes\n')
+    check("sweep: read from the code under test", routed.sweep_seconds(tmp), 600)
+b41 = {"crossing": {"ping": True, "silent_ping": False}, "start_ips": ["10.0.20.10", "10.0.20.11"], "start_listed_s": 30, "silent_ip": "10.0.20.30",
+       "new_ip": "10.0.20.40", "new_listed_s": 700, "alerts": {"10.0.20.40": 1}, "ever_listed": ["10.0.20.1", "10.0.20.10", "10.0.20.11", "10.0.20.40"]}
+check("S41 passes: starting point quiet, the newcomer listed and alerted once, the silent device never listed", run_campaign.CHECKS["S41"](b41)[0], "pass")
+check("S41 fails when nothing behind the router is listed (the code before P11)", run_campaign.CHECKS["S41"]({**b41, "start_listed_s": None, "new_ip": None,
+      "new_listed_s": None, "alerts": {}, "ever_listed": []}), ("fail", "never listed as new: the devices behind the router at the start (10.0.20.10,10.0.20.11)"))
+check("S41 fails when the starting point is alerted", run_campaign.CHECKS["S41"]({**b41, "alerts": {"10.0.20.10": 1, "10.0.20.40": 1}})[0], "fail")
+check("S41 fails when the newcomer is never listed", run_campaign.CHECKS["S41"]({**b41, "new_listed_s": None})[0], "fail")
+check("S41 fails when the newcomer is alerted twice", run_campaign.CHECKS["S41"]({**b41, "alerts": {"10.0.20.40": 2}})[0], "fail")
+check("S41 fails when the newcomer is never alerted", run_campaign.CHECKS["S41"]({**b41, "alerts": {}})[0], "fail")
+check("S41 fails when the silent device is listed", run_campaign.CHECKS["S41"]({**b41, "ever_listed": b41["ever_listed"] + ["10.0.20.30"]})[0], "fail")
+check("S41 fails when ping does not cross the simulated router", run_campaign.CHECKS["S41"]({**b41, "crossing": {"ping": False, "silent_ping": False}})[0], "fail")
+b42 = {"crossing": True, "card": "scan-10-0-20-15", "online_s": 40, "offline_s": 200, "back_s": 60, "card_end": {"online": True}}
+check("S42 passes: the card behind the router follows its device off and on", run_campaign.CHECKS["S42"](b42)[0], "pass")
+check("S42 fails when the card never goes offline (the defect of K1)", run_campaign.CHECKS["S42"]({**b42, "offline_s": None, "back_s": None})[0], "fail")
+check("S42 fails when the card does not come back", run_campaign.CHECKS["S42"]({**b42, "back_s": None})[0], "fail")
+check("S42 fails when ping does not cross the router", run_campaign.CHECKS["S42"]({**b42, "crossing": False})[0], "fail")
+check("S43 passes: both devices on at install are in the button's list", run_campaign.CHECKS["S43"]({"tv_in_button": True, "tv_listed_new": False, "cam_in_button": True, "cards": 0, "rows": 3})[0], "pass")
+check("S43 fails when the one silent to broadcast is missing (issue #35)", run_campaign.CHECKS["S43"]({"tv_in_button": True, "tv_listed_new": False, "cam_in_button": False, "cards": 0, "rows": 3})[0], "fail")
+check("S43 fails when the button does not list it (issue #35)", run_campaign.CHECKS["S43"]({"tv_in_button": False, "tv_listed_new": False, "cam_in_button": False, "cards": 0, "rows": 2})[0], "fail")
+check("S43 fails when cards are made by themselves", run_campaign.CHECKS["S43"]({"tv_in_button": True, "tv_listed_new": False, "cam_in_button": True, "cards": 2, "rows": 3})[0], "fail")
+check("S43 is in the campaign", "S43" in scenarios.SCENARIOS and "S43" in {k for k, _, _ in run_campaign.PLAN}, True)
+check("S42 is in the campaign", "S42" in scenarios.SCENARIOS and "S42" in {k for k, _, _ in run_campaign.PLAN}, True)
+check("S41 is in the campaign and the flat LAN stays flat by default", ("S41" in scenarios.SCENARIOS and "S41" in {k for k, _, _ in run_campaign.PLAN},
+      sim_lan.Lan().routed), (True, False))
+
 # --- 10. several runs at once (run_campaign --jobs): each run's machines carry its letter, nothing else in the simulator names them by hand
 import subprocess  # noqa: E402
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -260,7 +329,7 @@ for name in ("scenarios.py", "vedetta_proc.py", "run_campaign.py", "run_scenario
 plan = run_campaign.jobs(quick=True)
 fast = run_campaign.jobs(quick=True, slow_first=True)
 check("--jobs runs the same runs", sorted(map(repr, fast)), sorted(map(repr, plan)))
-check("--jobs starts the longest first", [k for k, _ in fast[:3]], list(run_campaign.SLOW_FIRST))
+check("--jobs starts the longest first", [k for k, _ in fast[:len(run_campaign.SLOW_FIRST)]], list(run_campaign.SLOW_FIRST))
 check("one at a time keeps the order of the plan", [k for k, _ in plan[:2]], ["S14", "S14B"])
 check("the ceiling is at most 8 and at most half the threads", 1 <= run_campaign.MAX_JOBS <= min(8, max(1, (os.cpu_count() or 2) // 2)), True)
 check("the full plan has every run", len(run_campaign.jobs(quick=False)), sum(r for _, r, _ in run_campaign.PLAN))

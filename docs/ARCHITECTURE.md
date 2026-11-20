@@ -15,11 +15,11 @@ This page is written to be read in ten minutes. The index at the end is generate
 
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
-- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `iface`, `macverdict`, `netutil`, `paths`, `procfs`, `sse`
-- **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `storage/`
+- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
+- **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `routedinv`, `storage/`, `twins`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
-- **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `inventory_view`, `maintenance`, `name_origin`, `newdevicewatch`, `state_cycle`, `state_support`, `state`
+- **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `inventory_view`, `maintenance`, `name_origin`, `newdevicewatch`, `routedwatch`, `sentinel_view`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
 - **layer 6**: `ingress`, `routes/`
 - **layer 7**: `main`
@@ -72,6 +72,7 @@ The functions that were restructured have a reference test that was generated fr
 | `formatters.py` | Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded for display, and the quality labels of a Wi-Fi signal and of a LAN link speed. |
 | `frontend_serving.py` | Serving of the front-end of the /ha page: ha.css and the script from their parts, the modules one by one, and the static folder. |
 | `i18n.py` | Internationalization: one folder per language in app/locales/<code>/ with one or more flat JSON files key -> text (server.json for the templates and Python, js.json for the browser). |
+| `identity_changes.py` | Which changes of a card's identity are worth remembering (storage/history_identity.py). |
 | `identity_upkeep.py` | Upkeep of the identity of the cards: what to do when the same device shows up with another address or another card. |
 | `iface.py` | LAN network interface: from VEDETTA_IFACE, otherwise from the default routing (/proc/net/route, no external command: it also works with BusyBox). |
 | `ingress.py` | Home Assistant ingress support (add-on). |
@@ -92,16 +93,24 @@ The functions that were restructured have a reference test that was generated fr
 | `paths.py` | Data paths and environment parameters: a single source of truth. |
 | `pause.py` | Pause of the periodic check: when it ends, how long it was, and its survival to a service restart (pause.json). |
 | `procfs.py` | Tolerant, lazy reading of the text tables the kernel exposes (/proc/net/route, /proc/net/arp, /proc/self/status). |
+| `routedinv.py` | The inventory by address of a network behind the router (1.0 step P11, decisions 1A and 2A): what one ping sweep of the network found, merged with what is already known of it. |
+| `routedwatch.py` | The ping sweep of the networks behind the router (1.0 step P11, decision 1A): every ROUTED_SWEEP_S, and when the person presses «Scan network», each confirmed network seen through the router (not paused, at most a /22 as model.validate allows) gets one ping per address (networks.trial.sweep: the excluded ranges never). |
+| `sentinel.py` | Sentinel: which changes of the network become a message for the person, and when. |
+| `sentinel_view.py` | The Sentinel at work (the rules are in sentinel.py): it is told what changed by the cycle (a card online/offline, a new device), and at the end of each cycle it sends what is ready. |
 | `sse.py` | sse: moved out of main.py (see tools/split_module.py). |
 | `state.py` | The shared state of the service: DeviceState keeps the card of every device and drives the periodic check. |
 | `state_cycle.py` | The periodic check of DeviceState and its decisions: one cycle (probes, response times and the network table together, the results applied, what is gone forgotten, the housekeeping that follows), the loop that repeats it, and the online/offline decision of a checked device (settle, publish). |
 | `state_support.py` | What DeviceState keeps and reports besides the cards, in four small parts: the activities in progress (scans and searches, kept here and not only in the browser that started them, so that after changing page the blinking LED and the search button are found as they were), who is online (presence), the MAC shadow jobs, and the numbers of the diagnostics for the export. |
+| `twins.py` | Twin cards: one machine with an address on two networks (the router of the house and its leg on a VLAN, Home Assistant with an address on a VLAN) has two cards, one per address. |
 
 ### analysis/
 
 | module | what it is for |
 |---|---|
 | `analysis/badges.py` | The badges of a card's icon. |
+| `analysis/digest.py` | The summary of a window (the night, the last hours): what is NEW, what CAME BACK after a long absence, what went SILENT. |
+| `analysis/quality.py` | The quality of a device's link, from what Vedetta already keeps: the response times (one average a minute, 7 days) and the presence segments (the holes of Vedetta off already cut out). |
+| `analysis/recurrence.py` | How a device comes and goes over the last 30 days: seen once, occasional, recurring or stable. |
 | `analysis/status.py` | Is a device identified, settling or under analysis? Phase 1: read-only, from the evidence card the app already builds (recognition/evidence.py); it sends nothing. |
 
 ### export/
@@ -119,7 +128,9 @@ The functions that were restructured have a reference test that was generated fr
 | `export/export_gather.py` | export_gather: moved out of export_engine.py (see tools/split_module.py). |
 | `export/export_jobs.py` | The export of the window, as a job the window follows step by step: it is started, polled (which steps are done, what the check found), the person decides what could not be fixed, and the file is taken once. |
 | `export/export_mask.py` | export_mask: moved out of export_engine.py (see tools/split_module.py). |
+| `export/export_names.py` | Names the export for the developer must learn before masking, beyond the board and the registries (review of 19/11): - what a deep search read from the device itself (scan_info / scans.result_json): its UPnP, NetBIOS, ONVIF names, the name its local interface gives (ESPHome, Shelly, Sonos...), the nmap host name, and the name in its web page title or certificate when they look like a name; - the names the history database keeps for cards removed and for guests (mac_memory, known_macs, mac_takeover). |
 | `export/export_zip.py` | Export for analysis: a zip file with the data needed to understand why a name, a brand or a category is wrong. |
+| `export/inventory.py` | The inventory for the person: one row per card, as CSV or JSON, to keep, print or put in a spreadsheet. |
 | `export/mac_shadow.py` | Shadow data per MAC: collected for analysis only, nothing here decides what a card shows. |
 | `export/network_survey.py` | An optional extra section of the export for the developer. |
 | `export/report_crypto.py` | Encrypted report: the zip is sealed with the maintainer's public key (data/report_key.pub). |
@@ -131,6 +142,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/analysis_view.py` | The state of every card (identified, settling, analysing) for the page. |
 | `ha/device_debug.py` | What debug mode shows for a device: the clues that decided its group, the candidates for its name, brand, mobile score, DHCP, roles, scan data and the registry/mDNS memory. |
 | `ha/ha_data.py` | Data for the Home Assistant-style dashboard (/ha): inferred device type, compact format for the UI, summary, event log. |
+| `ha/ha_notify.py` | The Sentinel's way out of the browser (step 3): what sentinel_view sends at the end of a cycle reaches Home Assistant. |
 | `ha/ha_registry.py` | Home Assistant registry as a source of name, brand, model and area of the network devices. |
 | `ha/ha_trackers.py` | The clients that a router integration of Home Assistant tracks on the network (UniFi, FRITZ!, MikroTik, nmap...), read from the states of Home Assistant. |
 | `ha/ha_type_evidence.py` | ha_type_evidence: moved out of ha_data.py (see tools/split_module.py). |
@@ -143,6 +155,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/mqtt_config.py` | mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py). |
 | `ha/mqtt_ha.py` | Publishes Vedetta's state over MQTT using Home Assistant's "device" discovery (homeassistant/device/<id>/config). |
 | `ha/mqtt_payloads.py` | mqtt_payloads: moved out of mqtt_ha.py (see tools/split_module.py). |
+| `ha/notify_queue.py` | The queue of the notifications (the Sentinel's way out, ha_notify): every message goes to the recipients in their order (the first, the second, the third...), each one after its wait ("delay_s") from the one before, whether the one before took it or not. |
 | `ha/passive_service.py` | Reads the devices that Home Assistant sees (ha_trackers) while the function is on, keeps them (passive_store) and writes their presence into the history. |
 | `ha/passive_view.py` | What the page shows of the devices that Home Assistant sees ("passive" devices): the cards in the same compact format as the devices Vedetta scans, and the list of the ones that can be adopted. |
 
@@ -159,11 +172,16 @@ The functions that were restructured have a reference test that was generated fr
 
 | module | what it is for |
 |---|---|
+| `networks/activity.py` | The life of a network, for the panel «Networks»: how many cards it holds, how many are on now, and whether it went mute. |
+| `networks/caps.py` | The judge of the functions of a network, for the panel «Networks»: what Vedetta sees of the devices of one network, function by function, and where each piece comes from. |
 | `networks/host_read.py` | The one reader of what the host says about its network: the default route and its gateway (/proc/net/route), the interfaces with their VLANs and addresses (/sys/class/net, /proc/net/vlan/config). |
 | `networks/legacy.py` | The cards that are already outside the main network (added by hand, or left from the network of before), and the addresses no card may have (K12). |
 | `networks/model.py` | A network Vedetta may look at, and the check of one written by the person: validate() gives a Network or refuses it with a code (Rejected), and never fixes a value silently. |
+| `networks/panel.py` | What the panel «Networks» shows of each network beyond its row of before: its name, its VLAN, how many cards are on, whether it went mute, and what Vedetta sees of it function by function (the judge, caps.py). |
+| `networks/purge.py` | «Delete this network» (a written network): its cards in devices.yaml, the devices of Home Assistant adopted in it, every row of the history about it, the ignored devices of it (by MAC seen there or by an address of it: those ignored by name hold for every network and stay) and its row in networks.json. |
 | `networks/registry.py` | The networks Vedetta looks at now: the abstraction in front of the places that today ask the host for its network (netutil.get_local_network). |
 | `networks/scope.py` | The one guard of the networks: to which confirmed network an address belongs, and which addresses of a list may be touched. |
+| `networks/trial.py` | «Try and add»: a network the person is about to write, tried before it is saved (POST /api/networks/test). |
 
 ### recognition/
 
@@ -213,6 +231,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/flows.py` | Registry of the functions (steps) and profiles (sub-flows) of the search. |
 | `scan/full_ports_plan.py` | The plan of the full port scan of a slow device, in the background: blocks of ports (each with its own limit, so a slow device never loses a whole run to one timeout), how many blocks a run may do, how long to wait after a block that timed out (a day, then two, four, seven: capped, as the retry of any background job), and when a card is due for the scan. |
 | `scan/host_load.py` | host_load: the load of the system under the app, from the pressure stall information of the kernel (/proc/pressure/{cpu,io,memory}: the "some" line, average of the last 60 seconds), which any process may read. |
+| `scan/httpcap.py` | HTTP answers of the devices on the network, read with a ceiling. |
 | `scan/internet.py` | Outbound internet connectivity: public IP, double NAT, provider CGNAT. |
 | `scan/latency.py` | Device response time, measured in the same check cycle. |
 | `scan/localapi.py` | Documented local interfaces of the manufacturers, read-only and without credentials. |
@@ -229,6 +248,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/probe_web.py` | probe_web: moved out of probe.py (see tools/split_module.py). |
 | `scan/rescan.py` | Deep search of one device (rescan_device): runs the deep profile, saves the result and its history, compares the open ports with the previous scan and warns about the ones that changed, applies a better name, and for a slow device schedules the full port scan in the background (rescan_background.py). |
 | `scan/rescan_background.py` | The full port scan of a slow device, in the BACKGROUND (schedule_full_ports): the deep search (rescan.py) covers only the targeted ports of such a device; this one runs afterwards, at a cautious pace and one at a time, adds the extra ports and reads their services. |
+| `scan/router_arp.py` | The MACs of the networks behind the router, from the router itself: its ARP table through SNMP (scan/snmp.py), when the person wrote the router's address and a read-only community (settings.snmp_*). |
 | `scan/scan_arp.py` | scan_arp: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scan_cert.py` | scan_cert: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scan_common.py` | scan_common: moved out of scanner.py (see tools/split_module.py). |
@@ -238,6 +258,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/scan_protocols.py` | scan_protocols: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scan_web.py` | scan_web: moved out of scanner.py (see tools/split_module.py). |
 | `scan/scanner.py` | Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define, so callers and tests keep writing scanner.name. |
+| `scan/snmp.py` | A small SNMP v2c reader, read-only, for ONE thing: the ARP table of the router the person names, with the community the person writes. |
 | `scan/touch_policy.py` | The touch policy: how much a device is contacted. |
 | `scan/upnp_wan.py` | The address of the router on its internet side, asked to the router itself over UPnP (IGD): the only sure way to tell a double NAT. |
 | `scan/wol.py` | Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC = 102 bytes) sent as a UDP broadcast. |
@@ -252,10 +273,13 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/health_hidden.py` | The health findings a person chose to hide (config/health_hidden.json). |
 | `storage/history.py` | The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer. |
 | `storage/history_health.py` | HealthMixin: the findings of the network health (health/) kept on disk, so a restart does not lose the record of what was seen. |
+| `storage/history_identity.py` | IdentityMixin: the history of what Vedetta called each card (name and brand), so the card can say «the name went from android-7f3a to Pixel of Anna on 12/11, from the Bonjour name». |
 | `storage/history_known.py` | KnownMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/history_maclayer.py` | MacLayerMixin: the tables of the single MAC layer (moved out of history.py's class by design, see maclayer.py). |
 | `storage/history_macs.py` | MacMemoryMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/history_presence.py` | PresenceMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
+| `storage/history_purge.py` | PurgeMixin: every row of the history that belongs to one written network, counted or deleted («delete this network», networks/purge.py). |
+| `storage/history_routed.py` | RoutedMixin: the inventory by address of the networks behind the router (1.0 step P11, routedinv.py), kept on disk. |
 | `storage/history_scans.py` | ScansMixin: methods of History that belong together (moved out of history.py by tools/split_class.py). |
 | `storage/journal.py` | Event log beyond online/offline, for the level-based Log of /ha. |
 | `storage/network_store.py` | The networks written by the person, beyond the main one (networks.json): read, checked, changed under one lock and written atomically. |
@@ -279,49 +303,58 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 
 | part | lines | what it is for |
 |---|---|---|
-| `js/app.js` | 43 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 318 | guided typing |
+| `js/alerts.js` | 231 | alerts outside this page (the Sentinel's way out) |
+| `js/app.js` | 44 | Log open: reloads by itself (more often at the detailed level, where |
+| `js/core-menu.js` | 311 | guided typing |
 | `js/core-ui.js` | 199 | state |
-| `js/core.js` | 240 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
+| `js/core.js` | 258 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
-| `js/deep.js` | 158 | deep search |
-| `js/export-vlan.js` | 107 | an optional extra of the export for the developer |
-| `js/export.js` | 264 | export for analysis |
-| `js/filters.js` | 248 | filters |
+| `js/deep.js` | 159 | deep search |
+| `js/export-vlan.js` | 108 | an optional extra of the export for the developer |
+| `js/export.js` | 270 | export for analysis |
+| `js/filters.js` | 249 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
 | `js/ha-networks.js` | 196 | networks seen by Home Assistant |
-| `js/health-card.js` | 275 | network health: the "Health" screen of the Network card |
+| `js/health-card.js` | 276 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
 | `js/health-sim.js` | 49 | network health: made-up findings, debug mode only |
-| `js/ignored.js` | 342 | ignored devices |
+| `js/ignored.js` | 347 | ignored devices, inside the panel «Networks» |
+| `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
 | `js/live.js` | 264 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 199 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
-| `js/more-edit.js` | 325 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
+| `js/more-attrs.js` | 222 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
-| `js/more-info.js` | 95 | "More info" dialog |
-| `js/net-gauge.js` | 106 | "living cycle" circle |
+| `js/more-info.js` | 99 | "More info" dialog |
+| `js/more-month.js` | 70 | "Last 30 days" in the card |
+| `js/net-gauge.js` | 127 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
 | `js/net-rotator.js` | 290 | rotating tile of the Network card |
+| `js/netpanel.js` | 493 | the panel «Networks» (v10) |
 | `js/network.js` | 59 | pause |
-| `js/new-devices.js` | 337 | new devices |
+| `js/new-devices.js` | 358 | new devices |
+| `js/night.js` | 44 | "Last 12 hours": the summary card |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
-| `js/tile.js` | 313 | tile |
+| `js/tile.js` | 319 | tile |
 | `js/update.js` | 34 | update available |
-| `css/10-base.css` | 169 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
+| `css/10-base.css` | 174 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 181 | components |
 | `css/12-motion.css` | 175 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
-| `css/21-export-vlan.css` | 82 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
+| `css/21-export-vlan.css` | 80 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 511 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 504 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/42-health.css` | 102 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
-| `css/50-tile.css` | 215 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
+| `css/50-tile.css` | 222 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
+| `css/61-night.css` | 13 | "Last 12 hours" (#card-night): the summary card, only when there is something to say; under the network card, above the log. |
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
+| `css/63-netpanel.css` | 190 | The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
+| `css/66-alerts.css` | 104 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
-| `css/80-more-info.css` | 288 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/80-more-info.css` | 281 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
+| `css/82-more-month.css` | 19 | "Last 30 days" in the card (#mi-month): the strip of the days, the class, one line on the link, the changes of name and brand. |
 

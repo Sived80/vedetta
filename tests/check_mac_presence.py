@@ -97,4 +97,4 @@ for world in range(2000):
     moved_any += bool(plan)
     swapped_any += any(cid not in moves for cid in plan) or any(ip in cards.values() for cid, ip in plan.items() if cid in moves)
 assert moved_any > 300 and swapped_any > 50, (moved_any, swapped_any)
-print("TUTTO OK")
+print("ALL OK")

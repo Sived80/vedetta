@@ -59,4 +59,4 @@ del asked[:]
 dsc._collect = packets([("http://10.0.0.40:49152/desc.xml", "10.0.0.40"), ("http://10.0.0.43:8080/d.xml", "10.0.0.43")])
 found = run(dsc.ssdp_devices("10.0.0.2", 0.1, http_transport=transport, skip=frozenset({"10.0.0.43"})))
 assert asked == ["http://10.0.0.40:49152/desc.xml"] and list(found) == ["10.0.0.40"], (asked, found)
-print("TUTTO OK")
+print("ALL OK")

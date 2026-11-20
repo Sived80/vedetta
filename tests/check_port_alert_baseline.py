@@ -28,4 +28,4 @@ b = run({"ports": [port(554), port(80)], "scanned_at": 5.0}, [80, 8000])        
 assert len(b) == 2 and any("8000" in t for t in b) and any("554" in t for t in b), b
 c = run({"http_title": "x"}, [80])                                                      # no ports before (as today): they are new
 assert len(c) == 1 and "80" in c[0], c
-print("TUTTO OK")
+print("ALL OK")

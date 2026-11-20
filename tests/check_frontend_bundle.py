@@ -102,4 +102,4 @@ if shutil.which("node"):
     for p in assets.module_files():
         proc = subprocess.run(["node", "--check", str(p)], capture_output=True, text=True)
         assert proc.returncode == 0, p.name + ": " + proc.stderr[-800:]
-print("TUTTO OK")
+print("ALL OK")

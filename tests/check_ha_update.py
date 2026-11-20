@@ -93,4 +93,4 @@ import importlib  # noqa: E402
 importlib.reload(ha_update)
 assert asyncio.run(ha_update._fetch("abc")) == {"version": "1", "version_latest": "2", "update_available": True}
 assert SEEN["url"] == "http://supervisor/addons/self/info" and SEEN["headers"] == {"Authorization": "Bearer abc"}, SEEN
-print("TUTTO OK")
+print("ALL OK")

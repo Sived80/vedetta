@@ -167,4 +167,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 assert text_out == GOLDEN.read_text(encoding="utf-8"), "key order or formatting differs"
 assert all(stats[k] > 60 for k in ("empty", "shelly", "tasmota", "sonos", "roku", "cast", "esphome", "none_found", "filtered", "stream_req")) and stats["slow"] > 20, "too uniform: %s" % stats
 assert stats["exc"] < 300, stats
-print("TUTTO OK")
+print("ALL OK")

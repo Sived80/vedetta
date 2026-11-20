@@ -1,5 +1,6 @@
 import { $, TYPE_ORDER, esc, t, typePlural } from "./core.js";
 import { S, animateNumber, pauseLeft } from "./core-ui.js";
+import { newWaitingCount } from "./new-devices.js";
 
 // ------------------------------------------------------------ "living cycle" circle
 // Inner ring: the devices by type. Outer ring: the real check cycle (S.poll / S.activity), told by the card's data-phase:
@@ -23,13 +24,33 @@ function typeSegments(c) {
     return c.types[b] - c.types[a] || TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b);
   });
 }
+// The arc of each segment, in the order of the counts: as its share of the devices, but never shorter than its dot (the line and its round
+// caps plus the gap), or a type with one device among many comes out longer than its arc and touches the next one. The arcs held at the
+// minimum are taken out and the others share what is left, until none is below it; the ring always closes.
+function segmentArcs(counts) {
+  const min = SW_TYPES + TYPE_GAP + 0.1, arcs = counts.map(function () { return 0; });
+  if (counts.length < 2 || min * counts.length >= TYPES_C) return counts.map(function () { return TYPES_C / counts.length; });
+  let held = counts.map(function () { return false; }), changed = true;
+  while (changed) {
+    changed = false;
+    const room = TYPES_C - min * held.filter(Boolean).length;
+    const share = counts.reduce(function (sum, n, i) { return held[i] ? sum : sum + n; }, 0);
+    counts.forEach(function (n, i) {
+      if (held[i]) { arcs[i] = min; return; }
+      arcs[i] = room * n / share;
+      if (arcs[i] < min) { held[i] = true; changed = true; }
+    });
+  }
+  return arcs;
+}
 function paintTypes(c) {
   const g = $("g-types"), keys = typeSegments(c), sig = keys.map(function (k) { return k + c.types[k]; }).join();
   if (g._sig === sig) return;
   g._sig = sig;
+  const arcs = segmentArcs(keys.map(function (k) { return c.types[k]; }));
   let off = 0, html = "";
-  keys.forEach(function (k) {
-    const arc = TYPES_C * c.types[k] / c.total, len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
+  keys.forEach(function (k, i) {
+    const arc = arcs[i], len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
     html += '<circle class="g-seg c' + (TYPE_ORDER.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
       '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(typePlural(k) + ": " + c.types[k]) + "</title></circle>";
     off += arc;
@@ -70,7 +91,7 @@ export function bindGauge(gauge, onPick) {
 
 // ------------------------------------------------------------ the new devices dot (+N)
 export function paintNewDot() {
-  const dot = $("newdot"), n = S.newDevices.count;
+  const dot = $("newdot"), n = newWaitingCount();
   if (!dot) return;
   dot.hidden = n === 0;
   dot.textContent = "+" + (n > 99 ? "99" : n);

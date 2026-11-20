@@ -38,6 +38,9 @@ class FakeHistory:
         LOG.append(["known_all"])
         return copy.deepcopy(self.rows)
 
+    def routed_new(self, since):
+        return []           # no network behind the router here (step P11)
+
     def meta_get(self, key):
         LOG.append(["meta_get", key])
         return None if CASE["fresh_network"] else "1"
@@ -148,4 +151,4 @@ assert sum(1 for c in good if any(e[0] == "known_set" and e[6] == "new" for e in
 assert sum(1 for c in good if any(e[0] == "known_set" and isinstance(e[2], float) and e[2] < 1000 for e in c["log"])) > 400, "no update of an existing row"
 assert sum(1 for c in good if not any(e[0] == "known_set" for e in c["log"]) and c["ret"][0] == []) > 100, "no case without writes"
 assert sum(1 for c in good if any(e[0] == "meta_set" for e in c["log"])) > 100, "no baseline taken"
-print("TUTTO OK")
+print("ALL OK")

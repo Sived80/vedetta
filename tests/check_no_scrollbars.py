@@ -8,4 +8,4 @@ assert re.search(r"\*\s*\{\s*scrollbar-width:\s*none;\s*\}", base) and re.search
 for path in sorted(CSS.glob("*.css")):
     for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         assert not re.search(r"scrollbar-width:\s*(auto|thin)", line), f"{path.name}:{n}: a scroll bar is brought back"
-print("TUTTO OK")
+print("ALL OK")

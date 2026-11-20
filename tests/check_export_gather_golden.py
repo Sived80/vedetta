@@ -25,6 +25,7 @@ rng = random.Random(86420)
 STATS: dict = {}
 LEGACY = ee.legacy
 LEGACY.MAX_LOG_BYTES = 64
+LEGACY.step_counts = lambda: {}          # the counts of the 1.0 steps: their own tests; empty here, the golden is unchanged
 
 
 def pick(seq):
@@ -245,4 +246,4 @@ s = STATS
 for k in ("df_notes", "df_files", "df_since", "df_binary", "df_filter", "df_tail", "fc_focus", "fc_many", "fc_note", "fc_notes", "fc_err", "fc_since", "fc_days"):
     assert s.get(k, 0) > 40, (k, s)
 assert s.get("df_exc", 0) > 10 and s.get("fc_exc", 0) > 10, s
-print("TUTTO OK")
+print("ALL OK")

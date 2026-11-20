@@ -216,4 +216,4 @@ reads = re.findall(r"SELECT[^\"']*\bFROM\s+(mac_class|ip_conflict)\b", (APP / "s
 assert reads == ["mac_class", "mac_class", "ip_conflict"], "the writer's own comparison, the one reader of mac_class (P2) and the one of ip_conflict (P3): " + repr(reads)
 assert conflict_readers == ["maclayer.py"], "History.ip_conflicts has one caller: " + repr(conflict_readers)
 assert conflict_refreshers == ["maclayer.py"], "only maclayer fills the conflicts of macverdict: " + repr(conflict_refreshers)
-print("TUTTO OK")
+print("ALL OK")

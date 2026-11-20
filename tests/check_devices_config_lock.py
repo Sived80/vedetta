@@ -81,4 +81,4 @@ for t in threads:
 cards = {d["id"]: d for d in dc.load_devices()}
 assert not errors, errors
 assert cards["a"]["name"] == "Name 14" and cards["b"]["name"] == "Auto 14" and "c" in cards, cards
-print("TUTTO OK")
+print("ALL OK")

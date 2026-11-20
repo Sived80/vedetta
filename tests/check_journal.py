@@ -34,4 +34,4 @@ async def go():
     assert t.cancelled() or t.cancelling()
 
 asyncio.run(go())
-print("TUTTO OK")
+print("ALL OK")

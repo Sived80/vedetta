@@ -83,4 +83,4 @@ assert (tmp / "devices.yaml.bak").read_text(encoding="utf-8") == old and dc.load
 assert dc.ensure_seq_safely() == 0
 dc.DEVICES_PATH.write_text("devices: [unclosed\n  - {", encoding="utf-8")
 assert dc.ensure_seq_safely() == 0, "an unreadable file must not stop the start (it is told in the log)"
-print("TUTTO OK")
+print("ALL OK")

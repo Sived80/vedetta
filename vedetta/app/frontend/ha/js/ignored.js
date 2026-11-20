@@ -1,28 +1,36 @@
 import { $, api, esc, icon, t } from "./core.js";
-import { S, raiseSnacks, snack, snacksEl } from "./core-ui.js";
-import { guidedInput, guidedKey, menuBtn } from "./core-menu.js";
-import { flash } from "./tile.js";
+import { S, snack } from "./core-ui.js";
+import { guidedInput, guidedKey } from "./core-menu.js";
 
-// ------------------------------------------------- ignored devices
+// ------------------------------------------------- ignored devices, inside the panel «Networks»
 // Two origins: "Ignore" on a device found by a search (an entry of the list: MAC, IP or name) and "Ignore" on a device found on the network (its MAC).
+// They are shown where they belong: in the management panel of a network, those of that network (an address of it; for a MAC its last known
+// address); under the list of networks, in «In every network», those by name and those by MAC with no known address, with the field to ignore
+// a device by hand and the group buttons. One place at a time is live (mountIgnored): the panel covers the list while it is open.
 // Each row has a menu (three dots) with Restore and Forget. Both work with a countdown: the pressed item becomes "Undo" with a colour sliding
-// across it for 5 s; only Undo stops it; leaving the menu, the sheet or the window lets it run to the end, and it ends with a notice (no Undo).
+// across it for 5 s; only Undo stops it; leaving the menu or the place lets it run to the end, and it ends with a notice (no Undo).
 // Rows are independent (a countdown each); the two group buttons below are locked while any countdown runs, and lock the rows while theirs does.
-var ignDlg = $("ignored");
+var viewEl = $("netview");
 var IGN_UNDO_MS = 5000;
-export var ign = { rows: [], kind: "mac", pend: {}, bulk: null, menu: null, menuBtn: null, ui: null };
+export var ign = { rows: [], kind: "mac", pend: {}, bulk: null, menu: null, menuBtn: null, ui: null, root: null, filter: null, all: false };
 
 function ignRowsFrom(g) {
   const rows = [];
   g.items.forEach(function (it) {
     rows.push({ id: "i" + it.id, api: { id: it.id }, source: "search", kind: it.kind, title: it.label || it.value,
-      ip: it.kind === "ip" ? it.value : "", mac: it.kind === "mac" ? it.value : "", name: it.kind === "name" ? it.value : "", vendor: "" });
+      ip: it.kind === "ip" ? it.value : it.ip || "", mac: it.kind === "mac" ? it.value : "", name: it.kind === "name" ? it.value : "", vendor: "" });
   });
   g.macs.forEach(function (m) {
     rows.push({ id: "m" + m.mac, api: { mac: m.mac }, source: "network", kind: "mac", title: m.hostname || m.vendor || m.ip || m.mac,
       ip: m.ip || "", mac: m.mac, name: m.hostname || "", vendor: m.vendor || "" });
   });
   return rows;
+}
+// The answers after a change carry the entries without the last known address of a MAC: it is kept from what was read before.
+function setItems(items) {
+  const ipOf = {};
+  (S.ign.items || []).forEach(function (x) { if (x.ip) ipOf[x.id] = x.ip; });
+  S.ign.items = (items || []).map(function (x) { return x.ip || !ipOf[x.id] ? x : Object.assign({}, x, { ip: ipOf[x.id] }); });
 }
 function ignIds(r) {
   let a = [r.ip, r.mac].filter(function (x) { return x && x !== r.title; });
@@ -40,34 +48,36 @@ function ignRowHtml(r) {
     '" title="' + esc(t("js.ha.ign.more")) + '">' + icon("dots-vertical") + "</button></div></div></div>";
 }
 function ignBuild() {
-  ign.rows = ignRowsFrom(S.ign);
+  const root = ign.root;
+  ign.rows = ignRowsFrom(S.ign).filter(ign.filter);
   ign.pend = {}; ign.bulk = null; ign.menu = null; ign.menuBtn = null;
-  const kinds = ["mac", "ip", "name"].map(function (k) {
-    return '<button type="button" class="pill" data-ign-kind="' + k + '" aria-pressed="' + (k === ign.kind) + '">' + esc(t(k === "name" ? "js.ha.ign.pill_name" : "js.ha.ign.kind_" + k)) + "</button>";
-  }).join("");
-  ignDlg.innerHTML = '<div class="mi"><div class="mi-header"><button type="button" class="icon-btn touch rp" data-ign="close" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") + "</button>" +
-    '<div class="mi-titles"><h2 class="mi-title" id="ignored-title">' + esc(t("js.ha.menu.ignored")) + '</h2><div class="mi-sub">' + esc(t("js.ha.ign.sub")) + "</div></div>" +
-    '<button type="button" class="icon-btn ig-add-btn rp" data-ign="toggle-add" aria-expanded="false" aria-controls="ig-add" title="' + esc(t("js.ha.ign.add")) + '" aria-label="' + esc(t("js.ha.ign.add")) + '">' + icon("plus") + "</button></div>" +
-    '<div class="ig-body"><div class="ig-scroll" tabindex="-1"><div class="ig-inner">' +
-    '<div class="ig-addwrap" id="ig-add"><div><form class="ig-add" novalidate><div class="ig-kinds" role="group" aria-label="' + esc(t("js.ha.ign.kind_label")) + '">' + kinds + "</div>" +
-    '<div class="ig-line"><input class="ig-field" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="ig-err"><button type="submit" class="btn filled rp">' + esc(t("js.ha.ign.go")) + "</button></div>" +
-    '<div class="ig-err hint" id="ig-err" aria-live="polite"></div></form></div></div>' +
-    '<div class="ig-list">' + ign.rows.map(ignRowHtml).join("") + "</div>" +
-    '<div class="ig-empty"><div class="empty-ic">' + icon("eye-off") + "</div><h3>" + esc(t("js.ha.ign.empty")) + "</h3></div></div></div></div>" +
-    '<div class="mi-actions"><button type="button" class="btn text ig-all rp" data-ign="all" data-bulk="restore">' + esc(t("js.ha.ign.restore_all")) +
-    '</button><button type="button" class="btn text ig-all danger rp" data-ign="all" data-bulk="forget">' + esc(t("js.ha.ign.forget_all")) + "</button></div>" +
-    '<div class="vh" role="status" aria-live="polite" id="ig-live"></div></div>';
-  ign.ui = { scroll: ignDlg.querySelector(".ig-scroll"), list: ignDlg.querySelector(".ig-list"), empty: ignDlg.querySelector(".ig-empty"), addWrap: ignDlg.querySelector(".ig-addwrap"),
-    field: ignDlg.querySelector(".ig-field"), err: ignDlg.querySelector(".ig-err"), addBtn: ignDlg.querySelector(".ig-add-btn"), all: ignDlg.querySelectorAll(".ig-all"), live: ignDlg.querySelector("#ig-live") };
-  ignSetKind(ign.kind);
+  const list = '<div class="ig-list">' + ign.rows.map(ignRowHtml).join("") + "</div>";
+  if (!ign.all) {
+    root.innerHTML = '<div class="ig-body"><div class="ig-inner">' + list + '<p class="ig-empty">' + esc(t("js.networks.ui.ign_none")) + '</p></div></div><div class="vh" role="status" aria-live="polite"></div>';
+  } else {
+    const kinds = ["mac", "ip", "name"].map(function (k) {
+      return '<button type="button" class="pill" data-ign-kind="' + k + '" aria-pressed="' + (k === ign.kind) + '">' + esc(t(k === "name" ? "js.ha.ign.pill_name" : "js.ha.ign.kind_" + k)) + "</button>";
+    }).join("");
+    root.innerHTML = '<div class="ig-top"><div class="mi-titles"><h3 class="mi-title" id="ig-all-title">' + esc(t("js.networks.ui.all_title")) + '</h3><div class="mi-sub">' + esc(t("js.networks.ui.all_sub")) + "</div></div>" +
+      '<button type="button" class="icon-btn ig-add-btn rp" data-ign="toggle-add" aria-expanded="false" aria-controls="ig-add" title="' + esc(t("js.ha.ign.add")) + '" aria-label="' + esc(t("js.ha.ign.add")) + '">' + icon("plus") + "</button></div>" +
+      '<div class="ig-body"><div class="ig-inner">' +
+      '<div class="ig-addwrap" id="ig-add"><div><form class="ig-add" novalidate><div class="ig-kinds" role="group" aria-label="' + esc(t("js.ha.ign.kind_label")) + '">' + kinds + "</div>" +
+      '<div class="ig-line"><input class="ig-field" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="ig-err"><button type="submit" class="btn filled rp">' + esc(t("js.ha.ign.go")) + "</button></div>" +
+      '<div class="ig-err hint" id="ig-err" aria-live="polite"></div></form></div></div>' + list +
+      '<div class="ig-empty"><div class="empty-ic">' + icon("eye-off") + "</div><h3>" + esc(t("js.ha.ign.empty")) + "</h3></div></div></div>" +
+      '<div class="mi-actions"><button type="button" class="btn text ig-all rp" data-ign="all" data-bulk="restore">' + esc(t("js.ha.ign.restore_all")) +
+      '</button><button type="button" class="btn text ig-all danger rp" data-ign="all" data-bulk="forget">' + esc(t("js.ha.ign.forget_all")) + "</button></div>" +
+      '<div class="vh" role="status" aria-live="polite"></div>';
+  }
+  ign.ui = { list: root.querySelector(".ig-list"), empty: root.querySelector(".ig-empty"), addWrap: root.querySelector(".ig-addwrap"), field: root.querySelector(".ig-field"),
+    err: root.querySelector(".ig-err"), addBtn: root.querySelector(".ig-add-btn"), all: root.querySelectorAll(".ig-all"), live: root.querySelector('[role="status"]') };
+  if (ign.all) ignSetKind(ign.kind);
   ignRefresh();
 }
-function ignBar() { if (ign.ui) ignDlg.style.setProperty("--ig-sb", (ign.ui.scroll.offsetWidth - ign.ui.scroll.clientWidth) + "px"); }   // the + sits above the dots: the right edge follows the scroll bar
 function ignRefresh() {
   const n = ign.rows.length;
   [].forEach.call(ign.ui.all, function (b) { b.hidden = !(n >= 2 || (ign.bulk && n >= 1)); });
   ign.ui.empty.classList.toggle("on", n === 0 && !ign.ui.list.querySelector(".ig-item"));
-  ignBar();
 }
 function ignSay(s) { const l = ign.ui && ign.ui.live; if (!l) return; l.textContent = ""; setTimeout(function () { l.textContent = s; }, 30); }
 function ignRow(id) { return ign.rows.find(function (r) { return r.id === id; }) || null; }
@@ -107,17 +117,14 @@ function ignDrop(id) {                 // the row leaves the list (the server is
 // --- what the server is asked
 function ignCall(r, kind) {
   if (kind === "restore") {
-    return r.api.id ? api("/api/ignored/" + encodeURIComponent(r.api.id), { method: "DELETE" }).then(function (x) { S.ign.items = (x && x.items) || []; })
+    return r.api.id ? api("/api/ignored/" + encodeURIComponent(r.api.id), { method: "DELETE" }).then(function (x) { setItems(x && x.items); })
       : api("/api/new-devices/unignore", { method: "POST", json: { mac: r.api.mac } }).then(function (x) { S.ign.macs = Array.isArray(x) ? x : []; });
   }
-  return api("/api/ignored/forget", { method: "POST", json: r.api }).then(function (x) { S.ign.items = (x && x.items) || []; S.ign.macs = (x && x.macs) || []; });
+  return api("/api/ignored/forget", { method: "POST", json: r.api }).then(function (x) { setItems(x && x.items); S.ign.macs = (x && x.macs) || []; });
 }
 function ignFailed() {
   snack(t("js.ha.toast.error"), { kind: "error" });
-  Promise.all([api("/api/ignored"), api("/api/new-devices/ignored")]).then(function (res) {
-    S.ign = { items: (res[0] && res[0].items) || [], macs: Array.isArray(res[1]) ? res[1] : [] };
-    if (ignDlg.open) ignBuild();
-  }).catch(function () { /* the next opening reads it again */ });
+  refreshIgnored().then(function () { if (ign.root) ignBuild(); });
 }
 
 // --- ROWS: a countdown each
@@ -148,8 +155,8 @@ function ignFinishRow(id, silent) {
   const said = t(f.kind === "restore" ? "js.ha.ign.restored" : "js.ha.ign.forgot") + ": " + r.title;
   if (!silent) {
     snack(said); ignSay(said);
-    var fb = next && next.querySelector('[data-ign="more"]');
-    if (!ign.menu) (fb || ign.ui.addBtn).focus();
+    var fb = (next && next.querySelector('[data-ign="more"]')) || ign.ui.addBtn;
+    if (!ign.menu && fb) fb.focus();
   }
 }
 function ignFinishAllRows(silent) { Object.keys(ign.pend).forEach(function (id) { ignFinishRow(id, silent); }); }
@@ -181,7 +188,7 @@ function ignFinishBulk(silent) {
   rows.forEach(function (r) { ignDrop(r.id); });
   ignBulkReset(); ignLock();
   rows.reduce(function (p, r) { return p.then(function () { return ignCall(r, f.kind); }); }, Promise.resolve()).catch(ignFailed);
-  if (!silent && n) { var said = t(f.kind === "restore" ? "js.ha.ign.restored_n" : "js.ha.ign.forgot_n", { n: n }); snack(said); ignSay(said); ign.ui.addBtn.focus(); }
+  if (!silent && n) { var said = t(f.kind === "restore" ? "js.ha.ign.restored_n" : "js.ha.ign.forgot_n", { n: n }); snack(said); ignSay(said); if (ign.ui.addBtn) ign.ui.addBtn.focus(); }
 }
 function ignCancelBulk() {
   const f = ign.bulk; if (!f) return;
@@ -210,7 +217,7 @@ function ignOpenMenu(btn) {
   m.className = "menu ig-menu"; m.setAttribute("role", "menu"); m.setAttribute("aria-label", t("js.ha.ign.more"));
   m.innerHTML = '<button type="button" class="menu-item" role="menuitem" tabindex="-1" data-id="' + esc(id) + '" data-do="restore">' + ignInner("restore") + "</button>" +
     '<button type="button" class="menu-item danger" role="menuitem" tabindex="-1" data-id="' + esc(id) + '" data-do="forget">' + ignInner("forget") + "</button>";
-  ignDlg.appendChild(m); ign.menu = m; ign.menuBtn = btn; btn.setAttribute("aria-expanded", "true");
+  viewEl.appendChild(m); ign.menu = m; ign.menuBtn = btn; btn.setAttribute("aria-expanded", "true");
   const f = ign.pend[id];
   if (f) ignPaint(m.querySelector('[data-do="' + f.kind + '"]'), Date.now() - f.start);
   ignLock();
@@ -229,14 +236,14 @@ function ignErr(msg) {
 }
 function ignSetKind(k) {
   const u = ign.ui; ign.kind = k;
-  [].forEach.call(ignDlg.querySelectorAll(".ig-kinds .pill"), function (p) { p.setAttribute("aria-pressed", p.getAttribute("data-ign-kind") === k); });
+  [].forEach.call(ign.root.querySelectorAll(".ig-kinds .pill"), function (p) { p.setAttribute("aria-pressed", p.getAttribute("data-ign-kind") === k); });
   u.field.placeholder = t("js.ha.ign.ph_" + k); u.field.setAttribute("aria-label", t(k === "name" ? "js.ha.ign.pill_name" : "js.ha.ign.kind_" + k));
   u.field.inputMode = k === "ip" ? "decimal" : "text"; u.field.value = ""; ignErr("");
 }
 function ignToggleAdd(open) {
   const u = ign.ui; open = open === undefined ? !u.addWrap.classList.contains("open") : open;
   u.addWrap.classList.toggle("open", open); u.addBtn.setAttribute("aria-expanded", String(open));
-  if (open) { u.scroll.scrollTop = 0; setTimeout(function () { u.field.focus({ preventScroll: true }); }, 60); } else { ignErr(""); u.field.value = ""; }
+  if (open) setTimeout(function () { u.field.focus({ preventScroll: true }); }, 60); else { ignErr(""); u.field.value = ""; }
 }
 function ignSubmit() {
   let u = ign.ui, v = u.field.value.trim(), kind = ign.kind, value;
@@ -252,48 +259,52 @@ function ignSubmit() {
     if (!v) return ignErr(t("js.ha.ign.err_name"));
     value = v;
   }
-  const dup = ign.rows.some(function (r) { return r.source === "search" && r.kind === kind && ((r.mac || r.ip || r.name) + "").toLowerCase() === value.toLowerCase(); });
+  const dup = ignRowsFrom(S.ign).some(function (r) { return r.source === "search" && r.kind === kind && ((r.mac || r.ip || r.name) + "").toLowerCase() === value.toLowerCase(); });
   if (dup) return ignErr(t("js.ha.ign.err_dup"));
   const before = {}; S.ign.items.forEach(function (x) { before[x.id] = 1; });
   api("/api/ignored", { method: "POST", json: { kind: kind, value: value, label: value } }).then(function (res) {
-    S.ign.items = (res && res.items) || [];
+    setItems(res && res.items);
     const added = S.ign.items.filter(function (x) { return !before[x.id]; })[0];
     ignToggleAdd(false);
     if (!added) return;
     const row = ignRowsFrom({ items: [added], macs: [] })[0];
-    ign.rows.unshift(row); ignInsert(row, true); ignRefresh(); u.scroll.scrollTop = 0; u.addBtn.focus();
+    if (ign.filter(row)) { ign.rows.unshift(row); ignInsert(row, true); ignRefresh(); } else snack(t("js.ha.ign.add") + ": " + row.title);     // an address of a network: listed there
+    u.addBtn.focus();
     ignSay(t("js.ha.ign.add") + ": " + row.title);
   }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
 }
 
-// The two lists of ignored devices (the ones of a search and the ones seen on the network), asked together.
+// The two lists of ignored devices (the ones of a search and the ones seen on the network), asked together. Never fails: on an error the
+// lists stay as they were (empty the first time).
 export function refreshIgnored() {
   return Promise.all([api("/api/ignored"), api("/api/new-devices/ignored")]).then(function (res) {
     S.ign = { items: (res[0] && res[0].items) || [], macs: Array.isArray(res[1]) ? res[1] : [] };
-  });
-}
-// How many devices are ignored, for the number in the menu (0 while the lists have not been asked yet).
-export function ignoredCount() {
-  return S.ign ? (S.ign.items || []).length + (S.ign.macs || []).length : 0;
+  }, function () { S.ign = S.ign || { items: [], macs: [] }; });
 }
 
-// --- opening and closing
-export function openIgnored() {
-  refreshIgnored().then(function () {
-    ignBuild();
-    if (!ignDlg.open) {
-      if (typeof ignDlg.showModal === "function") ignDlg.showModal(); else ignDlg.setAttribute("open", "");
-      if (snacksEl.children.length) raiseSnacks();
-    }
-    ignBar();
-  }).catch(function () { snack(t("js.ha.toast.error"), { kind: "error" }); });
+// --- the place they are shown: one at a time
+// root: the element to fill; filter(row): which rows belong there; all: the box «In every network» (field to ignore by hand, group buttons).
+export function mountIgnored(root, filter, all) {
+  leaveIgnored();
+  ign.root = root; ign.filter = filter; ign.all = !!all;
+  ignBuild();
 }
-function closeIgnored() {
-  ignFinishAllRows(true); ignFinishBulk(true); ignCloseMenu(false);        // what is counting ends in silence
-  if (ignDlg.open && typeof ignDlg.close === "function") ignDlg.close(); else ignDlg.removeAttribute("open");
+export function mountedIn() { return ign.root; }
+// Leaving the place: what is counting ends in silence (as when the window of before closed), the menu closes.
+export function leaveIgnored() {
+  if (!ign.root) return;
+  ignFinishAllRows(true); ignFinishBulk(true); ignCloseMenu(false);
+  ign.root = null; ign.ui = null;
 }
-ignDlg.addEventListener("click", function (e) {
-  if (e.target === ignDlg) return closeIgnored();
+// Escape: first the menu of a row, then the field to ignore by hand. True when it was used here.
+export function ignoredEscape() {
+  if (ign.menu) { ignCloseMenu(true); return true; }
+  if (ign.ui && ign.ui.addWrap && ign.ui.addWrap.classList.contains("open")) { ignToggleAdd(false); ign.ui.addBtn.focus(); return true; }
+  return false;
+}
+function mine(e) { return !!ign.root && (ign.root.contains(e.target) || (!!ign.menu && ign.menu.contains(e.target))); }
+viewEl.addEventListener("click", function (e) {
+  if (!mine(e)) return;
   const kb = e.target.closest("[data-ign-kind]");
   if (kb) { ignSetKind(kb.getAttribute("data-ign-kind")); ign.ui.field.focus(); return; }
   const mi = e.target.closest(".ig-menu .menu-item");
@@ -305,17 +316,17 @@ ignDlg.addEventListener("click", function (e) {
   }
   const b = e.target.closest("[data-ign]"); if (!b) return;
   const a = b.getAttribute("data-ign");
-  if (a === "close") closeIgnored();
-  else if (a === "toggle-add") ignToggleAdd();
+  if (a === "toggle-add") ignToggleAdd();
   else if (a === "more") { if (ign.menuBtn === b) ignCloseMenu(true); else ignOpenMenu(b); }
   else if (a === "all") {
     if (b.classList.contains("counting")) ignCancelBulk();
     else if (b.getAttribute("aria-disabled") !== "true") ignStartBulk(b);
   }
 });
-ignDlg.addEventListener("submit", function (e) { e.preventDefault(); ignSubmit(); });
-ignDlg.addEventListener("input", function (e) { if (ign.ui && e.target === ign.ui.field) { guidedInput(ign.ui.field, ign.kind); ignErr(""); } });
-ignDlg.addEventListener("keydown", function (e) {
+viewEl.addEventListener("submit", function (e) { if (mine(e)) { e.preventDefault(); ignSubmit(); } });
+viewEl.addEventListener("input", function (e) { if (ign.ui && e.target === ign.ui.field) { guidedInput(ign.ui.field, ign.kind); ignErr(""); } });
+viewEl.addEventListener("keydown", function (e) {
+  if (!mine(e)) return;
   if (ign.ui && e.target === ign.ui.field && guidedKey(e, ign.ui.field, ign.kind)) { ignErr(""); return; }
   const b = e.target.closest && e.target.closest('[data-ign="more"]');
   if (b && (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ")) { e.preventDefault(); e.stopPropagation(); ignOpenMenu(b); return; }
@@ -329,14 +340,8 @@ ignDlg.addEventListener("keydown", function (e) {
     else if (e.key === "Tab") { ignCloseMenu(true); e.preventDefault(); }
     return;
   }
-  if (e.key === "Escape" && ign.ui && ign.ui.addWrap.classList.contains("open")) { e.preventDefault(); e.stopPropagation(); ignToggleAdd(false); ign.ui.addBtn.focus(); }
-});
-ignDlg.addEventListener("cancel", function (e) {
-  if (ign.menu) { e.preventDefault(); ignCloseMenu(true); }
-  else if (ign.ui && ign.ui.addWrap.classList.contains("open")) { e.preventDefault(); ignToggleAdd(false); ign.ui.addBtn.focus(); }
-  else { ignFinishAllRows(true); ignFinishBulk(true); }
 });
 document.addEventListener("pointerdown", function (e) { if (ign.menu && !ign.menu.contains(e.target) && !e.target.closest('[data-ign="more"]')) ignCloseMenu(false); }, true);
-ignDlg.addEventListener("scroll", function () { if (ign.menu) ignCloseMenu(false); }, true);
-window.addEventListener("resize", function () { if (ign.menu) ignCloseMenu(false); ignBar(); });
+viewEl.addEventListener("scroll", function () { if (ign.menu) ignCloseMenu(false); }, true);
+window.addEventListener("resize", function () { if (ign.menu) ignCloseMenu(false); });
 

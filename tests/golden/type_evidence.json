@@ -8,6 +8,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:InternetGatewayDevice",
 "group": "router",
 "pts": 8,
@@ -74,6 +80,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:22",
@@ -577,7 +589,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -708,7 +720,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -1024,6 +1036,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -1097,6 +1115,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "onvif",
@@ -1357,6 +1381,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:InternetGatewayDevice",
 "group": "router",
 "pts": 8,
@@ -1394,7 +1424,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -1438,6 +1468,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_spotify-connect._tcp",
@@ -1508,6 +1544,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaServer",
@@ -2010,6 +2052,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "api:roku",
 "group": "media",
 "pts": 8,
@@ -2041,7 +2089,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -2091,7 +2139,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -2314,6 +2362,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:InternetGatewayDevice",
 "group": "router",
 "pts": 8,
@@ -2412,6 +2466,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:MediaServer",
 "group": "server",
 "pts": 2,
@@ -2498,6 +2558,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaRenderer",
@@ -2675,6 +2741,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "rtsp",
@@ -3063,6 +3135,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:Printer",
 "group": "printer",
 "pts": 8,
@@ -3428,6 +3506,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "onvif",
 "group": "camera",
 "pts": 8,
@@ -3564,6 +3648,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -3613,7 +3703,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -3981,6 +4071,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -4254,6 +4350,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_spotify-connect._tcp",
 "group": "audio",
 "pts": 1,
@@ -4320,6 +4422,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:InternetGatewayDevice",
@@ -4423,6 +4531,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaRenderer",
@@ -5366,6 +5480,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:9100",
 "group": "printer",
 "pts": 1,
@@ -5520,6 +5640,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "cast",
@@ -5752,6 +5878,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_smb._tcp",
 "group": "server",
 "pts": 2,
@@ -5980,6 +6112,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "onvif",
@@ -6213,6 +6351,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaRenderer",
@@ -6514,6 +6658,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "rtsp",
@@ -6885,7 +7035,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -6928,6 +7078,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:InternetGatewayDevice",
@@ -7066,6 +7222,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "api:sonos",
@@ -7406,6 +7568,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:5683",
 "group": "iot",
 "pts": 1,
@@ -7707,6 +7875,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_printer._tcp",
 "group": "printer",
 "pts": 8,
@@ -7991,6 +8165,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -8229,6 +8409,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "brand",
@@ -8602,7 +8788,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -8625,6 +8811,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "rtsp",
@@ -9052,6 +9244,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:InternetGatewayDevice",
@@ -9681,6 +9879,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:1883",
 "group": "iot",
 "pts": 1,
@@ -9936,6 +10140,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:InternetGatewayDevice",
 "group": "router",
 "pts": 8,
@@ -10035,6 +10245,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_smb._tcp",
@@ -10168,6 +10384,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "rtsp",
@@ -10540,6 +10762,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:MediaRenderer",
 "group": "media",
 "pts": 8,
@@ -10777,6 +11005,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:MediaRenderer",
 "group": "media",
 "pts": 8,
@@ -10844,6 +11078,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "words",
@@ -10927,6 +11167,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_ipp._tcp",
@@ -11033,6 +11279,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaServer",
@@ -11346,7 +11598,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -11403,7 +11655,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -11535,6 +11787,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:Printer",
@@ -11772,7 +12030,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -11808,6 +12066,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_smb._tcp",
@@ -12642,7 +12906,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -12664,6 +12928,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:5683",
@@ -12932,6 +13202,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:22",
@@ -13949,6 +14225,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "words",
 "group": "server",
 "pts": 3,
@@ -14429,6 +14711,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "cast",
@@ -14983,6 +15271,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "ha_entities",
 "group": "camera",
 "pts": 4,
@@ -15098,6 +15392,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_printer._tcp",
@@ -15229,6 +15529,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_spotify-connect._tcp",
@@ -15576,6 +15882,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -15666,6 +15978,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaServer",
@@ -15820,6 +16138,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "cast",
@@ -16078,6 +16402,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_spotify-connect._tcp",
 "group": "audio",
 "pts": 1,
@@ -16209,6 +16539,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:554",
 "group": "camera",
 "pts": 1,
@@ -16260,7 +16596,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -16984,6 +17320,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "api:sonos",
 "group": "audio",
 "pts": 8,
@@ -17027,7 +17369,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -17164,6 +17506,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:Printer",
@@ -17635,6 +17983,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "cast",
@@ -18221,7 +18575,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -18486,6 +18840,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:9100",
 "group": "printer",
 "pts": 1,
@@ -18525,6 +18885,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_smb._tcp",
@@ -18686,6 +19052,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:MediaServer",
 "group": "server",
 "pts": 2,
@@ -18711,7 +19083,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -18740,6 +19112,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_printer._tcp",
@@ -18870,6 +19248,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:InternetGatewayDevice",
@@ -19178,6 +19562,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "rtsp",
@@ -19791,6 +20181,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:InternetGatewayDevice",
 "group": "router",
 "pts": 8,
@@ -19988,6 +20384,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:554",
 "group": "camera",
 "pts": 1,
@@ -20019,7 +20421,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -20234,6 +20636,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_spotify-connect._tcp",
 "group": "audio",
 "pts": 1,
@@ -20279,6 +20687,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "svc:_spotify-connect._tcp",
@@ -20349,6 +20763,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_smb._tcp",
 "group": "server",
 "pts": 2,
@@ -20403,6 +20823,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:8883",
@@ -20585,6 +21011,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_ipp._tcp",
 "group": "printer",
 "pts": 8,
@@ -20752,7 +21184,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -20945,6 +21377,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "upnp:MediaRenderer",
 "group": "media",
 "pts": 8,
@@ -21075,6 +21513,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "onvif",
 "group": "camera",
 "pts": 8,
@@ -21142,6 +21586,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "api:roku",
@@ -21227,6 +21677,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "cast",
@@ -21384,7 +21840,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -21653,6 +22109,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_printer._tcp",
 "group": "printer",
 "pts": 8,
@@ -21719,6 +22181,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaRenderer",
@@ -21867,6 +22335,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "svc:_smb._tcp",
 "group": "server",
 "pts": 2,
@@ -21934,6 +22408,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:9100",
@@ -22211,6 +22691,12 @@
 "source": "ruolo di rete"
 },
 {
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
+},
+{
 "family": "port:8883",
 "group": "iot",
 "pts": 1,
@@ -22271,6 +22757,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "upnp:MediaServer",
@@ -22405,6 +22897,12 @@
 "group": "router",
 "pts": 10,
 "source": "ruolo di rete"
+},
+{
+"family": "gateway",
+"group": "router",
+"pts": 10,
+"source": "router di casa"
 },
 {
 "family": "port:554",
@@ -22705,7 +23203,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -22961,7 +23459,7 @@
 },
 {
 "family": "words",
-"group": "router",
+"group": "iot",
 "pts": 4,
 "source": "parola: hub"
 },

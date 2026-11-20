@@ -4,6 +4,7 @@ The main network is derived from the host at every call (the interface chosen in
 nobody can change it. The networks written by the person come from storage/network_store.py (networks.json) and follow it; with no file the
 world is the main network alone, and allowed() gives exactly what netutil.filter_local_ips allows (tests/check_networks_registry.py)."""
 import ipaddress
+import time
 
 from .. import netutil
 from ..applog import logger
@@ -101,24 +102,48 @@ async def current() -> Scope:
 
 async def allowed(ips: list) -> list:
     """The addresses of `ips` that may be searched in depth, in the order given: those of a confirmed network whose devices may be touched
-    fully (the main one, or a written network reached through the host's own interface with touch "full"). With the main network alone:
+    fully (the main one, or a written network reached through the host's own interface with touch "full"), or for their ports and model
+    (a network with touch "ports": Scope.searchable). With the main network alone:
     exactly netutil.filter_local_ips, the warning in the log included, and the same ValueError on a value that is not an address (its callers
     check first; tests/check_networks_registry.py)."""
     scope = await current()
     for ip in ips:
         ipaddress.ip_address(ip)
     kept = scope.searchable(ips)
-    rejected = [ip for ip in ips if ip not in set(kept)]
+    kept_set = set(kept)
+    rejected = [ip for ip in ips if ip not in kept_set]
     if rejected:
         logger.warning("Scansione rifiutata, IP fuori dalla rete locale %s: %s", scope.networks[0].cidr, ", ".join(rejected))
     return kept
+
+
+def through_router(ip) -> bool:
+    """The address is searched through the router (Scope.through_router, with the main network last read); False while nothing is known."""
+    cidr = netutil.last_network
+    return bool(cidr) and scope_of(cidr).through_router(ip)
+
+
+_containers: dict = {"at": None, "nets": ()}
+CONTAINERS_TTL_S = 300      # a container bridge comes and goes with a container: read again every 5 minutes, not at every address
+
+
+def _host_containers() -> tuple:
+    """The networks of the host's container bridges (legacy.container_networks), read from /sys at most every CONTAINERS_TTL_S."""
+    now = time.monotonic()
+    if _containers["at"] is None or now - _containers["at"] >= CONTAINERS_TTL_S:
+        try:
+            _containers["nets"] = legacy.container_networks(host_read.read_host())
+        except OSError:
+            _containers["nets"] = ()
+        _containers["at"] = now
+    return _containers["nets"]
 
 
 def _off_limits(ip, scope: Scope) -> bool:
     network = scope.held_by(ip)
     if network is not None:
         return network.state == "paused"
-    return not legacy.admissible(ip)
+    return not legacy.admissible(ip, _host_containers())
 
 
 def holds(network: Network, ip) -> bool:
@@ -165,7 +190,7 @@ def propose(ips) -> list:
         return []
     main_net = main_network(cidr)
     stored = []
-    for candidate in legacy.proposals(ips, scope_of(cidr)):
+    for candidate in legacy.proposals(ips, scope_of(cidr), _host_containers()):
         if (candidate["cidr"], cidr) in _not_proposed:
             continue
         try:

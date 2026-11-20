@@ -58,7 +58,7 @@ exports.openPage = function openPage(lang, debug) {
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
   const kit = { win, doc, L, server, calls, errors, wait, q, qa, failed: 0 };
-  kit.check = (cond, msg) => { if (cond) console.log("ok:", msg); else { kit.failed++; console.log("FALLITO:", msg); } };
+  kit.check = (cond, msg) => { if (cond) console.log("ok:", msg); else { kit.failed++; console.log("FAILED:", msg); } };
   kit.click = async (sel) => { const el = typeof sel === "string" ? q(sel) : sel; if (!el) throw new Error("manca " + sel); el.click(); await wait(20); };
   kit.dlg = () => q("#exportdlg");
   kit.openWindow = async () => { await kit.click("#btn-menu"); await kit.click("[data-export]"); await wait(60); };
@@ -66,7 +66,7 @@ exports.openPage = function openPage(lang, debug) {
   kit.text = (key, n) => { const base = "js.ha.export.vlan." + key; const k = n === undefined ? base : base + (n === 1 ? "_one" : "_other"); return (L[k] || "").replace("{n}", n); };
   kit.finish = () => {
     if (errors.length) { console.log("errori della pagina:\n" + errors.join("\n")); kit.failed++; }
-    console.log(kit.failed ? kit.failed + " verifiche FALLITE" : "TUTTO OK");
+    console.log(kit.failed ? kit.failed + " checks FAILED" : "ALL OK");
     process.exit(kit.failed ? 1 : 0);
   };
   return kit;

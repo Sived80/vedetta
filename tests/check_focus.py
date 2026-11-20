@@ -73,4 +73,4 @@ devices_config.set_override("d1", "focus_note", None)
 with zipfile.ZipFile(io.BytesIO(export.build_zip())) as z:
     assert "state/focus.json" not in z.namelist() and json.loads(z.read("manifest.json"))["focus"]["devices"] == 0
 state.devices.clear()
-print("TUTTO OK")
+print("ALL OK")

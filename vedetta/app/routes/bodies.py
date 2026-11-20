@@ -14,3 +14,12 @@ async def json_dict(request: Request, message_key: str = "error.invalid_body") -
     if not isinstance(body, dict):
         raise HTTPException(400, i18n.t(message_key))
     return body
+
+
+def list_field(body: dict, key: str, item_type: type) -> list:
+    """body[key], an empty list when absent, when it is a list of item_type; otherwise the same translated 400 (a number or a list of lists used
+    to give a 500 with a traceback, deep inside the route)."""
+    value = body.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(v, item_type) for v in value):
+        raise HTTPException(400, i18n.t("error.invalid_body"))
+    return value

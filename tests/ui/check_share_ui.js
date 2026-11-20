@@ -22,7 +22,7 @@ const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 function openPage(mqtt, failSave) {
   const errors = [], posts = [];
@@ -107,6 +107,6 @@ function openPage(mqtt, failSave) {
   check(!texts(bad).includes(words["js.ha.share.added"]) && !texts(bad).includes(words["js.ha.share.removed"]), "salvataggio non riuscito: nessun messaggio di successo (dice: " + JSON.stringify(texts(bad)) + ")");
   bad.dom.window.close();
 
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

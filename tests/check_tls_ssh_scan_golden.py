@@ -102,4 +102,4 @@ assert sum(1 for o in out if isinstance(o["res"], dict) and o["res"]) > 500
 assert sum(1 for o in out if isinstance(o["res"], list)) >= 1
 assert any(len(o["log"][0][1][2].split(",")) == 12 for o in out if o["log"])
 assert any(set(o["res"]) == {"tls_subject", "tls_issuer", "ssh_hostkey"} for o in out if isinstance(o["res"], dict))
-print("TUTTO OK")
+print("ALL OK")

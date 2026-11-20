@@ -304,4 +304,4 @@ for k in ("later", "cancel", "trigger", "publish", "soon"):
 for k in ("sleep", "publish", "subscribe", "unsubscribe"):
     assert s["run_" + k] > 100, s
 assert s["run_sub2"] > 100 and s["run_new"] > 100 and s["run_exc"] > 5, s
-print("TUTTO OK")
+print("ALL OK")

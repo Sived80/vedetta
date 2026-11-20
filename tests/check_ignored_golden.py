@@ -160,7 +160,7 @@ def main():
         old = json.loads(GOLDEN.read_text(encoding="utf-8"))
         bad = [i for i, (a, b) in enumerate(zip(old["digests"], digests)) if a != b]
         assert old["n"] == N and not bad, ("differences at cases", bad[:5], json.dumps(cases[bad[0]], default=str)[:800] if bad else "")
-    print("TUTTO OK")
+    print("ALL OK")
 
 
 main()

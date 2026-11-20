@@ -14,4 +14,4 @@ for path in sorted(FRONTEND.rglob("*.js")):
         assert "<circle" not in text[text.index('preserveAspectRatio="none"'):][:400], f"{path.name}: a circle inside a stretched SVG"
 css = (FRONTEND / "ha" / "css" / "80-more-info.css").read_text(encoding="utf-8")
 assert "vector-effect: non-scaling-stroke" in css, "the stretched latency chart needs a stroke that does not scale"
-print("TUTTO OK" if found else "TUTTO OK (nothing stretched)")
+print("ALL OK" if found else "ALL OK (nothing stretched)")

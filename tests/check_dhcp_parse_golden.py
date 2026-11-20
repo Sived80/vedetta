@@ -104,4 +104,4 @@ assert any("ip_from" in r[1] and r[1]["ip_from"] == "ciaddr" for r in parsed) an
 assert any("server_id" in r[1] for r in parsed) and any("prl" in r[1] for r in parsed) and any("vendor_class" in r[1] for r in parsed)
 fams = {r[2] for r in out["family"]}
 assert {"ios", "macos", "windows", "android", "linux", "chromeos", None} <= fams, fams
-print("TUTTO OK")
+print("ALL OK")

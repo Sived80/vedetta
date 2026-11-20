@@ -15,5 +15,8 @@
   "networks.error.E_DUP_ID": "Síť s tímto názvem již existuje",
   "networks.error.E_OVERLAP": "Překrývá se s jinou sítí",
   "networks.error.E_BAD_EXCLUDE": "Neplatné vyloučené adresy",
-  "networks.error.not_found": "Síť nenalezena"
+  "networks.error.E_BAD_NAME": "Napište název o nejvýše 32 znacích, bez mezery na začátku nebo na konci",
+  "networks.error.E_BAD_VLAN": "VLAN je číslo od 1 do 4094",
+  "networks.error.not_found": "Síť nenalezena",
+  "networks.main_name": "Domov"
 }

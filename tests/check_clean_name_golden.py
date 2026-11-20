@@ -42,4 +42,4 @@ for i, (x, y) in enumerate(zip(out, want)):
 res = [r for _, r in out]
 assert sum(1 for r in res if r is None) > 200 and sum(1 for r in res if isinstance(r, str)) > 200, "scenarios too uniform"
 assert not any(isinstance(r, dict) for r in res)
-print("TUTTO OK")
+print("ALL OK")

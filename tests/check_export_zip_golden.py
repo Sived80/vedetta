@@ -144,4 +144,4 @@ for sc in want:
 a = out["all"]["entries"]
 assert out["corrupt"]["omitted"] and len(json.loads(out["corrupt"]["entries"]["state/focus.json"])["devices"]) == 1 and "state/journal.json" in a, "scenarios too uniform"
 assert "state/focus.json" in a and "data/vedetta.db" in a and "data/blob.bin" not in a and "data/api_key.json" not in a and out["bigdb"]["entries"]["manifest.json"]["notes"], "scenarios too uniform"
-print("TUTTO OK")
+print("ALL OK")

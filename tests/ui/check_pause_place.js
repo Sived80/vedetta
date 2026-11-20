@@ -5,14 +5,14 @@ const path = require("path");
 const { pathToFileURL } = require("url");
 
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
 (async () => {
   let mod;
   try {
     mod = await import(pathToFileURL(path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "js", "pause-place.js")).href);
   } catch (e) {
-    console.log("FALLITO: il modulo pause-place.js non si carica: " + e.message);
+    console.log("FAILED: il modulo pause-place.js non si carica: " + e.message);
     process.exit(1);
   }
   const { pausePlacement, PAUSE_MAX_W, PAUSE_MIN_W, PAUSE_EDGE } = mod;
@@ -48,6 +48,6 @@ function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; 
   p = pausePlacement({ left: 700, width: 28 }, { left: 0, right: 1500 }, 1600);
   check(p.width === PAUSE_MAX_W, "mai piu' largo di 232 px, anche con molto posto");
 
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

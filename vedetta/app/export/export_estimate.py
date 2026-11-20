@@ -8,6 +8,7 @@ from .. import paths
 import re
 import sqlite3
 from ..state import state
+import threading
 import time
 
 
@@ -99,9 +100,10 @@ def _period_db(path: Path, since: float, until: float) -> None:
             except sqlite3.OperationalError:
                 pass                                              # a table an older database does not have
         run("DELETE FROM presence_events WHERE ts > ? OR (ts < ? AND id NOT IN (SELECT MAX(id) FROM presence_events WHERE ts < ? GROUP BY device_id))", until, since, since)
-        for table in ("scans", "latency", "mac_takeover"):
+        for table in ("scans", "latency", "mac_takeover", "identity_change"):
             run(f"DELETE FROM {table} WHERE ts < ? OR ts > ?", since, until)  # noqa: S608  table names from a fixed tuple
         run("DELETE FROM mac_memory WHERE last_seen < ? OR first_seen > ?", since, until)
+        run("DELETE FROM routed_seen WHERE last_seen < ? OR first_seen > ?", since, until)      # 1.0: the addresses behind the router seen in the period
         con.commit()
         con.execute("VACUUM")
     finally:
@@ -110,11 +112,21 @@ def _period_db(path: Path, since: float, until: float) -> None:
 
 # ------------------------------------------------------------------ how big it will be
 _est_cache: dict = {"key": None, "data": None, "at": 0.0}
+_est_lock = threading.Lock()
 
 
 def estimate() -> dict:
     """Bytes of raw data for each of the last HORIZON_DAYS days (index 0 = today), what is always in the file, and the limit:
-    the window uses them to say how big a period will be and to draw the columns."""
+    the window uses them to say how big a period will be and to draw the columns. One computation at a time: a request that
+    waited for another takes its result (the page asks again when it gets no answer, and each ask used to start it anew)."""
+    asked = time.time()
+    with _est_lock:
+        if _est_cache["data"] is not None and _est_cache["at"] >= asked:
+            return _est_cache["data"]
+        return _estimate()
+
+
+def _estimate() -> dict:
     _result, data_dir, key, daily, base, mid, add_, db_path, log_path = _open_estimate_buckets()
     if _result is not None:
         return _result
@@ -141,22 +153,36 @@ def _open_estimate_buckets():
     return None, data_dir, key, daily, base, mid, add_, db_path, log_path
 
 
+# the day of a row (0 = today) and its bytes, counted by the database: a history of weeks has millions of ping samples, and reading
+# them one by one took longer than the page waits
+_AGE = "CAST((? - ts) / 86400.0 AS INTEGER)"
+_DAY_SIZES = [f"SELECT {_AGE}, COUNT(*) * {size} FROM {table} WHERE ts >= ? AND ts < ? GROUP BY 1"  # noqa: S608  fixed names
+              for table, size in (("presence_events", 90), ("latency", 40), ("mac_takeover", 250))]
+_DAY_SIZES.append("SELECT CAST((? - ts) / 86400.0 AS INTEGER), SUM(COALESCE(length(result_json), 0) + 40) FROM scans WHERE ts >= ? AND ts < ? GROUP BY 1")
+
+
 def _add_database_row_sizes(db_path, add_, mid):
-    ts = None            # set below on some paths only
+    """Adds each day's bytes of the database rows (through add_, at the middle of that day). Returns None (kept for the callers)."""
     if not db_path.exists():
-        return ts
-    since = (mid - HORIZON_DAYS * 86400,)
+        return None
+    end = float(mid + 86400)
+    for age, nbytes in _day_sizes(db_path, (end, mid - HORIZON_DAYS * 86400, end)):
+        add_(end - (int(age) + 0.5) * 86400, int(nbytes or 0))
+    return None
+
+
+def _day_sizes(db_path, params) -> list:
+    """[(day, bytes)] of every table, read-only; [] when the database cannot be read."""
     try:
         con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
-        for table, size in (("presence_events", 90), ("latency", 40), ("mac_takeover", 250)):
-            for (ts,) in _rows(con, f"SELECT ts FROM {table} WHERE ts >= ?", since):  # noqa: S608  table names from a fixed tuple
-                add_(ts, size)
-        for ts, n in _rows(con, "SELECT ts, length(result_json) FROM scans WHERE ts >= ?", since):
-            add_(ts, int(n or 0) + 40)
-        con.close()
     except sqlite3.Error:
-        pass
-    return ts
+        return []
+    try:
+        return [row for sql in _DAY_SIZES for row in _rows(con, sql, params)]
+    except sqlite3.Error:
+        return []
+    finally:
+        con.close()
 
 
 def _rows(con, sql, params):

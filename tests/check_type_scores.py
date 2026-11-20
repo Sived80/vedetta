@@ -45,4 +45,4 @@ for device, expected in cases:
 # The router without a role (first moments after startup) does not become a PC because of SMB ports.
 roles._rt.roles.update(by_ip={}, types={})
 assert ha_data.infer_type(router) != "pc", ha_data.type_scores(router)
-print("TUTTO OK")
+print("ALL OK")

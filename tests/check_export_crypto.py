@@ -78,4 +78,4 @@ for plain in (False, True):
     assert r.status_code == 500 and b"export_failed" in r.body and b"disk full" not in r.body     # a clear answer, the reason goes to the log
 export.build_zip = good_build
 report_crypto.seal = real_seal
-print("TUTTO OK")
+print("ALL OK")

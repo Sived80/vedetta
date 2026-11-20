@@ -49,7 +49,7 @@ const dom = new JSDOM(html, {
 const doc = dom.window.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const click = (el) => el.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true, cancelable: true }));
 const on = () => doc.documentElement.hasAttribute("data-debug") && !!doc.getElementById("debug-badge");
 const off = () => !doc.documentElement.hasAttribute("data-debug") && !doc.getElementById("debug-badge");
@@ -92,6 +92,6 @@ const off = () => !doc.documentElement.hasAttribute("data-debug") && !doc.getEle
   check(off(), "tre tocchi troppo lenti (oltre due secondi) non contano");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors[0] : ""));
   dom.window.close();
-  console.log(failed ? "FALLITI: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

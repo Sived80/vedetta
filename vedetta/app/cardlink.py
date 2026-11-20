@@ -18,7 +18,9 @@ an installation that upgrades (at the first cycle, source "seed") and for the ca
 Every "no" has a code (UNLINKED). A link that exists is never moved to another MAC (decision 4A): it is deleted when its card is gone (or the id
 now belongs to another card: another seq), held while M names no single device or the card is off that network, and linked again when the cause
 goes. Another MAC taking the card's address does not touch it (P5: the card is not online by that MAC). The requests of P5 (requested): a link
-released when two cards of one phone are merged, and the gesture "this is a new device" (source "user"), offered only when it applies (offers)."""
+released when two cards of one phone are merged, and the gesture "this is a new device" (source "user"), offered only when it applies (offers).
+Step P10: when the linked MAC is a private MAC that rotated (the judge of identity says the new MAC is the same device), the link passes to the
+new MAC (successors, source "identity"): the one exception to decision 4A."""
 from . import macclassify
 from .recognition import same_device
 
@@ -75,6 +77,31 @@ def _relink(out: dict, card: dict | None, mac: str, now: float) -> None:
     out["links"][card["id"]] = row
     out["write"].append(row)
     out["delete"].append(card["id"])
+
+
+def successors(links: dict, succ: dict[str, str], cards: list[dict], now: float) -> dict:
+    """1.0 step P10 (decision 1A): the links whose MAC rotated pass to the new MAC (source "identity"), like the requests: {"links": the links after
+    them, "write", "delete", "moved": how many}. succ: {new MAC: old MAC} (maclayer.successions). An exception to decision 4A: the judge of
+    identity says the new MAC is the same device. Refused when the card is gone or has another seq, or the new MAC is another card's link there."""
+    by_id = {c["id"]: c for c in cards}
+    old_to_new = {_key(old): _key(new) for new, old in succ.items()}
+    out = {"links": dict(links), "write": [], "delete": [], "moved": 0}
+    for device_id in sorted(links):
+        new = old_to_new.get(links[device_id]["mac"])
+        if new and _may_move(out["links"], device_id, by_id.get(device_id), new):
+            moved = {**links[device_id], "mac": new, "state": "linked", "reason": None, "source": "identity", "since": now, "changed": now}
+            out["links"][device_id] = moved
+            out["write"].append(moved)
+            out["delete"].append(device_id)
+            out["moved"] += 1
+    return out
+
+
+def _may_move(links: dict, device_id: str, card: dict | None, mac: str) -> bool:
+    row = links[device_id]
+    if card is None or card.get("seq") != row["seq"]:
+        return False
+    return not any(r["mac"] == mac and r["network"] == row["network"] for d, r in links.items() if d != device_id)
 
 
 OFFER_NOW_S = 300         # an answer at most this old is "now" (one full sweep of the network)

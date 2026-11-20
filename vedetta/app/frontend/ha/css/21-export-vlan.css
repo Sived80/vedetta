@@ -43,10 +43,8 @@
 
   /* the guide: a sheet over the window: where to go, what to do, what you must see, what to do if it does not work */
   .xv-guide { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; background: var(--card-background-color, var(--primary-background-color)); border-radius: inherit; overflow: hidden; }
-  .xv-gt { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 12px 8px 24px; }
+  .xv-gt { display: flex; align-items: center; gap: 4px; padding: 8px 16px 8px 8px; }      /* the X first on the left, then the title, as in every window */
   .xv-gt h3 { margin: 0; font-size: 18px; font-weight: 500; }
-  .xv-x { border: 0; background: transparent; color: var(--focus-color); font: inherit; font-size: 14px; font-weight: 500; min-height: 40px; padding: 0 12px; border-radius: 20px; cursor: pointer; }
-  .xv-x:hover { background: color-mix(in srgb, var(--primary-color) 10%, transparent); }
   .xv-gb { overflow: auto; padding: 0 24px 20px; display: flex; flex-direction: column; gap: 14px; font-size: 14px; line-height: 1.5; }
   .xv-banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--secondary-background-color); border-left: 6px solid var(--focus-color); font-weight: 500; }
   .xv-banner .mdi { color: var(--focus-color); margin-top: 1px; }
@@ -75,7 +73,7 @@
   @media (prefers-reduced-motion: reduce) { .xv-spin { animation: none; } }
   @media (max-width: 480px) {
     .xv-pop { max-height: 72vh; }
-    .xv-gt { padding-left: 16px; } .xv-gb { padding: 0 14px 16px; }
+    .xv-gt { padding-left: 4px; } .xv-gb { padding: 0 14px 16px; }
     .xv-row { grid-template-columns: 1fr; gap: 3px; }
     .xv-gs { grid-template-columns: 1fr; row-gap: 8px; }
   }

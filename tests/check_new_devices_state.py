@@ -100,4 +100,4 @@ async def scenario():
 
 
 run(scenario())
-print("TUTTO OK")
+print("ALL OK")

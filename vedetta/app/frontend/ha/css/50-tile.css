@@ -69,6 +69,10 @@
   .tile-flag { position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     background: var(--primary-color); color: var(--text-primary-color, #fff); box-shadow: 0 0 0 2px var(--card-background-color); }
   .tile-flag .mdi { width: 12px; height: 12px; }
+  /* A device watched by the Sentinel ("Monitor"): small bell on the bottom left corner of its icon, the same look as the flag. */
+  .tile-watch { position: absolute; left: -5px; bottom: -5px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--primary-color); color: var(--text-primary-color, #fff); box-shadow: 0 0 0 2px var(--card-background-color); }
+  .tile-watch .mdi { width: 12px; height: 12px; }
   /* A device shared with Home Assistant: the sign of Home Assistant on the top left corner of its icon. */
   .tile-ha { position: absolute; left: -5px; top: -5px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     background: #18bcf2; color: #fff; box-shadow: 0 0 0 2px var(--card-background-color); }
@@ -81,6 +85,9 @@
   .tile-mark.br { right: -5px; bottom: -5px; }
   /* The flag of the report keeps the bottom right corner, as it always had: a card that is flagged and settling shows the clock on the bottom left. */
   .tile.flagged .tile-mark.br { right: auto; left: -5px; }
+  /* The marks of the user (Home Assistant top left, the bell bottom left, the flag bottom right) never move: flagged and watched, the
+     sign of the bottom corner (new, settling) is told only in the card. */
+  .tile.flagged.watched .tile-mark.br { display: none; }
   .tile-mark.analysing { background: var(--warning-color); }
   .tile-mark.settling { background: var(--secondary-text-color); }
   .tile-mark.unresolved { background: var(--primary-text-color); }

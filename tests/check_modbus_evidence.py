@@ -20,4 +20,4 @@ assert te.type_scores(with_api).get("iot", 0) >= te.MIN_TYPE_SCORE, te.type_scor
 # a port that is not Modbus stays as it was
 other = dict(card, scanned_ports=[{"label": "8081 · http", "confirmed": False, "category": "web"}])
 assert not [e for e in te.type_evidence(other) if e["family"].startswith("port:502")]
-print("TUTTO OK")
+print("ALL OK")

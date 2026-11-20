@@ -15,5 +15,8 @@
   "networks.error.E_DUP_ID": "Esiste già una rete con questo nome",
   "networks.error.E_OVERLAP": "Si sovrappone a un'altra rete",
   "networks.error.E_BAD_EXCLUDE": "Indirizzi esclusi non validi",
-  "networks.error.not_found": "Rete non trovata"
+  "networks.error.E_BAD_NAME": "Scrivi un nome di massimo 32 caratteri, senza spazi all'inizio o alla fine",
+  "networks.error.E_BAD_VLAN": "La VLAN è un numero da 1 a 4094",
+  "networks.error.not_found": "Rete non trovata",
+  "networks.main_name": "Casa"
 }

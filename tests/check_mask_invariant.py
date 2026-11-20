@@ -53,4 +53,4 @@ for _ in range(3000):
     line = f"x {ip.replace('.', sep)} y {rng.choice(['via', 'to', 'v', 'version', 'fw'])} {ip} z"
     out = a.text(line)
     assert a.leaks(out) == [], (line, out, a.leaks(out))
-print("TUTTO OK")
+print("ALL OK")

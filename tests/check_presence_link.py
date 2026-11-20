@@ -54,4 +54,4 @@ assert task_run({"online": True}, plain, "10.0.0.116") == {"online": False}
 assert task_run({"online": False}, {**plain, "ip": "10.0.0.50"}, "10.0.0.50") == {"online": True, "mac": "11:22:33:44:55:66"}   # a MAC nobody has
 assert task_run({"online": False}, {**plain, "links_of_others": frozenset()}, "10.0.0.116") == {"online": True, "mac": PC.lower()}  # no links: as before
 assert task_run({"online": False}, {"id": "old", "ip": "10.0.0.116"}, "10.0.0.116") == {"online": True, "mac": PC.lower()}       # nothing told: as before
-print("TUTTO OK")
+print("ALL OK")

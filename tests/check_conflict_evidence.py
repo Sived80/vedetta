@@ -93,4 +93,4 @@ assert macclassify.last_evidence(C, S, F) == [{"ip": IP, "macs": [CAM, RELAY], "
 assert macclassify.last_evidence(C, S[:1], F[:1])[0]["last_evidence"] == 3000.0
 assert macclassify.last_evidence(C, [], [])[0]["last_evidence"] is None
 assert C == [{"ip": IP, "macs": [CAM, RELAY]}], "the input is not changed"
-print("TUTTO OK")
+print("ALL OK")

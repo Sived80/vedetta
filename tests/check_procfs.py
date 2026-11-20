@@ -49,4 +49,4 @@ assert list(procfs.lines(tmp)) == [], "a folder is not a file: an OSError on eve
 late = tmp / "late"
 late.write_bytes(b"first\nsecond\n" + b"x" * 20000 + b"\n\xff\n")
 assert next(procfs.lines(late)) == "first\n", "the first line is there even though the file ends with a bad byte"
-print("TUTTO OK")
+print("ALL OK")

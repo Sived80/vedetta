@@ -41,6 +41,10 @@ class FakeRoles:
         LOG.append(["roles_for", ip])
         return self.roles
 
+    def is_gateway(self, ip, mac):
+        LOG.append(["is_gateway", ip])
+        return "gateway" in self.roles
+
 
 HA_TABLE = {"onvif": {"group": "media", "kind": "camera"}, "braviatv": {"group": "media"}, "shelly": {"platform": True, "group": "iot"}, "esphome": {"platform": True, "group": "iot", "kind": "esp"},
             "hue": {"group": "iot", "kind": "light"}, "empty": {}, "sonos": {"group": "audio", "kind": "speaker"}}
@@ -174,4 +178,4 @@ assert not bad and len(digests) == len(want["digests"]), "type_evidence differs 
 assert json.loads(json.dumps(sample, sort_keys=True, default=str)) == json.loads(json.dumps(want["sample"], sort_keys=True, default=str))
 for key, low in (("ev", 3000), ("ha", 150), ("kinds_out", 400), ("ports", 800), ("platform", 100)):
     assert stats[key] >= low, ("the generator no longer reaches this case", key, stats)
-print("TUTTO OK", stats)
+print("ALL OK", stats)

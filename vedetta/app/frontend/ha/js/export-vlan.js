@@ -65,7 +65,8 @@ export function vlanGuide(X) {
   for (var n = 1; n <= VLAN_GUIDE_STEPS; n++) steps += vlanGuideStep(n);
   let ready = "";
   for (var r = 1; r <= 3; r++) ready += "<div>" + icon("check") + "<span>" + esc(vlanT("ready_" + r)) + "</span></div>";
-  return '<div class="xv-guide" role="dialog" aria-labelledby="xv-gtitle"><div class="xv-gt"><h3 id="xv-gtitle">' + esc(vlanT("g_title")) + '</h3><button type="button" class="xv-x" data-xp="vlanclose">' + esc(vlanT("g_close")) + "</button></div>" +
+  return '<div class="xv-guide" role="dialog" aria-labelledby="xv-gtitle"><div class="xv-gt"><button type="button" class="icon-btn touch rp xv-x" data-xp="vlanclose" title="' + esc(vlanT("g_close")) +
+    '" aria-label="' + esc(vlanT("g_close")) + '">' + icon("close") + '</button><h3 id="xv-gtitle">' + esc(vlanT("g_title")) + "</h3></div>" +
     '<div class="xv-gb">' + vlanBanner(X.vlan.why) + '<p class="xv-lead">' + esc(vlanT("g_lead")) + "</p>" + steps +
     '<div class="xv-ready"><b>' + esc(vlanT("ready_title")) + "</b>" + ready + '</div><div class="xv-gf"><button type="button" class="btn filled" data-xp="vlandone">' + esc(vlanT("g_done")) + "</button></div></div></div>";
 }

@@ -87,4 +87,4 @@ assert sum(1 for r in res if "exception" in r) < 50, [r for r in res if "excepti
 assert any(len(r.get("clues", [])) == 4 for r in res) and any(0 < len(r.get("clues", [])) < 4 for r in res) and any(r.get("clues") == [] for r in res)
 assert any(r.get("reason") for r in res) and any(r.get("certainty") == 100 for r in res) and any(0 < r.get("certainty", 0) < 100 for r in res)
 assert any(r.get("basis") == "scored" and r["certainty"] in (5, 99) for r in res)
-print("TUTTO OK")
+print("ALL OK")

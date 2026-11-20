@@ -235,4 +235,4 @@ assert any(c[0] == "icon_for" for b in board for c in b["log"]) and sum(1 for b 
 assert sum(1 for m in mask if m["res"] is None) > 150 and sum(1 for m in mask if isinstance(m["res"], str)) > 150 and sum(1 for m in mask if m["res"] and m["res"][0] == "EXC") > 50
 assert sum(1 for f in files if f["puts"]) > 600 and sum(1 for f in files if f["notes"]) > 100 and any(len(f["puts"]) > 3 for f in files)
 assert any(p[0].startswith("data/") and p[0].endswith(".log") for f in files for p in f["puts"])
-print("TUTTO OK")
+print("ALL OK")

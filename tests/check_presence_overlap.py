@@ -33,4 +33,4 @@ assert overlap.shared_macs(brief, NOW) == set()
 
 # one card alone, or the same card twice, is never shared; rows without a MAC are ignored
 assert overlap.shared_macs([("a", "x", True, 1 * H), ("a", "x", True, 2 * H), ("b", None, True, 1 * H)], NOW) == set()
-print("TUTTO OK")
+print("ALL OK")

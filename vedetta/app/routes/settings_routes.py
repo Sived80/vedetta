@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 import asyncio
 from .. import i18n
 from .bodies import json_dict
+from ..ha import ha_notify, notify_queue
+from ..scan import router_arp
 from ..storage import journal, newdevices, settings, userlang
 from ..applog import logger
 from ..state import state
@@ -87,3 +89,60 @@ async def api_new_devices_ignore(request: Request):
     logger.info("Nuovi dispositivi ignorati: %s", ", ".join(map(str, macs)) if macs else "tutti")
     state.set_new_devices(devices)
     return devices
+
+
+@router.get("/api/sentinel")
+async def api_sentinel_get():
+    """The Sentinel's way out: {"ha_events", "notify_order"} ("notify_service" is always empty: the single service of 0.99.x)."""
+    return settings.sentinel_load()
+
+
+@router.post("/api/sentinel")
+async def api_sentinel_set(request: Request):
+    return _update_or_error(settings.sentinel_update, await json_dict(request))
+
+
+@router.get("/api/sentinel/services")
+async def api_sentinel_services():
+    """The notify services of Home Assistant ([] outside Home Assistant), the messages waiting in line and the last answer of each."""
+    return {"services": await ha_notify.notify_services(), **notify_queue.status()}
+
+
+@router.post("/api/sentinel/test")
+async def api_sentinel_test(request: Request):
+    """«Send a test» (no service: an event and a test message in line for the whole order) or the «Try» of one recipient."""
+    body = await json_dict(request)
+    service = body.get("service")
+    if service is not None and not settings.sentinel_valid("notify_service", service):
+        raise HTTPException(400, "Valore non valido: service")
+    return await ha_notify.test(service)
+
+
+@router.get("/api/snmp")
+async def api_snmp_get():
+    """The ARP table of the router through SNMP: its address, whether a community is written (never the community), the last reading."""
+    return router_arp.status()
+
+
+@router.post("/api/snmp")
+async def api_snmp_set(request: Request):
+    _update_or_error(settings.snmp_update, await json_dict(request))
+    return router_arp.status()
+
+
+def _update_or_error(update, body: dict) -> dict:
+    """One group of settings saved: a wrong value is a 400, a file that cannot be written the same clean 500 as /api/settings."""
+    try:
+        return update(body)
+    except ValueError as exc:
+        raise HTTPException(400, f"Valore non valido: {exc}")
+    except OSError:
+        logger.exception("Salvataggio impostazioni fallito")
+        raise HTTPException(500, "Salvataggio non riuscito")
+
+
+@router.post("/api/snmp/test")
+async def api_snmp_test():
+    """«Try»: one reading of the router's table now (how many addresses, or why not)."""
+    return await router_arp.test()
+

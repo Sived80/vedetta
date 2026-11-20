@@ -112,4 +112,4 @@ stats = {"ok": c(lambda o: o["status"] == 200), "err": c(lambda o: o["status"] !
          "empty": c(lambda o: o["status"] == 200 and not ev(o))}
 for key, low in (("ok", 1000), ("err", 50), ("min", 300), ("normal", 150), ("detail", 150), ("presence", 400), ("journal", 400), ("trace", 60), ("alert", 25), ("cut", 100), ("empty", 20)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

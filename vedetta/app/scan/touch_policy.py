@@ -52,6 +52,13 @@ def adapter_of(device: dict) -> str:
     return "ping" if device.get(NET_TOUCH) == "presence" else device.get("adapter")
 
 
+def saved_part(device: dict) -> dict:
+    """The card as it is saved, for the check "did the card change while it was asked": without NET_TOUCH, a mark of one cycle that is never
+    written (with it every card of a network behind the router kept its first state for ever). OFF_LIMITS stays: a card that may not be asked
+    (a paused network) keeps its state, as before, instead of falling offline at every cycle."""
+    return {k: v for k, v in device.items() if k != NET_TOUCH} if NET_TOUCH in device else device
+
+
 def may_touch(device: dict) -> bool:
     """False when only watching is allowed: no adapter call, no response-time measure, no scan."""
     return touch_level(device) != NONE
@@ -70,3 +77,18 @@ def calm_steps(steps: list[str]) -> list[str]:
 
 def calm_batch(batch):
     return replace(batch, steps=calm_steps(batch.steps))
+
+
+# Behind the router (a network with touch "ports", decision «B» of 14/11) a device is asked for its ports and its model: what crosses the
+# router by unicast TCP (ports, web page, certificate, local interface, adapter) and what arrives anyway (mDNS through a reflector, Home
+# Assistant's registry, names). Left out: ARP and the multicast searches (they never leave the link) and NetBIOS/SNMP (UDP, more than ports).
+ROUTED_LEFT_OUT = ("arp", "ssdp", "onvif", "netbios_snmp", "igmp")
+
+
+def routed_steps(steps: list[str]) -> list[str]:
+    """The steps of a profile that a device behind the router may be asked, in the same order."""
+    return [s for s in steps if s not in ROUTED_LEFT_OUT]
+
+
+def routed_batch(batch):
+    return replace(batch, steps=routed_steps(batch.steps))

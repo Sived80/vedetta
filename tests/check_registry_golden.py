@@ -76,4 +76,4 @@ for i, (x, y) in enumerate(zip(out, want)):
     assert x == y, "registry %d differs: %s" % (i, json.dumps([x, y], default=str)[:500])
 assert sum(len(o["by_mac"]) for o in out) > 300 and sum(len(o["by_ip"]) for o in out) > 100, "scenarios too uniform"
 assert any(c["name_by_user"] for o in out for c in o["by_mac"].values()) and any(c["area"] for o in out for c in o["by_mac"].values())
-print("TUTTO OK")
+print("ALL OK")

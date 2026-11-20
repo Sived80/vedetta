@@ -114,4 +114,4 @@ assert any(e["port"] == 0 for e in flat) and any(e["port"] is None for e in flat
 assert any("name" in e for e in flat) and any("name" not in e for e in flat) and any("scan_info" in e for e in flat) and any("scan_info" not in e for e in flat)
 assert any("name_source" in e for e in flat) and any("name_source" not in e for e in flat)
 assert any(c[1] is None for c in cases)
-print("TUTTO OK")
+print("ALL OK")

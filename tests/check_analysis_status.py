@@ -91,4 +91,4 @@ mid = {"value": "router", "certainty": 55, "rejected": [{"value": "pc", "points"
 assert st.assess(mid, age_s=10 ** 9, previous=st.UNRESOLVED, analysing_for_s=WEEK).state == st.UNRESOLVED
 assert st.assess(dict(mid, certainty=61), age_s=10 ** 9, previous=st.UNRESOLVED, analysing_for_s=WEEK).state == st.IDENTIFIED
 assert st.assess(mid, age_s=10 ** 9, previous=st.IDENTIFIED, analysing_for_s=WEEK).state == st.IDENTIFIED, "a card that was identified needs the low threshold to enter"
-print("TUTTO OK")
+print("ALL OK")

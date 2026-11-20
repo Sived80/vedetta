@@ -15,6 +15,7 @@ import re
 
 import httpx
 
+from . import httpcap
 from .discovery import parse_description
 
 _TIMEOUT = 3.0
@@ -148,7 +149,7 @@ async def _first_ping(resp) -> dict:
 
 async def _get(client: httpx.AsyncClient, url: str):
     try:
-        resp = await client.get(url)
+        resp = await httpcap.get(client, url)
     except Exception:
         return None
     if resp.status_code != 200:

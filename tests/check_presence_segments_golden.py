@@ -62,4 +62,4 @@ assert sum(1 for c in cases if c[0]["online_pct"] is None) > 300 and sum(1 for c
 assert sum(1 for c in cases if c[0]["to"] < c[0]["from"]) > 100 and any(c[0]["to"] == c[0]["from"] for c in cases)
 assert any(x["from"] == c[0]["from"] and x["to"] == c[0]["to"] for c in cases for x in c[0]["segments"])
 assert any(c[1][0] == "int" for c in cases) and any(c[1][0] == "float" for c in cases)
-print("TUTTO OK")
+print("ALL OK")

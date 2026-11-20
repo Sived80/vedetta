@@ -188,4 +188,4 @@ assert sum(1 for c in cases if any(e[0] == "info" and e[2] == ["0"] and e[1].sta
 assert sum(1 for k in kinds if "filter" in k and "prepare_batch" not in k) > 50, "no case where every stale device is remote"
 assert sum(1 for L in evs if "auto_update_enabled" in L and "is_due" not in L) > 100 and sum(1 for L in evs if "is_due" in L and "oui_update" not in L) > 100
 assert sum(1 for L in evs if L.count("rescan") >= 3) > 100
-print("TUTTO OK")
+print("ALL OK")

@@ -100,7 +100,7 @@ def known_ips() -> list[str]:
 
 
 def listable(fresh: list[dict], configs: list[dict], now: float, listed: list[dict] | None = None) -> list[dict]:
-    """1.0 step P9 (decisions 1A, 2A): what the "Search devices" button shows. The hosts the pass of the button has just heard (`fresh`, seen
+    """1.0 step P9 (decisions 1A, 2A): what the "Scan network" button shows. The hosts the pass of the button has just heard (`fresh`, seen
     now) and the devices the inventory confirmed or has asleep at the last cycle (`listed`, by default the last cycle's), once per MAC, the
     fresh first; never a configured device: a MAC linked to a card, or an address of a card without a link (decision 2A of P7).
     Rows: {ip, mac, hostname, last_seen}."""

@@ -86,4 +86,4 @@ assert ask(WEB[:3] + NOT_WEB + [{"port": 4840, "service": "unknown"}]) == {80, 4
 from app.scan import touch_policy  # noqa: E402
 assert touch_policy.touch_level({"id": "x", "ip": "10.0.0.9", "scan_info": {"ports": [{"label": "4840 · opc-ua"}]}}) == touch_policy.NORMAL
 assert touch_policy.touch_level({"id": "x", "ip": "10.0.0.9", "scan_info": {"ports": [{"label": "502"}]}}) == touch_policy.NONE
-print("TUTTO OK")
+print("ALL OK")

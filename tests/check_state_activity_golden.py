@@ -121,4 +121,4 @@ calls_n = sum(len(o["calls"]) for o in out)
 fired = sum(1 for o in out for e in o["events"] if e.get("type") == "activity")
 for key, val, low in (("hold", hold, 150), ("clamp", clamp, 300), ("calls", calls_n, 600), ("events", fired, 3000), ("boundary", boundary, 20)):
     assert val >= low, ("scenarios too uniform", key, val)
-print("TUTTO OK")
+print("ALL OK")

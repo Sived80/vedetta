@@ -73,7 +73,7 @@ const win = dom.window, doc = win.document;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const q = (s) => doc.querySelector(s), qa = (s) => Array.from(doc.querySelectorAll(s));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const badge = () => q("#deep-badge");
 const arrow = () => q("#btn-deepmenu");
 const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device", { type: "device", rev: 10 + i + Math.random(), device: Object.assign({}, D[i], patch) }); Object.assign(D[i], patch); await wait(60); };
@@ -97,6 +97,10 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
   await setDevice(0, { scanned_at: null });
   await setDevice(1, { deep_empty_at: null });
   check(!badge().hidden && badge().textContent === "2", "un dispositivo nuovo o da rifare: ricompare (2)");
+  await setDevice(0, { online: false });
+  check(badge().textContent === "1", "un dispositivo offline non si puo' analizzare: non conta (1)");
+  await setDevice(0, { online: true });
+  check(badge().textContent === "2", "quando torna in rete conta di nuovo (2)");
 
   // --- the network card is rebuilt (return to the app, silent reload): the badge is put back in the new arrow, it is not lost
   const oldSplit = q(".gauge-side .split"), freshSplit = doc.createElement("div");
@@ -203,6 +207,6 @@ const setDevice = async (i, patch) => { sources[sources.length - 1].emit("device
 
   if (errors.length) console.log(errors.join(String.fromCharCode(10)));
   check(errors.length === 0, "nessun errore nella pagina");
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

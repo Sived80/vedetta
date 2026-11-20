@@ -50,7 +50,7 @@ assert ha_data.infer_type(box("Soundbar", "Yamaha", {"mdns_services": "_airplay.
 matter = {"mdns_services": "_I163C04EE3B7C500E._sub._matter._tcp, _matter._tcp"}
 assert ha_data.infer_type(box("Amazon", "Amazon", matter, [(4070, "Nagios NSCA"), (55443, "unknown")])) != "router"
 assert ha_data.infer_type(box("Alexa", "Amazon", {"mdns_services": "_spotify-connect._tcp, _matter._tcp"}, [])) == "audio"
-assert ha_data.infer_type(box("Zigbee bridge", "Tasmota", {}, [])) == "router"        # the hub kind keeps its real words
+assert ha_data.infer_type(box("Zigbee bridge", "Tasmota", {}, [])) == "iot"           # the hub kind keeps its real words; a Zigbee hub is smart home (18/11)
 # --- a Xiaomi announced as "expiscor" by mDNS and "Xiaomi-14" by DHCP: the hostname says phone even if it is not the displayed name
 assert probe._is_mobile("Xiaomi-14") and not probe._is_mobile("expiscor")
-print("TUTTO OK")
+print("ALL OK")

@@ -17,4 +17,4 @@ for name in ("ha.js",):
         if icon not in known:
             missing.setdefault(name, []).append(icon)
 assert not missing, f"icons used but not in icons.js: {missing}"
-print("TUTTO OK")
+print("ALL OK")

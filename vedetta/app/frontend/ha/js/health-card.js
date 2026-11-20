@@ -8,6 +8,7 @@ import { simAnswer, simNext, simOn, simPreview, simScenario } from "./health-sim
 // For everyone since 0.11.0, with the findings of the rules that are shown; while the debug mode is on (three taps on the title) the ones in shadow too, and the made-up scenarios. The carousel of the card gets one more tile, the only way in: it opens, from its own place, the health screen (four tiles, or a short report when
 // all is well); a tile of the four opens, from its own place, the big tile with its findings; a row opens the detail of one finding: who (name and IP), what, when, what to do. The data comes from /api/ha/health, the judge runs on the server in any case.
 var HC_POLL_MS = 30000, HC_HIDDEN_KEY = "vedetta-health-hidden";
+var HC_MAX_HIDDEN = 500;     // what the server keeps (storage/health_hidden.MAX_HIDDEN): a longer list is refused with a 400
 var HC_LEVEL_ICON = { bad: "alert-circle", warn: "alert", ok: "check-circle" };
 var HC_TILE_ICON = { addr: "lan", drop: "access-point", boot: "refresh", lat: "wifi-arrow-up-down" };
 var HC_COLOR = { bad: "var(--error-color)", warn: "var(--warning-color)", ok: "var(--success-color)", none: "var(--secondary-text-color)" };
@@ -24,7 +25,7 @@ function hcSendHidden(hide, show) {
 function hcMigrateHidden() {
   const old = hcOldHidden();
   if (!old.length || simOn()) return;
-  hcSendHidden(old, []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
+  hcSendHidden(old.slice(-HC_MAX_HIDDEN), []).then(function () { try { localStorage.removeItem(HC_HIDDEN_KEY); } catch (e) { /* ignore */ } hcRepaint(); }).catch(function () { /* kept here: the next round tries again */ });
 }
 function hcDebugOn() { return ROOT.hasAttribute("data-debug"); }
 function hcModel() { return healthTiles(HC.findings, HC.hidden); }

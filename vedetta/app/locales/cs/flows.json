@@ -13,7 +13,7 @@
   "flow.step.reverse_names.description": "Dotáže se zařízení bez názvu na jejich jméno.",
   "flow.step.ssdp.label": "SSDP/UPnP",
   "flow.step.ssdp.description": "Název, výrobce a model přes UPnP.",
-  "flow.step.netbios_snmp.label": "NetBIOS a SNMP",
+  "flow.step.netbios_snmp.label": "NetBIOS",
   "flow.step.netbios_snmp.description": "Pro počítače, tiskárny a NAS.",
   "flow.step.ports_fast.label": "Porty (rychle)",
   "flow.step.ports_fast.description": "Rychle vyhledá otevřené porty.",

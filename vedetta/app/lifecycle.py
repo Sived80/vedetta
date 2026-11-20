@@ -68,7 +68,7 @@ def verdict(info: dict, memory_limit_mb: int = DEFAULT_MEMORY_LIMIT_MB) -> str:
 previous: dict = {}      # how the previous run ended, for the export: {"kind": ..., "verdict": ..., numbers...}
 
 
-def start(path: Path, rss_mb, log) -> "asyncio.Task":
+def start(path: Path, rss_mb, log, on_begin=None, on_beat=None) -> "asyncio.Task":
     """At the start of the service: tells how the previous run ended (log and export), opens the record of this run and starts the heartbeat. Returns the task of the heartbeat (cancel it, then call stop)."""
     kind, info = describe_previous(previous_run(path), time.time())
     previous.clear()
@@ -78,19 +78,37 @@ def start(path: Path, rss_mb, log) -> "asyncio.Task":
             info["ran_s"], info["silent_s"], info["rss_mb"], info["max_lag_s"], previous["verdict"])
     elif kind == "clean":
         log("Avvio precedente concluso con un arresto pulito (visse %d s, fermo da %d s)", info["ran_s"], info["down_s"])
-    begin(path, time.time(), rss_mb())
-    return asyncio.create_task(_heartbeat(path, rss_mb))
+    now = time.time()
+    begin(path, now, rss_mb())
+    if on_begin:
+        try:
+            on_begin(now)        # the history of the runs (history.service_run_begin): while the service is off, nothing is known
+        except Exception:  # noqa: S110  the record of the run is auxiliary: the start goes on
+            pass
+    return asyncio.create_task(_heartbeat(path, rss_mb, on_beat))
 
 
-async def _heartbeat(path: Path, rss_mb) -> None:
+async def _heartbeat(path: Path, rss_mb, on_beat=None) -> None:
     monitor = LoopLag()
     watcher = asyncio.create_task(monitor.run())
     try:
         while True:
             await asyncio.sleep(BEAT_EVERY_S)
-            beat(path, time.time(), rss_mb(), monitor.take_max())
+            now = time.time()
+            beat(path, now, rss_mb(), monitor.take_max())
+            await _quietly(on_beat, now)
     finally:
         watcher.cancel()
+
+
+async def _quietly(fn, now: float) -> None:
+    """A beat written elsewhere (the history) never stops the heartbeat."""
+    if fn is None:
+        return
+    try:
+        await asyncio.to_thread(fn, now)
+    except Exception:  # noqa: S110  the record of the run is auxiliary
+        pass
 
 
 async def stop(task: "asyncio.Task", path: Path) -> None:

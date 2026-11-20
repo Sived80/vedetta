@@ -118,4 +118,4 @@ stats = {"writes": c(lambda e: e[0] == "record_presence", logs), "write_fail": c
          "seen": c(lambda s: s[4], steps), "db": c(lambda s: s[5], steps), "mac_set": c(lambda s: s[6], steps)}
 for key, low in (("writes", 1500), ("write_fail", 150), ("load_fail", 50), ("last_mac", 200), ("removed_known", 100), ("seen", 300), ("db", 800), ("mac_set", 150)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

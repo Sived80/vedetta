@@ -133,4 +133,4 @@ stats = {"tasks": c(lambda o: o["created"] == 1), "alerts": c(lambda o: o["alert
          "empty_card": c(lambda o: any(e[0] == "evaluate" and e[2] is None for e in o["log"])), "bg_left": c(lambda o: o["bg_after"] > 0)}
 for key, low in (("tasks", 800), ("alerts", 150), ("debug", 150), ("job", 300), ("evaluate", 300), ("no_task", 300), ("old_found", 100), ("empty_card", 5)):
     assert stats[key] >= low, ("scenarios too uniform", key, stats)
-print("TUTTO OK")
+print("ALL OK")

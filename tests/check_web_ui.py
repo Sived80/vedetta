@@ -78,4 +78,4 @@ assert probe._web_url("10.0.0.2", 80, glances) == "http://10.0.0.2:61208"
 assert probe._web_url("10.0.0.2", 61208, glances) == "http://10.0.0.2:61208"
 assert probe._web_url("10.0.0.2", 80, []) == "http://10.0.0.2:80"                                      # nothing known: unchanged
 assert probe._web_url("10.0.0.2", 80, [{"label": "22 · OpenSSH", "category": "remote", "confirmed": True}]) == "http://10.0.0.2:80"
-print("TUTTO OK")
+print("ALL OK")

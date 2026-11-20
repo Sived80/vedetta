@@ -19,6 +19,11 @@ BRIDGE = "lsbr0"
 RUN = os.environ.get("LANSIM_RUN", "")
 PREFIX = "ls" + RUN + "-"
 ROUTER_MAC, VEDETTA_MAC, EXTENDER_MAC, EXTENDER2_MAC = "02:00:00:00:00:01", "02:00:00:00:00:02", "4e:00:00:00:00:03", "4e:00:00:00:00:04"
+# The network behind the router (P11): made-up documentation-style addresses, nothing of a real network
+ROUTED_SUBNET = "10.0.20"
+ROUTED_CIDR = ROUTED_SUBNET + ".0/24"
+ROUTED_BRIDGE = "lsbr1"
+ROUTER_ROUTED_MAC = "02:00:00:00:14:01"
 
 
 def _run(*cmd: str, check: bool = True) -> str:
@@ -37,11 +42,13 @@ def _ns(name: str) -> str:
 class Lan:
     """A context manager: `with Lan() as lan:` builds the base network, `lan.add_client(...)` adds a phone, leaving the block removes everything."""
 
-    def __init__(self, extenders: int = 1) -> None:
+    def __init__(self, extenders: int = 1, routed: bool = False) -> None:
         self.nodes: list[str] = []
         self.extenders = extenders
+        self.routed = routed
         self.holder: dict[str, str | None] = {}       # client address -> the extender holding it now
         self.responders: list[subprocess.Popen] = []  # the ARP responders of devices that answer in their own way
+        self.routed_nodes: set[str] = set()           # the devices behind the router (their way back goes through it)
 
     def __enter__(self) -> "Lan":
         self.cleanup()
@@ -53,6 +60,8 @@ class Lan:
         self._add_extender("ext", EXTENDER_MAC, 3)
         if self.extenders > 1:
             self._add_extender("ext2", EXTENDER2_MAC, 4)
+        if self.routed:
+            self._add_routed_segment()
         return self
 
     def __exit__(self, *exc) -> None:
@@ -67,23 +76,51 @@ class Lan:
             if line.startswith(PREFIX):
                 _ip("netns", "del", line.split()[0], check=False)
         _ip("link", "del", BRIDGE, check=False)
+        _ip("link", "del", ROUTED_BRIDGE, check=False)
         for line in _ip("-o", "link", "show", check=False).splitlines():        # the host ends of the cables go away a little after their namespace
             name = line.split(":")[1].strip().split("@")[0] if ":" in line else ""
             if name.startswith("lsh-"):
                 _ip("link", "del", name, check=False)
 
-    def add_node(self, name: str, mac: str, address: str) -> None:
+    def add_node(self, name: str, mac: str, address: str, bridge: str = BRIDGE) -> None:
         """A machine on the bridge: its own namespace, an interface e0 with this MAC and address, the other end of the cable on the bridge."""
-        ns, host = _ns(name), "lsh-" + name[:9]
+        ns = _ns(name)
         _ip("netns", "add", ns)
-        _ip("link", "add", host, "type", "veth", "peer", "name", "e0", "netns", ns)
-        _ip("-n", ns, "link", "set", "e0", "address", mac)
-        _ip("-n", ns, "addr", "add", address + "/24", "dev", "e0")
+        self._cable(name, "e0", mac, address, bridge)
         _ip("-n", ns, "link", "set", "lo", "up")
-        _ip("-n", ns, "link", "set", "e0", "up")
-        _ip("link", "set", host, "master", BRIDGE)
-        _ip("link", "set", host, "up")
         self.nodes.append(name)
+
+    @staticmethod
+    def _cable(name: str, iface: str, mac: str, address: str, bridge: str) -> None:
+        """An interface `iface` of the machine `name` with this MAC and address (/24), its other end on `bridge`."""
+        ns, host = _ns(name), "lsh-" + (name + iface[1:] if iface != "e0" else name)[:9]
+        _ip("link", "add", host, "type", "veth", "peer", "name", iface, "netns", ns)
+        _ip("-n", ns, "link", "set", iface, "address", mac)
+        _ip("-n", ns, "addr", "add", address + "/24", "dev", iface)
+        _ip("-n", ns, "link", "set", iface, "up")
+        _ip("link", "set", host, "master", bridge)
+        _ip("link", "set", host, "up")
+
+    def _add_routed_segment(self) -> None:
+        """The network behind the router: a second bridge, the router's second leg on it, forwarding on, the vedetta machine's route to it through the router."""
+        _ip("link", "add", ROUTED_BRIDGE, "type", "bridge")
+        _ip("link", "set", ROUTED_BRIDGE, "up")
+        self._cable("router", "e1", ROUTER_ROUTED_MAC, ROUTED_SUBNET + ".1", ROUTED_BRIDGE)
+        # forwarding on; arp_ignore=1 on the home leg: the router answers ARP there only for 10.9.0.1, not for its address behind (as a real router does)
+        _run("ip", "netns", "exec", _ns("router"), "sysctl", "-qw", "net.ipv4.ip_forward=1", "net.ipv4.conf.e0.arp_ignore=1")
+        _ip("-n", _ns("vedetta"), "route", "add", ROUTED_CIDR, "via", SUBNET + ".1", "dev", "e0")
+
+    def add_routed_client(self, name: str, mac: str, host_number: int, answers_ping: bool = True) -> str:
+        """A device behind the router at 10.0.20.<host_number> (Lan(routed=True) only); `answers_ping` False: it never answers an ICMP echo. Returns its address."""
+        if not self.routed:
+            raise RuntimeError("no network behind the router: build the Lan with routed=True")
+        address = "%s.%d" % (ROUTED_SUBNET, host_number)
+        self.add_node(name, mac, address, ROUTED_BRIDGE)
+        _ip("-n", _ns(name), "route", "add", "default", "via", ROUTED_SUBNET + ".1")
+        self.routed_nodes.add(name)
+        if not answers_ping:
+            _run("ip", "netns", "exec", _ns(name), "sysctl", "-qw", "net.ipv4.icmp_echo_ignore_all=1")
+        return address
 
     def _add_extender(self, name: str, mac: str, host_number: int) -> None:
         """An extender holds a client by having a route to it through w0 (a cable to nowhere): with proxy ARP on e0 it then answers for it."""
@@ -161,3 +198,5 @@ class Lan:
     def link(self, name: str, up: bool) -> None:
         """The phone leaves the network (Wi-Fi off) or comes back."""
         _ip("-n", _ns(name), "link", "set", "e0", "up" if up else "down")
+        if up and name in self.routed_nodes:      # the link going down took its default route away: without it the device cannot answer the other network
+            _ip("-n", _ns(name), "route", "replace", "default", "via", ROUTED_SUBNET + ".1")

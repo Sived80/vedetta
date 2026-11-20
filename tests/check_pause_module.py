@@ -35,4 +35,4 @@ FILE.write_text('{"until": %s, "total": 30}' % (time.time() - 5), encoding="utf-
 assert pause_mod.Pause().remaining() is None
 FILE.write_text("not json", encoding="utf-8")          # corrupt file: active, no error
 assert pause_mod.Pause().remaining() is None
-print("TUTTO OK")
+print("ALL OK")

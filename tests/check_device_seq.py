@@ -40,4 +40,4 @@ cards = [{"id": "1", "seq": 1, "name": "Shelly SHDM-2", "brand": "Shelly", "type
          {"id": "7", "name": "Shelly SHDM-2", "brand": "Shelly", "type": "iot"}]
 assert twins.twin_numbers(cards) == {"1": 1, "2": 2, "3": 5, "5": 7, "6": 8}, twins.twin_numbers(cards)
 assert twins.twin_numbers([]) == {} and twins.twin_numbers([{"id": "x", "seq": 1, "name": "A"}]) == {}
-print("TUTTO OK")
+print("ALL OK")

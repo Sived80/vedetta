@@ -97,6 +97,7 @@ def _fill_manifest_header(p):
 def _gather_data_files(p, data_dir):
     m = p.manifest
     m["phone_merge"] = state.merge_report
+    m.update(legacy.step_counts())          # the counts of the 1.0 steps: until now only the old zip carried them
     try:
         m["service"] = state.diagnostics()      # sizes, times and counts of the service: no address, no name
     except Exception as exc:

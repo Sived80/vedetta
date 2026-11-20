@@ -24,4 +24,4 @@ assert group(card(None, ports=("3389/tcp",))) == "generic", "an unconfirmed port
 assert group(card("_workstation._tcp", ports=("3389/tcp",))) == "pc", "a weak clue still adds to another weak clue of a computer"
 assert group(card("_rdp._tcp")) == "pc", "Remote Desktop says what the device is"
 assert group(card("_workstation._tcp, _rdp._tcp")) == "pc"
-print("TUTTO OK")
+print("ALL OK")

@@ -169,4 +169,4 @@ assert zone(shuffled, "FAC", "PRI") == zone(network(), "FAC", "PRI")
 two_a = {"A1": mac("10.0.0.201", [(0, 1), (10, 11)]), "A2": mac("10.0.0.202", [(0.5, 0.9)])}
 rev = {"A1": dict(two_a["A1"], sessions=list(reversed(two_a["A1"]["sessions"]))), "A2": two_a["A2"]}
 assert mi.link(rev)[0]["why"] == mi.link(two_a)[0]["why"] and any("insieme" in w for w in mi.link(rev)[0]["why"])
-print("TUTTO OK")
+print("ALL OK")

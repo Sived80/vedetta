@@ -98,4 +98,4 @@ try:
     raise AssertionError("must fail")
 except ValueError:
     pass
-print("TUTTO OK")
+print("ALL OK")

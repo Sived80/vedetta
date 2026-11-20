@@ -11,8 +11,9 @@ import { movingIcon, radarIcon } from "./net-icons.js";
 // can start: the buttons are off until it is over (the network search is independent and stays available).
 export var SKIP_DEEP_KEY = "vedetta-ha-skip-deep";
 export function skipDeepConfirm() { try { return localStorage.getItem(SKIP_DEEP_KEY) === "1"; } catch (err) { return false; } }
-// Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search").
-function deepPending() { return Array.from(S.devices.values()).filter(function (d) { return !d.scanned_at && !d.deep_empty_at; }); }
+// Devices never analyzed in depth: scanned_at is written only by the deep search ("Last deep search"). Only the ones online now: an
+// offline device cannot be analysed, and the badge kept asking for it (an offline printer, 17/11); it counts again when it answers.
+function deepPending() { return Array.from(S.devices.values()).filter(function (d) { return !d.scanned_at && !d.deep_empty_at && d.online; }); }
 var deepFlying = new Set();       // the devices whose search THIS page started and whose request is still open (a second device is queued by the server, not dropped)
 function deepBusy() { return deepFlying.size > 0; }               // the top buttons wait until every request of this page is over
 export function deepOneBusy(id) { return !!id && (S.activity.rescanning.has(id) || deepFlying.has(id)); }   // a device already being searched cannot be started again

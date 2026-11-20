@@ -85,4 +85,4 @@ assert not bad and len(digests) == len(want["digests"]), "brands hints differ fr
 assert out["sample"] == want["sample"]
 for key, low in (("model", 200), ("battery", 100), ("resolve_name", 200), ("resolve_web", 100), ("resolve_other", 200), ("resolve_none", 200)):
     assert stats[key] >= low, ("the generator no longer reaches this case", key, stats)
-print("TUTTO OK", stats)
+print("ALL OK", stats)

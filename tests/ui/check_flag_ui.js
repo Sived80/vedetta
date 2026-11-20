@@ -22,7 +22,7 @@ const html = fs.readFileSync(path.join(out, "page.html"), "utf8");
 const data = JSON.parse(fs.readFileSync(path.join(out, "data.json"), "utf8"));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
-function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FALLITO:", msg); } }
+function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 const WORD = lang === "it" ? "Segnalato" : "Flagged";
 
 const errors = [], posts = [];
@@ -120,11 +120,13 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   // --- the style: blue/azzurro (theme primary), not orange, no word
   const cssDir = path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "css");   // the page links its styles: they are read from the files
   const css = fs.readdirSync(cssDir).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(cssDir, f), "utf8")).join("\n");
-  const on = /\.mi-flag\.on\s*\{([^}]*)\}/.exec(css);
+  const on = /:is\(\.mi-flag, \.mi-watch\)\.on[^{]*\{([^}]*)\}/.exec(css);       // the flag and the bell: the same plain button, no border
   check(!!on && /--primary-color/.test(on[1]) && !/--warning-color/.test(on[1]), "il tasto acceso usa il blu/azzurro della pagina (--primary-color), non l'arancione");
   check(/\.tile\.flagged\s+\.tile-mark\.br\s*\{[^}]*left:/.test(css), "segnalata e in assestamento insieme: l'orologio passa in basso a sinistra, la bandierina resta dov'era");
+  check(!/\.mi-flag\s*\{[^}]*border:/.test(css) && /\.mi-watch\s*\{[^}]*margin-right:\s*auto/.test(css), "bandiera e campana uguali, senza bordo, tutte e due a sinistra");
+  check(/\.tile-watch\s*\{[^}]*left:[^}]*bottom:/.test(css) && /\.tile\.flagged\.watched\s+\.tile-mark\.br\s*\{[^}]*display:\s*none/.test(css), "la campanella sulla tile sta fissa in basso a sinistra: con bandiera e campana il segno di assestamento resta nella scheda");
   check(errors.length === 0, "nessun errore nella pagina" + (errors.length ? ": " + errors.join("; ") : ""));
   win.close();
-  console.log(failed ? "FALLITO: " + failed : "TUTTO OK");
+  console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);
 })();

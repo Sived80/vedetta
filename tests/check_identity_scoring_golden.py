@@ -258,4 +258,4 @@ assert ev.count("confirmed") > 800 and ev.count("plausible") > 400 and ev.count(
 for clause in range(4):
     assert sum(1 for i in info if i == [clause]) > 15, "clause %d is rarely the only one that holds" % clause
 assert any(o["res"]["vendor_role"] == "private" for o in br if "res" in o) and any(o["res"]["vendor"] == "Acme Corp" for o in br if "res" in o)
-print("TUTTO OK")
+print("ALL OK")

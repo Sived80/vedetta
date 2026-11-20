@@ -14,4 +14,4 @@ assert have.replace("\r\n", "\n") == want, "docs/ARCHITECTURE.md is out of date:
 for line in want.splitlines():
     if line.startswith("| `") and line.rstrip().endswith("| — |"):
         raise AssertionError("a module has no docstring: " + line)
-print("TUTTO OK")
+print("ALL OK")

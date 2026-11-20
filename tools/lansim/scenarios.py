@@ -9,8 +9,8 @@ import tempfile
 import time
 from pathlib import Path
 
-from tools.lansim import phases
-from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTER_MAC, SUBNET, Lan, _ns
+from tools.lansim import phases, routed
+from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTED_CIDR, ROUTER_MAC, SUBNET, Lan, _ns
 from tools.lansim.vedetta_proc import VedettaProcess
 
 ANDROID_MAC, IOS_MAC, IOS_MAC_2 = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "5a:00:00:00:00:24"
@@ -555,7 +555,7 @@ QUIET_CYCLES = 4       # S38: cycles the TV is silent before the button is press
 
 
 def s38_button_lists_the_quiet_tv(code_dir: str) -> dict:
-    """1.0 step P9 (decisions 1A, 2A): a TV nobody added is seen, then stops answering. The button "Search devices" still lists it, with
+    """1.0 step P9 (decisions 1A, 2A): a TV nobody added is seen, then stops answering. The button "Scan network" still lists it, with
     when it was last seen (from the inventory); before, the button showed only what answered its own pass."""
     with Lan() as lan, VedettaProcess(code_dir) as vedetta:
         vedetta.add_found()
@@ -569,6 +569,192 @@ def s38_button_lists_the_quiet_tv(code_dir: str) -> dict:
         tv = next((h for h in rows if str(h.get("mac") or "").upper() == BLINK_TV_MAC.upper()), None)
         return {"first_listed_s": first, "in_button": tv is not None,
                 "seen_before_press_s": round(pressed - tv["last_seen"]) if tv and tv.get("last_seen") else None}
+
+
+ISSUE35_TV_MAC, ISSUE35_CAM_MAC = "3c:00:00:00:35:01", "3c:00:00:00:35:02"
+
+
+def s43_on_at_install_is_listed(code_dir: str) -> dict:
+    """Issue #35: a device already on when Vedetta starts is part of the starting point (known, no alert, no card). Nobody adds it. The button
+    "Scan network" must still list it (P9: every device without a card), so the person can add it. Two of them: an ordinary one, and one
+    like the LG TV of the issue: it ignores broadcast ARP (so the sweep never hears it) but talks to Home Assistant now and then, so the
+    system's neighbour table knows it (1.0 step P7 reads that table). 0.13.2 listed only what answered the sweep."""
+    with Lan() as lan:
+        tv = lan.add_client("tv35", ISSUE35_TV_MAC, 60)
+        cam = lan.add_camera("cam35", ISSUE35_CAM_MAC, 61)
+        with VedettaProcess(code_dir) as vedetta:
+            vedetta.wait_cycles(SETTLE)
+            for _ in range(3):                    # the TV talks to Home Assistant (a cast, an integration): one ping each cycle
+                subprocess.run(["ip", "netns", "exec", _ns("cam35"), "ping", "-c", "1", "-W", "2", SUBNET + ".2"], capture_output=True)
+                vedetta.wait_cycles(1)
+            rows = vedetta.post("/api/scan/quick", {})
+            macs = {str(h.get("mac") or "").upper() for h in rows}
+            ips = {h.get("ip") for h in rows}
+            new = {str(d.get("mac") or "").upper() for d in vedetta.get("/api/new-devices")}
+            return {"tv_in_button": ISSUE35_TV_MAC.upper() in macs or tv in ips, "tv_listed_new": ISSUE35_TV_MAC.upper() in new,
+                    "cam_in_button": ISSUE35_CAM_MAC.upper() in macs or cam in ips, "cards": len(vedetta.cards()), "rows": len(rows)}
+
+
+# S41 (1.0 step P11): the devices of the network behind the router (made-up MACs: ARP does not cross the router, Vedetta never sees them)
+ROUTED_START = [("r20a", "3c:00:00:00:20:0a", 10), ("r20b", "3c:00:00:00:20:0b", 11), ("r20c", "3c:00:00:00:20:0c", 12)]
+ROUTED_SILENT = ("r20s", "3c:00:00:00:20:1e", 30)
+ROUTED_NEWCOMER = ("r20n", "3c:00:00:00:20:28", 40)
+ROUTED_GRACE_S = 300   # beyond one sweep: the sweep itself (254 addresses) and the cycle that writes the list
+
+
+def _watch_routed(vedetta: VedettaProcess, want: set, timeout: float, ever: set) -> float | None:
+    """Seconds until every address in `want` is in the list of new devices (None if not within `timeout`; with `want` empty it just waits `timeout`).
+    Every address behind the router seen in the list meanwhile goes into `ever`."""
+    start = time.time()
+    while True:
+        try:
+            listed = routed.listed_in(vedetta.get("/api/new-devices"), ROUTED_CIDR)
+        except OSError:
+            listed = set()
+        ever |= listed
+        if want and want <= listed:
+            return round(time.time() - start)
+        if time.time() - start >= timeout:
+            return None
+        time.sleep(10)
+
+
+def _routed_alerts(vedetta: VedettaProcess) -> dict:
+    """{address behind the router: new-device alerts in the journal of the run}."""
+    try:
+        with open(os.path.join(vedetta.data, "journal.jsonl"), encoding="utf-8") as f:
+            counts = routed.alerts_by_ip(f)
+    except OSError:
+        return {}
+    inside = routed.listed_in([{"ip": ip} for ip in counts], ROUTED_CIDR)
+    return {ip: n for ip, n in counts.items() if ip in inside}
+
+
+def s41_routed_new_device(code_dir: str) -> dict:
+    """1.0 step P11: a confirmed network behind the router (touch "presence"), swept by ping every ROUTED_SWEEP_S. The devices that answer at the start are the
+    starting point: listed as new, no alert. After that first sweep a device joins and answers: listed and alerted once, never again at the following sweep.
+    A device that never answers ping is never listed. Before P11 nothing searches the network behind the router: nothing is ever listed."""
+    sweep_s = routed.sweep_seconds(code_dir)
+    data = tempfile.mkdtemp(prefix="lansim-data-")
+    routed.write_networks(data, routed.networks_file(ROUTED_CIDR))
+    ever: set = set()
+    with Lan(routed=True) as lan:
+        start_ips = {lan.add_routed_client(name, mac, n) for name, mac, n in ROUTED_START}
+        silent_ip = lan.add_routed_client(ROUTED_SILENT[0], ROUTED_SILENT[1], ROUTED_SILENT[2], answers_ping=False)
+        crossing = {"ping": lan.probe("ping", "-c", "1", "-W", "2", sorted(start_ips)[0]), "silent_ping": lan.probe("ping", "-c", "1", "-W", "2", silent_ip)}
+        with VedettaProcess(code_dir, data=data) as vedetta:
+            out = {"sweep_s": sweep_s, "crossing": crossing, "start_ips": sorted(start_ips), "silent_ip": silent_ip, "new_ip": None, "new_listed_s": None,
+                   "start_listed_s": _watch_routed(vedetta, start_ips, sweep_s + ROUTED_GRACE_S, ever)}
+            out["alerts_at_start"] = _routed_alerts(vedetta)
+            if out["start_listed_s"] is not None:
+                name, mac, n = ROUTED_NEWCOMER
+                out["new_ip"] = lan.add_routed_client(name, mac, n)
+                out["new_listed_s"] = _watch_routed(vedetta, {out["new_ip"]}, sweep_s + ROUTED_GRACE_S, ever)
+                if out["new_listed_s"] is not None:
+                    _watch_routed(vedetta, set(), sweep_s + ROUTED_GRACE_S, ever)      # one more sweep at least: the newcomer must not be alerted again
+            out["alerts"] = _routed_alerts(vedetta)
+            out["ever_listed"] = sorted(ever)
+            return out
+
+
+ROUTED_CARD = ("r20k", "3c:00:00:00:20:15", 15)
+ROUTED_STATE_WAIT_S = 900   # a card behind the router must change state within this (the checks behind the router run less often than on the home network)
+
+
+def _wait_online(vedetta: VedettaProcess, device_id: str | None, online: bool, timeout: float) -> float | None:
+    """Seconds until the card shows `online` (None if not within `timeout`)."""
+    start = time.time()
+    while time.time() - start < timeout:
+        card = _card_of(vedetta, device_id)
+        if card and bool(card["online"]) == online:
+            return round(time.time() - start)
+        time.sleep(10)
+    return None
+
+
+def s42_routed_card_goes_away(code_dir: str) -> dict:
+    """K1 (17/11): a card of a network behind the router follows its device. Added by hand, it is online; the device is unplugged: the card goes offline;
+    it is plugged back: online again. With the defect of the cycle mark (net_touch made every result of those cards stale) the card kept its first state for ever."""
+    data = tempfile.mkdtemp(prefix="lansim-data-")
+    routed.write_networks(data, routed.networks_file(ROUTED_CIDR))
+    with Lan(routed=True) as lan:
+        name, mac, n = ROUTED_CARD
+        address = lan.add_routed_client(name, mac, n)
+        crossing = lan.probe("ping", "-c", "1", "-W", "2", address)
+        with VedettaProcess(code_dir, data=data) as vedetta:
+            vedetta.post("/api/devices/add", {"devices": [{"ip": address, "name": "Microonde", "name_source": None}]})
+            card_id = _id_at(vedetta, address)
+            out = {"crossing": crossing, "card": card_id, "online_s": _wait_online(vedetta, card_id, True, ROUTED_STATE_WAIT_S), "offline_s": None, "back_s": None}
+            if out["online_s"] is not None:
+                lan.link(name, False)
+                out["offline_s"] = _wait_online(vedetta, card_id, False, ROUTED_STATE_WAIT_S)
+                lan.link(name, True)
+                out["back_s"] = _wait_online(vedetta, card_id, True, ROUTED_STATE_WAIT_S)
+            out["card_end"] = _card_of(vedetta, card_id)
+            return out
+
+
+ANNA_MAC, ANNA_NEW_MAC, LUCA_MAC = "da:00:00:00:00:a1", "da:00:00:00:00:a2", "da:00:00:00:00:a3"     # private MACs (0xDA)
+# P10: the other devices that announce themselves over DHCP, so that the phone's name and fingerprint are rare on this network, as at home
+NEIGHBOURS = [("n1", "3c:00:00:00:00:b1", 70, "ios", "ipad-sala"), ("n2", "3c:00:00:00:00:b2", 71, "windows", "laptop-marco"),
+              ("n3", "3c:00:00:00:00:b3", 72, "console", "console-1"), ("n4", "3c:00:00:00:00:b4", 73, "camera", "camera-1")]
+FOLLOW_WAIT_S = 1500   # the link moved by the judge of identity is used after two stable judgements (about 15 min, decision A 14/11), then a sweep moves the card
+
+
+def _with_neighbours(lan: Lan) -> None:
+    for name, mac, host, kind, hostname in NEIGHBOURS:
+        lan.announce(name, kind, mac, lan.add_client(name, mac, host), hostname)
+
+
+def _phone_with_link(lan: Lan, vedetta: VedettaProcess) -> tuple[str, str | None, bool]:
+    """Anna's phone (private MAC, android, "anna-phone") added and linked; returns (its address, card id, link usable)."""
+    _with_neighbours(lan)
+    address = lan.add_client("anna", ANNA_MAC, 40)
+    lan.announce("anna", "android", ANNA_MAC, address, "anna-phone")
+    vedetta.add_found()
+    card_id = _id_at(vedetta, address)
+    return address, card_id, _wait_usable(vedetta, card_id, USABLE_WAIT_S)
+
+
+def _link_source(vedetta: VedettaProcess, card_id: str | None) -> list | None:
+    row = _read_db(vedetta.data, "SELECT device_id, mac, source FROM card_mac", lambda rows: {d: [m, s] for d, m, s in rows}).get(card_id)
+    return [str(row[0]).upper(), row[1]] if row else None
+
+
+def s39_phone_rotates_its_mac(code_dir: str) -> dict:
+    """1.0 step P10 (decision 1A): Anna's phone, linked, rotates its private MAC and takes another address (Wi-Fi off and on, a new MAC, a new
+    lease announced with the same name and system). The link passes to the new MAC (source "identity"), the card follows the phone to the new
+    address and the new MAC is never listed as a new device."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address, card_id, usable = _phone_with_link(lan, vedetta)
+        new_address = "%s.%d" % (SUBNET, 41)
+        lan.set_mac("anna", ANNA_NEW_MAC)
+        lan.move("anna", address, new_address)
+        lan.announce("anna", "android", ANNA_NEW_MAC, new_address, "anna-phone")
+        start, listed = time.time(), False
+        followed = None
+        while time.time() - start < FOLLOW_WAIT_S and followed is None:
+            listed = listed or _listed(vedetta, ANNA_NEW_MAC)
+            card = _card_of(vedetta, card_id)
+            followed = round(time.time() - start) if card and card["ip"] == new_address and card["online"] else None
+            time.sleep(5)
+        vedetta.wait_cycles(SETTLE)
+        return {"usable": usable, "followed_s": followed, "listed_new": listed or _listed(vedetta, ANNA_NEW_MAC),
+                "link": _link_source(vedetta, card_id), "new_mac": ANNA_NEW_MAC.upper(), "card_end": _card_of(vedetta, card_id)}
+
+
+def s40_two_phones_same_model(code_dir: str) -> dict:
+    """1.0 step P10: Anna's phone (linked) leaves; right after, Luca's phone of the same model (same system, another name, another private MAC)
+    joins at another address. Never one device: Anna's link stays on her MAC, her card does not move, Luca's phone is listed as new."""
+    with Lan() as lan, VedettaProcess(code_dir) as vedetta:
+        address, card_id, usable = _phone_with_link(lan, vedetta)
+        lan.link("anna", False)
+        luca = lan.add_client("luca", LUCA_MAC, 42)
+        lan.announce("luca", "android", LUCA_MAC, luca, "luca-phone")
+        listed = _wait_listed(vedetta, LUCA_MAC, ROUND_S + 120)
+        time.sleep(max(0.0, FOLLOW_WAIT_S - (listed or ROUND_S + 120)))
+        return {"usable": usable, "luca_listed_s": listed, "link": _link_source(vedetta, card_id), "old_mac": ANNA_MAC.upper(),
+                "card_end": _card_of(vedetta, card_id), "luca_address": luca}
 
 
 PRINTER_MAC, NEW_PRINTER_MAC = "3c:00:00:00:00:61", "3c:00:00:00:00:62"
@@ -960,4 +1146,4 @@ def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 
                 "samples": len(latency), "slow_from_s": round(slow_at - since), "slow_until_s": round(back_at - since), "judged": _judged(code_dir, vedetta, since, SUBNET + ".1")}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S35": s35_tv_away_stays_listed, "S37": s37_new_device_found_by_the_slices, "S38": s38_button_lists_the_quiet_tv, "S36": s36_console_at_linked_address, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S35": s35_tv_away_stays_listed, "S37": s37_new_device_found_by_the_slices, "S38": s38_button_lists_the_quiet_tv, "S39": s39_phone_rotates_its_mac, "S40": s40_two_phones_same_model, "S41": s41_routed_new_device, "S42": s42_routed_card_goes_away, "S43": s43_on_at_install_is_listed, "S36": s36_console_at_linked_address, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}

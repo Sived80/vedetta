@@ -54,4 +54,4 @@ docs = (ROOT / "DOCS.md").read_text(encoding="utf-8")
 missing = [k for k in schema if "`%s`" % k not in docs and not k.startswith("mqtt_")]
 assert not missing, ("options not explained in DOCS.md", missing)
 assert "`mqtt_host`" in docs
-print("TUTTO OK")
+print("ALL OK")

@@ -17,5 +17,7 @@
   "journal.unignored": "{name} wird nicht mehr ignoriert",
   "journal.forgotten": "{name} vergessen",
   "journal.fullports": "{ip}: vollständige Hintergrundsuche beendet ({ports} Ports, {added} mehr)",
-  "journal.fullports_failed": "{ip}: vollständige Hintergrundsuche nicht beendet (Gerät zu langsam), gezielte Ports beibehalten"
+  "journal.fullports_failed": "{ip}: vollständige Hintergrundsuche nicht beendet (Gerät zu langsam), gezielte Ports beibehalten",
+  "journal.settings_damaged": "Einstellungsdatei beschädigt: eine Kopie liegt unter {copy}, die Einstellungen starten wieder mit den Standardwerten",
+  "journal.settings_damaged_kept": "Einstellungsdatei beschädigt und nicht kopiert: Sie wird nicht überschrieben, bis sie wieder lesbar ist"
 }

@@ -4,9 +4,12 @@ name with the network after it ("Home Assistant (VLAN 20)"), and the page puts i
 all the addresses is for after 1.0).
 
 Pure: it is handed the cards, the addresses of the host Vedetta runs on, its own address, the MACs that are lent (a repeater answering for
-its clients: the same MAC there says nothing) and the network of an address. Two ways to be a twin:
+its clients: the same MAC there says nothing) and the network of an address. Three ways to be a twin, the first that applies wins:
   - an address of the host itself on another network: the twin of the card at the host's own address (the host has no MAC in its own ARP table);
-  - the same MAC as a card on another network (a MAC that is not lent): the twin of the card on the main network."""
+  - the same MAC as a card on another network (a MAC that is not lent): the twin of the card on the main network;
+  - the same TLS certificate (`tls_fp`, its SHA-256 fingerprint from the deep search) as a card on another network: the twin of the card on the
+    main network (1.0.1: a VLAN reached only through the router shows no MAC, but the router presents one certificate on every address). A
+    certificate shared by two cards of one network says nothing (two devices of one maker with its default certificate): ignored."""
 from collections.abc import Callable
 
 from .formatters import MAX_NAME_LEN, truncate_name
@@ -19,14 +22,16 @@ SOURCE = "twin"          # the name_source of a twin's name: never replaced by a
 def find(cards: list[dict], host_ips: set, own_ip: str | None, lenders: frozenset, network_of: Callable) -> dict[str, str]:
     """{twin card id: main card id}."""
     out = _host_twins(cards, host_ips, own_ip, network_of)
-    for group in _by_mac(cards, lenders).values():
-        for twin, main in _mac_twins(group, network_of).items():
+    groups = [*_by_mac(cards, lenders).values(), *_by_cert(cards, network_of)]
+    for group in groups:
+        for twin, main in _group_twins(group, network_of).items():
             out.setdefault(twin, main)
     return out
 
 
-def _mac_twins(group: list[dict], network_of: Callable) -> dict[str, str]:
-    """Cards with one MAC: those on another network than the card on the main network are its twins (none without a card on the main network)."""
+def _group_twins(group: list[dict], network_of: Callable) -> dict[str, str]:
+    """Cards of one machine (one MAC, one certificate): those on another network than the card on the main network are its twins (none without
+    a card on the main network)."""
     main = next((c for c in group if _net_id(network_of(c["ip"])) == MAIN_NETWORK), None)
     if main is None:
         return {}
@@ -49,6 +54,21 @@ def _by_mac(cards: list[dict], lenders: frozenset) -> dict[str, list[dict]]:
         if mac and mac not in lenders and card.get("ip"):
             groups.setdefault(mac, []).append(card)
     return {m: g for m, g in groups.items() if len(g) > 1}
+
+
+def _by_cert(cards: list[dict], network_of: Callable) -> list[list[dict]]:
+    """Cards with the same certificate fingerprint, on different networks (a fingerprint with two cards on one network is ignored)."""
+    groups: dict[str, list[dict]] = {}
+    for card in cards:
+        fp = str(card.get("tls_fp") or "").lower()
+        if fp and card.get("ip"):
+            groups.setdefault(fp, []).append(card)
+    return [g for g in groups.values() if len(g) > 1 and _one_per_network(g, network_of)]
+
+
+def _one_per_network(group: list[dict], network_of: Callable) -> bool:
+    nets = [n for n in (_net_id(network_of(c["ip"])) for c in group) if n is not None]
+    return len(nets) == len(set(nets))
 
 
 def _net_id(network) -> str | None:

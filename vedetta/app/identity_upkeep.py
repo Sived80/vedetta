@@ -48,9 +48,9 @@ class IdentityUpkeep:
             logger.exception("Schede gemelle non aggiornate")
 
     def _judge_twins(self, scope, own_ip, host_ips: set, saved_cards: list) -> None:
-        cards = [{**c, "mac": self._twin_mac(c, scope)} for c in self.devices.values()]
-        pairs = twins.find(cards, host_ips, own_ip, macverdict.lenders(), scope.network_of)
         saved = {c["id"]: c for c in saved_cards}
+        cards = [{**c, "mac": self._twin_mac(c, scope), "tls_fp": self._twin_fp(c, scope, saved.get(c["id"]))} for c in self.devices.values()]
+        pairs = twins.find(cards, host_ips, own_ip, macverdict.lenders(), scope.network_of)
         self._twin_of = {tid: self.devices[mid].get("ip") for tid, mid in pairs.items() if mid in self.devices}
         for card in list(self.devices.values()):
             self._twin_card(card, self.devices.get(pairs.get(card.get("id"))), (saved.get(card["id"]) or {}).get("name_source"), scope)
@@ -63,9 +63,19 @@ class IdentityUpkeep:
         mac = card.get("mac")
         if mac:
             return mac
+        return self._last_mac.get(card.get("id")) if self._may_pair_offline(card, scope) else None
+
+    def _twin_fp(self, card: dict, scope, saved: dict | None) -> str | None:
+        """The certificate fingerprint a card is paired by (twins.py): the one of its last deep search, on the same terms as its MAC (a card on
+        another network pairs while it answers, or as a twin seen in the last day)."""
+        fp = ((saved or {}).get("scan_info") or {}).get("tls_fp")
+        return fp if fp and (card.get("online") or self._may_pair_offline(card, scope)) else None
+
+    def _may_pair_offline(self, card: dict, scope) -> bool:
+        """A card that is off still pairs when it is on the main network, or a twin seen in the last day."""
         network = scope.network_of(card.get("ip"))
         recent = card.get("id") in self._twin_of and time.time() - (card.get("last_seen") or 0) <= TWIN_KEEP_S
-        return self._last_mac.get(card.get("id")) if getattr(network, "id", None) == twins.MAIN_NETWORK or recent else None
+        return getattr(network, "id", None) == twins.MAIN_NETWORK or recent
 
     @staticmethod
     async def _twin_inputs():

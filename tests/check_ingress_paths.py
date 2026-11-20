@@ -104,6 +104,9 @@ print("ok: sorgenti statici senza URL assoluti nascosti")
 # 4) normalisation and headers
 assert normalize_base("/abc/") == "/abc" and normalize_base("") == "" and normalize_base("/") == ""
 assert normalize_base("abc") == "" and normalize_base('/a"b') == "" and normalize_base("//evil.com") != "//evil.com/"
+# a value starting with // is a URL of another host (protocol-relative) in a redirect or in a script src: refused
+assert normalize_base("//evil.example") == "" and normalize_base("///evil.example/x") == "" and normalize_base("//") == ""
+assert normalize_base("/api/hassio_ingress/a//b") == "/api/hassio_ingress/a//b"
 assert base_from_headers({b"x-ingress-path": b"/api/hassio_ingress/abc"}) == PREFIX
 os.environ.pop("VEDETTA_BASE_PATH", None)
 assert base_from_headers({}) == ""

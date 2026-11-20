@@ -25,9 +25,10 @@ def env_base_path() -> str:
 
 
 def normalize_base(value: str | None) -> str:
-    """'/abc/' -> '/abc'; empty or '/' -> ''. Only URL-safe characters."""
+    """'/abc/' -> '/abc'; empty or '/' -> ''. Only URL-safe characters. A value starting with '//' is refused: in a redirect or a script
+    src it would be a protocol-relative URL, another host."""
     value = (value or "").strip().rstrip("/")
-    if not value or not value.startswith("/"):
+    if not value or not value.startswith("/") or value.startswith("//"):
         return ""
     if not all(c.isalnum() or c in "/-_.~" for c in value):
         return ""

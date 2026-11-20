@@ -12,6 +12,7 @@ import time
 from . import linkview, macpresence, macverdict, netutil, twins
 from .networks import host_read, registry
 from .recognition import brands, naming
+from .scan import router_arp
 from .storage import devices_config
 from .storage.overlap import SAME_MOMENT_S
 from .storage.history import history
@@ -50,7 +51,7 @@ class IdentityUpkeep:
     def _judge_twins(self, scope, own_ip, host_ips: set, saved_cards: list) -> None:
         saved = {c["id"]: c for c in saved_cards}
         cards = [{**c, "mac": self._twin_mac(c, scope), "tls_fp": self._twin_fp(c, scope, saved.get(c["id"]))} for c in self.devices.values()]
-        pairs = twins.find(cards, host_ips, own_ip, macverdict.lenders(), scope.network_of)
+        pairs = twins.find(cards, host_ips, own_ip, macverdict.lenders(), scope.network_of, router_arp.own_addresses())
         self._twin_of = {tid: self.devices[mid].get("ip") for tid, mid in pairs.items() if mid in self.devices}
         for card in list(self.devices.values()):
             self._twin_card(card, self.devices.get(pairs.get(card.get("id"))), (saved.get(card["id"]) or {}).get("name_source"), scope)

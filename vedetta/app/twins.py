@@ -4,9 +4,10 @@ name with the network after it ("Home Assistant (VLAN 20)"), and the page puts i
 all the addresses is for after 1.0).
 
 Pure: it is handed the cards, the addresses of the host Vedetta runs on, its own address, the MACs that are lent (a repeater answering for
-its clients: the same MAC there says nothing) and the network of an address. Three ways to be a twin, the first that applies wins:
+its clients: the same MAC there says nothing), the network of an address and, with SNMP, the router's own addresses. Four ways to be a twin, the first that applies wins:
   - an address of the host itself on another network: the twin of the card at the host's own address (the host has no MAC in its own ARP table);
   - the same MAC as a card on another network (a MAC that is not lent): the twin of the card on the main network;
+  - an address the router itself lists as its own (SNMP, scan/router_arp.py): the twin of the router's card on the main network;
   - the same TLS certificate (`tls_fp`, its SHA-256 fingerprint from the deep search) as a card on another network: the twin of the card on the
     main network (1.0.1: a VLAN reached only through the router shows no MAC, but the router presents one certificate on every address). A
     certificate shared by two cards of one network says nothing (two devices of one maker with its default certificate): ignored."""
@@ -19,10 +20,11 @@ MAIN_NETWORK = "main"
 SOURCE = "twin"          # the name_source of a twin's name: never replaced by an automatic name, released when the card stops being a twin
 
 
-def find(cards: list[dict], host_ips: set, own_ip: str | None, lenders: frozenset, network_of: Callable) -> dict[str, str]:
-    """{twin card id: main card id}."""
+def find(cards: list[dict], host_ips: set, own_ip: str | None, lenders: frozenset, network_of: Callable,
+         router: tuple = (None, frozenset())) -> dict[str, str]:
+    """{twin card id: main card id}. `router` = (the address written as the router, the router's own addresses), from SNMP."""
     out = _host_twins(cards, host_ips, own_ip, network_of)
-    groups = [*_by_mac(cards, lenders).values(), *_by_cert(cards, network_of)]
+    groups = [*_by_mac(cards, lenders).values(), *_by_router(cards, router), *_by_cert(cards, network_of)]
     for group in groups:
         for twin, main in _group_twins(group, network_of).items():
             out.setdefault(twin, main)
@@ -54,6 +56,16 @@ def _by_mac(cards: list[dict], lenders: frozenset) -> dict[str, list[dict]]:
         if mac and mac not in lenders and card.get("ip"):
             groups.setdefault(mac, []).append(card)
     return {m: g for m, g in groups.items() if len(g) > 1}
+
+
+def _by_router(cards: list[dict], router: tuple) -> list[list[dict]]:
+    """The cards at the router's own addresses, the one at the address written as the router first (so the group's main card when it is on
+    the main network)."""
+    written, own = router
+    if not own:
+        return []
+    group = sorted((c for c in cards if c.get("ip") and c["ip"] in own | {written}), key=lambda c: c["ip"] != written)
+    return [group] if len(group) > 1 else []
 
 
 def _by_cert(cards: list[dict], network_of: Callable) -> list[list[dict]]:

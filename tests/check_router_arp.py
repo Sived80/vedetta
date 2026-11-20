@@ -22,7 +22,11 @@ async def fake_arp(host, community, **kw):
         raise asyncio.TimeoutError()
     return {"192.168.20.5": "AA:BB:CC:00:00:05", "192.168.20.6": "AA:BB:CC:00:00:06"}
 
-snmp.arp_table = fake_arp
+
+async def fake_own(host, community, **kw):
+    return set()                 # the router's own addresses (check_router_own_addresses.py): never a real packet from a test
+
+snmp.arp_table, snmp.own_addresses = fake_arp, fake_own
 
 # 1) off by default: nothing asked, «Try» says so
 assert not router_arp.configured() and asyncio.run(router_arp.table()) == {} and asked == []

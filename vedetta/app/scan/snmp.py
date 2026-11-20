@@ -1,5 +1,5 @@
-"""A small SNMP v2c reader, read-only, for ONE thing: the ARP table of the router the person names, with the community the person
-writes. Vedetta never tries a community on its own (no "public"), never writes (no SET), never asks a device other than that router.
+"""A small SNMP v2c reader, read-only, for the router the person names, with the community the person writes: its ARP table and its own
+addresses. Vedetta never tries a community on its own (no "public"), never writes (no SET), never asks a device other than that router.
 
 Only what that needs, no library: BER encoding of GETNEXT / GETBULK requests, decoding of the answer (integers, octet strings,
 object identifiers, the three "end" markers), and a walk with its ceilings (rows, time) and the checks on the answer (the same
@@ -7,12 +7,17 @@ request-id, no error-status). Pure functions for the bytes; `walk` does the netw
 
 The table (ipNetToMediaPhysAddress, RFC 1213, 1.3.6.1.2.1.4.22.1.2): index = ifIndex . a . b . c . d, value = the 6 bytes of the MAC;
 when a router has only the newer one (ipNetToPhysicalPhysAddress, RFC 4293, 1.3.6.1.2.1.4.35.1.4: index = ifIndex . 1 (ipv4) . 4 .
-a . b . c . d), that one is read."""
+a . b . c . d), that one is read.
+
+The router's own addresses (1.0.1: its address on each VLAN is the same machine, twins.py): ipAdEntAddr (RFC 1213, 1.3.6.1.2.1.4.20.1.1,
+index = a . b . c . d), else ipAddressIfIndex (RFC 4293, 1.3.6.1.2.1.4.34.1.3, index = 1 (ipv4) . 4 . a . b . c . d)."""
 import asyncio
 import os
 
 ARP_V1 = (1, 3, 6, 1, 2, 1, 4, 22, 1, 2)
 ARP_V2 = (1, 3, 6, 1, 2, 1, 4, 35, 1, 4)
+ADDR_V1 = (1, 3, 6, 1, 2, 1, 4, 20, 1, 1)
+ADDR_V2 = (1, 3, 6, 1, 2, 1, 4, 34, 1, 3)
 GET_NEXT, GET_BULK, RESPONSE = 0xA1, 0xA5, 0xA2
 END_TAGS = (0x80, 0x81, 0x82)            # noSuchObject, noSuchInstance, endOfMibView
 MAX_ROWS = 4096
@@ -224,3 +229,31 @@ async def arp_table(host: str, community: str, **kw) -> dict[str, str]:
     if refused:
         raise refused
     return {}
+
+
+# ---- the router's own addresses ----
+def own_rows(rows: list[tuple[tuple, int, bytes]], base: tuple) -> set[str]:
+    """The IPv4 addresses in the index of the rows of one of the two address tables (loopback and 0.0.0.0 dropped)."""
+    out: set[str] = set()
+    for o, _tag, _value in rows:
+        suffix = o[len(base):]
+        ip = suffix if base == ADDR_V1 else (suffix[2:] if suffix[:2] == (1, 4) else ())
+        if len(ip) == 4 and all(0 <= p <= 255 for p in ip) and ip[0] not in (0, 127):
+            out.add(".".join(map(str, ip)))
+    return out
+
+
+async def own_addresses(host: str, community: str, **kw) -> set[str]:
+    """The router's own IPv4 addresses: the old table first, the newer one when the old is empty or refused (as arp_table)."""
+    refused = None
+    for base in (ADDR_V1, ADDR_V2):
+        try:
+            found = own_rows(await walk(host, community, base, **kw), base)
+        except SnmpError as exc:
+            refused = refused or exc
+            continue
+        if found:
+            return found
+    if refused:
+        raise refused
+    return set()

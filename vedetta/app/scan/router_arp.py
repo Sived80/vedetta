@@ -3,14 +3,17 @@ wrote the router's address and a read-only community (settings.snmp_*). Off whil
 
 Read once per sweep of the networks behind the router (routedwatch, every 15 minutes) and only for that: the table gives an address
 its MAC (and so the maker of the device, K10), never its presence, because a router keeps an entry for minutes after the device
-has gone. The last reading (when, how many rows, the error) is kept for the page; a failure is said once in the log."""
+has gone. The last reading (when, how many rows, the error) is kept for the page; a failure is said once in the log.
+
+With the table, the router's own address list (1.0.1): its address on each VLAN is the same machine as the one on the main network
+(twins.py). A router that refuses that list still gives its table; the list is then empty."""
 import time
 
 from ..applog import logger
 from ..storage import settings
 from . import snmp
 
-_last: dict = {"at": None, "rows": 0, "error": None, "ips": ()}
+_last: dict = {"at": None, "rows": 0, "error": None, "ips": (), "own": frozenset()}
 
 
 def configured() -> bool:
@@ -30,8 +33,24 @@ async def table() -> dict[str, str]:
         return {}
     if _last["error"]:
         logger.info("Tabella ARP del router di nuovo leggibile (%d indirizzi)", len(found))
-    _last.update(at=time.time(), rows=len(found), error=None, ips=tuple(found))
+    _last.update(at=time.time(), rows=len(found), error=None, ips=tuple(found), own=await _own(cfg))
     return found
+
+
+async def _own(cfg: dict) -> frozenset:
+    """The router's own addresses; empty when it does not give them (said in the log at debug level only: the table is what counts)."""
+    try:
+        return frozenset(await snmp.own_addresses(cfg["snmp_router"], cfg["snmp_community"]))
+    except Exception as exc:
+        logger.debug("Indirizzi propri del router non letti via SNMP (%s)", type(exc).__name__)
+        return frozenset()
+
+
+def own_addresses() -> tuple[str | None, frozenset]:
+    """(the address written as the router, the router's own addresses at its last good reading); (None, empty) without SNMP."""
+    if not configured() or _last["error"]:
+        return None, frozenset()
+    return settings.snmp_load()["snmp_router"], _last["own"]
 
 
 def last_ips() -> tuple:

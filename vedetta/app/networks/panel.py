@@ -64,12 +64,13 @@ def _in(network: Network, ip) -> bool:
 
 def describe(network: Network, seen: Seen, name: str | None, main: bool, answers: bool | None = None) -> dict:
     """{"name", "vlan", "on", "mute", "caps"} of one network. `name` is the one to show (the main network's default included). `answers`:
-    whether the network answers, when it is known otherwise (the sweep of «try and add»); by default, a card of it is on now."""
+    whether the network answers, when it is known otherwise (the sweep of «try and add»); by default, a card of it is on now, or it has no card
+    yet (just added: its devices are not found again yet, nothing says that it does not answer, so no firewall help)."""
     life = activity.tally(network, [(cid, ip) for cid, ip, _ in seen.cards], seen.last, seen.now)
     direct = "direct" in network.via
     vlan = (host_read.vlan_for(network.cidr, seen.host) if direct else None) or network.vlan
     facts = caps.Facts(direct=direct, main=main, touch=network.touch, cidr=str(network.cidr), vlan=vlan,
-                       answers=life["on"] > 0 if answers is None else answers,
+                       answers=(life["on"] > 0 or life["cards"] == 0) if answers is None else answers,
                        dns_names=any(src == DNS_SOURCE and _in(network, ip) for _, ip, src in seen.cards),
                        trackers=any(_in(network, ip) for ip in seen.trackers), mdns=any(_in(network, ip) for ip in seen.mdns),
                        snmp=any(_in(network, ip) for ip in seen.snmp), ha_ip=seen.own_ip, iface=seen.iface)

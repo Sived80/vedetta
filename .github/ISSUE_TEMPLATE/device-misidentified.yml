@@ -18,7 +18,7 @@ body:
     attributes:
       label: Vedetta version
       description: Settings > Apps > Vedetta shows it.
-      placeholder: "0.3.9"
+      placeholder: "1.0.0"
     validations:
       required: true
 

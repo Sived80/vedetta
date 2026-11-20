@@ -138,6 +138,15 @@
     font-size: var(--fs-xs); line-height: 14px; letter-spacing: 0.03em; text-transform: uppercase;
     color: var(--secondary-text-color); font-weight: var(--fw-m);
   }
+  /* The carousel's tiles (1.0.1): the name on a row of its own under the icon and the dots, as wide as the tile; the icon and the name at the
+     edge of the boxes; the foot keeps its height whether it holds a legend with its bar or a button, so every tile has its places in the same spot. */
+  .nettile .t-name {
+    margin-top: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: var(--fs-xs); line-height: 14px; letter-spacing: 0.03em; text-transform: uppercase;
+    color: var(--secondary-text-color); font-weight: var(--fw-m);
+  }
+  .nettile .t-foot { min-height: 28px; justify-content: flex-end; }
+  .nettile .stat-box-val { overflow: hidden; text-overflow: ellipsis; }
 
   .t-mid { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; margin: 4px 0; }
   .t-v {

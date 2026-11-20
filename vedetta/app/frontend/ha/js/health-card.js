@@ -74,8 +74,10 @@ function hcCarouselTile() {
   const two = finds.length ? hcStatBox(t("js.ha.health.last"), esc(fmtClock(last))) : hcStatBox(t("js.ha.health.card.check"), judged ? esc(fmtClock(judged)) : "–");
   return {
     id: "health", tip: t("js.ha.health.card.tip"), open: hcOpenScreen, color: c, attention: finds.map(function (f) { return f.id; }).join("|"),
-    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + '</span><span class="t-l">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</span>" +
-      '</div><div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
+    // the places of every tile of the carousel (net-rotator.js cardHTML): icon, the name on its own row, two boxes, the button in the foot
+    html: '<div class="t-card" style="--c:' + c + '"><div class="t-head"><span class="t-ic">' + icon(HC_LEVEL_ICON[worst]) + "</span></div>" +
+      '<div class="t-name">' + esc(t(simOn() && !simPreview() ? "js.ha.health.sim.tile" : "js.ha.health.title")) + "</div>" +
+      '<div class="t-mid"><div class="stat-grid-2">' + one + two + '</div></div><div class="t-foot"><span class="hs-go" data-open>' + esc(t("js.ha.health.card.open")) + icon("chevron-right") + "</span></div></div>",
   };
 }
 

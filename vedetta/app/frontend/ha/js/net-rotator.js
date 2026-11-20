@@ -1,37 +1,22 @@
-import { $, REDUCED, ago, api, esc, icon, subnetOf, t } from "./core.js";
+import { $, REDUCED, ago, api, esc, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
-import { deepOneBusy } from "./deep.js";
 
 // ------------------------------------------------------------ rotating tile of the Network card
-// One tile that shows, in turn, a datum of the network: LAN latency, gateway, recognised devices, Home Assistant link.
+// One tile that shows, in turn, a datum: one tile per network (its gateway's latency in the main one), internet, the outside functions,
+// recognised devices, Home Assistant.
 // A tile with no data to show is left out. It turns by itself, stops under the pointer, and a click goes to the next one.
-var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_LATENCY = 13, MAX_CYCLES = 8;
-var latency = [], cycles = [], lastNext = null;       // samples of this page: gateway latency (ms) and duration of the checks (s)
+var ROTATE_MS = 4200, ATTENTION_HOLD_MS = 12000, FADE_MS = 160, MAX_CYCLES = 8;
+var cycles = [], lastNext = null;                    // samples of this page: duration of the checks (s)
 var shown = 0, hold = false, timer = 0;
 var toggleShared = null;                              // set by filters.js: shows only the devices shared with Home Assistant, or all again (Discussion #17)
 export function onSharedFilter(fn) { toggleShared = fn; }
+var openNetworks = null;                              // set by core-menu.js, which owns the Networks panel: the button of a proposed or paused network's tile
+export function onOpenNetworks(fn) { openNetworks = fn; }
 // One more tile that another part of the page offers (the network health, only in the debug mode): `extra()` returns {id, tip, html, open(el), attention} or null. A tile with `open` does that only when
 // its `[data-open]` part is clicked; any other click passes to the next tile. When `attention` becomes something new the carousel goes to the tile and stays on it for a while.
 var extra = null, seenAttention = "", holdUntil = 0, current = null;
 export function setExtraTile(fn) { extra = fn; seenAttention = ""; }
 
-// The latency of the gateway over the last hour, from the history of the app (the average of each minute, to a tenth of a millisecond). The value
-// of the card is rounded to whole milliseconds (a LAN answers in less than one: it was always "1.0 ms"); the history is not.
-var gwHist = { id: null, at: 0, busy: false, series: null };
-function refreshGatewayHistory(gw) {
-  if (!gw || !gw.id || gwHist.busy) return;
-  if (gwHist.id === gw.id && Date.now() - gwHist.at < 60000) return;
-  gwHist.busy = true;
-  gwHist.id = gw.id;
-  api("/api/ha/history/" + encodeURIComponent(gw.id) + "?hours=1").then(function (x) {
-    const lat = x && x.latency;
-    gwHist.series = lat && lat.points && lat.points.length ? lat : null;
-  }).catch(function () { gwHist.series = null; }).then(function () {
-    gwHist.busy = false;
-    gwHist.at = Date.now();
-    paintTile(false);
-  });
-}
 function push(list, value, max) { list.push(value); if (list.length > max) list.shift(); }
 function ms(v) { return v < 10 ? v.toFixed(1) : String(Math.round(v)); }
 
@@ -54,119 +39,128 @@ export function sampleCycle() {
   if (!S.poll.known) return false;
   const next = S.poll.nextAt, first = lastNext === null, taken = first || next > lastNext + 1000;
   if (taken) {
-    const took = first ? 0 : (Date.now() - lastNext) / 1000, gw = gateway();
+    const took = first ? 0 : (Date.now() - lastNext) / 1000;
     if (took > 0 && took * 1000 < S.poll.interval) push(cycles, took, MAX_CYCLES);
-    if (gw && gw.online && gw.latency_ms != null) push(latency, gw.latency_ms, MAX_LATENCY);
   }
   lastNext = next;
   return taken;
 }
 
-function cardHTML(color, iconName, label, midHTML, footHTML) {
+// Every tile has the same places (decided 20/11, the layout of the health tile): the icon on the first row (the dots of the carousel on its
+// right), the name on a row of its own, two boxes (label on the left, value on the right; the first one tinted in the colour of the tile)
+// and the foot: a legend with its bar, or a button in the place of both. Values are escaped by the caller.
+function cardHTML(color, iconName, name, b1, b2, foot) {
   return '<div class="t-card" style="--c:' + color + '">' +
-    '<div class="t-head"><span class="t-ic">' + icon(iconName) + '</span><span class="t-l">' + label + '</span></div>' +
-    '<div class="t-mid">' + midHTML + '</div>' +
-    '<div class="t-foot">' + (footHTML || '') + '</div>' +
-  '</div>';
+    '<div class="t-head"><span class="t-ic">' + icon(iconName) + "</span></div>" +
+    '<div class="t-name">' + name + "</div>" +
+    '<div class="t-mid"><div class="stat-grid-2">' + b1 + b2 + "</div></div>" +
+    '<div class="t-foot">' + (foot || "") + "</div>" +
+  "</div>";
 }
-// KPI box of the middle of a tile: small label above, value below (value is already escaped).
+// KPI box of the middle of a tile: label on the left, value on the right (value is already escaped).
 function statBox(label, value, color, boxCls) {
   return '<div class="stat-box' + (boxCls ? " " + boxCls : "") + '"' + (color ? ' style="--sc:' + color + '"' : "") + '><span class="stat-box-lbl">' + esc(label) + "</span>" +
     '<span class="stat-box-val">' + value + "</span></div>";
 }
+function tileLegend(left, right, pct, color) {
+  return '<div class="bar-leg"><span>' + left + "</span><span>" + right + "</span></div>" +
+    '<div class="pbar"><i style="width:' + Math.max(0, Math.min(100, pct || 0)).toFixed(1) + "%" + (color ? ";background:" + color : "") + '"></i></div>';
+}
+// A button in the place of the legend and its bar, as the one of the health tile ("Open"): the click on it calls the tile's `open`.
+function goButton(label) { return '<span class="hs-go" data-open>' + esc(label) + icon("chevron-right") + "</span>"; }
 
-function latencyTile(gw) {
-  const hist = gw && gwHist.id === gw.id && gwHist.series ? gwHist.series.points.map(function (p) { return p[1]; }) : null;
-  const samples = hist || latency;
-  if (!gw || !gw.online || !samples.length) return null;
-  const last = samples[samples.length - 1], lo = Math.min.apply(null, samples), hi = Math.max.apply(null, samples);
-  const avg = samples.reduce(function (a, v) { return a + v; }, 0) / samples.length;
-  const pct = hi > lo ? Math.max(4, (last - lo) / (hi - lo) * 100) : 100;
-  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.min")) + " <b>" + ms(lo) + ' ms</b></span><span>' + esc(t("js.ha.tile.max")) + " <b>" + ms(hi) + ' ms</b></span></div>' +
-    '<div class="pbar"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
+// ------------------------------------------------------------ one tile per network
+// The networks are read from the panel's own answer (GET /api/networks: name, subnet, VLAN, state, cards, cards on now, "silent"), at most
+// once a minute and never twice at a time; the gateway's latency comes from its card. Nothing else is asked for these tiles.
+var NET_EVERY_MS = 60000;
+var NET_COLORS = ["var(--primary-color)", "var(--orange-color)", "var(--purple-color)", "var(--teal-color)", "var(--pink-color, #e91e63)", "var(--indigo-color, #3f51b5)"];
+var tileNets = { rows: null, at: 0, busy: false };   // the page is one bundle: names unique across the modules (netpanel.js has nets and legend)
+function refreshNetworks() {
+  if (tileNets.busy || Date.now() - tileNets.at < NET_EVERY_MS) return;
+  tileNets.busy = true;
+  api("/api/networks").then(function (x) {
+    tileNets.rows = x && x.main ? [x.main].concat((x.networks || []).filter(function (n) { return n && n.fits !== false; })) : null;
+  }).catch(function () { /* keep the last answer */ }).then(function () {
+    tileNets.busy = false;
+    tileNets.at = Date.now();
+    paintTile(false);
+  });
+}
+function gatewayBox(gw) {
+  if (!gw) return statBox(t("js.ha.tile.gateway"), "–");
+  if (!gw.online) return statBox(t("js.ha.tile.gateway"), esc(t("js.ha.tile.net_gw_down")), "var(--error-color)", "tinted");
+  return statBox(t("js.ha.tile.gateway"), gw.latency_ms == null ? "–" : ms(gw.latency_ms) + ' <span class="unit">ms</span>');
+}
+function netFoot(n, cards, on, color) {
+  if (n.state === "proposed" || n.state === "paused") return goButton(t("js.ha.tile.net_open"));
+  return tileLegend(esc(n.cidr), esc(t("js.ha.tile.net_off", { n: cards - on })), cards ? on / cards * 100 : 0, color);
+}
+function netBoxes(n, i, cards, on, color) {
+  const count = on + " / " + cards;
+  if (n.state === "proposed") return [statBox(t("js.ha.tile.net_proposed"), esc(t("js.ha.tile.net_cards", { n: cards })), "var(--info-color)", "tinted"), statBox(t("js.ha.tile.net_on"), count)];
+  const b2 = i === 0 ? gatewayBox(gateway()) : statBox(t("js.ha.tile.net_vlan"), n.vlan ? esc(String(n.vlan)) : "–");
+  if (n.state === "paused") return [statBox(t("js.ha.tile.net_paused"), "–", "var(--secondary-text-color)", "tinted"), b2];
+  if (n.mute) return [statBox(t("js.ha.tile.net_mute"), esc(t("js.ha.tile.net_mute_val")), "var(--error-color)", "tinted"), b2];
+  return [statBox(t("js.ha.tile.net_on"), count, color, "tinted"), b2];
+}
+function netTile(n, i) {
+  if (!n || !n.cidr) return null;
+  const color = NET_COLORS[i % NET_COLORS.length], cards = n.cards || 0, on = Math.min(n.on || 0, cards);
+  const name = n.state === "proposed" ? n.cidr : n.name || n.cidr, boxes = netBoxes(n, i, cards, on, color);
+  const button = n.state === "proposed" || n.state === "paused";
   return {
-    id: "latency",
-    tip: t("js.ha.tile.latency_tip", { n: samples.length, min: ms(lo), max: ms(hi) }),
-    html: cardHTML("var(--primary-color)", "wifi-arrow-up-down", esc(t("js.ha.tile.latency")),
-      '<div class="stat-grid-2">' +
-        statBox(t("js.ha.tile.current"), ms(last) + ' <span class="unit">ms</span>', "var(--primary-color)") +
-        statBox(t("js.ha.tile.avg_lan"), ms(avg) + ' <span class="unit">ms</span>') +
-      "</div>",
-      foot)
+    id: "net-" + (n.id || n.cidr),
+    open: button && openNetworks ? function () { openNetworks(); } : null,
+    tip: t("js.ha.tile.net_tip", { name: name, on: on, cards: cards }),
+    html: cardHTML(color, "router-wireless", esc(name), boxes[0], boxes[1], netFoot(n, cards, on, color))
   };
 }
-
-function gatewayTile(gw) {
-  const net = gw && subnetOf(S.roles && S.roles.network, gw.ip);       // the real network of the LAN, a /22 too (Discussion #15)
-  if (!net) return null;
-  const used = S.list.filter(function (d) { return net.has(d.ip); }).length, free = Math.max(0, net.hosts - used);
-  const subnet = net.label;
-  const pct = Math.max(0, Math.min(100, used / net.hosts * 100)).toFixed(1);
-  const foot = '<div class="bar-leg"><span><b>' + used + '</b> ' + esc(t("js.ha.tile.used")) + '</span><span>' + esc(t("js.ha.tile.free", { n: free })) + '</span></div>' +
-    '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
-  return {
-    id: "gateway",
-    tip: t(gw.online ? "js.ha.tile.gateway_tip" : "js.ha.tile.gateway_tip_off", { subnet: subnet, used: used, free: free }),
-    html: cardHTML("var(--teal-color)", "router-wireless", esc(t("js.ha.tile.gateway")),
-      '<div class="t-v"><span class="t-n mono' + (gw.online ? "" : " gw-off") + '">' + esc(gw.ip) + '</span></div>' +
-      '<div class="gw-net"><span class="gw-sub">' + esc(subnet) + '</span>' + (gw.online ? '<span class="gw-state">' + esc(t("js.ha.tile.net_active")) + '</span>' : "") + '</div>',
-      foot)
-  };
+function netTiles() {
+  refreshNetworks();
+  return (tileNets.rows || []).map(function (n, i) { return safe(function () { return netTile(n, i); }); });
 }
 
-// Connection to the internet, in the style of the gateway tile: the public IP, how it is reached (direct, CGNAT, double NAT), the hops to the outside.
+// ------------------------------------------------------------ the other tiles
+// Connection to the internet: the public IP, how it is reached (direct, CGNAT, double NAT), the hops to the outside.
 // Each of the two checks can be switched off in the add-on options (S.external): what is off says so instead of a value.
 function internetTile() {
   const ext = S.external, net = S.roles && S.roles.internet;
   const ipOn = !ext || ext.public_ip.on, pathOn = !ext || ext.path.on;
+  const name = esc(t("js.ha.tile.internet")), color = "var(--info-color)";
   if (!ipOn && !pathOn) {
     return {
       id: "internet",
       tip: t("js.ha.tile.internet_tip_off"),
-      html: cardHTML("var(--info-color)", "earth", esc(t("js.ha.tile.internet")),
-        '<div class="t-v"><span class="t-n mono gw-off">' + esc(t("js.ha.tile.off")) + '</span></div>' +
-        '<div class="gw-net"><span class="gw-sub">' + esc(t("js.ha.tile.net_all_off")) + '</span><span class="gw-state gw-off">' + esc(t("js.ha.tile.no_checks")) + '</span></div>',
-        '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: "–" })) + '</span><span>–</span></div><div class="pbar"><i style="width:0%"></i></div>')
+      html: cardHTML(color, "earth", name, statBox(t("js.ha.tile.ext_public_ip"), esc(t("js.ha.tile.off")), "var(--secondary-text-color)", "tinted"),
+        statBox(t("js.ha.tile.connection"), esc(t("js.ha.tile.net_all_off"))), tileLegend(esc(t("js.ha.tile.hops", { n: "–" })), esc(t("js.ha.tile.no_checks")), 0))
     };
   }
   if (!net) return null;
   const hops = (net.hops || []).length, reachable = ipOn ? !!net.public_ip : hops > 0;
   const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : net.maybe_double_nat ? "js.ha.tile.net_maybe_double" : "js.ha.tile.net_direct");
-  const pct = pathOn ? Math.max(0, Math.min(100, hops / 5 * 100)).toFixed(1) : "0";
-  const foot = '<div class="bar-leg"><span>' + esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + '</span><span>' + esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })) + '</span></div>' +
-    '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
-  return {
-    id: "internet",
-    tip: t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }),
-    html: cardHTML("var(--info-color)", "earth", esc(t("js.ha.tile.internet")),
-      '<div class="t-v"><span class="t-n mono' + (ipOn && net.public_ip ? "" : " gw-off") + '">' + esc(ipOn ? net.public_ip || "–" : t("js.ha.tile.off")) + '</span></div>' +
-      '<div class="gw-net"><span class="gw-sub">' + esc(kind) + '</span><span class="gw-state' + (reachable ? "" : " gw-off") + '">' + esc(t(reachable ? "js.ha.tile.online" : "js.ha.tile.offline")) + '</span></div>',
-      foot)
-  };
+  const ip = ipOn ? (net.public_ip || "–") : t("js.ha.tile.off");
+  const b1 = statBox(t("js.ha.tile.ext_public_ip"), esc(ip), reachable ? color : "var(--error-color)", "tinted");
+  const b2 = statBox(t("js.ha.tile.connection"), esc(kind));
+  const foot = tileLegend(esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + " · " + esc(t(reachable ? "js.ha.tile.online" : "js.ha.tile.offline")),
+    esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })), pathOn ? hops / 5 * 100 : 0, color);
+  return { id: "internet", tip: t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }), html: cardHTML(color, "earth", name, b1, b2, foot) };
 }
 
-// The three functions that reach the internet and whether each is on: three boxes as in the latency tile, label on the left and On or Off on the right.
-function extRow(on, labelKey) {
-  return statBox(t(labelKey), esc(t(on ? "js.ha.tile.on" : "js.ha.tile.off")), on ? "var(--success-color)" : "var(--secondary-text-color)", "tinted");
-}
+// The three functions that reach the internet: how many are on, and which ones are off.
 function externalTile() {
   const ext = S.external;
   if (!ext) return null;
   const rows = [[ext.public_ip.on, "js.ha.tile.ext_public_ip"], [ext.path.on, "js.ha.tile.ext_path"], [ext.mac_database.on, "js.ha.tile.ext_mac"]];
-  const n = rows.filter(function (r) { return r[0]; }).length;
+  const n = rows.filter(function (r) { return r[0]; }).length, off = rows.filter(function (r) { return !r[0]; }).map(function (r) { return t(r[1]); });
+  const color = "var(--teal-color)";
+  const b1 = statBox(t("js.ha.tile.ext_on_lbl"), esc(t("js.ha.tile.ext_count", { n: n, total: rows.length })), n ? "var(--success-color)" : "var(--secondary-text-color)", "tinted");
+  const b2 = statBox(t("js.ha.tile.ext_off_lbl"), off.length ? esc(off.join(", ")) : "–");
+  const all = rows.map(function (r) { return t(r[1]) + " " + t(r[0] ? "js.ha.tile.on" : "js.ha.tile.off"); }).join(" · ");
   return {
     id: "external",
     tip: t("js.ha.tile.external_tip", { n: n, total: rows.length }),
-    html: cardHTML("var(--teal-color)", "toggle-switch", esc(t("js.ha.tile.external")),
-      '<div class="stat-grid-2">' + rows.map(function (r) { return extRow(r[0], r[1]); }).join("") + "</div>")
+    html: cardHTML(color, "toggle-switch", esc(t("js.ha.tile.external")), b1, b2, tileLegend(esc(all), "", n / rows.length * 100, color))
   };
-}
-
-// One labelled bar of the "recognised devices" tile: count and label above, share shown by the bar.
-function lensRow(n, total, labelKey, color) {
-  const pct = total ? n / total * 100 : 0;
-  return '<div class="bar-row" style="--bc:' + color + '"><div class="bar-leg"><span><b>' + n + '</b> ' + esc(t(labelKey)) + '</span></div>' +
-    '<div class="pbar"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
 }
 
 function lensTile() {
@@ -180,19 +174,13 @@ function lensTile() {
     if (!info) return;
     if (info.state === "analysing") analysing++; else waiting++;
   });
-  // Devices whose deep search is running right now.
-  const deepCount = devices.filter(function (d) { return deepOneBusy(d.id); }).length;
-  const ok = total - analysing - waiting, pct = Math.round(ok / total * 100);
+  const ok = total - analysing - waiting, pct = Math.round(ok / total * 100), color = "var(--purple-color)";
   return {
     id: "lens",
     tip: t("js.ha.tile.lens_tip", { ok: ok, total: total, pct: pct, wait: analysing + waiting }),
-    html: cardHTML("var(--purple-color)", "magnify", esc(t("js.ha.tile.lens")),
-      '<div class="t-bars">' +
-        lensRow(ok, total, "js.ha.tile.identified", "var(--purple-color)") +
-        lensRow(analysing, total, "js.ha.tile.analyzing", "var(--primary-color)") +
-        lensRow(deepCount, total, "js.ha.deep.title", "var(--warning-color)") +
-      "</div>",
-      "")
+    html: cardHTML(color, "magnify", esc(t("js.ha.tile.lens")),
+      statBox(t("js.ha.tile.identified"), ok + " / " + total, color, "tinted"), statBox(t("js.ha.tile.analyzing"), String(analysing)),
+      tileLegend(pct + "%", esc(t("js.ha.tile.waiting", { n: waiting })), pct, color))
   };
 }
 
@@ -213,15 +201,15 @@ function mqttTile() {
     id: "mqtt",
     tip: t(on ? "js.ha.tile.mqtt_tip" : configured ? "js.ha.tile.mqtt_tip_off" : "js.ha.tile.mqtt_tip_none", { s: last === undefined ? "?" : last.toFixed(1) }),
     open: can && toggleShared ? function () { toggleShared(); paintTile(false); } : null,
-    html: cardHTML("var(--orange-color)", "home-assistant", esc(t("js.ha.tile.mqtt")),
-      '<div class="stat-grid-2">' + broker + cycle + "</div>", foot)
+    html: cardHTML("var(--orange-color)", "home-assistant", esc(t("js.ha.tile.mqtt")), broker, cycle, foot)
   };
 }
 
+// One tile that fails (a field missing, an answer of an unexpected shape) is left out: the others are still shown.
+function safe(make) { try { return make(); } catch (err) { return null; } }
 function tiles() {
-  const gw = gateway();
-  refreshGatewayHistory(gw);
-  const own = extra ? extra() : null, list = [latencyTile(gw), gatewayTile(gw), internetTile(), externalTile(), lensTile(), mqttTile()].filter(Boolean);
+  const own = extra ? safe(extra) : null;
+  const list = netTiles().concat([internetTile, externalTile, lensTile, mqttTile].map(safe)).filter(Boolean);
   return own ? list.concat([own]) : list;
 }
 

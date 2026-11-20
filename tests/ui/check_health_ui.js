@@ -98,7 +98,7 @@ const running = (list) => () => ({ running: true, findings: list });
 // The way in is the tile of the carousel: it turns by itself and a click on another tile passes to the next; this goes to the health one and opens it.
 const TITLE = new RegExp(L["js.ha.health.title"] + "|" + L["js.ha.health.sim.tile"]);
 async function openHealth(p) {
-  for (let i = 0; i < 10 && !TITLE.test(p.text("#rot .t-l")); i++) await p.click("#rot");
+  for (let i = 0; i < 10 && !TITLE.test(p.text("#rot .t-name")); i++) await p.click("#rot");
   await p.click("#rot .hs-go");
 }
 
@@ -135,16 +135,16 @@ async function openHealth(p) {
   const { q, qa, click, text } = p;
   check(!!q(".hs-stack") && !q(".hs-dots"), "col debug la scheda ha lo strato della salute e nessun puntino");
   check(asked(p).length > 0 && asked(p).every((u) => u.includes("shadow=1")), "col debug si chiedono anche i rilievi in ombra (?shadow=1)");
-  check(TITLE.test(text("#rot .t-l")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
+  check(TITLE.test(text("#rot .t-name")) && /3/.test(text("#rot .stat-box-val")), "con rilievi il carosello salta alla tile «Salute della rete» e dice quanti sono: " + text("#rot"));
   check(!!q("#rot .hs-go") && text("#rot .hs-go").includes(tx("js.ha.health.card.open")), "la tile ha il tasto «Apri» ben visibile");
-  const heldOn = text("#rot .t-l");
+  const heldOn = text("#rot .t-name");
   await wait(5000);
-  check(text("#rot .t-l") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");
+  check(text("#rot .t-name") === heldOn, "la tile resta ferma qualche secondo, il carosello non scappa via");
   check(!!q("#card-network .hs-pane.net #gauge") && !!q("#card-network .hs-pane.net #badges") && !!q("#card-network .hs-pane.net #search-row"), "la schermata rete tiene il cerchio, i badge e la ricerca (con i loro gestori)");
   await click("#rot");
   await wait(300);
-  check(q(".hs-stack").getAttribute("data-at") === "0" && TITLE.test(text("#rot .t-l")) === false, "un tocco sul corpo della tile passa alla successiva, non apre il pannello");
-  for (let i = 0; i < 10 && !TITLE.test(text("#rot .t-l")); i++) await click("#rot");
+  check(q(".hs-stack").getAttribute("data-at") === "0" && TITLE.test(text("#rot .t-name")) === false, "un tocco sul corpo della tile passa alla successiva, non apre il pannello");
+  for (let i = 0; i < 10 && !TITLE.test(text("#rot .t-name")); i++) await click("#rot");
   await openHealth(p);
   check(q(".hs-stack").getAttribute("data-at") === "1" && q(".hs-pane.health .hs-d-head").firstElementChild.dataset.act === "exit", "il tasto «Apri» apre la schermata e la X e' in alto a sinistra");
   const tiles = qa(".hs-tile");
@@ -247,7 +247,7 @@ async function openHealth(p) {
   await wait(1500);
   check(!p.doc.documentElement.hasAttribute("data-debug") && !!p.q(".hs-stack") && !p.calls.some((u) => u.includes("/api/ha/health")), "anteprima: senza debug la schermata c'e' e non chiede nulla al server");
   await openHealth(p);
-  check(!p.q(".hs-soon") && TITLE.test(p.text("#rot .t-l")) && p.text("#rot .t-l") !== tx("js.ha.health.sim.tile"), "anteprima: la tile porta il suo nome e non dice piu' «in arrivo»");
+  check(!p.q(".hs-soon") && TITLE.test(p.text("#rot .t-name")) && p.text("#rot .t-name") !== tx("js.ha.health.sim.tile"), "anteprima: la tile porta il suo nome e non dice piu' «in arrivo»");
   check(p.qa(".hs-tile").length === 4 && !p.q(".hs-sim"), "anteprima: quattro tile, nessun pulsante per cambiare scenario");
   check(p.errors.length === 0, "anteprima: nessun errore nella pagina" + (p.errors.length ? ": " + p.errors[0] : ""));
 
@@ -269,7 +269,7 @@ async function openHealth(p) {
   await p.click(".hs-pane.detail .hs-d-head [data-act='close']");
   await p.click(".hs-pane.health [data-act='exit']");
   await wait(300);
-  check(p.text("#rot .t-l") === tx("js.ha.health.sim.tile"), "con la simulazione accesa la tile del carosello lo dice");
+  check(p.text("#rot .t-name") === tx("js.ha.health.sim.tile"), "con la simulazione accesa la tile del carosello lo dice");
   await openHealth(p);
   for (let i = 0; i < 4; i++) { await p.click(".hs-sim"); await wait(100); }
   check(!p.q(".hs-sim.on") && p.text(".hs-sim") === tx("js.ha.health.sim.off"), "dopo l'ultimo scenario si torna ai dati veri");

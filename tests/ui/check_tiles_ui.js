@@ -100,7 +100,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   // Each click shows the next tile (the fade of the swap takes ~160 ms): collect what each one says.
   const seen = {};
   for (let i = 0; i < 7; i++) {
-    const label = (q("#rot .t-l") || { textContent: "" }).textContent.trim();
+    const label = (q("#rot .t-name") || { textContent: "" }).textContent.trim();
     if (label && !seen[label]) seen[label] = q("#rot .t-body").textContent.replace(/\s+/g, " ").trim();
     q("#rot").click();
     await wait(350);
@@ -109,12 +109,13 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(labels.length >= 4, "la tile gira tra almeno quattro schede: " + labels.join(", "));
   const internet = seen.Internet;
   check(!!internet && internet.includes("203.0.113.7") && /Connessione diretta|Direct connection/.test(internet) && /Online/.test(internet) && /Salti: 3|Hops: 3/.test(internet) && /controllato|checked/.test(internet), "tile «Internet»: IP pubblico, tipo di connessione, stato, salti e quando e' stato controllato");
-  const lat = seen[labels.find((l) => /Latenza|Latency/i.test(l))];
-  check(histCalls >= 1 && !!lat && lat.includes("0.5") && lat.includes("0.4") && lat.includes("0.6") && !lat.includes("1.0"), "tile della latenza: i numeri vengono dalla storia dell'ultima ora (0.4 - 0.6 ms), non piu' sempre «1.0 ms»");
+  // 1.0.1: the latency of the gateway is a box of the main network's tile (tests/ui/check_net_tiles_ui.js), no more a tile of its own
+  check(!labels.some((l) => /^(Latenza|Latency|Gateway)$/.test(l)), "niente piu' tile separate di latenza e gateway: " + labels.join(", "));
   // The MQTT tile: "exposed" counts the devices shared with Home Assistant, and only while the broker is connected.
   const visit = async (label) => {
     for (let i = 0; i < 7; i++) {
-      if ((q("#rot .t-l") || { textContent: "" }).textContent.trim() === label) return q("#rot .t-body");
+      // found: the pointer rests on it (as a person reading it), so the carousel does not turn away by itself in the middle of the checks
+      if ((q("#rot .t-name") || { textContent: "" }).textContent.trim() === label) { q("#rot").dispatchEvent(new win.MouseEvent("mouseenter")); return q("#rot .t-body"); }
       q("#rot").click();
       await wait(350);
     }
@@ -129,13 +130,13 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   check(/Offline/.test(mqText()) && !/Non configurato|Not set up/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "configurato ma il broker non risponde, avvisato in tempo reale dal server: «Offline»");
   link(true, true);
   await wait(300);
-  check(/Online/.test(mqText()) && /(Esposte|Exposed) MQTT\s*2(?!\d)/.test(mqText()) && /width:\s*66\.7%/.test(q("#rot .t-body").innerHTML), "broker connesso: «Online», «Esposte MQTT 2» (i due condivisi su tre) e barra al 66,7%");
+  check(/Online/.test(mqText()) && /(Esposte|Exposed) MQTT\s*2(?!\d)/.test(mqText()) && /width:\s*66\.7%/.test(q("#rot .t-body").innerHTML), "broker connesso: «Online», «Esposte MQTT 2» (i due condivisi su tre) e barra al 66,7%: " + mqText());
   link(true, false);
   await wait(300);
   check(/Offline/.test(mqText()) && /(Esposte|Exposed) MQTT\s*–/.test(mqText()), "il broker cade: la tile segue senza ricaricare la pagina");
   // The tile of the functions that reach the internet, and the tile "Internet" when a check is off (add-on options).
   const ext = seen[labels.find((l) => /Permessi|Permissions/.test(l))];
-  check(!!ext && (ext.match(/Acceso|On(?![a-z])/g) || []).length === 2 && (ext.match(/Spento|Off(?![a-z])/g) || []).length === 1 && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Permessi»: le tre funzioni, due accese e una spenta");
+  check(!!ext && /2 (di|of) 3/.test(ext) && /Prefissi MAC|MAC/.test(ext) && /IP pubblico|Public IP/.test(ext) && /Percorso|Path/.test(ext), "tile «Permessi»: due accese su tre, quale e' spenta, e le tre funzioni nella legenda: " + ext);
   let reload = 0;
   const reloadWith = async (external) => {
     data.summary.external = external;
@@ -153,7 +154,7 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   it = await text("Internet");
   check(/Controlli spenti|Checks off/.test(it) && /Nessun controllo|No checks/.test(it) && !/203\.0\.113\.7/.test(it), "tutti e due i controlli spenti: «Controlli spenti», nessun indirizzo");
   const none = await text(labels.find((l) => /Permessi|Permissions/.test(l)));
-  check((none.match(/Spento|Off(?![a-z])/g) || []).length === 3 && !/(Acceso|On)\b/.test(none.replace(/Permissions/, "")), "e la tile delle funzioni mostra le tre righe spente, nessuna accesa");
+  check(/0 (di|of) 3/.test(none) && /IP pubblico|Public IP/.test(none) && /Percorso|Path/.test(none) && /MAC/.test(none), "e la tile delle funzioni dice nessuna accesa su tre, con le tre spente: " + none);
   // Discussion #17 (at the end: it taps the carousel): the shared devices carry the sign of Home Assistant, and "Exposed N" filters them
   link(true, true);
   await wait(300);

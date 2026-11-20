@@ -10,6 +10,8 @@ import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
 import { netsCount, openNets } from "./ha-networks.js";
 import { openNetPanel } from "./netpanel.js";
+import { onOpenNetworks } from "./net-rotator.js";
+onOpenNetworks(openNetPanel);                          // the tile of a proposed or paused network opens this panel (net-rotator.js)
 
 // ----------------------------------------------------------------- guided typing
 // Fields that ask for an address help the typing: in a MAC the colons appear by themselves (and the letters become capitals); in an IP address

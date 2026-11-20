@@ -6,7 +6,8 @@ URLs must be prefixed. The prefix arrives in X-Ingress-Path (or in
 VEDETTA_BASE_PATH); absent = empty string and nothing changes compared to the LXC.
 
 VEDETTA_INGRESS_ONLY=1 (off by default): 403 for anyone not coming from the Supervisor
-(172.30.32.2). Not even localhost: with host_network another app on the host would reach the API.
+(172.30.32.2). Not even localhost: with host_network another app on the host would reach the API. Only /healthz is answered
+on localhost too (the watch loop of run.sh).
 
 Every answer carries the security headers (SECURITY_HEADERS); the page gets a Content-Security-Policy with a new nonce at each
 request, so only its own three inline scripts run (template_context gives the nonce to the template)."""
@@ -17,6 +18,7 @@ from .paths import env_base_path, normalize_base
 
 SUPERVISOR_IP = "172.30.32.2"
 _ALLOWED_PEERS = {SUPERVISOR_IP}
+_HEALTH_PEERS = {SUPERVISOR_IP, "127.0.0.1", "::1"}     # /healthz: also the watch loop of run.sh, which asks it from localhost
 SECURITY_HEADERS = [(b"x-content-type-options", b"nosniff"), (b"x-frame-options", b"SAMEORIGIN"), (b"referrer-policy", b"same-origin")]
 
 
@@ -46,10 +48,10 @@ class IngressMiddleware:
         if scope["type"] not in ("http", "websocket"):
             await self.app(scope, receive, send)
             return
-        # /healthz stays reachable by the watch loop of run.sh (from localhost): it reveals nothing.
-        if ingress_only() and scope.get("path") != "/healthz":
+        # /healthz stays reachable by the watch loop of run.sh (from localhost), not by the rest of the network.
+        if ingress_only():
             client = (scope.get("client") or ("",))[0]
-            if client not in _ALLOWED_PEERS:
+            if client not in (_HEALTH_PEERS if scope.get("path") == "/healthz" else _ALLOWED_PEERS):
                 if scope["type"] == "http":
                     body = b"Forbidden"
                     await send({"type": "http.response.start", "status": 403, "headers": [

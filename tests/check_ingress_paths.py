@@ -126,7 +126,7 @@ async def inner(scope, receive, send):
     await send({"type": "http.response.body", "body": b"ok"})
 
 
-async def call(client_ip, headers=()):
+async def call(client_ip, headers=(), path="/"):
     sent = []
 
     async def send(msg):
@@ -135,7 +135,7 @@ async def call(client_ip, headers=()):
     async def receive():
         return {"type": "http.request"}
 
-    scope = {"type": "http", "client": (client_ip, 1234), "headers": list(headers), "path": "/", "method": "GET"}
+    scope = {"type": "http", "client": (client_ip, 1234), "headers": list(headers), "path": path, "method": "GET"}
     await IngressMiddleware(inner)(scope, receive, send)
     seen["headers"] = dict(sent[0].get("headers", []))
     return sent[0]["status"]
@@ -148,6 +148,10 @@ os.environ["VEDETTA_INGRESS_ONLY"] = "1"
 assert asyncio.run(call("192.168.1.9")) == 403
 assert asyncio.run(call("172.30.32.2")) == 200
 assert asyncio.run(call("127.0.0.1")) == 403 and asyncio.run(call("::1")) == 403    # another app on the host network
+# /healthz: the watch loop of run.sh asks it from localhost, the Supervisor may ask it; nobody else on the network
+for peer in ("127.0.0.1", "::1", "172.30.32.2"):
+    assert asyncio.run(call(peer, path="/healthz")) == 200, peer
+assert asyncio.run(call("10.70.0.9", path="/healthz")) == 403
 del os.environ["VEDETTA_INGRESS_ONLY"]
 assert asyncio.run(call("192.168.1.9")) == 200
 assert template_context(types.SimpleNamespace(state=types.SimpleNamespace(base="/x", nonce="n1"))) == {"base": "/x", "nonce": "n1"}

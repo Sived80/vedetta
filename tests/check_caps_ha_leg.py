@@ -43,6 +43,8 @@ check(got["quiet"]["state"] == "soon" and got["stray"]["state"] == "soon", "Hidd
 check(all("ha_inside" not in ways(c) for c in got.values()), "no function proposes to put Home Assistant inside the network")
 check(got["mac"]["state"] == "how" and ways(got["mac"]) == ["router_integration", "snmp"], "MAC keeps its other ways: %s" % ways(got["mac"]))
 before = judge(other)
-check(before["quiet"]["state"] == "how" and "ha_inside" in ways(before["stray"]), "without a leg in the network: as before")
+check(before["quiet"]["state"] == "soon" and before["stray"]["state"] == "soon", "without a leg (VLAN 30): Hidden and Strays are coming too, the same")
+inside = [w for w in before["mac"].get("ways") or [] if w["id"] == "ha_inside"]
+check(len(inside) == 1 and inside[0]["soon"] is True, "and «Home Assistant inside» is offered for MAC only as «coming»: %s" % inside)
 print("ALL OK" if not failed else f"{failed} FAILED")
 sys.exit(1 if failed else 0)

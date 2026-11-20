@@ -57,7 +57,7 @@ iot = r.json()["networks"][0]
 assert iot["name"] is None and iot["vlan"] is None and iot["on"] == 0 and iot["mute"] is True, iot
 assert iot["caps"]["pres"] == {"state": "on", "source": "ved", "by": "ping"} and iot["caps"]["name"] == {"state": "on", "source": "router", "by": "router_dns"}, iot["caps"]
 assert iot["caps"]["port"]["state"] == "off" and iot["caps"]["port"]["switch"] == {"on": False, "touch_on": "ports", "touch_off": "presence"}
-assert iot["caps"]["mac"]["state"] == "how" and iot["caps"]["stray"]["ways"][0]["id"] == "ha_inside"
+assert iot["caps"]["mac"]["state"] == "how" and iot["caps"]["stray"] == {"state": "soon"} and iot["caps"]["mac"]["ways"][2]["id"] == "ha_inside"        # 20/11: strays coming behind the router
 
 r = c.post("/api/networks", json={"id": "x", "cidr": "192.168.50.0/25", "via": ["routed"]}, headers={"Accept-Language": "de"})
 assert r.status_code == 400 and r.json()["detail"]["code"] == "E_OVERLAP", r.text

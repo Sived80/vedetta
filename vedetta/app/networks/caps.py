@@ -135,16 +135,17 @@ def _routed_deep(facts: Facts) -> dict:
 
 
 def _routed(facts: Facts) -> dict:
-    """Behind the router. When Home Assistant already has an interface in the network (a VLAN shared with it), the way "put Home Assistant
-    inside" is not offered (it is done): what only that interface would give is "coming", as Vedetta does not listen on it yet (20/11)."""
+    """Behind the router. Vedetta listens to ARP on the main interface only (20/11): what only Home Assistant inside the network would give
+    (the hidden devices, the strays) is "coming" on every such network, and "put Home Assistant inside" is offered for MAC only as coming,
+    and not at all when Home Assistant already has an interface there (it is done)."""
     tracked = _on("ha", "router_integration") if facts.trackers else None
-    inside = [] if facts.ha_leg else [_way("ha_inside", facts)]
+    inside = [] if facts.ha_leg else [_way("ha_inside", facts, soon=True)]
     return {"pres": _on("ved", "ping"), "name": _routed_name(facts),
             "mac": tracked or (_on("router", "snmp") if facts.snmp else None) or _how(_way("router_integration", facts, best=True), _way("snmp", facts), *inside),
             "port": _routed_port(facts),
             "deep": _routed_deep(facts),
-            "quiet": tracked or (SOON if facts.ha_leg else _how(_way("router_integration", facts, best=True), *inside)),
-            "stray": SOON if facts.ha_leg else _how(_way("ha_inside", facts, best=True))}
+            "quiet": tracked or SOON,
+            "stray": SOON}
 
 
 def judge(facts: Facts) -> dict:

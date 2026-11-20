@@ -62,19 +62,21 @@ bare = judge(vlan=60)
 assert bare["pres"] == on("ved", "ping"), bare["pres"]
 assert bare["port"] == {"state": "off", "source": "ved", "by": "through_router", "switch": switch(False, "ports", "presence")}, bare["port"]
 assert bare["deep"] == bare["port"], "behind the router the model follows the switch of the ports (B, 14/11)"
-ids = {k: [w["id"] for w in bare[k]["ways"]] for k in ("name", "mac", "quiet", "stray")}
-assert ids == {"name": ["router_dns", "router_integration"], "mac": ["router_integration", "snmp", "ha_inside"],
-               "quiet": ["router_integration", "ha_inside"], "stray": ["ha_inside"]}, ids
-assert bare["stray"]["need"] == "this" and bare["mac"]["need"] == "one"
+# Vedetta listens to ARP on the main interface only (20/11): what only Home Assistant inside the network would give is "coming", on every
+# network behind the router; «Home Assistant inside» is still shown for MAC, marked as coming, with the ways that work today.
+ids = {k: [w["id"] for w in bare[k]["ways"]] for k in ("name", "mac")}
+assert ids == {"name": ["router_dns", "router_integration"], "mac": ["router_integration", "snmp", "ha_inside"]}, ids
+assert bare["quiet"] == {"state": "soon"} and bare["stray"] == {"state": "soon"}, (bare["quiet"], bare["stray"])
+assert bare["mac"]["need"] == "one"
 snmp = bare["mac"]["ways"][1]
 assert snmp["soon"] is False and snmp["best"] is False and snmp["by"] == "router", snmp      # no longer «coming soon»: the page has its form
 assert judge(vlan=60, snmp=True)["mac"] == on("router", "snmp"), "the router's ARP table gave MACs of the network: MAC on, from the router"
-inside = bare["stray"]["ways"][0]
-assert inside["by"] == "ha" and inside["best"] is True and inside["where"] == ["ha.settings", "ha.system", "ha.network"], inside
+inside = bare["mac"]["ways"][2]
+assert inside["by"] == "ha" and inside["soon"] is True and inside["best"] is False and inside["where"] == ["ha.settings", "ha.system", "ha.network"], inside
 assert inside["params"] == {"cidr": "192.168.60.0/24", "vlan": 60,
                             "example": "ha network vlan enp0s18 60 --ipv4-method static --ipv4-address 192.168.60.100/24"}, inside["params"]
-assert "example" not in judge()["stray"]["ways"][0]["params"], "no VLAN number: no example command"
-assert judge(vlan=7, cidr="192.168.60.16/28")["stray"]["ways"][0]["params"]["example"].endswith("192.168.60.30/28"), "a small network: the last usable address"
+assert "example" not in judge()["mac"]["ways"][2]["params"], "no VLAN number: no example command"
+assert judge(vlan=7, cidr="192.168.60.16/28")["mac"]["ways"][2]["params"]["example"].endswith("192.168.60.30/28"), "a small network: the last usable address"
 asked = judge(touch="ports")
 assert asked["deep"] == asked["port"], "asked, no answer: the firewall stops the model too"
 assert judge(touch="ports", answers=True)["deep"] == on("ved", "through_router", switch=switch(True, "ports", "presence")), "the model from the search through the router"
@@ -87,7 +89,7 @@ full = judge(touch="ports", answers=True, dns_names=True, trackers=True, mdns=Tr
 assert full["name"] == on("router", "router_dns") and full["mac"] == on("ha", "router_integration") and full["quiet"] == on("ha", "router_integration")
 assert full["port"] == on("ved", "through_router", switch=switch(True, "ports", "presence")), full["port"]
 assert full["deep"] == on("router", "mdns_reflector"), full["deep"]
-assert full["stray"]["state"] == "how" and full["pres"] == on("ved", "ping")
+assert full["stray"] == {"state": "soon"} and full["pres"] == on("ved", "ping")
 assert judge(trackers=True)["name"] == on("ha", "router_integration"), "no DNS names: the names of the router integration"
 
 # 5) the shape of every answer

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1 · Orizzonte
+Fixes and a clearer page for **Orizzonte**.
+
+- **One tile per network.** The tiles at the top show each network Vedetta follows, all with the same layout. A wider side column keeps their texts whole.
+- **One machine, one name.** A router or Home Assistant seen on several networks is now matched by its web certificate too, and, with SNMP, by the router's own addresses.
+- **The network panel says what works today.** Behind the router, hidden devices and strays are marked as *coming*. A network with no device yet no longer asks for a firewall rule, and devices of a presence-only network leave the deep search count.
+- **Nmap and arp-scan are installed when the app starts**, from the Alpine packages, instead of being shipped in the image. If the download fails, Vedetta tries again every 10 minutes.
+- **Safer inside.** Bounded DHCP and Bonjour memory, saved atomically. `/healthz` answers only to Home Assistant. Stricter checks on requests, and a quieter log.
+
+**Thank you** to everyone who tested the VLAN support and shared an export.
+
 ## 1.0.0 · Orizzonte
 **Orizzonte** is Italian for *horizon*: Vedetta now sees past the router, remembers, and tells you when something goes quiet.
 

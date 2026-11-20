@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0 · Orizzonte
+**Orizzonte** is Italian for *horizon*: Vedetta now sees past the router, remembers, and tells you when something goes quiet.
+
+- **Networks behind the router.** Add a VLAN or another subnet, try it first, give it a name. Vedetta pings it every 15 minutes and finds the new devices there. Turn on *Ports* and it reads their ports and model too; with SNMP on the router, their MACs.
+- **Alerts.** Ring the bell on a card: if the device goes away, a phone gets a notification, and another one when it is back. Recipients go in line, each after its own wait. *Send a test* checks it all. Nothing is written to Home Assistant until you turn it on.
+- **Memory.** Each card shows its last 30 days, the quality of its link and the names it had. A new card sums up the last 12 hours. The device list can be downloaded as CSV or JSON, with MACs and IPs hidden if you like.
+- **A card follows its device.** Presence comes from the device's own MAC, also when its address changes or a phone rotates its private MAC. One machine on two networks (your router, Home Assistant on a VLAN) gets the same name on both cards, side by side.
+- **Every device gets in.** *Scan network* lists every device without a card, even one that was on at install and ignores broadcasts (#35).
+- **Fixes.** Supervisor ingress errors on the live stream (#55), a stale name from Home Assistant no longer decides the brand (#36), encrypted export greyed out on a long history, large networks checked a slice at a time. The export for the developer now also hides every name a device has had and secrets in web addresses.
+
+**Thank you** to everyone who shared an export, tested on VLANs and reported issues: this release is built on them.
+
 ## 0.13.2 · Bussola
 A small fix for **Bussola**.
 - **The page opens behind a reverse proxy.** Behind a proxy that adds its own security policy, or rewrites the scripts of a page, Vedetta showed `js.ha.error.title` instead of your devices. The page no longer needs inline scripts to start (issue #48).

@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 0.13.2 · Bussola**, released in November 2026. **35 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 1.0.0 · Orizzonte**, released in November 2026. **34 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **1.0.0 · Orizzonte** | 20 Nov | Networks behind the router (VLANs), pinged every 15 minutes · alerts on your phone when a device goes away and when it is back · 30 days of memory per device, the last 12 hours at a glance, the device list as CSV or JSON · a card follows its device by its MAC · one machine on two networks, side by side · *Scan network* lists every device without a card (#35) |
 | **0.13.2 · Bussola** | 13 Nov | The page opens behind a reverse proxy (issue #48) |
 | **0.13.1 · Bussola** | 8 Nov | Scan network works on large networks (/8, /16) · no borrowed presence from the router's MAC · a change of network followed within a minute, without a restart · fewer packets |
 | **0.13.0 · Ascolto** | 7 Nov | Devices silent to a broadcast count as present · ignored devices left alone by the DNS check · no brands borrowed from an integration's placeholder model · mDNS services announced later are seen · clearer first steps with an empty list |
@@ -38,8 +39,8 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 
 - ☐ Radar of new devices: "3 new since your last visit" with *it's mine / ignore*
 - ☐ Clear-text services (telnet, FTP, SMB1) with severity per port
-- ☐ Passive anomalies: second DHCP server, IP with two MACs, MAC that changes IP
-- ☐ Device silent for days; IP changes and conflicts
+- ☐ Passive anomalies: second DHCP server, MAC that changes IP
+- ☐ IP changes over time
 - ☐ Every alert says why, what to do, and has *this is normal for me*
 - ☐ Network health indicator with a public, explained formula
 - ☐ TLS certificates close to expiry (self-signed shown as information only)
@@ -52,7 +53,7 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 <summary><b>🕰️ History</b> · 5</summary>
 
 - ☐ Event timeline (arrivals, departures, IP and port changes)
-- ☐ Before/after comparison between two scans, and "overnight" summary
+- ☐ Before/after comparison between two scans
 - ☐ Time machine: snapshots and differences
 - ☐ 90-bar status strips with latency sparklines
 - ☐ Presence heatmap (7×24), local and opt-in only
@@ -70,12 +71,11 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 </details>
 
 <details>
-<summary><b>🏠 Home Assistant</b> · 7</summary>
+<summary><b>🏠 Home Assistant</b> · 6</summary>
 
-- ☐ `vedetta_new_device` event with brand, model and reason
-- ☐ Native notification on a service you choose
+- ☐ Brand, model and reason in the `vedetta_new_device` event
 - ☐ Ready-made blueprints (new device, critical device offline)
-- ☐ More aggregate sensors (online, new today, unknown)
+- ☐ More aggregate sensors (new today, unknown)
 - ☐ Weekly digest notification
 - ☐ "This device is also in HA as …" on the card
 - ☐ Repairs and a custom integration *(later)*
@@ -95,7 +95,7 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 <details>
 <summary><b>💡 Original ideas</b> · 6</summary>
 
-- ☐ Inventory export (CSV, JSON, Markdown) with an anonymize option
+- ☐ Inventory export as Markdown
 - ☐ Device identity card: first/last seen, notes, room, warranty
 - ☐ "Ask Vedetta" with fixed Assist sentences, no language model
 - ☐ "If this repeater drops, who disappears?"

@@ -32,9 +32,8 @@ async def _https_get(ip: str, port: int, timeout: float) -> tuple[bytes, str | N
         writer.write(f"GET / HTTP/1.0\r\nHost: {ip}\r\n\r\n".encode())
         await writer.drain()
         data = await asyncio.wait_for(reader.read(65536), timeout=timeout)
-        writer.close()
-        with contextlib.suppress(Exception):
-            await writer.wait_closed()
+        data = await _read_rest(reader, data)          # headers and page often come in separate TLS records, like over plain HTTP
+        await _close_writer(writer)
         return data, subject, fp
     except Exception:
         return None

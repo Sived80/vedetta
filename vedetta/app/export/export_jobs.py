@@ -28,12 +28,13 @@ class Job:
         self.fixed = 0
         self.result: bytes | None = None
         self.filename = self.mime = ""
-        self.created = time.time()
+        self.created = self.touched = time.time()       # touched: the last step, the age of the job counts from it
         self.lock = threading.Lock()
 
     def note(self, step: str) -> None:
         with self.lock:
             self.steps.append(step)
+            self.touched = time.time()
 
     def close(self) -> None:
         if self.prepared is not None:
@@ -46,8 +47,10 @@ _guard = threading.Lock()
 
 
 def _purge() -> None:
+    """Forget the jobs idle for MAX_AGE since their last step; never one still running (a slow export polled into a 404 and let a
+    second export start next to it)."""
     for jid, job in list(_jobs.items()):
-        if time.time() - job.created > MAX_AGE:
+        if job.status != "running" and time.time() - job.touched > MAX_AGE:
             job.close()
             _jobs.pop(jid, None)
 
@@ -69,6 +72,7 @@ def _run(job: Job) -> None:
         job.fixed = job.prepared.fixed
         if job.prepared.pending:
             job.pending = job.prepared.pending
+            job.touched = time.time()
             job.status = "choose"
             return
         _finish(job, {})
@@ -78,6 +82,7 @@ def _run(job: Job) -> None:
 
 
 def _fail(job: Job, code: str) -> None:
+    job.touched = time.time()
     job.error, job.status = code, "error"
     job.close()
 
@@ -125,6 +130,7 @@ def decide(job: Job, choices: dict) -> None:
     listed in the window follow "rm")."""
     if job.status != "choose":
         raise Busy("nothing to decide")
+    job.touched = time.time()
     job.status = "running"
     clean = {int(k): ("keep" if v == "keep" else "rm") for k, v in (choices or {}).items() if str(k).isdigit()}
     threading.Thread(target=_finish, args=(job, clean), daemon=True, name="export-" + job.id[:6]).start()

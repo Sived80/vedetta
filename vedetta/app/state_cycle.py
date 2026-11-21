@@ -11,7 +11,7 @@ from . import identity_changes, linkview, macpresence, macverdict, netutil, sent
 from .applog import logger
 from .storage.history import history
 from .formatters import update_generic_titles
-from .scan import latency, probe, touch_policy
+from .scan import latency, presence_confirm, probe, touch_policy
 from .networks import registry
 from .storage import devices_config
 
@@ -71,6 +71,7 @@ async def poll_once(state) -> None:
     results = await asyncio.gather(*(probe.probe_device(i, arp_task) for i in inputs), return_exceptions=True)
     samples = await _samples(lat_task)
     moves = await _found_elsewhere(state, inputs, results, arp_task, started)
+    await presence_confirm.confirm_before_offline(state, inputs, results)
     _apply_results(state, snapshot, results, samples)
     await state._save_latency()
     await _after_cycle(state, await _arp_of(arp_task), moves)

@@ -113,9 +113,6 @@
     }
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -126,6 +123,9 @@
      "ip": "10.0.0.2",
      "ports": 2
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200
@@ -226,9 +226,6 @@
     }
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -239,6 +236,9 @@
      "ip": "10.0.0.2",
      "ports": 2
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200
@@ -324,9 +324,6 @@
     }
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -337,6 +334,9 @@
      "ip": "10.0.0.2",
      "ports": 2
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200
@@ -467,9 +467,6 @@
     }
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -480,6 +477,9 @@
      "ip": "10.0.0.5",
      "ports": 0
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200
@@ -557,9 +557,6 @@
     "track"
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -570,6 +567,9 @@
      "ip": "10.0.0.0",
      "ports": 0
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200
@@ -652,9 +652,6 @@
     }
    ],
    [
-    "search_finished"
-   ],
-   [
     "journal.add",
     [
      "detail",
@@ -665,6 +662,9 @@
      "ip": "10.0.0.1",
      "ports": 1
     }
+   ],
+   [
+    "search_finished"
    ]
   ],
   "status": 200

@@ -23,23 +23,19 @@ GOLDEN = Path(__file__).parent / "golden" / "scan_deep_stream.json"
 
 
 class _GatedAsyncio:
-    """asyncio as the route module sees it, with one change: the fake jobs below wait until the stream calls as_completed, then
-    finish in their fixed order. Without it the order depended on when the server starts the stream (later in Starlette 1.x)."""
-    started = False
+    """asyncio as the route module sees it, with one change: as_completed hands the searches to the stream in their fixed order, and a search
+    may end only when the stream asks for it (its gate opens then). So each search ends after the stream has dealt with the one before, whatever
+    the speed of the machine or the moment the server starts the stream: no clock and no count of turns of the event loop (a count of turns
+    once failed on a loaded CI runner)."""
+    gates: list = []
 
     def __getattr__(self, name):
         return getattr(asyncio, name)
 
     def as_completed(self, fs):
-        _GatedAsyncio.started = True
-        return asyncio.as_completed(fs)
-
-
-async def _wait_for_stream():
-    for _ in range(100000):
-        if _GatedAsyncio.started:
-            return
-        await asyncio.sleep(0)
+        for gate, fut in zip(_GatedAsyncio.gates, fs, strict=True):
+            gate.set()
+            yield fut
 
 
 scan_routes.asyncio = _GatedAsyncio()
@@ -57,16 +53,13 @@ async def _local(ips):
 scan_routes.registry.allowed = _local
 
 
-TURNS = 200     # the loops of the event loop that one step of delay lasts
-
-
 def job(kind, i):
-    """The search i ends TURNS * (i + 1) turns of the event loop after the start: the order of the answers, and the time the stream has between two of them to do its work, are counted in turns and do not depend on a
-    clock (it used to be a pause of 0.02 s times the number, and under load two close pauses could swap)."""
+    """The search i ends as soon as the stream asks for it (its gate), never before."""
+    gate = asyncio.Event()
+    _GatedAsyncio.gates.append(gate)
+
     async def run():
-        await _wait_for_stream()
-        for _ in range(TURNS * (i + 1)):
-            await asyncio.sleep(0)
+        await gate.wait()
         if kind == "ok":
             return {"ip": "10.0.0.%d" % i, "scan_info": {"ports": [80, 443][: i % 3]}}
         if kind == "empty":
@@ -97,10 +90,10 @@ def run_scenario(kinds):
 
     def fake_start(ips, hints):
         LOG.append(["start_associative", list(ips), hints])
+        _GatedAsyncio.gates = []
         return [asyncio.ensure_future(job(k, i)()) for i, k in enumerate(kinds)]
 
     pipeline.start_associative = fake_start
-    _GatedAsyncio.started = False
     app = FastAPI()
     app.include_router(scan_routes.router)
     with TestClient(app) as client:

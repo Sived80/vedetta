@@ -15,7 +15,7 @@ This page is written to be read in ten minutes. The index at the end is generate
 
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
-- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
+- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macaddr`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
 - **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `routedinv`, `storage/`, `twins`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
@@ -80,6 +80,7 @@ The functions that were restructured have a reference test that was generated fr
 | `inventory_view.py` | What the guard of new devices sees (1.0 step P7): the inventory of the MAC layer instead of the snapshot of the last ARP read. |
 | `lifecycle.py` | Why did the service restart? A small record of the run (tests/check_lifecycle.py): when it started, a heartbeat (time, memory, the longest delay of the event loop) and a mark when it stops cleanly. |
 | `linkview.py` | The card -> MAC links as the cycle reads them (1.0 step P5): which stored link may be trusted now. |
+| `macaddr.py` | Which MACs are a device: the one rule every entry point of a MAC follows (arp-scan, the neighbour table, DHCP, the router's table by SNMP, Home Assistant's registry, the MAC a probe reads). |
 | `macclassify.py` | Single MAC layer, phase 2: what kind of MAC is this? Pure functions over the rows of ip_mac (no network, no database, no brand). |
 | `macidentity.py` | Single MAC layer, phase 3: are two MACs the same physical device? Probabilistic record linkage (Fellegi-Sunter), pure functions, no brand. |
 | `maclayer.py` | The single MAC layer, phase 1: what the network says about which MAC answers at which address, as plain observations. |
@@ -242,6 +243,7 @@ The functions that were restructured have a reference test that was generated fr
 | `scan/pipeline_plan.py` | pipeline_plan: moved out of pipeline.py (see tools/split_module.py). |
 | `scan/pipeline_probes.py` | pipeline_probes: moved out of pipeline.py (see tools/split_module.py). |
 | `scan/presence.py` | Whose answer is an ARP answer. |
+| `scan/presence_confirm.py` | Confirm before saying offline (1.0.2). |
 | `scan/probe.py` | Builds the card of ONE device (probe_device): asks its adapter, adds what the search, Bonjour, DHCP and Home Assistant know, decides name, brand and "mobile", and returns a single record. |
 | `scan/probe_names.py` | probe_names: moved out of probe.py (see tools/split_module.py). |
 | `scan/probe_record.py` | probe_record: the records that the stages of probe_device pass to each other (what is known about the device, how it is reached, the brand stage, the name, the product) and the builder of the final card record. |
@@ -311,7 +313,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 163 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer |
-| `js/export.js` | 270 | export for analysis |
+| `js/export.js` | 271 | export for analysis |
 | `js/filters.js` | 249 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |

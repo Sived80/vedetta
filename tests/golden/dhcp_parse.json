@@ -7532,12 +7532,7 @@ null,
 ]
 ],
 "parse": [
-[
-"43:a3:f7:39:09:88",
-{
-"prl": "1"
-}
-],
+null,
 null,
 null,
 null,
@@ -7556,10 +7551,7 @@ null,
 ],
 null,
 null,
-[
-"35:16:6e:ab:2a:f2",
-{}
-],
+null,
 [
 "5a:20:1e:93:19:36",
 {
@@ -7582,13 +7574,6 @@ null,
 null,
 null,
 null,
-[
-"6b:ea:87:a4:82:cc",
-{
-"ip": "192.168.1.223",
-"ip_from": "requested"
-}
-],
 null,
 null,
 null,
@@ -7602,10 +7587,8 @@ null,
 null,
 null,
 null,
-[
-"9f:e3:36:da:9e:6b",
-{}
-],
+null,
+null,
 [
 "fc:93:bf:5a:f3:1f",
 {
@@ -7653,10 +7636,7 @@ null,
 null,
 null,
 null,
-[
-"bf:54:3a:85:d1:b9",
-{}
-],
+null,
 null,
 null,
 null,
@@ -7678,13 +7658,7 @@ null,
 ],
 null,
 null,
-[
-"83:f4:55:ac:08:1c",
-{
-"client_id": "01aabbccddeeff",
-"prl": "58"
-}
-],
+null,
 null,
 [
 "32:7d:0d:21:5a:b1",
@@ -7698,10 +7672,7 @@ null,
 null,
 null,
 null,
-[
-"e3:fb:3b:df:87:9b",
-{}
-],
+null,
 null,
 null,
 [
@@ -7717,27 +7688,11 @@ null,
 null,
 null,
 null,
-[
-"d7:0a:d1:1e:60:c5",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
-[
-"7b:e3:76:a8:57:35",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "3,95,51"
-}
-],
+null,
+null,
 [
 "44:bb:5e:a2:60:47",
 {}
@@ -7751,13 +7706,7 @@ null,
 null,
 null,
 null,
-[
-"c5:54:a6:8a:3e:25",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 [
@@ -7770,27 +7719,9 @@ null,
 "vendor_class": "bad utf"
 }
 ],
-[
-"41:94:7e:4c:55:e3",
-{
-"hostname": "giulia-ipad",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"53:33:37:49:19:f5",
-{}
-],
-[
-"43:4c:21:71:5b:58",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 null,
 [
@@ -7801,38 +7732,14 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"27:bb:ba:79:f0:b9",
-{}
-],
-null,
-[
-"d7:be:b6:9b:f0:fd",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "51,119,121,3,46,59,28"
-}
-],
-[
-"b7:7f:9f:cd:38:1e",
-{
-"hostname": "abc"
-}
-],
-[
-"75:51:8f:b9:93:f2",
-{}
-],
 null,
 null,
-[
-"9f:9c:25:b5:62:c9",
-{
-"client_id": "01aabbccddeeff",
-"prl": "46,26,1,6,28"
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -7856,13 +7763,7 @@ null,
 "vendor_class": "giulia-ipad"
 }
 ],
-[
-"75:b0:0d:47:7b:bf",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "a0:57:28:c5:4c:49",
 {
@@ -7886,10 +7787,7 @@ null,
 {}
 ],
 null,
-[
-"a7:68:0f:8a:9b:c6",
-{}
-],
+null,
 null,
 [
 "88:e7:14:27:f6:2b",
@@ -7913,23 +7811,10 @@ null,
 "42:a8:9f:34:87:f5",
 {}
 ],
-[
-"d3:17:66:82:74:75",
-{}
-],
-[
-"5d:d7:19:ad:c9:23",
-{}
-],
 null,
-[
-"0b:14:20:d5:e3:dc",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 [
 "de:72:51:f0:7f:de",
@@ -7940,10 +7825,7 @@ null,
 null,
 null,
 null,
-[
-"2f:ac:55:7c:8b:aa",
-{}
-],
+null,
 null,
 [
 "2e:a6:58:3b:6c:1b",
@@ -7969,33 +7851,11 @@ null,
 null,
 null,
 null,
-[
-"3f:84:08:94:f1:31",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "",
-"vendor_class": ""
-}
-],
 null,
-[
-"d5:d3:c7:01:18:37",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
-[
-"eb:0a:23:a7:1c:e8",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "giulia-ipad"
-}
-],
+null,
+null,
+null,
 [
 "38:4b:96:2c:50:48",
 {
@@ -8012,14 +7872,7 @@ null,
 "hostname": "abc"
 }
 ],
-[
-"2d:45:9f:5a:14:d1",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "46,121,33"
-}
-],
+null,
 null,
 [
 "0a:33:59:57:e1:f3",
@@ -8027,22 +7880,10 @@ null,
 ],
 null,
 null,
-[
-"57:c8:6a:a7:79:7a",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "44,46,33,121,59,249,95,252",
-"vendor_class": "MSFT 5.0"
-}
-],
 null,
 null,
-[
-"7d:d7:3c:66:bf:ac",
-{}
-],
+null,
+null,
 null,
 null,
 null,
@@ -8054,10 +7895,7 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"19:34:0c:7d:b2:73",
-{}
-],
+null,
 null,
 null,
 [
@@ -8072,10 +7910,7 @@ null,
 }
 ],
 null,
-[
-"4b:c0:23:cd:37:47",
-{}
-],
+null,
 null,
 null,
 [
@@ -8085,10 +7920,7 @@ null,
 null,
 null,
 null,
-[
-"e7:3f:8f:e8:25:e8",
-{}
-],
+null,
 [
 "84:07:ab:60:ac:8d",
 {
@@ -8111,12 +7943,7 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"f7:1f:5e:ee:e7:bc",
-{
-"prl": "58,95,26,28,121,44,59"
-}
-],
+null,
 null,
 null,
 null,
@@ -8134,13 +7961,6 @@ null,
 null,
 null,
 null,
-[
-"8b:44:f2:37:18:76",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -8152,13 +7972,8 @@ null,
 null,
 null,
 null,
-[
-"7b:ac:39:7a:b9:67",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "MSFT 5.0"
-}
-],
+null,
+null,
 [
 "4a:93:33:93:cf:46",
 {}
@@ -8166,29 +7981,10 @@ null,
 null,
 null,
 null,
-[
-"cd:fb:35:8e:50:0a",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "android-dhcp-13",
-"vendor_class": "android-dhcp-13"
-}
-],
 null,
-[
-"61:a7:ad:c5:e0:14",
-{
-"hostname": "giulia-ipad",
-"vendor_class": "giulia-ipad"
-}
-],
-[
-"69:04:b6:48:f2:67",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 [
 "f6:e0:ad:da:ac:34",
@@ -8197,13 +7993,7 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"09:de:3d:f5:a2:a8",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 null,
@@ -8223,24 +8013,13 @@ null,
 ],
 null,
 null,
-[
-"69:1e:44:d8:45:9f",
-{}
-],
 null,
 null,
 null,
-[
-"bd:a4:30:04:90:f1",
-{
-"hostname": "abc"
-}
-],
 null,
-[
-"63:73:90:a1:e7:0b",
-{}
-],
+null,
+null,
+null,
 [
 "30:de:f9:59:64:87",
 {
@@ -8292,10 +8071,7 @@ null,
 null,
 null,
 null,
-[
-"3b:d3:6a:21:68:13",
-{}
-],
+null,
 [
 "ee:26:71:85:78:c0",
 {
@@ -8309,10 +8085,7 @@ null,
 null,
 null,
 null,
-[
-"e5:ab:9c:2e:21:76",
-{}
-],
+null,
 [
 "e2:ef:f6:36:c5:cc",
 {
@@ -8342,15 +8115,7 @@ null,
 }
 ],
 null,
-[
-"a9:ab:aa:9e:b6:60",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "abc",
-"prl": "46,58,44,51,26,3,15",
-"vendor_class": "android-dhcp-13"
-}
-],
+null,
 null,
 null,
 null,
@@ -8369,13 +8134,6 @@ null,
 null,
 null,
 null,
-[
-"13:93:68:a0:94:fd",
-{
-"prl": "121,249",
-"vendor_class": "padded"
-}
-],
 null,
 null,
 null,
@@ -8384,25 +8142,13 @@ null,
 null,
 null,
 null,
-[
-"f9:39:55:ce:4d:c2",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-"vendor_class": "bad utf"
-}
-],
 null,
 null,
 null,
 null,
-[
-"f9:18:6f:c8:80:fe",
-{
-"hostname": "abc",
-"server_id": "192.168.1.132"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -8422,10 +8168,7 @@ null,
 null,
 null,
 null,
-[
-"a7:cb:76:7e:da:d3",
-{}
-],
+null,
 [
 "ae:40:e9:d3:48:7b",
 {
@@ -8434,12 +8177,7 @@ null,
 "prl": "95,15,59,46,121,28,1,249"
 }
 ],
-[
-"73:95:29:c0:b5:46",
-{
-"hostname": "abc"
-}
-],
+null,
 null,
 null,
 null,
@@ -8461,23 +8199,14 @@ null,
 null,
 null,
 null,
-[
-"25:25:2e:18:aa:b2",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"e7:31:22:fb:f7:04",
-{}
-],
+null,
+null,
 null,
 null,
 null,
@@ -8489,12 +8218,7 @@ null,
 "vendor_class": "giulia-ipad"
 }
 ],
-[
-"51:7a:d2:77:9c:56",
-{
-"vendor_class": "padded"
-}
-],
+null,
 null,
 null,
 null,
@@ -8526,13 +8250,6 @@ null,
 ],
 null,
 null,
-[
-"89:e9:6a:09:c4:cf",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -8542,24 +8259,13 @@ null,
 null,
 null,
 null,
-[
-"cf:dc:69:0e:26:e1",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
 null,
-[
-"d3:af:bb:37:a2:38",
-{
-"ip": "192.168.1.149",
-"ip_from": "requested"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -8574,15 +8280,7 @@ null,
 null,
 null,
 null,
-[
-"6d:66:e7:3a:03:96",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"server_id": "192.168.1.70"
-}
-],
+null,
 null,
 null,
 null,
@@ -8622,10 +8320,7 @@ null,
 null,
 null,
 null,
-[
-"5f:ef:74:0b:1d:01",
-{}
-],
+null,
 [
 "32:4d:8e:ad:2a:70",
 {
@@ -8647,12 +8342,7 @@ null,
 null,
 null,
 null,
-[
-"3d:b5:ae:31:81:0a",
-{
-"prl": "26,249"
-}
-],
+null,
 null,
 null,
 null,
@@ -8689,14 +8379,7 @@ null,
 }
 ],
 null,
-[
-"59:62:03:17:1c:45",
-{
-"hostname": "bad utf",
-"prl": "46,1,59,26,33,6",
-"vendor_class": ""
-}
-],
+null,
 null,
 null,
 [
@@ -8737,24 +8420,11 @@ null,
 "hostname": "abc"
 }
 ],
-[
-"6f:6e:c3:bb:e3:a6",
-{
-"hostname": "MSFT 5.0",
-"vendor_class": "padded"
-}
-],
 null,
 null,
 null,
-[
-"4f:59:cb:10:8b:f0",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -8777,10 +8447,7 @@ null,
 ],
 null,
 null,
-[
-"9b:e7:fb:85:1d:fd",
-{}
-],
+null,
 null,
 null,
 [
@@ -8809,46 +8476,19 @@ null,
 ],
 null,
 null,
-[
-"57:64:16:eb:44:00",
-{
-"ip": "192.168.1.228",
-"ip_from": "requested"
-}
-],
 null,
 null,
 null,
 null,
-[
-"f1:f7:63:51:22:f0",
-{
-"ip": "192.168.1.5",
-"ip_from": "requested",
-"prl": "26,249,58,44,119,51,15"
-}
-],
 null,
 null,
 null,
 null,
-[
-"4b:18:a5:18:e8:a6",
-{
-"hostname": "padded",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": ""
-}
-],
 null,
-[
-"c1:67:59:06:cd:b2",
-{
-"ip": "192.168.1.47",
-"ip_from": "requested"
-}
-],
+null,
+null,
+null,
+null,
 null,
 null,
 [
@@ -8862,13 +8502,7 @@ null,
 ],
 null,
 null,
-[
-"07:5a:22:e1:6d:c4",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "1a:c0:b3:ed:3e:47",
 {
@@ -8909,30 +8543,6 @@ null,
 null,
 null,
 null,
-[
-"33:37:30:3c:d8:93",
-{
-"hostname": ""
-}
-],
-[
-"6f:42:77:f3:e7:5b",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-[
-"3b:f9:40:20:65:a2",
-{}
-],
 null,
 null,
 null,
@@ -8942,12 +8552,17 @@ null,
 null,
 null,
 null,
-[
-"c1:64:d8:51:f7:6f",
-{
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 [
@@ -9022,16 +8637,7 @@ null,
 null,
 null,
 null,
-[
-"07:57:ec:8f:c3:37",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "giulia-ipad"
-}
-],
+null,
 null,
 [
 "dc:c1:8b:02:22:d1",
@@ -9052,14 +8658,7 @@ null,
 ],
 null,
 null,
-[
-"e9:43:f2:bd:43:de",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "a8:61:36:f1:b6:3a",
 {
@@ -9072,13 +8671,7 @@ null,
 ],
 null,
 null,
-[
-"21:71:1e:68:06:97",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 [
 "5e:e9:e6:ce:de:8e",
@@ -9123,35 +8716,18 @@ null,
 ],
 null,
 null,
-[
-"87:59:47:22:31:a2",
-{
-"client_id": "01aabbccddeeff"
-}
-],
-null,
-null,
-null,
-null,
-[
-"3d:8c:63:08:95:c6",
-{
-"server_id": "192.168.1.147"
-}
-],
 null,
 null,
 null,
 null,
 null,
-[
-"23:df:85:26:a8:a2",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": ""
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -9165,66 +8741,24 @@ null,
 "hostname": "padded"
 }
 ],
-[
-"7b:06:5e:90:b1:86",
-{
-"hostname": "MSFT 5.0"
-}
-],
 null,
 null,
-[
-"cd:36:b8:41:44:0d",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"7b:cd:a8:12:42:fc",
-{
-"client_id": "01aabbccddeeff"
-}
-],
 null,
 null,
-[
-"bd:63:bc:c2:c0:f7",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
-[
-"17:c8:ac:af:73:b3",
-{}
-],
+null,
+null,
+null,
+null,
+null,
 null,
 [
 "38:01:6b:f3:ce:0c",
 {}
 ],
-[
-"95:79:cc:00:a3:f3",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "padded"
-}
-],
-[
-"79:0f:0a:5a:21:94",
-{
-"hostname": "giulia-ipad"
-}
-],
+null,
+null,
 null,
 null,
 [
@@ -9235,22 +8769,11 @@ null,
 }
 ],
 null,
-[
-"1b:15:87:24:a5:33",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
-[
-"43:15:21:21:26:e7",
-{
-"server_id": "192.168.1.230"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -9273,23 +8796,9 @@ null,
 "94:d4:b5:a3:ae:c2",
 {}
 ],
-[
-"11:d9:53:c3:64:55",
-{
-"ip": "192.168.1.32",
-"ip_from": "requested",
-"prl": "1,3,44"
-}
-],
 null,
-[
-"05:64:c6:8a:d1:91",
-{
-"hostname": "abc",
-"prl": "59,95,119,46,121,44,1",
-"server_id": "192.168.1.40"
-}
-],
+null,
+null,
 [
 "d0:67:cd:ce:bd:9c",
 {
@@ -9302,14 +8811,7 @@ null,
 null,
 null,
 null,
-[
-"21:14:00:18:f8:c7",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "59,58,3,249,119,121,44"
-}
-],
+null,
 null,
 null,
 null,
@@ -9333,10 +8835,7 @@ null,
 "prl": ""
 }
 ],
-[
-"cb:9c:e9:57:2e:0b",
-{}
-],
+null,
 [
 "26:a5:eb:20:62:57",
 {
@@ -9351,13 +8850,7 @@ null,
 null,
 null,
 null,
-[
-"57:ab:27:3a:fb:90",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "2a:ed:86:be:25:5f",
 {}
@@ -9372,14 +8865,7 @@ null,
 null,
 null,
 null,
-[
-"1f:0d:03:79:b1:30",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-"prl": "",
-"server_id": "192.168.1.98"
-}
-],
+null,
 null,
 [
 "4c:c3:ec:0c:0a:71",
@@ -9393,22 +8879,14 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"91:58:6f:f2:16:e8",
-{
-"hostname": "abc"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"33:64:3d:dc:1a:c9",
-{}
-],
+null,
+null,
 [
 "ee:49:d5:94:80:e8",
 {
@@ -9440,13 +8918,7 @@ null,
 null,
 null,
 null,
-[
-"f7:bf:a4:25:13:91",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "38:e6:c6:42:f1:7b",
 {
@@ -9455,14 +8927,7 @@ null,
 ],
 null,
 null,
-[
-"03:45:3c:da:fc:96",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "padded"
-}
-],
+null,
 null,
 [
 "50:4b:f5:ba:35:b9",
@@ -9473,10 +8938,7 @@ null,
 null,
 null,
 null,
-[
-"33:59:31:04:5d:41",
-{}
-],
+null,
 [
 "b0:f7:12:77:10:2d",
 {
@@ -9486,10 +8948,7 @@ null,
 "prl": "3,26,58,15"
 }
 ],
-[
-"1d:04:1e:6d:66:59",
-{}
-],
+null,
 null,
 [
 "18:07:fb:75:e6:e0",
@@ -9513,10 +8972,7 @@ null,
 }
 ],
 null,
-[
-"57:45:1d:52:ff:ff",
-{}
-],
+null,
 [
 "0c:e4:59:06:38:ec",
 {
@@ -9539,17 +8995,9 @@ null,
 "ip_from": "requested"
 }
 ],
-[
-"d9:03:17:5d:29:0a",
-{}
-],
 null,
-[
-"6f:06:20:b8:54:95",
-{
-"prl": ""
-}
-],
+null,
+null,
 null,
 null,
 [
@@ -9573,13 +9021,7 @@ null,
 null,
 null,
 null,
-[
-"8d:ec:01:5a:76:6c",
-{
-"hostname": "abc",
-"prl": "33,59,1"
-}
-],
+null,
 null,
 null,
 null,
@@ -9593,26 +9035,11 @@ null,
 }
 ],
 null,
-[
-"59:91:90:3e:ff:fc",
-{
-"vendor_class": "bad utf"
-}
-],
 null,
-[
-"19:81:32:6d:f6:e1",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-"prl": "46,15",
-"vendor_class": "bad utf"
-}
-],
 null,
-[
-"1d:e6:51:53:21:21",
-{}
-],
+null,
+null,
+null,
 [
 "82:1c:6b:33:58:da",
 {
@@ -9638,10 +9065,7 @@ null,
 }
 ],
 null,
-[
-"6b:d7:1a:4e:b0:b4",
-{}
-],
+null,
 null,
 null,
 null,
@@ -9665,10 +9089,7 @@ null,
 null,
 null,
 null,
-[
-"4d:b8:be:2d:7b:1b",
-{}
-],
+null,
 [
 "92:e6:da:3c:05:da",
 {
@@ -9693,46 +9114,20 @@ null,
 null,
 null,
 null,
-[
-"4d:2a:c6:2b:24:20",
-{
-"hostname": "MSFT 5.0"
-}
-],
 null,
 null,
 null,
 null,
-[
-"37:d8:a5:c2:9d:b2",
-{
-"hostname": "bad utf"
-}
-],
-[
-"b3:80:7e:9d:83:ab",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 [
 "0c:3a:0e:89:f3:88",
 {
 "hostname": "abc"
 }
 ],
-[
-"87:2b:32:23:8c:d6",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "59,58,28,119,33,51",
-"server_id": "192.168.1.175"
-}
-],
+null,
 [
 "44:46:7e:de:3f:71",
 {
@@ -9742,23 +9137,13 @@ null,
 "prl": "28,59,119,44,121,6"
 }
 ],
-[
-"69:39:f3:8e:94:74",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
 null,
 null,
-[
-"91:26:42:dd:07:21",
-{}
-],
+null,
+null,
 null,
 null,
 null,
@@ -9773,16 +9158,8 @@ null,
 ],
 null,
 null,
-[
-"37:d8:8e:0a:8d:8c",
-{}
-],
-[
-"11:3b:a8:ef:4e:ae",
-{
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -9799,27 +9176,9 @@ null,
 null,
 null,
 null,
-[
-"3f:48:fc:54:83:41",
-{
-"hostname": "bad utf"
-}
-],
-[
-"89:87:29:ac:1e:89",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"cb:62:bb:a0:5e:ec",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 [
 "e0:fd:29:f1:a4:3e",
@@ -9840,29 +9199,11 @@ null,
 null,
 null,
 null,
-[
-"a1:a4:77:40:a3:e5",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"server_id": "192.168.1.147"
-}
-],
-[
-"53:cf:27:dd:ab:ff",
-{
-"hostname": "abc"
-}
-],
 null,
 null,
-[
-"83:7a:51:cf:6d:ac",
-{
-"hostname": "android-dhcp-13",
-"prl": "44,121,6,51"
-}
-],
+null,
+null,
+null,
 null,
 [
 "a4:41:d1:c8:4f:89",
@@ -9871,24 +9212,14 @@ null,
 null,
 null,
 null,
-[
-"db:cf:8e:b5:9c:91",
-{}
-],
+null,
 [
 "dc:e9:a4:0d:a6:c3",
 {}
 ],
 null,
 null,
-[
-"27:09:23:b1:9f:4d",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "28"
-}
-],
+null,
 null,
 [
 "fe:8b:a9:e6:b7:86",
@@ -9980,10 +9311,6 @@ null,
 null,
 null,
 null,
-[
-"99:c0:0d:d2:00:ab",
-{}
-],
 null,
 null,
 null,
@@ -9999,12 +9326,6 @@ null,
 null,
 null,
 null,
-[
-"57:d9:2e:76:8a:04",
-{
-"vendor_class": "MSFT 5.0"
-}
-],
 null,
 null,
 null,
@@ -10012,12 +9333,9 @@ null,
 null,
 null,
 null,
-[
-"61:89:92:bb:fc:1b",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
+null,
+null,
 null,
 null,
 [
@@ -10039,10 +9357,7 @@ null,
 "client_id": "01aabbccddeeff"
 }
 ],
-[
-"39:cf:9c:4a:3f:ec",
-{}
-],
+null,
 null,
 null,
 null,
@@ -10076,22 +9391,8 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"eb:5d:7a:70:38:83",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"ff:84:4a:70:a2:38",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -10108,10 +9409,7 @@ null,
 null,
 null,
 null,
-[
-"f3:92:eb:2b:3d:56",
-{}
-],
+null,
 [
 "d0:49:58:f1:31:58",
 {
@@ -10119,14 +9417,7 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"c7:2a:e5:88:55:64",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"server_id": "192.168.1.128"
-}
-],
+null,
 null,
 null,
 null,
@@ -10150,10 +9441,7 @@ null,
 null,
 null,
 null,
-[
-"e1:db:cc:be:8d:70",
-{}
-],
+null,
 null,
 [
 "da:9c:2f:44:5c:c0",
@@ -10191,25 +9479,10 @@ null,
 null,
 null,
 null,
-[
-"5d:ff:89:2d:86:a9",
-{}
-],
 null,
-[
-"75:51:c0:55:08:bf",
-{}
-],
-[
-"65:a2:a0:d0:d9:6d",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -10239,20 +9512,10 @@ null,
 "da:e7:27:fa:d2:62",
 {}
 ],
-[
-"4b:54:52:9c:cf:51",
-{
-"prl": "3,33,15,121,44,119,252"
-}
-],
 null,
 null,
-[
-"4d:a4:ae:78:8d:1f",
-{
-"prl": "33,252,1,59,95,121,51,3"
-}
-],
+null,
+null,
 [
 "a0:7b:94:2b:d1:b7",
 {}
@@ -10310,14 +9573,7 @@ null,
 {}
 ],
 null,
-[
-"91:2b:58:b2:35:a4",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "bad utf"
-}
-],
+null,
 null,
 null,
 null,
@@ -10330,10 +9586,6 @@ null,
 null,
 null,
 null,
-[
-"99:d3:5d:cd:33:8e",
-{}
-],
 null,
 null,
 null,
@@ -10341,46 +9593,22 @@ null,
 null,
 null,
 null,
-[
-"6f:b9:0c:7e:7f:3b",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 null,
 [
 "5e:3d:bc:df:03:ba",
 {}
 ],
-[
-"51:5b:6e:62:2f:4d",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "giulia-ipad",
-"prl": "",
-"vendor_class": "bad utf"
-}
-],
-[
-"45:3b:3c:c9:8f:c4",
-{
-"hostname": ""
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"8b:e4:01:56:42:23",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 [
 "2c:f8:c4:7a:ce:cf",
 {
@@ -10398,42 +9626,13 @@ null,
 null,
 null,
 null,
-[
-"8d:ad:87:95:a1:ac",
-{
-"client_id": "ff0000000100010001aa",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "121,95,119,26,33,1,3,6"
-}
-],
-null,
-[
-"1f:21:9d:96:8c:b2",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "bad utf",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
-[
-"df:ac:d0:05:54:74",
-{
-"hostname": "",
-"prl": "",
-"vendor_class": "giulia-ipad"
-}
-],
-[
-"b1:1f:2c:2d:c5:d7",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -10448,36 +9647,15 @@ null,
 null,
 null,
 null,
-[
-"f9:b8:01:5a:be:04",
-{
-"hostname": "bad utf",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"7f:77:14:11:b5:b0",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "giulia-ipad"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"f1:91:16:30:98:8f",
-{
-"ip": "192.168.1.157",
-"ip_from": "requested",
-"prl": "33,26,59,119,28,46,58,3"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -10495,14 +9673,7 @@ null,
 null,
 null,
 null,
-[
-"9d:c3:a6:8b:68:0b",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "MSFT 5.0",
-"prl": "249,1,26,28"
-}
-],
+null,
 null,
 null,
 null,
@@ -10538,13 +9709,7 @@ null,
 }
 ],
 null,
-[
-"71:16:25:b2:2b:3f",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 [
 "ca:a0:2f:65:8e:bf",
@@ -10561,20 +9726,12 @@ null,
 ],
 null,
 null,
-[
-"67:c5:a9:64:b3:99",
-{
-"vendor_class": "android-dhcp-13"
-}
-],
 null,
 null,
 null,
 null,
-[
-"d1:20:de:0c:99:f0",
-{}
-],
+null,
+null,
 [
 "de:2f:fe:88:e2:32",
 {}
@@ -10599,13 +9756,7 @@ null,
 null,
 null,
 null,
-[
-"b3:f1:91:e2:42:67",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 null,
@@ -10625,22 +9776,9 @@ null,
 null,
 null,
 null,
-[
-"bb:1f:13:3e:b9:1f",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
-[
-"a5:68:e0:1a:6c:85",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "padded",
-"server_id": "192.168.1.61"
-}
-],
+null,
+null,
 null,
 [
 "5e:97:6a:c5:51:6d",
@@ -10650,30 +9788,10 @@ null,
 }
 ],
 null,
-[
-"77:34:2e:4b:04:ff",
-{
-"vendor_class": "android-dhcp-13"
-}
-],
-[
-"37:df:1a:28:c9:e9",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "",
-"prl": "6",
-"server_id": "192.168.1.30",
-"vendor_class": "giulia-ipad"
-}
-],
-[
-"3f:4e:99:b3:3d:b4",
-{}
-],
-[
-"9b:45:86:83:99:f5",
-{}
-],
+null,
+null,
+null,
+null,
 null,
 null,
 [
@@ -10685,22 +9803,10 @@ null,
 null,
 null,
 null,
-[
-"e5:d5:b0:2b:f2:39",
-{
-"ip": "192.168.1.117",
-"ip_from": "requested",
-"prl": "121,252,58,51"
-}
-],
 null,
 null,
-[
-"b5:a4:00:10:4b:34",
-{
-"hostname": "abc"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -10725,13 +9831,6 @@ null,
 null,
 null,
 null,
-[
-"ad:3e:60:9b:4e:9d",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -10739,27 +9838,10 @@ null,
 null,
 null,
 null,
-[
-"fb:9f:4e:94:cb:61",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"server_id": "192.168.1.44"
-}
-],
-[
-"b9:bf:e9:a9:14:17",
-{
-"hostname": "",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"d7:98:14:e2:48:8b",
-{}
-],
+null,
+null,
+null,
+null,
 [
 "54:dd:0c:9b:ff:29",
 {
@@ -10775,41 +9857,16 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"e9:32:9e:50:ef:df",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "121,95,252,119,26,1,33,51"
-}
-],
-null,
-[
-"67:d8:d3:46:09:8b",
-{
-"hostname": "abc",
-"prl": "249,26,44"
-}
-],
 null,
 null,
 null,
-[
-"f3:76:27:4b:09:78",
-{}
-],
 null,
 null,
-[
-"ff:ae:27:73:0b:6d",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -10823,12 +9880,7 @@ null,
 null,
 null,
 null,
-[
-"1d:09:ce:f9:d1:4a",
-{
-"hostname": "abc"
-}
-],
+null,
 [
 "80:3e:8e:96:6c:f6",
 {
@@ -10846,13 +9898,7 @@ null,
 null,
 null,
 null,
-[
-"ed:a2:ba:49:87:1f",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 null,
@@ -10866,12 +9912,7 @@ null,
 null,
 null,
 null,
-[
-"ad:ba:c6:fb:9e:68",
-{
-"prl": ""
-}
-],
+null,
 [
 "3a:1a:3e:1d:ca:7f",
 {
@@ -10905,12 +9946,7 @@ null,
 null,
 null,
 null,
-[
-"f9:4b:81:8d:b9:55",
-{
-"vendor_class": "bad utf"
-}
-],
+null,
 null,
 null,
 [
@@ -10973,27 +10009,6 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"0f:9c:18:7d:1d:b4",
-{
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
-null,
-[
-"b1:bc:13:69:39:1e",
-{}
-],
-null,
-null,
-null,
-[
-"07:eb:76:c9:ed:b0",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -11001,20 +10016,17 @@ null,
 null,
 null,
 null,
-[
-"e5:08:16:5c:4f:04",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "95,15,252,119,58,46,26,33"
-}
-],
 null,
 null,
-[
-"89:67:6a:11:a2:7b",
-{}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 [
 "50:42:cc:07:bf:f7",
 {
@@ -11038,25 +10050,6 @@ null,
 null,
 null,
 null,
-[
-"e9:b8:84:46:af:57",
-{}
-],
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-[
-"3d:30:be:9f:7f:77",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -11067,47 +10060,28 @@ null,
 null,
 null,
 null,
-[
-"37:11:13:25:a5:42",
-{
-"prl": "",
-"vendor_class": "giulia-ipad"
-}
-],
-null,
-[
-"19:8b:21:95:6a:eb",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "android-dhcp-13"
-}
-],
 null,
 null,
 null,
 null,
 null,
-[
-"8b:46:68:48:a0:7d",
-{}
-],
 null,
-[
-"ad:eb:f0:97:85:99",
-{
-"ip": "192.168.1.42",
-"ip_from": "requested"
-}
-],
 null,
-[
-"e7:6f:23:ac:06:75",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -11124,15 +10098,7 @@ null,
 null,
 null,
 null,
-[
-"01:1b:19:aa:39:06",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "58,26,6,28"
-}
-],
+null,
 null,
 null,
 null,
@@ -11151,42 +10117,20 @@ null,
 null,
 null,
 null,
-[
-"31:1c:89:39:3e:76",
-{}
-],
-null,
-null,
-[
-"83:b3:f4:10:c4:39",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-null,
-null,
-null,
-[
-"43:2b:f8:d9:bb:3a",
-{
-"hostname": "bad utf",
-"ip": "192.168.1.242",
-"ip_from": "requested",
-"vendor_class": "bad utf"
-}
-],
 null,
 null,
 null,
 null,
 null,
-[
-"47:18:b5:eb:22:ed",
-{
-"hostname": "abc"
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 [
 "5a:32:72:ed:c3:73",
 {}
@@ -11214,17 +10158,8 @@ null,
 null,
 null,
 null,
-[
-"33:0a:a6:b1:55:d7",
-{}
-],
-[
-"47:67:80:3e:f2:cf",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
+null,
 null,
 [
 "da:4a:ea:59:ae:c0",
@@ -11243,12 +10178,7 @@ null,
 "60:ba:c7:4e:19:a2",
 {}
 ],
-[
-"09:01:5e:5c:5c:bb",
-{
-"vendor_class": "MSFT 5.0"
-}
-],
+null,
 [
 "40:1a:af:e6:d0:27",
 {
@@ -11256,29 +10186,12 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"d5:8c:2d:62:d8:99",
-{}
-],
 null,
 null,
-[
-"e9:17:ad:ae:34:15",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "bad utf"
-}
-],
 null,
-[
-"51:10:75:68:31:c3",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 null,
 [
@@ -11304,17 +10217,9 @@ null,
 null,
 null,
 null,
-[
-"83:5b:dc:c4:bc:a1",
-{
-"vendor_class": "padded"
-}
-],
 null,
-[
-"03:18:c5:56:2d:fc",
-{}
-],
+null,
+null,
 null,
 [
 "a4:2f:c1:16:66:e9",
@@ -11347,32 +10252,12 @@ null,
 "vendor_class": "MSFT 5.0"
 }
 ],
-[
-"5f:58:b9:71:86:2c",
-{
-"vendor_class": "giulia-ipad"
-}
-],
 null,
 null,
-[
-"c7:e0:33:1c:26:21",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "android-dhcp-13",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
 null,
-[
-"33:b5:c3:c7:a8:a0",
-{
-"hostname": "android-dhcp-13",
-"server_id": "192.168.1.111"
-}
-],
+null,
+null,
+null,
 [
 "f0:72:95:6d:81:17",
 {
@@ -11381,10 +10266,7 @@ null,
 }
 ],
 null,
-[
-"35:e5:d3:bf:34:47",
-{}
-],
+null,
 null,
 null,
 null,
@@ -11397,12 +10279,7 @@ null,
 {}
 ],
 null,
-[
-"bd:0c:f0:c8:7c:47",
-{
-"client_id": "ff0000000100010001aa"
-}
-],
+null,
 [
 "86:69:a4:b1:f4:b2",
 {
@@ -11424,47 +10301,22 @@ null,
 }
 ],
 null,
-[
-"df:6a:32:9f:f2:c2",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "padded"
-}
-],
 null,
 null,
 null,
 null,
-[
-"9b:8a:d8:1b:ee:fe",
-{
-"hostname": "padded",
-"vendor_class": "MSFT 5.0"
-}
-],
 null,
 null,
 null,
 null,
-[
-"19:44:d3:6a:35:ab",
-{
-"prl": "252,6,121"
-}
-],
 null,
 null,
 null,
 null,
-[
-"33:57:6f:c1:98:31",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "119,46"
-}
-],
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -11491,27 +10343,13 @@ null,
 null,
 null,
 null,
-[
-"67:f4:d0:17:5d:6f",
-{}
-],
 null,
 null,
 null,
 null,
-[
-"77:b8:fa:9b:2f:2f",
-{
-"hostname": "bad utf"
-}
-],
-[
-"df:c8:16:43:0b:8f",
-{
-"client_id": "01aabbccddeeff",
-"vendor_class": "giulia-ipad"
-}
-],
+null,
+null,
+null,
 null,
 null,
 [
@@ -11524,10 +10362,7 @@ null,
 null,
 null,
 null,
-[
-"57:ce:a8:2a:7e:4e",
-{}
-],
+null,
 [
 "ac:bf:71:38:72:a6",
 {}
@@ -11552,14 +10387,7 @@ null,
 null,
 null,
 null,
-[
-"a7:13:7d:df:64:c0",
-{
-"hostname": "abc",
-"prl": "1,33,28,249,119,252,3,26",
-"vendor_class": ""
-}
-],
+null,
 null,
 null,
 [
@@ -11592,15 +10420,6 @@ null,
 {}
 ],
 null,
-[
-"b7:52:63:73:ee:5b",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "giulia-ipad"
-}
-],
 null,
 null,
 null,
@@ -11611,13 +10430,8 @@ null,
 null,
 null,
 null,
-[
-"ef:5b:ee:87:9a:27",
-{
-"hostname": "",
-"server_id": "192.168.1.114"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -11642,15 +10456,7 @@ null,
 null,
 null,
 null,
-[
-"ff:55:42:9b:15:c8",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "bad utf"
-}
-],
+null,
 null,
 null,
 null,
@@ -11662,14 +10468,7 @@ null,
 "e6:8c:a4:00:74:e1",
 {}
 ],
-[
-"a3:ca:6a:2a:a8:4c",
-{
-"hostname": "padded",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 null,
@@ -11709,13 +10508,6 @@ null,
 null,
 null,
 null,
-[
-"5d:33:d5:9f:f0:23",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -11735,20 +10527,12 @@ null,
 null,
 null,
 null,
-[
-"81:e1:b2:12:25:1c",
-{
-"hostname": "abc",
-"prl": "1,249,6,3"
-}
-],
 null,
 null,
 null,
-[
-"31:20:92:50:5e:e4",
-{}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -11761,15 +10545,6 @@ null,
 }
 ],
 null,
-[
-"99:11:1a:dd:f4:ac",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "giulia-ipad",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -11778,24 +10553,10 @@ null,
 null,
 null,
 null,
-[
-"09:48:68:ba:89:b2",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "249,121,252,1,59",
-"vendor_class": "MSFT 5.0"
-}
-],
 null,
-[
-"2b:62:16:a1:92:f1",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "",
-"vendor_class": "bad utf"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -11816,23 +10577,11 @@ null,
 null,
 null,
 null,
-[
-"e9:09:52:45:a8:4b",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
-[
-"d1:e6:09:a0:21:21",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 [
 "96:c2:61:ea:1a:07",
 {}
@@ -11869,25 +10618,12 @@ null,
 null,
 null,
 null,
-[
-"09:f8:ed:95:64:80",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
 null,
 null,
 null,
 null,
-[
-"1f:80:6a:c6:a4:5b",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "MSFT 5.0",
-"prl": "252,33",
-"server_id": "192.168.1.115"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -11905,10 +10641,7 @@ null,
 null,
 null,
 null,
-[
-"63:1a:7b:e5:17:c2",
-{}
-],
+null,
 null,
 null,
 null,
@@ -11997,27 +10730,6 @@ null,
 }
 ],
 null,
-[
-"4d:d1:9a:16:fb:f0",
-{
-"ip": "192.168.1.108",
-"ip_from": "requested"
-}
-],
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-[
-"2f:c7:75:fb:3e:a6",
-{}
-],
 null,
 null,
 null,
@@ -12031,10 +10743,19 @@ null,
 null,
 null,
 null,
-[
-"ab:0a:1a:02:d6:9a",
-{}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -12064,21 +10785,8 @@ null,
 ],
 null,
 null,
-[
-"d3:20:21:15:45:86",
-{
-"client_id": "ff0000000100010001aa"
-}
-],
-[
-"d1:26:17:b3:6b:17",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "padded"
-}
-],
+null,
+null,
 [
 "8e:bc:58:b9:a7:94",
 {}
@@ -12100,12 +10808,7 @@ null,
 "client_id": "01aabbccddeeff"
 }
 ],
-[
-"5f:75:89:30:1f:86",
-{
-"prl": ""
-}
-],
+null,
 null,
 null,
 null,
@@ -12120,61 +10823,25 @@ null,
 ],
 null,
 null,
-[
-"fb:97:fe:2b:79:cf",
-{
-"hostname": "bad utf"
-}
-],
-null,
-[
-"ad:1d:cb:90:99:aa",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-null,
-null,
-null,
-[
-"17:8d:20:2a:30:43",
-{
-"vendor_class": "android-dhcp-13"
-}
-],
-null,
-null,
-[
-"57:78:7e:c1:6c:45",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"21:f2:f9:ce:33:62",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"cd:74:54:8f:fa:aa",
-{}
-],
-[
-"b9:1d:2d:71:ed:de",
-{}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 [
 "e4:87:3b:72:75:45",
 {
@@ -12185,38 +10852,13 @@ null,
 }
 ],
 null,
-[
-"a3:16:a2:41:33:a5",
-{
-"ip": "192.168.1.50",
-"ip_from": "requested"
-}
-],
-[
-"8d:84:bb:d3:2c:98",
-{}
-],
 null,
-[
-"45:18:c1:30:4d:17",
-{
-"hostname": "abc"
-}
-],
-[
-"ef:be:da:cd:bc:f2",
-{}
-],
-[
-"7b:2b:ba:05:f8:68",
-{
-"prl": ""
-}
-],
-[
-"a3:75:61:cf:9c:af",
-{}
-],
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 null,
 null,
@@ -12233,43 +10875,6 @@ null,
 ],
 null,
 null,
-[
-"7f:93:1a:dd:b7:ee",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
-[
-"93:df:00:da:da:5e",
-{
-"prl": "",
-"server_id": "192.168.1.27",
-"vendor_class": ""
-}
-],
-null,
-[
-"13:02:69:23:ad:ae",
-{
-"hostname": "abc",
-"vendor_class": "bad utf"
-}
-],
-null,
-null,
-null,
-null,
-null,
-null,
-[
-"e5:75:a8:39:2a:61",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -12277,13 +10882,18 @@ null,
 null,
 null,
 null,
-[
-"ef:ae:6e:1e:26:3c",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 null,
 [
 "ea:17:26:94:d8:dd",
@@ -12292,13 +10902,7 @@ null,
 "vendor_class": "MSFT 5.0"
 }
 ],
-[
-"b1:48:88:e0:7d:e7",
-{
-"prl": "6,3",
-"vendor_class": "padded"
-}
-],
+null,
 [
 "1e:08:dd:e6:a3:0b",
 {
@@ -12313,18 +10917,10 @@ null,
 "48:fd:5b:78:79:a0",
 {}
 ],
-[
-"8d:5b:ca:f7:d9:96",
-{}
-],
 null,
 null,
-[
-"ad:e9:37:29:3c:5c",
-{
-"prl": "121,59,33,46,26,119,95,44"
-}
-],
+null,
+null,
 null,
 [
 "08:23:fa:bc:0b:17",
@@ -12369,15 +10965,6 @@ null,
 "7e:3a:19:0e:3c:95",
 {}
 ],
-[
-"03:54:52:11:bb:4a",
-{
-"hostname": "android-dhcp-13",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
 null,
 null,
 null,
@@ -12386,34 +10973,13 @@ null,
 null,
 null,
 null,
-[
-"31:9e:82:fe:36:b9",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 null,
 [
 "0c:2e:2d:ca:26:69",
 {}
 ],
-[
-"3f:24:58:9d:1b:a7",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-null,
-[
-"bb:da:57:b4:6d:da",
-{
-"prl": "121,1,252,44,46,58,51,3"
-}
-],
 null,
 null,
 null,
@@ -12422,13 +10988,10 @@ null,
 null,
 null,
 null,
-[
-"71:0d:0b:c6:80:9b",
-{
-"hostname": "android-dhcp-13",
-"vendor_class": "bad utf"
-}
-],
+null,
+null,
+null,
+null,
 null,
 [
 "2c:4f:a1:b4:7f:90",
@@ -12458,10 +11021,7 @@ null,
 null,
 null,
 null,
-[
-"5b:62:c0:4e:b8:58",
-{}
-],
+null,
 null,
 [
 "22:24:8e:56:9f:0c",
@@ -12491,15 +11051,7 @@ null,
 {}
 ],
 null,
-[
-"91:72:d1:f3:8c:11",
-{
-"client_id": "01aabbccddeeff",
-"hostname": "",
-"prl": "15,3,6,59,249",
-"vendor_class": ""
-}
-],
+null,
 [
 "84:71:9f:94:9c:13",
 {
@@ -12517,19 +11069,8 @@ null,
 "prl": ""
 }
 ],
-[
-"99:98:58:b2:c6:19",
-{}
-],
-[
-"af:f8:53:78:bb:e3",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "121,28,119,46,15,3"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -12549,23 +11090,14 @@ null,
 }
 ],
 null,
-[
-"49:7a:43:df:00:65",
-{
-"ip": "192.168.1.157",
-"ip_from": "requested"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"2b:89:51:2c:84:2f",
-{}
-],
+null,
+null,
 null,
 null,
 null,
@@ -12653,23 +11185,10 @@ null,
 null,
 null,
 null,
-[
-"21:ea:99:f8:4a:9e",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
-[
-"cd:f1:c2:95:c1:b3",
-{
-"hostname": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-"prl": "249,121",
-"server_id": "192.168.1.196"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -12681,10 +11200,7 @@ null,
 ],
 null,
 null,
-[
-"e3:ab:e0:40:56:87",
-{}
-],
+null,
 null,
 null,
 [
@@ -12695,10 +11211,6 @@ null,
 ],
 null,
 null,
-[
-"e1:ab:70:73:0a:c4",
-{}
-],
 null,
 null,
 null,
@@ -12712,28 +11224,15 @@ null,
 null,
 null,
 null,
-[
-"c7:1a:37:95:50:8f",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "249,46",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
 null,
 null,
 null,
 null,
 null,
 null,
-[
-"19:f9:81:cf:9e:e8",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -12762,13 +11261,7 @@ null,
 "vendor_class": "giulia-ipad"
 }
 ],
-[
-"ed:7e:6d:40:4f:55",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 null,
 null,
 null,
@@ -12787,14 +11280,7 @@ null,
 null,
 null,
 null,
-[
-"e5:6d:37:a8:ea:93",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
 [
 "8e:b2:ea:55:be:41",
 {
@@ -12804,36 +11290,14 @@ null,
 null,
 null,
 null,
-[
-"7d:1d:a5:4d:fc:8d",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-null,
-[
-"69:41:fb:b4:f1:91",
-{
-"hostname": "bad utf"
-}
-],
 null,
 null,
-[
-"55:99:cd:1a:d6:94",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
-[
-"83:03:35:7a:87:86",
-{
-"prl": "15,26,95,6,46"
-}
-],
+null,
+null,
+null,
+null,
+null,
 null,
 [
 "9e:70:7c:b3:ab:01",
@@ -12882,22 +11346,8 @@ null,
 null,
 null,
 null,
-[
-"c7:ae:8f:d5:bd:d8",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"51:29:25:99:07:7a",
-{
-"ip": "192.168.1.17",
-"ip_from": "requested",
-"prl": "33,46,51,26,1,6,121",
-"vendor_class": "giulia-ipad"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -12917,19 +11367,6 @@ null,
 "vendor_class": "android-dhcp-13"
 }
 ],
-[
-"29:ef:66:f6:75:60",
-{}
-],
-null,
-[
-"93:48:de:0e:b2:18",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -12937,13 +11374,10 @@ null,
 null,
 null,
 null,
-[
-"21:fc:9e:c4:52:d8",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
+null,
 [
 "9e:25:4d:4e:10:60",
 {
@@ -12970,13 +11404,7 @@ null,
 null,
 null,
 null,
-[
-"59:38:d3:3e:46:c1",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "6e:1a:97:68:77:b5",
 {}
@@ -12995,18 +11423,9 @@ null,
 null,
 null,
 null,
-[
-"73:63:97:8f:9d:b8",
-{
-"client_id": "01aabbccddeeff",
-"prl": "51,58,249,95,1,46"
-}
-],
 null,
-[
-"d7:bb:22:c8:f9:1b",
-{}
-],
+null,
+null,
 null,
 null,
 [
@@ -13049,30 +11468,18 @@ null,
 null,
 null,
 null,
-[
-"f5:16:60:8b:eb:c6",
-{}
-],
-null,
-[
-"d1:08:60:74:de:b7",
-{}
-],
 null,
 null,
-[
-"21:21:fc:f0:0b:a2",
-{}
-],
+null,
+null,
+null,
+null,
 null,
 [
 "44:d9:fd:ee:9f:07",
 {}
 ],
-[
-"ff:60:24:d1:14:e7",
-{}
-],
+null,
 null,
 null,
 null,
@@ -13090,14 +11497,7 @@ null,
 null,
 null,
 null,
-[
-"13:af:bc:27:5a:a9",
-{
-"hostname": "bad utf",
-"ip": "192.168.1.103",
-"ip_from": "requested"
-}
-],
+null,
 null,
 null,
 [
@@ -13130,13 +11530,7 @@ null,
 null,
 null,
 null,
-[
-"f5:ce:ab:41:8c:4f",
-{
-"hostname": "padded",
-"vendor_class": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-],
+null,
 null,
 null,
 [
@@ -13147,31 +11541,13 @@ null,
 "ip_from": "ciaddr"
 }
 ],
-[
-"93:0e:22:f6:42:92",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
-[
-"01:d0:80:65:b4:db",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
-[
-"5d:00:93:19:82:dc",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -13209,17 +11585,9 @@ null,
 null,
 null,
 null,
-[
-"e1:e1:31:09:68:e9",
-{}
-],
 null,
-[
-"ed:99:2c:2b:2a:74",
-{
-"client_id": "01aabbccddeeff"
-}
-],
+null,
+null,
 [
 "ba:f8:99:18:48:fa",
 {
@@ -13228,12 +11596,7 @@ null,
 }
 ],
 null,
-[
-"fd:a8:45:16:35:78",
-{
-"hostname": "abc"
-}
-],
+null,
 null,
 null,
 null,
@@ -13269,28 +11632,9 @@ null,
 null,
 null,
 null,
-[
-"af:2b:8f:c9:f1:32",
-{
-"client_id": "01aabbccddeeff",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"9b:4d:0c:da:71:e0",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"89:37:1b:bf:77:84",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 [
 "8e:57:4a:e3:65:eb",
 {
@@ -13311,14 +11655,7 @@ null,
 null,
 null,
 null,
-[
-"bf:68:4a:64:7e:e8",
-{
-"client_id": "ff0000000100010001aa",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "a4:2b:b7:ac:bd:1a",
 {}
@@ -13327,41 +11664,20 @@ null,
 null,
 null,
 null,
-[
-"db:de:1b:4a:31:f0",
-{}
-],
+null,
 null,
 null,
 [
 "7c:21:66:f8:f3:b9",
 {}
 ],
-[
-"5b:91:b2:29:35:bf",
-{
-"hostname": "abc",
-"prl": "249"
-}
-],
-[
-"35:af:53:a3:0a:39",
-{
-"client_id": "ff0000000100010001aa",
-"hostname": "MSFT 5.0"
-}
-],
 null,
 null,
 null,
 null,
-[
-"89:c1:28:f4:79:11",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
+null,
 null,
 null,
 null,
@@ -13375,13 +11691,6 @@ null,
 }
 ],
 null,
-[
-"ef:88:a9:76:0f:34",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
 null,
 null,
 null,
@@ -13391,10 +11700,8 @@ null,
 null,
 null,
 null,
-[
-"a7:f8:2d:e5:48:6c",
-{}
-],
+null,
+null,
 null,
 [
 "4e:29:a7:91:a6:60",
@@ -13404,13 +11711,7 @@ null,
 "vendor_class": "android-dhcp-13"
 }
 ],
-[
-"7b:34:cd:8e:d9:0e",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
 [
 "7c:8a:27:00:d8:71",
 {
@@ -13423,15 +11724,7 @@ null,
 null,
 null,
 null,
-[
-"91:54:56:20:64:35",
-{
-"hostname": "bad utf",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "33,119,51,252"
-}
-],
+null,
 null,
 null,
 null,
@@ -13446,24 +11739,11 @@ null,
 ],
 null,
 null,
-[
-"fd:33:a8:3a:79:ee",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": ""
-}
-],
 null,
 null,
 null,
-[
-"75:4b:5f:d8:14:bd",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -13476,14 +11756,7 @@ null,
 }
 ],
 null,
-[
-"9d:56:66:05:66:17",
-{
-"ip": "192.168.1.77",
-"ip_from": "ciaddr",
-"prl": "119,59,51,44,28,26,252,6"
-}
-],
+null,
 null,
 null,
 null,
@@ -13496,20 +11769,8 @@ null,
 "prl": "58,1,46,3,95"
 }
 ],
-[
-"0f:43:9f:7c:8f:c5",
-{
-"hostname": "abc",
-"ip": "192.168.1.77",
-"ip_from": "ciaddr"
-}
-],
-[
-"8b:8c:39:2e:53:3f",
-{
-"hostname": "android-dhcp-13"
-}
-],
+null,
+null,
 null,
 null,
 null,
@@ -13524,12 +11785,7 @@ null,
 null,
 null,
 null,
-[
-"8b:a4:fc:31:7e:f0",
-{
-"hostname": "abc"
-}
-],
+null,
 null,
 null,
 null,
@@ -13541,12 +11797,7 @@ null,
 {}
 ],
 null,
-[
-"75:96:5c:66:f2:47",
-{
-"hostname": "giulia-ipad"
-}
-],
+null,
 null,
 null,
 null,

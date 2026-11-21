@@ -99,7 +99,8 @@ for i, (x, y) in enumerate(zip(out["parse"], want["parse"])):
 for i, (x, y) in enumerate(zip(out["family"], want["family"])):
     assert x == y, "fingerprint %d differs: %s" % (i, json.dumps([x, y])[:400])
 parsed = [r for r in out["parse"] if isinstance(r, list)]
-assert len(parsed) > 400 and sum(1 for r in out["parse"] if r is None) > 400 and not any(isinstance(r, dict) for r in out["parse"]), "packets too uniform"
+# about half the random chaddr have the group bit set: not a client since 1.0.2 (macaddr), so fewer packets are parsed than before
+assert len(parsed) > 250 and sum(1 for r in out["parse"] if r is None) > 400 and not any(isinstance(r, dict) for r in out["parse"]), "packets too uniform"
 assert any("ip_from" in r[1] and r[1]["ip_from"] == "ciaddr" for r in parsed) and any(r[1].get("ip_from") == "requested" for r in parsed) and any("client_id" in r[1] for r in parsed)
 assert any("server_id" in r[1] for r in parsed) and any("prl" in r[1] for r in parsed) and any("vendor_class" in r[1] for r in parsed)
 fams = {r[2] for r in out["family"]}

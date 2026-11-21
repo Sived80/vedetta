@@ -15,6 +15,7 @@ from pathlib import Path
 from . import blocklist, devices_config
 from .history import History, history
 from .. import routedinv
+from ..macaddr import is_device_mac
 from ..recognition.vendor_lookup import lookup_vendor, resolve_vendor_info
 
 logger = logging.getLogger("dashboard")
@@ -38,11 +39,7 @@ def normalize_mac(mac: str | None) -> str | None:
     if not mac:
         return None
     mac = mac.strip().upper().replace("-", ":")
-    if not _MAC_RE.match(mac) or mac in ("00:00:00:00:00:00", "FF:FF:FF:FF:FF:FF"):
-        return None
-    if int(mac[:2], 16) & 0x01:
-        return None
-    return mac
+    return mac if _MAC_RE.match(mac) and is_device_mac(mac) else None
 
 
 def own_macs() -> set[str]:

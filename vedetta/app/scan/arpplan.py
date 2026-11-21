@@ -14,6 +14,7 @@ still asks such a network whole, until step P9.
 Pure functions, no network access: see tests/check_arpplan.py."""
 import ipaddress
 import re
+from ..macaddr import device_mac
 
 FULL_PREFIX = 24     # a /24 or smaller is asked whole
 WIDEST_PREFIX = 16   # nothing wider than a /16 is ever walked through
@@ -166,7 +167,7 @@ def _neighbor_entry(line: str) -> dict | None:
         mac = parts[parts.index("lladdr") + 1].upper()
     except (ValueError, IndexError):
         return None
-    if len(mac) != 17:
+    if len(mac) != 17 or not device_mac(mac, "neigh"):
         return None
     used = _USED.search(line)
     return {"ip": ip, "mac": mac, "state": parts[-1], "confirmed_age": int(used.group(2)) if used else None}

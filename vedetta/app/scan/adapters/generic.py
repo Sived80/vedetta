@@ -5,6 +5,7 @@ import re
 import contextlib
 
 from ..scan_common import NO_TALK_PORTS
+from ...macaddr import device_mac
 from ...netutil import communicate_briefly
 
 MAC_RE = re.compile(r"([0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5})")
@@ -51,4 +52,4 @@ async def _get_mac(ip: str) -> str | None:
     except Exception:
         return None
     match = MAC_RE.search(out.decode())
-    return match.group(1).upper() if match else None
+    return match.group(1).upper() if match and device_mac(match.group(1), "neigh") else None

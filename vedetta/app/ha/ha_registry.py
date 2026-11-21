@@ -20,6 +20,7 @@ from ..atomic import write_atomic
 from ..recognition import naming
 from ..storage import settings
 import contextlib
+from ..macaddr import device_mac
 
 WS_URL = os.environ.get("VEDETTA_HA_WS", "ws://supervisor/core/websocket")
 REFRESH_S = 600
@@ -162,7 +163,7 @@ def _observer_titles(dev: dict, domains: list, entry_ids: list, domain_of: dict,
 
 def _macs_of(dev: dict) -> list[str]:
     macs = [norm_mac(c[1]) for c in dev.get("connections") or [] if len(c) == 2 and c[0] == "mac"]
-    return [m for m in macs if m]
+    return [m for m in macs if m and device_mac(m, "ha_registry")]
 
 
 def _made_by_vedetta(dev: dict, domains: list) -> bool:

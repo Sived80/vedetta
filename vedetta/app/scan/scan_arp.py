@@ -1,6 +1,7 @@
 """scan_arp: moved out of scanner.py (see tools/split_module.py)."""
 import asyncio
 from .scan_common import is_valid_ipv4
+from ..macaddr import device_mac, is_device_mac
 from ..networks import registry
 from .arpplan import parse_neighbor_entries, parse_neighbors
 import contextlib
@@ -87,7 +88,7 @@ def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
             mac = fh.read().strip().upper()
     except OSError:
         return None
-    if len(mac) != 17 or mac == "00:00:00:00:00:00":
+    if not is_device_mac(mac):
         return None
     return {"ip": own_ip, "mac": mac, "vendor": None}
 
@@ -113,6 +114,6 @@ def _arp_rows(text: str):
     """(ip, MAC in capitals, vendor or None) of each valid line of arp-scan, in order; the same address may appear more than once."""
     for line in text.splitlines():
         parts = line.split("\t")
-        if len(parts) >= 2 and is_valid_ipv4(parts[0]):
+        if len(parts) >= 2 and is_valid_ipv4(parts[0]) and device_mac(parts[1], "arp-scan"):
             vendor = parts[2].strip() if len(parts) >= 3 and not parts[2].startswith("(Unknown") else None
             yield parts[0], parts[1].upper(), vendor

@@ -72,8 +72,8 @@ assert len(rows) == 25
 
 # 4) the newer table when the old one is empty
 V2 = snmp.ARP_V2
-new = {V2 + (5, 1, 4, 10, 1, 20, 7): bytes([0x11, 0x22, 0x33, 0x44, 0x55, 0x66]), V2 + (5, 2, 16) + (0,) * 16: b"\x11" * 6}
-assert asyncio.run(snmp.arp_table("x", "s3cret", ask=router(new))) == {"10.1.20.7": "11:22:33:44:55:66"}
+new = {V2 + (5, 1, 4, 10, 1, 20, 7): bytes([0x12, 0x22, 0x33, 0x44, 0x55, 0x66]), V2 + (5, 2, 16) + (0,) * 16: b"\x11" * 6}
+assert asyncio.run(snmp.arp_table("x", "s3cret", ask=router(new))) == {"10.1.20.7": "12:22:33:44:55:66"}
 assert asyncio.run(snmp.arp_table("x", "s3cret", ask=router({}))) == {}
 
 # 5) an answer to another request, an error-status: refused
@@ -102,7 +102,7 @@ refuse_old = router({}, error=2)
 async def picky(packet):
     start = snmp.decode_oid(snmp._children(snmp._children(snmp._children(snmp._children(snmp._read(packet, 0)[1])[2][1])[3][1])[0][1])[0][1])
     return await (refuse_old if start[:len(V1)] == V1 else both)(packet)
-assert asyncio.run(snmp.arp_table("x", "s3cret", ask=picky)) == {"10.1.20.7": "11:22:33:44:55:66"}
+assert asyncio.run(snmp.arp_table("x", "s3cret", ask=picky)) == {"10.1.20.7": "12:22:33:44:55:66"}
 
 # 6) over real UDP on localhost (the fake router behind a socket); a silent host times out
 class Agent(asyncio.DatagramProtocol):

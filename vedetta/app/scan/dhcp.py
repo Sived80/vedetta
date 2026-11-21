@@ -15,6 +15,7 @@ from ..atomic import write_atomic
 from ..paths import DATA_DIR as CONFIG_DIR
 from . import scan_common
 import contextlib
+from ..macaddr import device_mac
 
 logger = logging.getLogger("dashboard")
 
@@ -91,6 +92,8 @@ def parse(packet: bytes) -> tuple[str, dict] | None:
     if len(packet) < 241 or packet[0] != 1 or packet[236:240] != _MAGIC_COOKIE:
         return None
     mac = ":".join(f"{b:02x}" for b in packet[28:34])
+    if not device_mac(mac, "dhcp"):
+        return None
     msg_type, info, requested = _read_options(packet)
     if msg_type not in _DHCP_REQUEST_TYPES:
         return None

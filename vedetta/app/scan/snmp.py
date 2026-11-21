@@ -13,6 +13,7 @@ The router's own addresses (1.0.1: its address on each VLAN is the same machine,
 index = a . b . c . d), else ipAddressIfIndex (RFC 4293, 1.3.6.1.2.1.4.34.1.3, index = 1 (ipv4) . 4 . a . b . c . d)."""
 import asyncio
 import os
+from ..macaddr import device_mac
 
 ARP_V1 = (1, 3, 6, 1, 2, 1, 4, 22, 1, 2)
 ARP_V2 = (1, 3, 6, 1, 2, 1, 4, 35, 1, 4)
@@ -192,9 +193,8 @@ async def _with_retry(ask, packet: bytes) -> bytes:
 
 # ---- the ARP table ----
 def mac_text(value: bytes) -> str | None:
-    if len(value) != 6 or value in (b"\x00" * 6, b"\xff" * 6):
-        return None
-    return ":".join(f"{b:02X}" for b in value)
+    mac = ":".join(f"{b:02X}" for b in value) if len(value) == 6 else None
+    return mac if mac and device_mac(mac, "snmp") else None
 
 
 def arp_rows(rows: list[tuple[tuple, int, bytes]], base: tuple) -> dict[str, str]:

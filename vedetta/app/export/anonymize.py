@@ -13,7 +13,7 @@ Ports, times, scores, clues, brand, model and versions are left as they are."""
 import ipaddress
 import re
 
-from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, names_regex, _v6_ok  # noqa: F401
+from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, names_regex, sub_names, _v6_ok  # noqa: F401
 from .anonymize_audit import AuditMixin
 from .anonymize_registry import Registry
 
@@ -135,7 +135,7 @@ class Anonymizer(Registry, AuditMixin):
             self._name_re = self._compile()
         if self._name_re is not None:
             table = {**self._areas, **self._names}
-            s = self._name_re.sub(lambda m: table.get(_norm(m.group(0)), m.group(0)), s)
+            s = sub_names(self._name_re, table, s)
         return s
 
     def data(self, obj, key: str = ""):

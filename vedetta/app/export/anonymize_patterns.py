@@ -135,6 +135,23 @@ def names_regex(keys) -> re.Pattern:
     return re.compile(_EDGE + "(?:" + "|".join(branches) + ")", re.IGNORECASE | re.UNICODE)
 
 
+def sub_names(rx: re.Pattern, table: dict, s: str) -> str:
+    """Every name found by `rx` replaced by its placeholder in `table` (normalised keys). A name with a bracket of its own, like a twin card's
+    "Router (VLAN 30)" (twins.py), ends after its last word for the pattern: its closing bracket goes with it, or the placeholder would read
+    "Router-2)". Only a bracket the name opened: "(Router)" keeps its own."""
+    out, at = [], 0
+    for m in rx.finditer(s):
+        found, end = m.group(0), m.end()
+        fake = table.get(_norm(found))
+        if fake is None:
+            continue
+        if found.count("(") > found.count(")") and s.startswith(")", end):
+            end += 1
+        out += [s[at:m.start()], fake]
+        at = end
+    return "".join(out) + s[at:] if out else s
+
+
 def _brand_keys() -> set:
     """Every brand and software name the app knows: they are not personal and the debug needs them as they are."""
     rules = brands._rules()

@@ -32,9 +32,10 @@ def page(headers=None, query=""):
 i18n.set_system_language(None)
 assert page() == ("en", True), page()
 assert page({"Accept-Language": "it-IT,it;q=0.9,en;q=0.8"}) == ("it", True), "la lingua del browser"
-assert page({"Accept-Language": "fr-FR,fr;q=0.9,cs;q=0.5"}) == ("cs", True), "la prima lingua che abbiamo, non la prima in elenco"
-assert page({"Accept-Language": "fr-FR,pl;q=0.9"}) == ("en", True), "nessuna lingua nostra: inglese"
+assert page({"Accept-Language": "es-ES,es;q=0.9,cs;q=0.5"}) == ("cs", True), "la prima lingua che abbiamo, non la prima in elenco"
+assert page({"Accept-Language": "es-ES,pl;q=0.9"}) == ("en", True), "nessuna lingua nostra: inglese"
 assert page({"Accept-Language": "de-AT,de;q=0.9,en;q=0.5"}) == ("de", True), "il tedesco c'e': chi lo chiede lo riceve"
+assert page({"Accept-Language": "fr-FR,fr;q=0.9,en;q=0.5"}) == ("fr", True), "French is there too: who asks for it gets it"
 assert page({"Accept-Language": "it;q=0, cs;q=0.2"}) == ("cs", True), "q=0 vuol dire 'non voglio questa'"
 assert page({"Accept-Language": "x" * 5000 + ",it"}) == ("en", True), "un'intestazione enorme non rompe niente"
 

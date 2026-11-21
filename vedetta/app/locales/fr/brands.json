@@ -1,0 +1,15 @@
+{
+  "brands.error.invalid_body": "Requête invalide",
+  "brands.error.invalid_kind": "Type de règle invalide",
+  "brands.error.invalid_text": "Le texte à rechercher doit compter de 2 à 80 caractères",
+  "brands.error.invalid_brand": "La marque doit compter de 1 à 60 caractères",
+  "brands.error.rule_not_found": "Règle introuvable",
+  "brands.error.save_failed": "Impossible d'enregistrer la règle",
+  "brands.error.locked": "Ce réglage est défini par la configuration de l'add-on (internet_mac_database)",
+  "brands.error.update_running": "Une mise à jour est déjà en cours",
+  "brands.error.update_off": "Le téléchargement de la liste des préfixes MAC est désactivé dans les options de l'application (internet_mac_database)",
+  "brands.error.update_network": "Échec du téléchargement, vérifiez la connexion internet ({detail})",
+  "brands.error.update_invalid": "Le fichier téléchargé n'est pas une liste de préfixes MAC valide",
+  "brands.error.update_too_small": "La liste téléchargée semble incomplète ({detail} entrées), mise à jour annulée",
+  "brands.error.update_write": "Impossible d'enregistrer la liste mise à jour {detail}"
+}

@@ -1,0 +1,12 @@
+{
+  "alert.new_device": "Nouvel appareil sur le réseau : {label} ({ip})",
+  "error.no_mac": "Aucune adresse MAC connue pour cet appareil",
+  "alert.ip_changed": "{label} a changé d'adresse : {old} → {new}",
+  "alert.dhcp_multiple": "Plus d'un serveur DHCP sur le réseau : {servers}. L'un d'eux est peut-être indésirable.",
+  "alert.ip_conflict": "IP en double : {ip} répond depuis plusieurs appareils ({macs})",
+  "alert.duplicate_merged": "{label} : deux cartes du même téléphone ont été fusionnées ({old} → {new})",
+  "alert.other_device": "Deux appareils différents répondent désormais derrière {name} : {other}",
+  "alert.device_down": "{label} ({ip}) ne répond pas",
+  "alert.device_back": "{label} ({ip}) est de retour après {minutes} min",
+  "notify.test": "Test de Vedetta : les notifications fonctionnent"
+}

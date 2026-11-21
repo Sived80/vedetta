@@ -31,7 +31,7 @@ def holes(text):
     return sorted(re.findall(r"\{[a-z_0-9]+\}|%[sd]", text)) if isinstance(text, str) else []
 
 
-TONIGHT = {"en": "tonight", "it": "stanotte", "de": "heute nacht", "cs": "dnes v noci"}   # the word for «tonight» of each language
+TONIGHT = {"en": "tonight", "it": "stanotte", "de": "heute nacht", "cs": "dnes v noci", "fr": "cette nuit"}   # the word for «tonight» of each language
 en = load("en")
 codes = sorted(p.name for p in LOC.iterdir() if p.is_dir())
 config = (ROOT / "vedetta" / "config.yaml").read_text(encoding="utf-8")

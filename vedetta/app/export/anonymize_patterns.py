@@ -44,7 +44,9 @@ _IPV4 = re.compile(r"(?<![\d.])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?!\d|\
 _IPV4_SEP = re.compile(r"(?<![\d])(\d{1,3})([-_])(\d{1,3})\2(\d{1,3})\2(\d{1,3})(?!\d)")
 
 
-_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# the part before "@" is at most 64 characters (the limit of an address): with "+" every character of a long run without "@" (a hex dump, a
+# long id) started a scan to the end of the run, quadratic in its length (#57); now each start looks at most 64 characters ahead
+_EMAIL = re.compile(r"[\w.+-]{1,64}@[\w-]+(?:\.[\w-]+)+")
 # A notify service of Home Assistant ("notify.mobile_app_marcos_iphone"): its name is often a person's or a phone's (the Alerts recipients)
 _NOTIFY = re.compile(r"(?<![\w.])notify\.([A-Za-z0-9_]+)(?![\w-]|\.\w)")       # not a host name such as notify.example.com
 _NOTIFY_KEEP = frozenset({"notify", "persistent_notification", "send_message"})      # the generic services of Home Assistant: no name in them
@@ -120,6 +122,17 @@ def _pattern(text: str) -> str:
     """Matches the name whatever the separators ("Anna's iPhone", "Annas-iPhone", "anna_s_iphone")."""
     words = _WORD.findall(text)
     return r"(?<![^\W_])" + r"[\W_]{1,3}".join(re.escape(w) for w in words) + r"(?![^\W_])"
+
+
+_EDGE = r"(?<![^\W_])"
+
+
+def names_regex(keys) -> re.Pattern:
+    """One pattern for all the names (normalised keys), the longest first so "Anna's iPhone 2" wins over "Anna". The word-edge guard is written
+    once in front of the alternation, not inside every branch: the same matches, but the engine tries the names only where a word starts
+    (#57: with 300 names the masking took about 5 s per MB on a desktop and minutes on a small Home Assistant box)."""
+    branches = [_pattern(k.replace("-", " "))[len(_EDGE):] for k in sorted(keys, key=len, reverse=True)]
+    return re.compile(_EDGE + "(?:" + "|".join(branches) + ")", re.IGNORECASE | re.UNICODE)
 
 
 def _brand_keys() -> set:

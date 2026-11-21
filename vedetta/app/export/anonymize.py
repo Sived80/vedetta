@@ -13,7 +13,7 @@ Ports, times, scores, clues, brand, model and versions are left as they are."""
 import ipaddress
 import re
 
-from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, _v6_ok  # noqa: F401
+from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _NOTIFY, _NOTIFY_KEEP, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _MAC, _NEVER, _PRIVATE_KEYS, products, _PUBLIC_DOMAINS, _SECRET_KEY, _SECRET_PAIR, _TLDS, _URL_CREDS, _V6_PLACEHOLDER, _VERSION_WORD, _WELL_KNOWN, _WORD, _brand_keys, _ip_ok, _norm, _pattern, _public_domain, names_regex, _v6_ok  # noqa: F401
 from .anonymize_audit import AuditMixin
 from .anonymize_registry import Registry
 
@@ -112,7 +112,7 @@ class Anonymizer(Registry, AuditMixin):
         if not table:
             return None
         # the originals, longest first so "Anna's iPhone 2" wins over "Anna"
-        return re.compile("|".join(_pattern(k.replace("-", " ")) for k in sorted(table, key=len, reverse=True)), re.IGNORECASE | re.UNICODE)
+        return names_regex(table)
 
     def text(self, s: str) -> str:
         if not s:
@@ -159,7 +159,7 @@ class Anonymizer(Registry, AuditMixin):
 
     def _compile_for(self, table: dict) -> re.Pattern:
         if getattr(self, "_leak_re", None) is None or self._leak_re[0] != len(table):
-            self._leak_re = (len(table), re.compile("|".join(_pattern(k.replace("-", " ")) for k in sorted(table, key=len, reverse=True)), re.IGNORECASE | re.UNICODE))
+            self._leak_re = (len(table), names_regex(table))
         return self._leak_re[1]
 
     def mapping(self) -> dict:

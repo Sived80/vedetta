@@ -12,4 +12,7 @@ assert [i18n.plural_of(n, "cs") for n in (0, 1, 2, 4, 5, 12)] == ["other", "one"
 assert [i18n.plural_of(n, lang) for lang in ("en", "it", "de") for n in (1, 3)] == ["one", "other"] * 3
 en = [i18n.translate("en", "settings.new_devices", n=n) for n in (1, 3)]
 assert "1 " in en[0] and "3 " in en[1] and en[0] != en[1], en
+assert [i18n.plural_of(n, "fr") for n in (0, 1, 2, 5)] == ["one", "one", "other", "other"]
+fr = [i18n.translate("fr", "settings.new_devices", n=n) for n in (0, 1, 3)]
+assert fr == ["0 nouvel appareil sur le réseau", "1 nouvel appareil sur le réseau", "3 nouveaux appareils sur le réseau"], fr
 print("ALL OK")

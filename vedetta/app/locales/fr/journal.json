@@ -1,0 +1,23 @@
+{
+  "journal.quick": "Recherche sur le réseau : {seen} appareils vus, {new} nouveaux",
+  "journal.analyzed": "Analyse de {ip} terminée ({ports} ports ouverts)",
+  "journal.cancelled": "Recherche annulée ({n} analyses arrêtées)",
+  "journal.added": "{name} ({ip}) ajouté au tableau de bord",
+  "journal.removed": "{name} ({ip}) retiré du tableau de bord",
+  "journal.ignored": "{name} ({ip}) retiré et ignoré",
+  "journal.paused": "Surveillance en pause pendant {minutes} minutes",
+  "journal.paused_forever": "Surveillance en pause jusqu'à sa reprise",
+  "journal.resumed": "Surveillance reprise",
+  "journal.dhcp": "DHCP : le serveur {server} distribue la passerelle {router} et le DNS {dns}",
+  "journal.internet_direct": "Accès internet direct (pas de double NAT)",
+  "journal.internet_double": "Accès internet derrière un double NAT",
+  "journal.internet_maybe_double": "Accès internet via deux routeurs privés : peut-être un double NAT",
+  "journal.internet_cgnat": "Accès internet via le CGNAT du fournisseur",
+  "journal.roles": "Rôles réseau : {roles} ; via un répéteur : {via}",
+  "journal.unignored": "{name} n'est plus ignoré",
+  "journal.forgotten": "{name} oublié",
+  "journal.fullports": "{ip} : analyse complète en arrière-plan terminée ({ports} ports, {added} de plus)",
+  "journal.fullports_failed": "{ip} : l'analyse complète en arrière-plan n'a pas abouti (appareil trop lent), ports ciblés conservés",
+  "journal.settings_damaged": "Fichier de paramètres endommagé : une copie est conservée sous {copy}, les paramètres repartent des valeurs par défaut",
+  "journal.settings_damaged_kept": "Fichier de paramètres endommagé et non copié : il ne sera pas écrasé tant qu'il ne pourra pas être lu"
+}

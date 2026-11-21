@@ -1,0 +1,34 @@
+configuration:
+  log_level:
+    name: "Journal"
+    description: "Quantité d'informations que l'application écrit dans son journal."
+  interface:
+    name: "Réseau · Interface"
+    description: "Vide = automatique (par exemple eth0)."
+  internet_public_ip:
+    name: "Internet · IP publique"
+    description: "Demande votre IP publique à OpenDNS. Désactivé : rien ne sort."
+  internet_path:
+    name: "Internet · Chemin"
+    description: "Traceroute pour repérer un double NAT ou un CGNAT. Désactivé : rien ne sort."
+  internet_path_target:
+    name: "Internet · Cible"
+    description: "Adresse pour le traceroute. Vide = 1.1.1.1."
+  internet_mac_database:
+    name: "Internet · Fabricants MAC"
+    description: "Télécharge la liste IEEE tous les 30 jours. Désactivé : utilise celle fournie."
+  night_hour:
+    name: "Maintenance nocturne · Heure"
+    description: "Heure (0-23, heure de Home Assistant) de la recherche approfondie et du nettoyage nocturnes. Vide = 3."
+  mqtt_host:
+    name: "MQTT · Adresse"
+    description: "Votre propre broker. Vide = service MQTT de Home Assistant."
+  mqtt_port:
+    name: "MQTT · Port"
+    description: "Généralement 1883."
+  mqtt_username:
+    name: "MQTT · Utilisateur"
+    description: "Uniquement si le broker demande un utilisateur."
+  mqtt_password:
+    name: "MQTT · Mot de passe"
+    description: "Uniquement si le broker demande un mot de passe."

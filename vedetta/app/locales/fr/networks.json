@@ -1,0 +1,22 @@
+{
+  "networks.error.E_SHAPE": "Réseau invalide",
+  "networks.error.E_CIDR": "Écrivez le réseau sous la forme 192.168.60.0/24",
+  "networks.error.E_NOT_IPV4": "Réseaux IPv4 uniquement",
+  "networks.error.E_BAD_VIA": "Choisissez comment le réseau est joint",
+  "networks.error.E_BAD_TOUCH": "Niveau de contact invalide",
+  "networks.error.E_BAD_STATE": "État invalide",
+  "networks.error.E_BAD_ID": "Nom de réseau invalide",
+  "networks.error.E_PUBLIC": "Réseaux privés uniquement (10.x, 172.16-31.x, 192.168.x)",
+  "networks.error.E_CONTAINER_NET": "C'est le réseau des conteneurs de Home Assistant",
+  "networks.error.E_TOO_WIDE": "Réseau trop large",
+  "networks.error.E_TOO_NARROW": "Réseau trop étroit",
+  "networks.error.E_TOUCH_NEEDS_DIRECT": "Une recherche complète n'est possible que sur un réseau auquel Home Assistant est connecté",
+  "networks.error.E_TOO_MANY": "Trop de réseaux",
+  "networks.error.E_DUP_ID": "Un réseau portant ce nom existe déjà",
+  "networks.error.E_OVERLAP": "Il chevauche un autre réseau",
+  "networks.error.E_BAD_EXCLUDE": "Adresses exclues invalides",
+  "networks.error.E_BAD_NAME": "Saisissez un nom de 32 caractères au maximum, sans espace au début ni à la fin",
+  "networks.error.E_BAD_VLAN": "Le VLAN est un nombre de 1 à 4094",
+  "networks.error.not_found": "Réseau introuvable",
+  "networks.main_name": "Maison"
+}

@@ -48,11 +48,13 @@ def normalize(code: str | None) -> str:
 
 def plural_of(n, lang: str) -> str:
     """The plural category of a count, as the page's Intl.PluralRules gives it for whole numbers (frontend/ha/js/core.js, pluralOf): Czech has
-    «few» for 2 to 4 ("3 zprávy", but "5 zpráv"); the other languages of the app only one and other."""
+    «few» for 2 to 4 ("3 zprávy", but "5 zpráv"); French puts 0 with 1 ("0 appareil"); the other languages of the app only one and other."""
     if n == 1:
         return "one"
     if lang == "cs" and n in (2, 3, 4):
         return "few"
+    if lang == "fr" and n == 0:     # French counts zero as singular ("0 appareil"), as Intl.PluralRules("fr") does
+        return "one"
     return "other"
 
 

@@ -110,7 +110,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "name": device.get("name") or device.get("ip"),
         "ip": device.get("ip"),
         "port": device.get("port", 80),
-        "mac": device.get("mac"),
+        "mac": device.get("mac") or device.get("mac_known"),   # #57: an asleep phone keeps the MAC its brand was read from
         # Two levels: vendor = MAC manufacturer (chip/board), brand = product
         # brand (None if unknown); brand_source/confidence say where it comes from.
         "vendor": device.get("vendor"),

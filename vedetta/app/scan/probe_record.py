@@ -78,6 +78,7 @@ def _build_probe_record(f: Facts, signal: Signal, brand_stage: Brand, name: Nami
         "online": f.result.get("online", False),
         "uptime": quantize_uptime(f.result.get("uptime_seconds")),
         "mac": f.mac,
+        "mac_known": f.identity_mac,   # the MAC the brand and names were asked with (this answer's, else the link or the last seen): the card shows it when this check heard none (#57)
         "vendor": product.vendor,
         "vendor_role": ident["vendor_role"],
         "brand": product.brand,

@@ -160,7 +160,7 @@ class _Clues:
         """Network roles, declared mDNS services and UPnP types, the interface that answered, ONVIF and RTSP."""
         if _has_network_role(roles, self.device.get("ip")):
             self.add("router", W_ROLE, "role", "ruolo di rete")
-        if roles.is_gateway(self.device.get("ip"), self.device.get("mac")):
+        if roles.is_gateway(self.device.get("ip"), self.device.get("mac")) or _twin_of_gateway(self.device):
             self.add("router", W_ROLE, "gateway", "router di casa")      # the way out of the house: a router whatever else runs on it (a controller, a web page)
         self.table_hits(services, _MDNS_TYPE, _FAMILY_SERVICE, "svc:", "mDNS ")
         self.table_hits(upnp_types, _UPNP_TYPE, _FAMILY_UPNP, "upnp:", "UPnP ")
@@ -315,6 +315,13 @@ def _brand_tokens(device: dict) -> set:
     return set(_TOKEN_RE.findall(" ".join(filter(None, [
         device.get("brand"), device.get("name"),
         device.get("vendor") if device.get("vendor_role") == "brand" else None])).lower()))
+
+
+def _twin_of_gateway(device: dict) -> bool:
+    """A twin of the house's router (twins.py: its own address on a network behind it, paired by certificate or SNMP, with no MAC there): a
+    router like its main card. `twin_of` is the main card's address."""
+    main_ip = device.get("twin_of")
+    return bool(main_ip) and roles.is_gateway(main_ip, None)
 
 
 def _has_network_role(roles_, ip) -> bool:

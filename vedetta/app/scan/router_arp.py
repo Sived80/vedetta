@@ -6,14 +6,20 @@ its MAC (and so the maker of the device, K10), never its presence, because a rou
 has gone. The last reading (when, how many rows, the error) is kept for the page; a failure is said once in the log.
 
 With the table, the router's own address list (1.0.1): its address on each VLAN is the same machine as the one on the main network
-(twins.py). A router that refuses that list still gives its table; the list is then empty."""
+(twins.py). A router that refuses that list still gives its table; the list is then empty. The list is kept in the data folder (1.0.2): after
+a restart the twins by SNMP are there at once, not after the first sweep (up to 15 minutes later); it counts only for the router it was read from."""
+import json
 import time
 
+from .. import paths
 from ..applog import logger
+from ..atomic import write_atomic
 from ..storage import settings
 from . import snmp
 
+OWN_PATH = paths.data_path("router_own.json")
 _last: dict = {"at": None, "rows": 0, "error": None, "ips": (), "own": frozenset()}
+_kept: dict = {}             # the list of the last run, read once at the first question before a reading: {"router": address, "own": [...]}
 
 
 def configured() -> bool:
@@ -34,7 +40,27 @@ async def table() -> dict[str, str]:
     if _last["error"]:
         logger.info("Tabella ARP del router di nuovo leggibile (%d indirizzi)", len(found))
     _last.update(at=time.time(), rows=len(found), error=None, ips=tuple(found), own=await _own(cfg))
+    _keep(cfg["snmp_router"], _last["own"])
     return found
+
+
+def _keep(router: str, own: frozenset) -> None:
+    """The list just read, written for the next start (a failed write only costs the wait for the first reading)."""
+    try:
+        write_atomic(OWN_PATH, lambda f: json.dump({"router": router, "own": sorted(own)}, f), ".router-own-", durable=False)
+    except OSError as exc:
+        logger.debug("Indirizzi propri del router non salvati (%r)", exc)
+
+
+def _kept_own(router: str) -> frozenset:
+    """The list of the last run for this router; empty when there is none, it was read from another router or the file is damaged."""
+    if not _kept:
+        try:
+            data = json.loads(OWN_PATH.read_text(encoding="utf-8"))
+            _kept.update(router=str(data["router"]), own=frozenset(str(ip) for ip in data["own"]))
+        except (OSError, ValueError, KeyError, TypeError):
+            _kept.update(router=None, own=frozenset())
+    return _kept["own"] if _kept["router"] == router else frozenset()
 
 
 async def _own(cfg: dict) -> frozenset:
@@ -50,7 +76,8 @@ def own_addresses() -> tuple[str | None, frozenset]:
     """(the address written as the router, the router's own addresses at its last good reading); (None, empty) without SNMP."""
     if not configured() or _last["error"]:
         return None, frozenset()
-    return settings.snmp_load()["snmp_router"], _last["own"]
+    router = settings.snmp_load()["snmp_router"]
+    return router, _last["own"] if _last["at"] is not None else _kept_own(router)
 
 
 def last_ips() -> tuple:

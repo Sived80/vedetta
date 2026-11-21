@@ -6,12 +6,17 @@ import json
 import sqlite3
 
 
-def _mask_files(p: Prepared, anon: anonymize.Anonymizer) -> None:
-    for name, entry in p.files.items():
+def _mask_files(p: Prepared, anon: anonymize.Anonymizer, part=None) -> None:
+    """Masks every file; part(done, total) is told before the first one and after each one."""
+    tell = part or (lambda done, total: None)
+    total = len(p.files)
+    tell(0, total)
+    for done, (name, entry) in enumerate(p.files.items(), 1):
         if entry[0] == "text":
             entry[1] = _mask_text(name, entry[1], anon)
         else:
             _mask_db(entry[1], anon)
+        tell(done, total)
 
 
 def _mask_text(name: str, text: str, anon: anonymize.Anonymizer) -> str:

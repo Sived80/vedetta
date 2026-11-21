@@ -555,6 +555,7 @@
   "js.ha.export.step_collect_sub": "journal, base de données, cartes des appareils",
   "js.ha.export.step_mask": "Masquage des IP, MAC, noms et e-mails",
   "js.ha.export.step_mask_sub": "chaque valeur reçoit un remplaçant stable",
+  "js.ha.export.step_part": "fichier {done} sur {total}",
   "js.ha.export.step_check": "Contrôle de sécurité",
   "js.ha.export.step_check_sub": "recherche de tout ce qui serait encore lisible",
   "js.ha.export.step_fix": "Correction des valeurs trouvées",

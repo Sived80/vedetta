@@ -555,6 +555,7 @@
   "js.ha.export.step_collect_sub": "Protokoll, Datenbank, Gerätekarten",
   "js.ha.export.step_mask": "IPs, MACs, Namen und E-Mails werden maskiert",
   "js.ha.export.step_mask_sub": "jeder Wert erhält einen stabilen Platzhalter",
+  "js.ha.export.step_part": "Datei {done} von {total}",
   "js.ha.export.step_check": "Sicherheitsprüfung",
   "js.ha.export.step_check_sub": "Suche nach allem, was noch lesbar ist",
   "js.ha.export.step_fix": "Gefundene Werte werden korrigiert",

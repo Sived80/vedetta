@@ -555,6 +555,7 @@
   "js.ha.export.step_collect_sub": "log, database, schede dei dispositivi",
   "js.ha.export.step_mask": "Maschero IP, MAC, nomi ed email",
   "js.ha.export.step_mask_sub": "ogni valore ha un segnaposto stabile",
+  "js.ha.export.step_part": "file {done} di {total}",
   "js.ha.export.step_check": "Controllo di sicurezza",
   "js.ha.export.step_check_sub": "cerco ancora qualcosa di leggibile",
   "js.ha.export.step_fix": "Correggo i valori trovati",

@@ -30,8 +30,9 @@ REMOVED = "[removed]"
 STEPS_DEV = ("collect", "mask", "check", "fix", "seal", "ready")
 
 
-def prepare(dest: str, first_day: int | None = None, last_day: int | None = None, progress=None, survey: bool = False) -> Prepared:
-    """Phase 1: gathers, masks (for the developer), checks and fixes. progress(step) is told when each step starts.
+def prepare(dest: str, first_day: int | None = None, last_day: int | None = None, progress=None, survey: bool = False, part=None) -> Prepared:
+    """Phase 1: gathers, masks (for the developer), checks and fixes. progress(step) is told when each step starts, part(done, total)
+    after each file of the masking (the slow step: the window shows it moving).
     `survey` adds the network survey, for the developer only and only while network_survey.ENABLED is on."""
     note = progress or (lambda step: None)
     since, until = bounds(first_day, last_day)
@@ -48,7 +49,7 @@ def prepare(dest: str, first_day: int | None = None, last_day: int | None = None
         if p.survey:
             network_survey.register_for_masking(anon, p.survey)
         p.manifest["notes"].append("anonymised: IP addresses (same last number), MAC addresses (same manufacturer prefix), names (numbered labels)")
-        _mask_files(p, anon)
+        _mask_files(p, anon, part)
         note("check")
         flagged_text, flagged_db = _flagged(p, anon)
         if not flagged_text and not flagged_db:

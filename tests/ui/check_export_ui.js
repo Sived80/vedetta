@@ -152,6 +152,13 @@ const reqs = (p) => calls.filter((c) => c.url.startsWith(p));
   await openWindow();
   await click("[data-xp='dest:dev']");
   await click("[data-xp='go']");
+  // the masking is slow on a small box: the step says how many files are done, so the window does not look stuck
+  job = Object.assign({}, job, { status: "running", steps: ["collect", "mask"], part: { done: 3, total: 12 }, dest: "dev" });
+  await wait(900);
+  check(!!q(".xp-step.run") && /\b3\b[^0-9]+\b12\b/.test(q(".xp-step.run .xp-sub").textContent), "durante il mascheramento il passo dice a che punto e' (3 di 12 file)");
+  job = Object.assign({}, job, { steps: ["collect", "mask", "check"], part: null });
+  await wait(900);
+  check(!/\b12\b/.test(dlg().querySelector(".xp-step.done:nth-child(2) .xp-sub") ? dlg().querySelector(".xp-step.done:nth-child(2) .xp-sub").textContent : ""), "a passo finito il conteggio sparisce");
   const items = Array.from({ length: 12 }, (_, i) => ({ id: i, kind: "email address", value: "u" + i + "@example.com", file: "data/settings.json", where: "/mail" }));
   job = Object.assign({}, job, { status: "choose", steps: ["collect", "mask", "check", "fix"], items: items.slice(0, 10), items_total: 12, fixed: 3, dest: "dev" });
   await wait(900);

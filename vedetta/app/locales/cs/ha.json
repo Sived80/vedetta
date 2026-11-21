@@ -566,6 +566,7 @@
   "js.ha.export.step_collect_sub": "protokol, databáze, karty zařízení",
   "js.ha.export.step_mask": "Maskování IP a MAC adres, jmen a e-mailů",
   "js.ha.export.step_mask_sub": "každá hodnota získá stálý zástupný symbol",
+  "js.ha.export.step_part": "soubor {done} z {total}",
   "js.ha.export.step_check": "Bezpečnostní kontrola",
   "js.ha.export.step_check_sub": "hledání údajů, které jsou stále čitelné",
   "js.ha.export.step_fix": "Oprava nalezených hodnot",

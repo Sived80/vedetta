@@ -22,6 +22,7 @@ class Job:
         self.dest, self.first_day, self.last_day, self.survey = dest, first_day, last_day, survey
         self.status = "running"            # running | choose | done | error
         self.steps: list[str] = []
+        self.done_total: tuple[int, int] | None = None   # how far the running step is (files masked / files), None if it does not say
         self.error: str | None = None
         self.prepared = None
         self.pending: list[dict] = []
@@ -34,6 +35,12 @@ class Job:
     def note(self, step: str) -> None:
         with self.lock:
             self.steps.append(step)
+            self.done_total = None
+            self.touched = time.time()
+
+    def part(self, done: int, total: int) -> None:
+        with self.lock:
+            self.done_total = (done, total)
             self.touched = time.time()
 
     def close(self) -> None:
@@ -68,7 +75,7 @@ def start(dest: str, first_day: int | None, last_day: int | None, survey: bool =
 
 def _run(job: Job) -> None:
     try:
-        job.prepared = E.prepare(job.dest, job.first_day, job.last_day, progress=job.note, survey=job.survey)
+        job.prepared = E.prepare(job.dest, job.first_day, job.last_day, progress=job.note, survey=job.survey, part=job.part)
         job.fixed = job.prepared.fixed
         if job.prepared.pending:
             job.pending = job.prepared.pending
@@ -117,8 +124,9 @@ def get(job_id: str) -> Job | None:
 
 def snapshot(job: Job) -> dict:
     with job.lock:
-        steps = list(job.steps)
+        steps, part = list(job.steps), job.done_total
     out = {"id": job.id, "dest": job.dest, "status": job.status, "steps": steps, "fixed": job.fixed, "error": job.error,
+           "part": {"done": part[0], "total": part[1]} if part else None,
            "items_total": len(job.pending), "items": [{k: it[k] for k in ("id", "kind", "value", "file", "where")} for it in job.pending[:SHOWN]]}
     if job.result is not None:
         out.update(size=len(job.result), filename=job.filename)

@@ -89,6 +89,7 @@ function xpSteps() {
     else if (at >= 0) st = at < last ? "done" : (s.status === "choose" && id === "fix") ? "bad" : s.status === "error" ? "bad" : "run";
     if (!ids.length && n === 0 && s.status === "running") st = "run";                 // before the first answer of the server
     let sub = xpT("js.ha.export.step_" + id + "_sub");
+    if (id === "mask" && st === "run" && s.part && s.part.total) sub += (sub ? " · " : "") + t("js.ha.export.step_part", { done: s.part.done, total: s.part.total });
     if (id === "fix" && at >= 0) sub = s.status === "choose" ? t("js.ha.export.step_fix_left", { n: s.items_total }) : t("js.ha.export.step_fix_sub");
     out += '<div class="xp-step ' + st + '"><span class="xp-dot">' + (st === "done" ? icon("check") : st === "bad" ? icon("close") : n + 1) + "</span><div><b>" + esc(t("js.ha.export.step_" + id)) + "</b>" + (sub ? '<span class="xp-sub">' + esc(sub) + "</span>" : "") + "</div></div>";
   });

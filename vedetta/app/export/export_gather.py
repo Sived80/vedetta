@@ -125,9 +125,18 @@ def _collect_data_file(p: Prepared, f: Path) -> None:
         p.manifest["notes"].append(f"{f.name}: {exc!r}")
 
 
+_ROTATED = re.compile(r"(\.log|\.jsonl)\.[1-9]\d*$")
+
+
+def _kind(f: Path) -> str:
+    """The suffix that says how a data file is read: a rotated log (dashboard.log.1 .. .3, see applog) is a log like dashboard.log."""
+    m = _ROTATED.search(f.name)
+    return m.group(1) if m else f.suffix
+
+
 def _read_data_file(f: Path, since: float | None) -> str | None:
     """The text of a data file (None if it is not text); without a period the logs are read only as far as their tail."""
-    return _text_of(f) if f.suffix not in (".log", ".jsonl") or since is not None else legacy._tail(f, legacy.MAX_LOG_BYTES).decode("utf-8", "replace")
+    return _text_of(f) if _kind(f) not in (".log", ".jsonl") or since is not None else legacy._tail(f, legacy.MAX_LOG_BYTES).decode("utf-8", "replace")
 
 
 def _text_of(path: Path) -> str | None:
@@ -139,11 +148,12 @@ def _text_of(path: Path) -> str | None:
 
 def _convert_data_text(f: Path, text: str, since: float | None, until: float | None) -> str:
     """Credentials replaced in the json files, the period applied to the logs and journals."""
-    if f.suffix == ".json":
+    kind = _kind(f)
+    if kind == ".json":
         return json.dumps(legacy._redact(json.loads(text)), ensure_ascii=False, indent=1)
-    if f.suffix == ".log" and since is not None:
+    if kind == ".log" and since is not None:
         return filter_log(text, since, until)
-    if f.suffix == ".jsonl" and since is not None:
+    if kind == ".jsonl" and since is not None:
         return filter_jsonl(text, since, until)
     return text
 

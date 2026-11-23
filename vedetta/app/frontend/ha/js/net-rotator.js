@@ -20,11 +20,13 @@ export function setExtraTile(fn) { extra = fn; seenAttention = ""; }
 function push(list, value, max) { list.push(value); if (list.length > max) list.shift(); }
 function ms(v) { return v < 10 ? v.toFixed(1) : String(Math.round(v)); }
 
+// The gateway's card, or null: without a card (a fresh install, nothing added yet) its state is not known, and not knowing is not "down"
+// (Discussion #63).
 function gateway() {
   const by = S.roles.by_ip || {};
   const ip = Object.keys(by).find(function (k) { return by[k].gateway; });
   if (!ip) return null;
-  return S.list.find(function (d) { return d.ip === ip; }) || { ip: ip, online: false };
+  return S.list.find(function (d) { return d.ip === ip; }) || null;
 }
 
 // The latency of the gateway now, as the tile says it (tenths below 10 ms), or null while it does not answer; the health screen shows it.

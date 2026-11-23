@@ -41,8 +41,36 @@ async def get_local_network() -> tuple[str, str]:
         logger.error("Impossibile determinare la subnet locale, output 'ip addr': %r", out.decode())
         raise HTTPException(500, "Impossibile determinare la subnet locale")
     iface = ipaddress.ip_interface(match.group(1))
-    last_network = str(iface.network)
+    network = iface.network if iface.network.prefixlen < HOST_PREFIX else await _host_address_network(iface.ip)
+    last_network = str(network)
     return last_network, str(iface.ip)
+
+
+HOST_PREFIX = 31            # a /31 or /32 is the address of the host, not a network to watch
+WIDEST_LINK_ROUTE = 16      # a link route wider than this is not taken as the LAN
+
+
+async def _host_address_network(ip) -> ipaddress.IPv4Network:
+    """The network around an own address given as /32 or /31 (a static address with a /32 mask, the gateway reached "on link"): the
+    narrowest link route of the interface that holds the address, or the /24 around it. Without this the network was HA alone."""
+    proc = await asyncio.create_subprocess_exec(
+        "ip", "-4", "route", "show", "dev", lan_iface(),
+        stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+    )
+    out = (await communicate_briefly(proc)).decode()
+    held = [net for net in map(_link_route, out.splitlines()) if net and WIDEST_LINK_ROUTE <= net.prefixlen < HOST_PREFIX and ip in net]
+    return max(held, key=lambda n: n.prefixlen) if held else ipaddress.ip_network(f"{ip}/24", strict=False)
+
+
+def _link_route(line: str) -> ipaddress.IPv4Network | None:
+    """The network of one line of `ip route` ("10.30.0.0/23 dev eth0 scope link"), None for the default route or a line without one."""
+    words = line.split()
+    if not words or "/" not in words[0]:
+        return None
+    try:
+        return ipaddress.ip_network(words[0], strict=False)
+    except ValueError:
+        return None
 
 
 async def filter_local_ips(ips: list[str]) -> list[str]:

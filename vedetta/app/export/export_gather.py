@@ -244,7 +244,7 @@ def _focus_entries(flagged: list[dict], ha_data_, dbg: dict, evi: dict, h_since:
 
 def _gather_state_snapshots(p, dbg, evi, ha_data_):
     add, since, until = p.add, p.since, p.until
-    dump = lambda obj: json.dumps(obj, ensure_ascii=False, indent=1, default=str)             # noqa: E731
+    dump = lambda obj: json.dumps(legacy.without_entity_names(obj), ensure_ascii=False, indent=1, default=str)             # noqa: E731
     add("state/devices_debug.json", dump(dbg))
     add("state/evidence.json", dump(evi))
     add("state/devices_compact.json", dump(ha_data_.compact_all(state.sorted_devices())))

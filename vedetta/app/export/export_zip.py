@@ -31,12 +31,27 @@ SKIP_WORDS = ("key", "token", "secret", "pass", "community", "user_lang")   # fi
 
 
 def _redact(obj):
-    """Copy with every field that looks like a credential replaced."""
+    """Copy with every field that looks like a credential replaced (and the entity names counted, as in without_entity_names)."""
     if isinstance(obj, dict):
-        return {k: ("***" if any(w in str(k).lower() for w in SKIP_WORDS) and v else _redact(v)) for k, v in obj.items()}
+        return {k: ("***" if any(w in str(k).lower() for w in SKIP_WORDS) and v else _entity_count(v) if k == "entity_names" else _redact(v))
+                for k, v in obj.items()}
     if isinstance(obj, list):
         return [_redact(v) for v in obj]
     return obj
+
+
+def without_entity_names(obj):
+    """Copy with the names of the entities of Home Assistant's registry replaced by how many there are: people write them, and
+    recognition does not read them."""
+    if isinstance(obj, dict):
+        return {k: _entity_count(v) if k == "entity_names" else without_entity_names(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [without_entity_names(v) for v in obj]
+    return obj
+
+
+def _entity_count(value):
+    return len(value) if isinstance(value, list) else value
 
 
 class MaskingFailed(RuntimeError):
@@ -131,7 +146,7 @@ class _Zip:
         self.manifest["files"][name] = len(raw)
 
     def put_json(self, name: str, obj, **dump) -> None:
-        self.put(name, json.dumps(obj, ensure_ascii=False, indent=1, **dump))
+        self.put(name, json.dumps(without_entity_names(obj), ensure_ascii=False, indent=1, **dump))
 
 
 def build_zip() -> bytes:

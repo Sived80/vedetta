@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.2 · Orizzonte
+Fixes from your reports, and Vedetta now speaks French.
+
+- **Français.** The whole page in French, thanks to loll31.
+- **Phones keep their MAC.** A card shows the last MAC heard, even when the latest check heard none (#57).
+- **Fewer false "offline".** Before saying a device is offline, Vedetta asks it once more by ARP.
+- **Home Assistant on a /32 address.** The network is taken from the routes, or the /24 around the address, instead of Home Assistant alone.
+- **No more "Gateway down" on a fresh install.** Until the gateway is added, its box shows "–".
+- **The router's twins are routers**, and the router's own addresses survive a restart.
+- **A faster, steadier export.** Masking is much quicker on big networks and shows "file N of M"; a running export is never lost; rotated logs follow the chosen period.
+- Addresses that cannot be a device (all zeros, broadcast, group) are ignored. FastAPI 0.163.1.
+
+**Thank you** to Ltek, loll31, vellanix and everyone on Reddit and Discord who reported a problem or shared an export.
+
 ## 1.0.1 · Orizzonte
 Fixes and a clearer page for **Orizzonte**.
 

@@ -1,5 +1,6 @@
 """ha_type_text: moved out of ha_type_evidence.py (see tools/split_module.py)."""
 import re
+import unicodedata
 from functools import lru_cache
 
 from .. import datafile
@@ -17,6 +18,13 @@ _MERGED_GROUPS = {"climate": "iot", "appliance": "iot", "energy": "iot", "securi
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
+def fold(text: str) -> str:
+    """Lowercase text without accents ("Umidità" -> "umidita"): the words of the tables and the text of the device are compared in this form, so an
+    accent written or left out on either side does not change the word (the tokenizer keeps only a-z and 0-9)."""
+    decomposed = unicodedata.normalize("NFKD", text.lower())     # lower() first: a value that is not text fails as it always did (AttributeError)
+    return "".join(c for c in decomposed if not unicodedata.combining(c)).lower()
+
+
 _PORT_RE = re.compile(r"^\s*(\d+)")
 
 
@@ -29,7 +37,7 @@ _PORT_RE = re.compile(r"^\s*(\d+)")
 def rules() -> dict:
     """The keyword rules by group, in the order of the file (none when the file cannot be read: told once in the log)."""
     groups = datafile.read(datafile.DATA_DIR / "type_words.json", "groups", what="Table of type words", default={})
-    return {group: {"subs": tuple(r["subs"]), "toks": set(r["toks"])} for group, r in groups.items()}
+    return {group: {"subs": tuple(fold(x) for x in r["subs"]), "toks": {fold(x) for x in r["toks"]}} for group, r in groups.items()}
 
 
 _PC_PORTS = {3389, 445, 139}
@@ -39,7 +47,7 @@ def _blob(device: dict) -> tuple[str, set[str], set[int]]:
     """Text (lowercase), set of words and port numbers of the device."""
     labels, ports = _blob_port_labels(device)
     parts = _blob_name_parts(device) + _blob_extra_texts(device) + labels
-    text = " ".join(str(p) for p in parts if p).lower()
+    text = fold(" ".join(str(p) for p in parts if p))
     return text, set(_TOKEN_RE.findall(text)), ports
 
 
@@ -84,7 +92,7 @@ def _model_text(device: dict) -> tuple[str, set[str]]:
     """The model that the device declares about itself (mDNS, UPnP, its own interface) or that Home Assistant knows: it is the name
     of the product, so a word in it ("camera", "speaker", "router") says what the product is."""
     parts = [v for k, v in (device.get("extra") or {}).items() if isinstance(v, str) and (k == "model" or k.endswith("_model"))]
-    text = " ".join(parts).lower()
+    text = fold(" ".join(parts))
     return text, set(_TOKEN_RE.findall(text))
 
 

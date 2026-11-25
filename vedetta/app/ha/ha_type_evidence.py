@@ -5,7 +5,7 @@ from typing import NamedTuple
 from .. import datafile
 from ..recognition import roles, signatures
 from .ha_registry import observed_only, tracker_only
-from .ha_type_text import TYPE_ORDER, W_BRAND, W_DECLARED, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PORT_RE, _TOKEN_RE, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _model_text, _word_pts, rules  # noqa: F401
+from .ha_type_text import TYPE_ORDER, W_BRAND, W_DECLARED, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PORT_RE, _TOKEN_RE, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _model_text, _word_pts, fold, rules  # noqa: F401
 
 
 MIN_TYPE_SCORE = 2
@@ -297,7 +297,7 @@ def _without_dual_maker(w: _Words, device: dict) -> _Words:
     all the device: "Tenda" is the maker, never a curtain). What the maker tells goes through the tables of makers (type_words.json, the brands of the types)."""
     if device.get("vendor_role") != "dual":
         return w
-    maker = set(_TOKEN_RE.findall(str(device.get("vendor") or "").lower()))
+    maker = set(_TOKEN_RE.findall(fold(str(device.get("vendor") or ""))))
     if not maker:
         return w
     return w._replace(text=_TOKEN_RE.sub(lambda m: " " if m.group(0) in maker else m.group(0), w.text), tokens=w.tokens - maker)
@@ -312,9 +312,9 @@ def _observed_client(entry: dict, ha_card: dict) -> bool:
 def _brand_tokens(device: dict) -> set:
     """The words of the product brand (or MAC manufacturer if it only sells devices of that type); the name counts too (a PC called "MSI"): the MAC manufacturer is often just the network card,
     the name is chosen by whoever installs the system."""
-    return set(_TOKEN_RE.findall(" ".join(filter(None, [
+    return set(_TOKEN_RE.findall(fold(" ".join(filter(None, [
         device.get("brand"), device.get("name"),
-        device.get("vendor") if device.get("vendor_role") == "brand" else None])).lower()))
+        device.get("vendor") if device.get("vendor_role") == "brand" else None])))))
 
 
 def _twin_of_gateway(device: dict) -> bool:
@@ -396,19 +396,19 @@ def _read_kind_rows() -> list:
 
 def _build_kind(k: dict) -> dict:
     """One entry of the file -> the type used by the matching code."""
-    toks = set(k.get("tokens") or [])
+    toks = {fold(t) for t in k.get("tokens") or []}
     subs = _split_words(k.get("words"), toks)
     toks |= {t + "s" for t in list(toks)}
     return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
-            "brands": set(k.get("brands") or []), "product": bool(k.get("product"))}
+            "brands": {fold(b) for b in k.get("brands") or []}, "product": bool(k.get("product"))}
 
 
 def _split_words(words, toks: set) -> list[str]:
     """Substrings for the long or composite words; the short single words are added to `toks` (whole-word matches only)."""
     subs = []
     for w in words or []:
-        w = w.lower()
+        w = fold(w)
         if " " not in w and "-" not in w and len(w) <= 7:
             toks.add(w)
         else:

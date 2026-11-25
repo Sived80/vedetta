@@ -32,7 +32,7 @@ _tasks: set = set()
 
 
 def lines(events: list[dict], lang: str) -> list[str]:
-    """Pure: one translated line per event, the same words as the journal."""
+    """Pure: one translated line per event, the same words as the journal; a new device adds what it is (_facts_suffix)."""
     out = []
     for ev in events:
         key = ALERT_KEYS.get(ev.get("kind"))
@@ -42,8 +42,18 @@ def lines(events: list[dict], lang: str) -> list[str]:
         params = {"label": p.get("label") or ev.get("card"), "ip": p.get("ip") or "-"}
         if ev["kind"] == "back":
             params["minutes"] = max(1, round((p.get("away_s") or 0) / 60))
-        out.append(i18n.translate(lang, key, **params))
+        suffix = _facts_suffix(p, lang) if ev["kind"] == "new" else ""
+        out.append(i18n.translate(lang, key, **params) + suffix)
     return out
+
+
+def _facts_suffix(p: dict, lang: str) -> str:
+    """" · brand · type" for a new device: the finer type by its translated name, else the group's name, else nothing; what is not
+    known is left out (an event saved by 1.0.2 gives the line of 1.0.2)."""
+    kind_name = i18n.translate_or(lang, "kind." + p["kind"], "") if p.get("kind") else ""
+    type_name = kind_name or (i18n.translate_or(lang, "group." + p["type"], "") if p.get("type") else "")
+    parts = [part for part in (p.get("brand"), type_name) if part]
+    return "".join(" · " + part for part in parts)
 
 
 def event_data(ev: dict) -> dict:

@@ -142,6 +142,13 @@ def js_table(lang: str) -> dict[str, str]:
     return merged
 
 
+def translate_or(lang: str, key: str, default: str) -> str:
+    """Like translate(), but if the key does not exist in that language nor in the default one it returns the given value."""
+    if key in _tables.get(lang, {}) or key in _tables.get(DEFAULT_LANG, {}):
+        return translate(lang, key)
+    return default
+
+
 def t_or(key: str, default: str) -> str:
     """Like t(), but if the key does not exist in any language it returns the
     given value (labels coming from the devices, e.g. 'Model')."""

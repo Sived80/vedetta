@@ -326,7 +326,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
 | `js/live.js` | 267 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 224 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-attrs.js` | 226 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
@@ -334,7 +334,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-month.js` | 70 | "Last 30 days" in the card |
 | `js/net-gauge.js` | 127 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 282 | rotating tile of the Network card |
+| `js/net-rotator.js` | 287 | rotating tile of the Network card |
 | `js/netpanel.js` | 493 | the panel «Networks» (v10) |
 | `js/network.js` | 59 | pause |
 | `js/new-devices.js` | 358 | new devices |

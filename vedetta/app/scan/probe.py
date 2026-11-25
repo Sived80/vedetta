@@ -97,7 +97,7 @@ def _probe_device_signal(result, device):
 def _read_facts(device, ip, port, result) -> Facts:
     """Everything the later decisions need to know: what the search and Bonjour remember (the announced names and the declared services are added to `extra`), the MAC the
     memories are asked with, what DHCP and Home Assistant say about it."""
-    mac, extra, scan_info = _merge_remembered_mdns_info(result, ip, device)
+    mac, extra, scan_info, accessories = _merge_remembered_mdns_info(result, ip, device)
     _add_announced_name_extras(extra, scan_info, device)
     key = _add_declared_service_extras(extra, scan_info)
     identity_mac = mac or device.get("last_mac")
@@ -107,38 +107,37 @@ def _read_facts(device, ip, port, result) -> Facts:
     if dhcp_class and "dhcp_class" not in extra:
         extra["dhcp_class"] = dhcp_class   # e.g. "PS3", "MSFT 5.0", "android-dhcp-13"
     return Facts(device=device, ip=ip, port=port, result=result, mac=mac, extra=extra, scan_info=scan_info, scanned_ports=scan_info.get("ports") or [], identity_mac=identity_mac,
-                 dhcp_name=dhcp_name, dhcp_class=dhcp_class, ha_card=ha_registry.lookup(identity_mac, ip), key=key)
+                 dhcp_name=dhcp_name, dhcp_class=dhcp_class, ha_card=ha_registry.lookup(identity_mac, ip), key=key, accessories=accessories)
 
 
 def _merge_remembered_mdns_info(result, ip, device):
     mac = result.get("mac")
     extra = {k: v for k, v in result.get("extra", {}).items() if v}
-    scan_info = _with_remembered_mdns(device.get("scan_info") or {}, mac, ip, device)
+    scan_info, accessories = _with_remembered_mdns(device.get("scan_info") or {}, mac, ip, device)
     if should_show_title(scan_info.get("http_title")) and "title" not in extra:
         extra["title"] = scan_info["http_title"]
-    return mac, extra, scan_info
+    return mac, extra, scan_info, accessories
 
 
 def _with_remembered_mdns(scan_info, mac, ip, device):
-    """Remembered Bonjour names (continuous listening and past scans) fill in what the scan did not find because the device was asleep.
-    Scan data, if present, wins. The names of a proxy (AirCast, AirConnect...) are those of OTHER devices: they are dropped."""
-    remembered = mdns_listener.as_scan_info(mdns_listener.lookup(mac or device.get("last_mac"), ip))
-    if remembered:
-        scan_info = {**remembered, **{k: v for k, v in scan_info.items() if v}}
+    """Remembered Bonjour names fill in what the scan did not find (mdns_listener.remembered_info, which also returns the accessory values of a
+    bridge at this address). The names of a proxy (AirCast, AirConnect...) are those of OTHER devices: they are dropped."""
+    scan_info, accessories = mdns_listener.remembered_info(scan_info, mac or device.get("last_mac"), ip)
     if brands.is_bridge(scan_info.get("mdns_model")):
         scan_info = {k: v for k, v in scan_info.items() if k not in ("mdns_name", "mdns_manufacturer")}
-    return scan_info
+    return scan_info, accessories
 
 
 def _stale_name(f: Facts, base_name):
     """(placeholder, ha_stale): the name must be recomputed from the other sources.
     A system placeholder name ("Android_1MRKG1M7", random on every boot) is not a chosen name. A name taken from Home Assistant that HA no longer
-    provides (device linked by mistake or removed from HA), or from a page title that would no longer pass the checks today, is stale too."""
+    provides (device linked by mistake or removed from HA), from a page title that fails the checks today, or a bridge's accessory, is stale too."""
     source = f.device.get("name_source")
     placeholder = (source != "user") and naming.is_placeholder(base_name)
     ha_stale = source in ("ha", "ha_user") and not ha_registry.choose_name(f.ha_card)[0]
     web_stale = source == "web" and not naming.title_name(f.scan_info.get("http_title"))
-    ha_stale = ha_stale or web_stale
+    accessory_stale = source == "mdns" and str(base_name or "").lower() in f.accessories
+    ha_stale = ha_stale or web_stale or accessory_stale
     return placeholder or ha_stale, ha_stale
 
 

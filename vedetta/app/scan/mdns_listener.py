@@ -13,7 +13,7 @@ import json
 import re
 import time
 
-from .. import macverdict, paths
+from .. import macverdict, netutil, paths
 from ..atomic import write_atomic
 from . import mdns_parse, scan_common
 from .mdns_browsing import Browsing, TypesQuestion
@@ -25,9 +25,10 @@ STORE_PATH = paths.data_path("mdns_seen.json")
 IP_TTL_S = 14 * 86400
 MAC_TTL_S = 90 * 86400   # a card by MAC not heard for this long is forgotten (the presence history keeps 90 days too)
 CARDS_MAX = 2000         # cards by MAC and by IP, each: anyone on the segment can announce from invented addresses (the oldest go first)
+ACCESSORIES_MAX = 32     # accessory instances listed per card (see _note_accessory)
 _NAME_STRONG = 3   # score of a user-chosen name (friendly_name / service with a user name)
 
-by_mac: dict[str, dict] = {}   # lowercase mac -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"}
+by_mac: dict[str, dict] = {}   # lowercase mac -> {"name", "score", "model", "manufacturer", "services", "ip", "seen"} (+ "hap_category", "accessories", "host_name")
 by_ip: dict[str, dict] = {}    # ip -> same card, until the MAC is known
 _mac_for_ip = lambda ip: None  # noqa: E731  (set by start)
 
@@ -81,16 +82,77 @@ def _own_mac(ip: str) -> str | None:
 
 def _updated_card(card: dict | None, stype: str, name: str, score: int, meta: dict, ip: str, now: float) -> dict:
     """A copy of the card remembered for a device, updated with one announcement: the service is added, a better name replaces the old one
-    (on equal score the most recent wins), model, manufacturer and HomeKit category are filled when the announcement has them, address and time are renewed."""
+    (on equal score the most recent wins, but never for an accessory), model, manufacturer and HomeKit category are filled when the announcement has them, address and time are renewed.
+    An accessory instance (mdns_parse._MDNS_ACCESSORY) is also listed in `accessories`; on a bridge it gives the card nothing, and what an
+    accessory gave the card before is taken away (_forget_accessories)."""
     card = dict(card or {})
     services = set(card.get("services") or []) | {stype}
-    if score >= int(card.get("score") or 0):
+    accessory = stype in mdns_parse._MDNS_ACCESSORY
+    if accessory:
+        _note_accessory(card, name, meta)
+    if is_bridge(card, ip):
+        _forget_accessories(card)
+    if not (accessory and is_bridge(card, ip)):
+        _take(card, name, score, meta, strict=accessory)
+    card.update(services=sorted(services), ip=ip, seen=now)
+    return card
+
+
+def _take(card: dict, name: str, score: int, meta: dict, strict: bool) -> None:
+    """The name (a better one; an equal one too unless `strict`, the rule of an accessory), model, manufacturer and HomeKit category of one
+    announcement. While the card lists accessories, the best name the device gave ITSELF is kept in `host_name` ([name, score]), so that
+    it comes back when the accessories turn out to be a bridge's."""
+    old = int(card.get("score") or 0)
+    if score > old or (score == old and not strict):
+        if strict and card.get("name") and "host_name" not in card:
+            card["host_name"] = [card["name"], old]
         card.update(name=truncate_name(name), score=score)
+    if not strict and card.get("accessories") and score >= int((card.get("host_name") or ("", 0))[1]):
+        card["host_name"] = [truncate_name(name), score]
     for key in ("model", "manufacturer", "hap_category"):
         if meta.get(key):
             card[key] = meta[key]
-    card.update(services=sorted(services), ip=ip, seen=now)
-    return card
+
+
+def _note_accessory(card: dict, name: str, meta: dict) -> None:
+    """The accessory instance in the card's list (name -> model and manufacturer), at most ACCESSORIES_MAX: the oldest go first."""
+    listed = dict(card.get("accessories") or {})
+    listed.pop(name, None)
+    listed[name] = {k: meta[k] for k in ("model", "manufacturer") if meta.get(k)}
+    card["accessories"] = dict(list(listed.items())[-ACCESSORIES_MAX:])
+
+
+def is_bridge(card: dict | None, ip: str | None = None) -> bool:
+    """The device announces accessories of a bridge (mdns_parse.bridge_host): the machine the app runs on, or two or more accessories."""
+    if not card:
+        return False
+    own = netutil.last_own is not None and (ip or card.get("ip")) == netutil.last_own
+    return mdns_parse.bridge_host(len(card.get("accessories") or ()), own)
+
+
+def accessory_values(card: dict | None) -> frozenset:
+    """The names, models and manufacturers of the accessories of a bridge, in lower case; empty for any other device."""
+    return _accessory_texts(card) if is_bridge(card) else frozenset()
+
+
+def _accessory_texts(card: dict) -> frozenset:
+    listed = card.get("accessories") or {}
+    found = {truncate_name(n) for n in listed} | {v for row in listed.values() for v in row.values()}
+    return frozenset(str(v).lower() for v in found if v)
+
+
+def _forget_accessories(card: dict) -> None:
+    """What the accessories of a bridge gave the card (also before it was known to be one) is taken away: they are not this device."""
+    told = _accessory_texts(card)
+    if str(card.get("name") or "").lower() in told:
+        card.pop("name", None)
+        card.pop("score", None)
+        if card.get("host_name"):
+            card["name"], card["score"] = card["host_name"]
+    for key in ("model", "manufacturer"):
+        if str(card.get(key) or "").lower() in told:
+            card.pop(key)
+    card.pop("hap_category", None)      # only an accessory announces it, and on a bridge it is never the host's
 
 
 def remember_scan(found: list[tuple[str, str, str, str]]) -> None:
@@ -110,6 +172,20 @@ def lookup(mac, ip: str | None = None) -> dict | None:
     return None
 
 
+def remembered_info(scan_info: dict, mac, ip: str | None) -> tuple[dict, frozenset]:
+    """The scan data of a device over the card remembered for it (continuous listening and past scans fill in what the scan did not find because
+    the device was asleep; scan data, if present, wins), and the accessory values of a bridge at that address (accessory_values): the name,
+    model and maker that an older scan saved from one of those accessories are dropped first."""
+    card = lookup(mac, ip)
+    accessories = accessory_values(card)
+    if accessories:
+        scan_info = {k: v for k, v in scan_info.items() if not (k in ("mdns_name", "mdns_model", "mdns_manufacturer") and str(v).lower() in accessories)}
+    remembered = as_scan_info(card)
+    if remembered:
+        scan_info = {**remembered, **{k: v for k, v in scan_info.items() if v}}
+    return scan_info, accessories
+
+
 def _label_only(card: dict) -> bool:
     """Every service heard from the device names only itself (see mdns_parse._MDNS_LABEL_ONLY): the remembered name is a label, not the name of the device."""
     services = set(card.get("services") or ())
@@ -120,6 +196,9 @@ def as_scan_info(card: dict | None) -> dict:
     """The remembered card in the format of the scan_info fields (only the fields present)."""
     if not card:
         return {}
+    if is_bridge(card):
+        card = dict(card)
+        _forget_accessories(card)
     fields = (("name", "mdns_name"), ("model", "mdns_model"), ("manufacturer", "mdns_manufacturer"))
     out = {dst: card[src] for src, dst in fields if card.get(src) and not (src == "name" and _label_only(card))}
     if card.get("services"):

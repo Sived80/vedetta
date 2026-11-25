@@ -6,7 +6,8 @@ import re
 import struct
 from ..formatters import truncate_name
 from .mdns_parse import _MDNS_MANUFACTURER_KEYS, _MDNS_META_TYPE, _MDNS_MODEL_KEYS, _MDNS_NAME_KEYS, _MDNS_SLUG_RE, _MDNS_USER_NAMED, _props_to_txt, parse_mdns_txt  # noqa: F401
-from . import mdns_listener
+from . import mdns_listener, mdns_parse
+from .. import netutil
 from .mdns_browsing import Browsing
 
 
@@ -78,14 +79,18 @@ async def _mdns_browse(found: list[tuple[str, str, str, str]]) -> None:
 
 
 def _best_names(found: list) -> tuple[dict[str, tuple[int, str]], dict[str, dict]]:
-    """Best (score, name) per address, and what was seen per address (service types, model, manufacturer)."""
+    """Best (score, name) per address, and what was seen per address (service types, model, manufacturer). The accessories a bridge announces
+    (mdns_parse.bridge_host) give the address only their service type."""
     best: dict[str, tuple[int, str]] = {}
     seen_meta: dict[str, dict] = {}
+    bridges = _bridges(found)
     for stype, name, address, txt in found:
         if not is_valid_ipv4(address):
             continue
         score, value = (2 if stype in _MDNS_USER_NAMED else 1), name
         seen_meta.setdefault(address, {}).setdefault("services", set()).add(stype)
+        if stype in mdns_parse._MDNS_ACCESSORY and address in bridges:
+            continue
         for field, got in parse_mdns_txt(txt).items():
             seen_meta.setdefault(address, {}).setdefault(field, got)
         named = _txt_name(txt)
@@ -94,6 +99,15 @@ def _best_names(found: list) -> tuple[dict[str, tuple[int, str]], dict[str, dict
         if address not in best or score > best[address][0]:
             best[address] = (score, value)
     return best, seen_meta
+
+
+def _bridges(found: list) -> set[str]:
+    """The addresses whose accessory instances are a bridge's: this computer's own address, or two or more different accessories."""
+    accessories: dict[str, set] = {}
+    for stype, name, address, _ in found:
+        if stype in mdns_parse._MDNS_ACCESSORY:
+            accessories.setdefault(address, set()).add(name)
+    return {a for a, names in accessories.items() if mdns_parse.bridge_host(len(names), a == netutil.last_own)}
 
 
 def _txt_name(txt: str) -> tuple[int, str] | None:

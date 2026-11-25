@@ -24,7 +24,7 @@ s, n = ml.score_name("_http._tcp", "web", '"fn=Salotto"')
 assert s >= 2 and n == "Salotto"
 assert ml.score_name("_http._tcp", "web", '"fn=a1b2c3d4-xyz"') == (1, "web"), "a technical slug is not a name"
 
-# an announcement is remembered by IP, a better name replaces it, the same score lets the latest win, a wrong IP is ignored
+# an announcement is remembered by IP, a better name replaces it, the same score lets the latest win (an accessory instance never wins a tie: check_own_host_bridge.py), a wrong IP is ignored
 ml.record("not-an-ip", "_hap._tcp", "x", "")
 assert not ml.by_ip and not ml.by_mac
 ml.record("10.0.0.20", "_http._tcp", "first", "", now=1000.0)
@@ -34,19 +34,19 @@ assert card["name"] == "second" and card["score"] == 2 and card["model"] == "Bul
 assert card["services"] == ["_hap._tcp", "_http._tcp"] and card["seen"] == 1100.0
 ml.record("10.0.0.20", "_http._tcp", "worse", "", now=1200.0)
 assert ml.by_ip["10.0.0.20"]["name"] == "second", "a worse score does not replace the name"
-ml.record("10.0.0.20", "_hap._tcp", "third", "", now=1300.0)
+ml.record("10.0.0.20", "_airplay._tcp", "third", "", now=1300.0)
 assert ml.by_ip["10.0.0.20"]["name"] == "third", "equal score: the most recent wins"
 assert ml._dirty is True
 
 # once the MAC is known the card moves under it
 macs["10.0.0.20"] = "aa:bb:cc:00:00:20"
-ml.record("10.0.0.20", "_hap._tcp", "fourth", "", now=1400.0)
+ml.record("10.0.0.20", "_airplay._tcp", "fourth", "", now=1400.0)
 assert "10.0.0.20" not in ml.by_ip and ml.by_mac["aa:bb:cc:00:00:20"]["name"] == "fourth"
 
 # the HomeKit accessory category (TXT key `ci` of the HAP standard) is kept, only from a HomeKit service and only when it is a number
-ml.record("10.0.0.20", "_hap._tcp", "fourth", '"ci=7" "md=Plug"', now=1450.0)
+ml.record("10.0.0.20", "_hap._tcp", "second", '"ci=7" "md=Plug"', now=1450.0)
 assert ml.by_mac["aa:bb:cc:00:00:20"]["hap_category"] == 7
-ml.record("10.0.0.20", "_hap._tcp", "fourth", '"ci=x7"', now=1460.0)
+ml.record("10.0.0.20", "_hap._tcp", "second", '"ci=x7"', now=1460.0)
 ml.record("10.0.0.20", "_http._tcp", "web", '"ci=17"', now=1470.0)
 assert ml.by_mac["aa:bb:cc:00:00:20"]["hap_category"] == 7, "another service's ci, or a ci that is no number, changes nothing"
 

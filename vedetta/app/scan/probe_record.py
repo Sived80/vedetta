@@ -24,6 +24,7 @@ class Facts:
     dhcp_class: str | None
     ha_card: dict | None
     key: str | None            # the last of the declared-service keys looked at (kept as it always was: the model step receives it)
+    accessories: frozenset = frozenset()   # names, models and makers of the accessories of a bridge at this address (mdns_listener.accessory_values)
 
 
 class Signal(NamedTuple):

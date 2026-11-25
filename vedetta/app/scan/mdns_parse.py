@@ -15,6 +15,19 @@ _MDNS_USER_NAMED = {"_airplay._tcp", "_companion-link._tcp", "_hap._tcp", "_sono
 _MDNS_LABEL_ONLY = {"_amazon-expiscor._udp"}
 
 
+# Services whose instances are ACCESSORIES: a bridge (a home automation server exporting its devices to HomeKit, for one) announces one instance
+# per accessory from its own address, each with the accessory's name, model and category. Such an instance names the host only when it is
+# the only one the host announces (a real accessory); see bridge_host.
+_MDNS_ACCESSORY = {"_hap._tcp"}
+_BRIDGE_MIN_ACCESSORIES = 2
+
+
+def bridge_host(accessories: int, own: bool) -> bool:
+    """A host whose accessory instances are not its own name or model: the machine the app runs on (whatever it exports is not itself), or
+    any host that announces two or more different accessories."""
+    return own or accessories >= _BRIDGE_MIN_ACCESSORIES
+
+
 _MDNS_SLUG_RE = re.compile(r"^[0-9a-f]{6,10}-", re.IGNORECASE)
 
 

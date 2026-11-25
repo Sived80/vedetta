@@ -216,7 +216,9 @@ def _add_registry_names(anon: anonymize.Anonymizer) -> None:
     for card in dhcp.seen.values():
         anon.add_names([card.get("hostname")])
     for card in list(mdns_listener.by_mac.values()) + list(mdns_listener.by_ip.values()):
-        anon.add_names([card.get("name")], skip=(card.get("model"), card.get("manufacturer")))
+        anon.add_names([card.get("name"), (card.get("host_name") or [None])[0]], skip=(card.get("model"), card.get("manufacturer")))
+        for name, said in (card.get("accessories") or {}).items():       # the accessories of a bridge: each one is a device of its own
+            anon.add_names([name], skip=(said.get("model"), said.get("manufacturer")))
     for card in list(ha_registry._state["by_mac"].values()) + list(ha_registry._state["by_ip"].values()):
         anon.add_names([card.get("name")] + list(card.get("entry_titles") or []), card.get("manufacturer"),
                        skip=(card.get("model"), card.get("manufacturer")))

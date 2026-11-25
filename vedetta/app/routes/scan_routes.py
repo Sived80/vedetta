@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import HTTPException, Request
-from ..sse import SSE_HEADERS, _sse
+from ..sse import SSE_HEADERS, _sse, with_keepalive
 import asyncio
 import time
 from ..storage import blocklist, devices_config, journal, newdevices
@@ -111,7 +111,10 @@ async def api_scan_deep(request: Request):
             yield _sse({"type": "progress", "done": done, "total": total, "result": result})
         yield _sse({"type": "complete", "results": results})
 
-    return StreamingResponse(stream(), media_type="text/event-stream", headers=SSE_HEADERS)
+    return StreamingResponse(with_keepalive(stream(), KEEPALIVE_S), media_type="text/event-stream", headers=SSE_HEADERS)
+
+
+KEEPALIVE_S = 20     # a comment line when no device has ended for this long (R8): the page gives the stream up after 90 s of nothing (new-devices.js STALL_MS)
 
 
 def _name_hints(body: dict) -> dict[str, str]:

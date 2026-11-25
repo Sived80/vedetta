@@ -272,6 +272,8 @@
   "js.ha.menu.speed_normal": "Normální",
   "js.ha.menu.speed_saver": "Volnější",
   "js.ha.menu.speed_hint": "Zařízení je označeno jako offline po přibližně {t}.",
+  "js.ha.menu.phone_hold": "Spící telefony",
+  "js.ha.menu.phone_hold_hint": "Zůstávají online, dokud je router v Home Assistantu vidí doma",
   "js.ha.log.flap": "změna stavu {n}x · nyní {state}",
   "js.ha.menu.flows": "Metody vyhledávání",
   "js.ha.menu.repo": "Repozitář Vedetta na GitHubu",

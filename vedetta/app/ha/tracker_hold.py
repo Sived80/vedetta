@@ -1,7 +1,8 @@
 """Presence held by Home Assistant (1.0.3). A phone asleep (Doze) stays on the Wi-Fi but does not answer ARP or ping for long stretches, while the
 router still has it. When a MOBILE card does not answer in a check, the router trackers of Home Assistant (ha_trackers: source "router" only,
 Vedetta's own MQTT trackers left out by their unique id) are asked about its MAC: "home" keeps it online, marked as held (state_cycle.settle);
-"not_home" or another zone let the usual rule decide; "unavailable", "unknown", no tracker or no reading change nothing.
+"not_home" or another zone let the usual rule decide; "unavailable", "unknown", no tracker or no reading change nothing. A switch in the menu
+(setting "phone_hold_ha", on by default) turns it off: then nothing is held and Home Assistant is not read.
 
 Never a source: a GPS tracker (it says the person is in the home zone, not that the phone is on the network), a Bluetooth one (near a receiver,
 not on the network), a card that is not mobile (a fixed device that does not answer is news, even if the router still lists it).
@@ -13,7 +14,7 @@ import time
 
 from .. import i18n
 from ..applog import logger
-from ..storage import passive_store
+from ..storage import passive_store, settings
 from . import ha_registry, ha_trackers
 
 HELD = "ha"
@@ -39,7 +40,7 @@ def _mac(probe_input: dict, result: dict) -> str | None:
 async def mark(inputs: list[dict], results: list) -> None:
     """The silent mobile cards whose router tracker says "home" get `presence_held` in their result (in place); nothing else changes."""
     waiting = [k for k, (i, r) in enumerate(zip(inputs, results)) if _silent_phone(r) and _mac(i, r)]
-    if not waiting or not ha_registry.token():
+    if not waiting or not ha_registry.token() or not settings.phone_hold_ha():      # the switch in the menu off: Home Assistant is not read at all
         return
     home = await _home_by_mac()
     for k in waiting:

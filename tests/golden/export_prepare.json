@@ -30,7 +30,7 @@
    "state/journal.json": "[]",
    "state/mdns_seen.json": "{\n \"by_mac\": {},\n \"by_ip\": {}\n}",
    "state/roles.json": "{\n \"by_ip\": {},\n \"via\": {},\n \"names\": {},\n \"dhcp\": [],\n \"internet\": null,\n \"types\": {}\n}",
-   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3\n}"
+   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3,\n \"phone_hold_ha\": true\n}"
   },
   "fixed": 6,
   "manifest": {
@@ -156,7 +156,7 @@
    "state/journal.json": "[]",
    "state/mdns_seen.json": "{\n \"by_mac\": {},\n \"by_ip\": {}\n}",
    "state/roles.json": "{\n \"by_ip\": {},\n \"via\": {},\n \"names\": {},\n \"dhcp\": [],\n \"internet\": null,\n \"types\": {}\n}",
-   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3\n}"
+   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3,\n \"phone_hold_ha\": true\n}"
   },
   "fixed": 0,
   "manifest": {
@@ -281,7 +281,7 @@
    "state/journal.json": "[]",
    "state/mdns_seen.json": "{\n \"by_mac\": {},\n \"by_ip\": {}\n}",
    "state/roles.json": "{\n \"by_ip\": {},\n \"via\": {},\n \"names\": {},\n \"dhcp\": [],\n \"internet\": null,\n \"types\": {}\n}",
-   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3\n}"
+   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3,\n \"phone_hold_ha\": true\n}"
   },
   "fixed": 0,
   "manifest": {
@@ -404,7 +404,7 @@
    "state/journal.json": "[]",
    "state/mdns_seen.json": "{\n \"by_mac\": {},\n \"by_ip\": {}\n}",
    "state/roles.json": "{\n \"by_ip\": {},\n \"via\": {},\n \"names\": {},\n \"dhcp\": [],\n \"internet\": null,\n \"types\": {}\n}",
-   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3\n}"
+   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3,\n \"phone_hold_ha\": true\n}"
   },
   "fixed": 5,
   "manifest": {
@@ -530,7 +530,7 @@
    "state/journal.json": "[]",
    "state/mdns_seen.json": "{\n \"by_mac\": {},\n \"by_ip\": {}\n}",
    "state/roles.json": "{\n \"by_ip\": {},\n \"via\": {},\n \"names\": {},\n \"dhcp\": [],\n \"internet\": null,\n \"types\": {}\n}",
-   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3\n}"
+   "state/settings.json": "{\n \"alerts\": true,\n \"poll_interval\": 30,\n \"miss_limit\": 3,\n \"phone_hold_ha\": true\n}"
   },
   "fixed": 0,
   "manifest": {

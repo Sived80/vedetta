@@ -178,6 +178,14 @@ function netsCountHtml() {
   const n = netsCount();
   return n > 0 ? ' <span class="menu-count">' + n + "</span>" : "";
 }
+// The presence held by Home Assistant (setting phone_hold_ha): the switch of the page (.rv-switch with the .al-* row, as in Alerts), under the
+// speed because it also decides when a device is called offline.
+function holdRow() {
+  const on = !!S.phoneHold;
+  return '<div class="al-row menu-switch"><div class="al-txt"><div class="al-lbl">' + esc(t("js.ha.menu.phone_hold")) + '</div><div class="al-hint">' +
+    esc(t("js.ha.menu.phone_hold_hint")) + '</div></div><button type="button" class="rv-switch' + (on ? " on" : "") + '" data-hold="1" role="switch" aria-checked="' + on +
+    '" aria-label="' + esc(t("js.ha.menu.phone_hold")) + '"></button></div>';
+}
 function buildMenu() {
   let html = starEntry() + langGroup();
   const theme = ROOT.getAttribute("data-theme") || "auto";
@@ -199,7 +207,7 @@ function buildMenu() {
   }).join("");
   const secs = cur ? cur.poll * cur.miss : pollNow * S.missLimit;
   html += menuGroup(t("js.ha.menu.speed"), pills) +
-    '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>";
+    '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>" + holdRow();
   html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-alerts="1">' + esc(t("js.ha.alerts.menu")) + icon("bell-outline") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-netpanel="1">' + esc(t("js.networks.ui.title")) + icon("router-network") + "</button>";
@@ -257,6 +265,13 @@ menuEl.addEventListener("click", function (e) {
   if (e.target.closest("[data-alerts]")) { toggleMenu(false); openAlerts(); return; }
   if (e.target.closest("[data-inventory]")) { toggleMenu(false); openInventory(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
+  if (e.target.closest("[data-hold]")) {
+    S.phoneHold = !S.phoneHold;
+    api("/api/settings", { method: "POST", json: { phone_hold_ha: S.phoneHold } }).catch(function () {});
+    buildMenu();      // the menu stays open, like after a speed: the switch shows the new state at once
+    menuEl.querySelector("[data-hold]").focus();
+    return;
+  }
   const item = e.target.closest(".menu-item");
   if (!item) return;
   if (item.dataset.theme) {

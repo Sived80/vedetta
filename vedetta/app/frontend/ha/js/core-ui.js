@@ -39,6 +39,7 @@ export var S = {
   adding: null,           // add in progress: {ips, done}
   found: [],              // devices found by the last scan and not yet added
   missLimit: 3,           // consecutive failed checks before going offline (shared setting)
+  phoneHold: true,        // a silent phone that the router in Home Assistant sees at home stays online (shared setting phone_hold_ha)
   dirty: { ids: new Set(), layout: false, net: false, more: false },
   flushQueued: false,
   gauge: 0

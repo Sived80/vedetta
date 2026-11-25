@@ -232,7 +232,10 @@ export function load(opts) {
     updateScan();
     fetchLog();
     fetchHist();
-    api("/api/settings").then(function (s) { if (s && s.miss_limit) S.missLimit = s.miss_limit; }).catch(function () {});
+    api("/api/settings").then(function (s) {
+      if (s && s.miss_limit) S.missLimit = s.miss_limit;
+      if (s && typeof s.phone_hold_ha === "boolean") S.phoneHold = s.phone_hold_ha;
+    }).catch(function () {});
     S.loadFails = 0;
     // A resync (roles, networks, return to the app) keeps a stream that is alive: it already sends every change.
     if (!streamAlive()) connect();

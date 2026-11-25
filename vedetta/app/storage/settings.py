@@ -1,6 +1,7 @@
 """User settings (config/settings.json):
 "alerts" = show the alerts (new open port, new device...);
-"poll_interval" = seconds between one check and the next (fixed values).
+"poll_interval" = seconds between one check and the next (fixed values);
+"phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3).
 Unknown keys are ignored: the file contains only the known ones."""
 from ..atomic import write_atomic
 import functools
@@ -41,7 +42,7 @@ _NOTIFY_SERVICE = re.compile(r"notify\.[a-z0-9_]{1,80}")   # a service of the no
 # higher = fewer false "offline" (sleeping phones), but slower detection.
 MISS_LIMITS = (1, 2, 3, 5, 10)
 
-DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3}
+DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True}
 
 # The Sentinel's way out (ha/ha_notify.py), keys of the file apart from DEFAULTS like the mqtt_* ones (not in load()/update()):
 # "ha_events" = vedetta_* events on the bus of Home Assistant; "notify_order" = the recipients in their order, each with the wait after
@@ -264,6 +265,11 @@ def update(changes: dict) -> dict:
 
 def alerts_enabled() -> bool:
     return bool(load()["alerts"])
+
+
+def phone_hold_ha() -> bool:
+    """The presence of a silent phone held by Home Assistant (the switch in the menu); re-read on every cycle."""
+    return bool(load()["phone_hold_ha"])
 
 
 def miss_limit() -> int:

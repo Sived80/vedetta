@@ -7,7 +7,9 @@ router integration of Home Assistant still has it. What this proves, on one real
     network), a Bluetooth tracker; a card that is not mobile is never held;
   - the load on Home Assistant: nothing is asked when no mobile card is silent, at most one reading a minute otherwise, and none at all when the
     function "devices seen by Home Assistant" already reads every minute (its fresh reading is used; a stale one is not);
-  - the refresh of a single card holds it too.
+  - the refresh of a single card holds it too;
+  - the switch in the menu (setting "phone_hold_ha", on by default): off, a silent phone goes offline by the usual rule, a card already held
+    included, and Home Assistant is not read at all (neither asked nor the reading of the passive function).
 Home Assistant is a fake websocket; no packet leaves."""
 import asyncio
 import json
@@ -25,7 +27,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "vedetta"))
 from app import netutil, state as state_mod, state_cycle  # noqa: E402
 from app.ha import ha_data  # noqa: E402
 from app.scan import latency, presence, probe  # noqa: E402
-from app.storage import devices_config, passive_store  # noqa: E402
+from app.storage import devices_config, passive_store, settings  # noqa: E402
 from app.networks import registry as _routes  # noqa: E402
 _routes.ROUTE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "no-route-file")
 
@@ -235,6 +237,32 @@ ANSWERS.clear()
 HA["states"] = HOME
 asyncio.run(refresh())
 check(phone()["online"] and phone().get("presence_held") == "ha", "the refresh of one card: held too")
+
+# 11) the switch of the menu: on by default; off, nothing is held and Home Assistant is not read at all
+check(settings.load().get("phone_hold_ha") is True, "the function is on by default: %r" % settings.load().get("phone_hold_ha"))
+cycle(BOTH)
+cycle(set(), HOME)
+check(phone()["online"] and phone().get("presence_held") == "ha", "switch on: the silent phone is held")
+settings.update({"phone_hold_ha": False})
+before = HA["connects"]
+cycle(set(), HOME)
+check(not phone()["online"] and ("phone", False) in RECORDED, "switch off: the phone held before goes offline by the usual rule: %r" % RECORDED)
+check(not phone().get("presence_held"), "switch off: no more held")
+check(HA["connects"] == before, "switch off: Home Assistant is not asked (%d readings)" % (HA["connects"] - before))
+SNAPSHOTS = []
+real_snapshot = passive_store.snapshot
+passive_store.snapshot = lambda: SNAPSHOTS.append(1) or real_snapshot()
+passive_store.set_enabled(True)
+passive_store.record_read([{"mac": M_PHONE, "ip": None, "host": None, "name": None, "online": True, "since": None}], time.time())
+cycle(BOTH)
+cycle(set(), [])
+check(not phone()["online"] and not SNAPSHOTS, "switch off: the fresh reading of the passive function is not used either (%d reads)" % len(SNAPSHOTS))
+passive_store.set_enabled(False)
+passive_store.snapshot = real_snapshot
+settings.update({"phone_hold_ha": True})
+cycle(BOTH)
+cycle(set(), HOME)
+check(phone()["online"] and phone().get("presence_held") == "ha", "switch on again: held again")
 
 print("ALL OK" if not failed else "%d FAILED" % failed)
 sys.exit(1 if failed else 0)

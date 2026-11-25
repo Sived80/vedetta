@@ -264,6 +264,8 @@
   "js.ha.menu.speed_normal": "Normal",
   "js.ha.menu.speed_saver": "Relaxed",
   "js.ha.menu.speed_hint": "A device is marked offline after about {t}.",
+  "js.ha.menu.phone_hold": "Sleeping phones",
+  "js.ha.menu.phone_hold_hint": "Kept online while the router in Home Assistant sees them at home",
   "js.ha.log.flap": "changed state {n} times · now {state}",
   "js.ha.menu.flows": "Search methods",
   "js.ha.menu.repo": "Vedetta repository on GitHub",

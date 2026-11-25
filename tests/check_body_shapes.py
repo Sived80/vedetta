@@ -58,7 +58,7 @@ assert not started, started
 
 # 3) an integer address is dropped, not saved
 r = client.post("/api/devices/add", json={"devices": [{"ip": 3232235777}]})
-assert r.status_code == 200 and r.json() == {"added": []}, (r.status_code, r.text)
+assert r.status_code == 200 and r.json() == {"added": [], "skipped": [{"ip": "", "reason": "invalid"}]}, (r.status_code, r.text)
 assert devices_config.load_devices() == []
 
 # 4) good bodies still pass; a hint that is not a text is left out
@@ -70,5 +70,5 @@ assert client.post("/api/devices/rescan", json={"ids": []}).status_code == 200
 started.clear()
 wide = [f"10.70.{n >> 8}.{n & 0xFF}" for n in range(1, 1023)]
 assert client.post("/api/scan/deep", json={"ips": wide}).status_code == 200 and started[0][0] == wide
-assert client.post("/api/devices/add", json={}).json() == {"added": []}
+assert client.post("/api/devices/add", json={}).json() == {"added": [], "skipped": []}
 print("check_body_shapes: ok")

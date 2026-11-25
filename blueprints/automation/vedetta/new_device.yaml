@@ -1,0 +1,80 @@
+blueprint:
+  name: "Vedetta: new device on the network"
+  description: >-
+    Turn on "Events in Home Assistant" in Vedetta (Menu → Alerts) first: this blueprint listens to its vedetta_new_device event.
+
+    Sends a notification with the name, brand, type and address of every device Vedetta sees for the first time.
+    Optionally only some device groups, or only devices of unknown brand.
+  domain: automation
+  author: Vedetta
+  homeassistant:
+    min_version: "2024.10.0"
+  source_url: https://github.com/Sived80/vedetta/blob/main/blueprints/automation/vedetta/new_device.yaml
+  input:
+    notify_device:
+      name: Phone
+      description: The phone (Home Assistant Companion app) that gets the notification.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+    groups:
+      name: Only these groups
+      description: Leave empty for every device.
+      default: []
+      selector:
+        select:
+          multiple: true
+          options:
+            - router
+            - server
+            - pc
+            - phone
+            - media
+            - audio
+            - iot
+            - printer
+            - camera
+            - generic
+    only_unknown_brand:
+      name: Only devices of unknown brand
+      default: false
+      selector:
+        boolean: {}
+    extra_actions:
+      name: Other actions
+      description: "Optional. They can use {{ title }} and {{ message }}."
+      default: []
+      selector:
+        action: {}
+
+mode: queued
+max: 20
+
+triggers:
+  - trigger: event
+    event_type: vedetta_new_device
+
+variables:
+  groups: !input groups
+  only_unknown_brand: !input only_unknown_brand
+  title: "New device on the network"
+  message: >-
+    {{ trigger.event.data.label or trigger.event.data.ip or 'Unknown' }}
+    ({{ trigger.event.data.ip or '-' }})
+    · {{ trigger.event.data.brand or 'unknown brand' }}
+    · {{ trigger.event.data.kind or trigger.event.data.type or 'unknown type' }}
+
+conditions:
+  - condition: template
+    value_template: "{{ groups | length == 0 or trigger.event.data.type in groups }}"
+  - condition: template
+    value_template: "{{ not only_unknown_brand or not trigger.event.data.brand }}"
+
+actions:
+  - domain: mobile_app
+    type: notify
+    device_id: !input notify_device
+    title: "{{ title }}"
+    message: "{{ message }}"
+  - sequence: !input extra_actions

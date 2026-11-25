@@ -1,0 +1,76 @@
+blueprint:
+  name: "Vedetta: device went offline"
+  description: >-
+    Turn on "Events in Home Assistant" in Vedetta (Menu → Alerts) first: this blueprint listens to its vedetta_device_down event,
+    sent for the devices you set to "Monitor" in Vedetta.
+
+    Sends a notification when one of them stops answering and, if you want, when it is back.
+    Optionally only some of them, by the name shown in Vedetta.
+  domain: automation
+  author: Vedetta
+  homeassistant:
+    min_version: "2024.10.0"
+  source_url: https://github.com/Sived80/vedetta/blob/main/blueprints/automation/vedetta/device_down.yaml
+  input:
+    notify_device:
+      name: Phone
+      description: The phone (Home Assistant Companion app) that gets the notification.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+    labels:
+      name: Only these devices
+      description: Names as Vedetta shows them. Leave empty for every watched device.
+      default: []
+      selector:
+        select:
+          multiple: true
+          custom_value: true
+          options: []
+    include_back:
+      name: Also when it is back
+      default: true
+      selector:
+        boolean: {}
+    extra_actions:
+      name: Other actions
+      description: "Optional. They can use {{ title }} and {{ message }}."
+      default: []
+      selector:
+        action: {}
+
+mode: queued
+max: 20
+
+triggers:
+  - trigger: event
+    event_type: vedetta_device_down
+    id: down
+  - trigger: event
+    event_type: vedetta_device_back
+    id: back
+
+variables:
+  labels: !input labels
+  include_back: !input include_back
+  title: "{{ 'Device back online' if trigger.id == 'back' else 'Device offline' }}"
+  message: >-
+    {{ trigger.event.data.label or trigger.event.data.ip or 'Unknown' }}
+    ({{ trigger.event.data.ip or '-' }})
+    {%- if trigger.event.data.kind or trigger.event.data.type %} · {{ trigger.event.data.kind or trigger.event.data.type }}{% endif %}
+    {%- if trigger.id == 'back' %} · back after {{ trigger.event.data.minutes or 1 }} min{% else %} · not answering{% endif %}
+
+conditions:
+  - condition: template
+    value_template: "{{ include_back or trigger.id == 'down' }}"
+  - condition: template
+    value_template: "{{ labels | length == 0 or trigger.event.data.label in labels }}"
+
+actions:
+  - domain: mobile_app
+    type: notify
+    device_id: !input notify_device
+    title: "{{ title }}"
+    message: "{{ message }}"
+  - sequence: !input extra_actions

@@ -69,6 +69,16 @@ And of course it names every device: name, brand, model and type, with every clu
 
 ⭐ Names your devices right? A star helps others find it. *Watch › Custom › Releases* tells you about new versions.
 
+## Automations
+
+Turn on *Events in Home Assistant* (Menu → Alerts), then import a ready-made blueprint. Each event carries name, address, brand and type: [Home Assistant](docs/HOME_ASSISTANT.md).
+
+**New device on the network**<br>
+<a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fvedetta%2Fnew_device.yaml"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Import the new device blueprint"></a>
+
+**Device went offline** (and back)<br>
+<a href="https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fvedetta%2Fdevice_down.yaml"><img src="https://my.home-assistant.io/badges/blueprint_import.svg" alt="Import the device offline blueprint"></a>
+
 ## Docs
 
 **Start** · [Installation](docs/INSTALLATION.md) · [How it works](docs/HOW_IT_WORKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)<br>

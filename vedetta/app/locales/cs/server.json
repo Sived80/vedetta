@@ -188,5 +188,7 @@
   "identity_shift.reason.mdns_name": "název Bonjour",
   "identity_shift.reason.ha_model": "model v Home Assistant",
   "extra.seen_by": "Viděno přes",
-  "extra.seen_by_ha": "Home Assistant (Vedetta ho nekontroluje)"
+  "extra.seen_by_ha": "Home Assistant (Vedetta ho nekontroluje)",
+  "extra.presence_held": "Přítomnost",
+  "extra.presence_held_ha": "drží ji Home Assistant: router ho stále vidí, teď neodpovídá"
 }

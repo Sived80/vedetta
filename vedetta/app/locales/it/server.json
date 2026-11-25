@@ -187,5 +187,7 @@
   "identity_shift.reason.mdns_name": "nome Bonjour",
   "identity_shift.reason.ha_model": "modello in Home Assistant",
   "extra.seen_by": "Visto tramite",
-  "extra.seen_by_ha": "Home Assistant (Vedetta non lo controlla)"
+  "extra.seen_by_ha": "Home Assistant (Vedetta non lo controlla)",
+  "extra.presence_held": "Presenza",
+  "extra.presence_held_ha": "tenuta da Home Assistant: il router lo vede ancora, ora non risponde"
 }

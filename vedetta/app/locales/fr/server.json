@@ -187,5 +187,7 @@
   "identity_shift.reason.mdns_name": "nom Bonjour",
   "identity_shift.reason.ha_model": "modèle dans Home Assistant",
   "extra.seen_by": "Vu via",
-  "extra.seen_by_ha": "Home Assistant (Vedetta ne le vérifie pas)"
+  "extra.seen_by_ha": "Home Assistant (Vedetta ne le vérifie pas)",
+  "extra.presence_held": "Présence",
+  "extra.presence_held_ha": "maintenue par Home Assistant : le routeur le voit encore, il ne répond pas pour l'instant"
 }

@@ -3,12 +3,13 @@ the loop that repeats it, and the online/offline decision of a checked device (s
 
 Presence by MAC (1.0 step P5): every probe is told the card's usable link and those of the other cards (probe_inputs, linkview); after the probes
 a linked card left offline whose MAC answered alone at another address in THIS cycle is online there (macpresence.elsewhere), and the move is
-planned for the end of the cycle."""
+planned for the end of the cycle. A silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold, 1.0.3)."""
 import asyncio
 import time
 
 from . import identity_changes, linkview, macpresence, macverdict, netutil, sentinel_view
 from .applog import logger
+from .ha import tracker_hold
 from .storage.history import history
 from .formatters import update_generic_titles
 from .scan import latency, presence_confirm, probe, touch_policy
@@ -37,6 +38,14 @@ def _inputs(state, configs: list[dict], checks: dict[str, tuple]) -> list[dict]:
 def probe_input(state, config: dict, configs: list[dict]) -> dict:
     """What the probe of one card is told (the refresh of a single card), the same as in a cycle."""
     return next(i for i in probe_inputs(state, configs) if i["id"] == config["id"])
+
+
+async def probe_one(state, config: dict, configs: list[dict], arp_task) -> dict:
+    """The probe of one card (the refresh of a single card), with the same hold by Home Assistant as in a cycle (ha/tracker_hold)."""
+    told = probe_input(state, config, configs)
+    result = await probe.probe_device(told, arp_task)
+    await tracker_hold.mark([told], [result])
+    return result
 
 
 def _link_checks(configs: list[dict], now: float) -> dict[str, tuple]:
@@ -72,6 +81,7 @@ async def poll_once(state) -> None:
     samples = await _samples(lat_task)
     moves = await _found_elsewhere(state, inputs, results, arp_task, started)
     await presence_confirm.confirm_before_offline(state, inputs, results)
+    await tracker_hold.mark(inputs, results)
     _apply_results(state, snapshot, results, samples)
     await state._save_latency()
     await _after_cycle(state, await _arp_of(arp_task), moves)
@@ -218,6 +228,8 @@ def settle(state, device_id: str, result: dict, previous: dict | None, now: floa
         state._misses[device_id] = 0
         state._last_seen[device_id] = now
         state._record_presence(result, True, now)
+    elif result.get("presence_held"):
+        result = _held(state, device_id, result, previous, now)
     else:
         result = _after_miss(state, device_id, result, previous, now)
     # Only from offline: for an online device it would change on every cycle and make the card be replaced every 30 seconds for no reason.
@@ -235,6 +247,16 @@ def _after_miss(state, device_id: str, result: dict, previous: dict | None, now:
     # The event carries the instant the device was last seen online, not the moment it was noticed: the chart starts from the real moment of the drop.
     state._record_presence(result, False, state._last_seen.get(device_id, now))
     return result
+
+
+def _held(state, device_id: str, result: dict, previous: dict | None, now: float) -> dict:
+    """A silent phone that Home Assistant's router says is at home (ha/tracker_hold): online and present in the history, with the data it
+    observed when it last answered; no response time is added (it gave none)."""
+    state._misses[device_id] = 0
+    state._last_seen[device_id] = now
+    state._record_presence(result, True, now)
+    seen = previous if previous and previous.get("online") else {}
+    return {**result, "online": True, "extra": {**seen.get("extra", {}), **result.get("extra", {})}, **{k: seen[k] for k in OBSERVED if k in seen}}
 
 
 def _fill_latency(device_id: str, result: dict) -> None:

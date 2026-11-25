@@ -10,7 +10,7 @@ from pathlib import Path
 from ..recognition import brand_logo
 from ..storage import devices_config
 from .. import i18n
-from . import identity_shift
+from . import identity_shift, tracker_hold
 from ..storage.history import History, history
 from .ha_type_evidence import MARGIN_BELOW, MIN_TYPE_SCORE, TYPE_ORDER, W_BRAND, W_DECLARED, W_PLATFORM_MAX, W_PORTS_MAX, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _FAMILY_PORT, _FAMILY_SERVICE, _FAMILY_UPNP, _MDNS_TYPE, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PLATFORM_KINDS, _PORT_RE, _PORT_SHARED, _PORT_TYPE, _TOKEN_RE, _UPNP_TYPE, _aggregate, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _build_kind, _declared_services, _declares_onvif, _ha_integrations, _ha_table_cache, _has_network_role, _kinds, _kinds_cache, _model_text, _read_kind_rows, _split_words, _word_pts, type_evidence, type_scores  # noqa: F401
 
@@ -161,7 +161,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "scanned_at": device.get("scanned_at"),
         "web_open": device.get("web_open"),
         "deep_empty_at": device.get("deep_empty_at"),
-        "attrs": _extra_attrs(extra) + identity_shift.attrs_for(device["id"], i18n.t),
+        "attrs": _extra_attrs(extra) + identity_shift.attrs_for(device["id"], i18n.t) + tracker_hold.attrs_for(device),
     }
 
 

@@ -1,5 +1,5 @@
 {
- "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND).",
+ "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND). brand_alone false: la marca da sola non basta (chi fa telecamere fa anche centrali d'allarme), conferma solo un indizio del gruppo gia' trovato.",
  "kinds": [
   {
    "id": "accesspoint",
@@ -446,7 +446,8 @@
     "lorex",
     "swann",
     "hiwatch"
-   ]
+   ],
+   "brand_alone": false
   },
   {
    "id": "nvr",

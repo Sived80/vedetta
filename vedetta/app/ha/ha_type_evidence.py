@@ -252,14 +252,19 @@ class _Clues:
                 self.kinds_out[kd["id"]] = self.kinds_out.get(kd["id"], 0) + pts      # added up with what the integration and the signatures gave (it was assigned: their points were lost)
 
     def kind_pts(self, kd: dict, w: _Words) -> int:
-        """All the points that the clues give to one type, in the order words, mDNS, UPnP, brand."""
+        """All the points that the clues give to one type, in the order words, mDNS, UPnP, brand (for some types only as a confirmation, see has_group)."""
         pts = self.kind_word_pts(kd, w)
         pts += self.kind_declared_pts(kd, w.services & kd["mdns"], _FAMILY_SERVICE, "svc:", "mDNS ")
         pts += self.kind_declared_pts(kd, w.upnp & kd["upnp"], _FAMILY_UPNP, "upnp:", "UPnP ")
-        if w.brand_tokens & kd["brands"]:
+        if w.brand_tokens & kd["brands"] and (kd["brand_alone"] or pts or self.has_group(kd["group"])):
             pts += W_BRAND
             self.add(kd["group"], W_BRAND, "brand", "marca: " + kd["id"])
         return pts
+
+    def has_group(self, group: str) -> bool:
+        """Some clue found so far points to the group. A type whose makers do not say it alone ("brand_alone": false in data/device_kinds.json: a maker of cameras also
+        makes alarm and access interfaces) counts its brand only to confirm a sign of its own."""
+        return any(e["group"] == group for e in self.ev)
 
     def kind_word_pts(self, kd: dict, w: _Words) -> int:
         """Points of the words of a type found in the text (0 if none); reported unless the type only tells the platform."""
@@ -401,7 +406,7 @@ def _build_kind(k: dict) -> dict:
     toks |= {t + "s" for t in list(toks)}
     return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
-            "brands": {fold(b) for b in k.get("brands") or []}, "product": bool(k.get("product"))}
+            "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product"))}
 
 
 def _split_words(words, toks: set) -> list[str]:

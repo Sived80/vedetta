@@ -237,7 +237,8 @@ class MqttService:
             cfg = ha_data.config_map()
             kinds = {did: ha_data.effective_type(d, cfg.get(did)) for did, d in devices.items()}
             shared = {did for did, c in cfg.items() if c.get("ha_share")}
-            desired = build_desired(devices, kinds, self._new_count, self._latency_seen, shared)
+            fine = {did: ha_data.effective_kind(devices[did], cfg.get(did), kinds[did]) for did in shared & devices.keys()}
+            desired = build_desired(devices, kinds, self._new_count, self._latency_seen, shared, fine)
             for topic, payload in self.sync.diff(desired):
                 client.publish(topic, payload, qos=1, retain=True)
         except Exception:

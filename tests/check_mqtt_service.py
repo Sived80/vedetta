@@ -71,7 +71,7 @@ class FakeState:
 
 
 desired = {"vedetta/dev/d1/state": "S1", "homeassistant/device/vedetta_d1/config": "C1"}      # the state comes first on purpose
-mqtt_ha.build_desired = lambda devices, kinds, new_count, latency_seen, shared: dict(desired)
+mqtt_ha.build_desired = lambda devices, kinds, new_count, latency_seen, shared, fine_kinds=None: dict(desired)
 mqtt_payloads.build_desired = mqtt_ha.build_desired
 ha_data.config_map = lambda: {"d1": {"ha_share": "1"}}
 ha_data.effective_type = lambda d, c: "generic"

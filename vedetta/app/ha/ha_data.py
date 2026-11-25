@@ -18,17 +18,8 @@ from .ha_type_evidence import MARGIN_BELOW, MIN_TYPE_SCORE, TYPE_ORDER, W_BRAND,
 def icon_for(device: dict, adapter: str | None = None, kind: str | None = None) -> str | None:
     """Name of the MDI icon best suited to the device: the one of the type (data/device_kinds.json)
     with the most points within the chosen category; None = the category icon."""
-    group = kind or infer_type(device, adapter)
-    kinds_out: dict[str, int] = {}
-    type_scores(device, adapter, kinds_out)
-    best, best_pts = None, 0
-    for kd in _kinds():
-        if kd["group"] != group:
-            continue
-        pts = kinds_out.get(kd["id"], 0)
-        if pts > best_pts:
-            best, best_pts = kd["icon"], pts
-    return best
+    row = _best_kind_row(device, adapter, kind or infer_type(device, adapter))
+    return row and row["icon"]
 
 
 def kind_is_product(kind_id: str | None) -> bool:
@@ -39,13 +30,26 @@ def kind_is_product(kind_id: str | None) -> bool:
 
 def best_kind(device: dict, adapter: str | None = None) -> str | None:
     """Id of the device type (data/device_kinds.json) with the most points, in the chosen category."""
-    group = infer_type(device, adapter)
+    row = _best_kind_row(device, adapter, infer_type(device, adapter))
+    return row and row["id"]
+
+
+def effective_kind(device: dict, cfg: dict | None = None, group: str | None = None) -> str | None:
+    """Id of the device type with the most points inside the category that counts (effective_type: the one chosen by hand wins, so
+    the fine type never contradicts it); group = that category when the caller already has it. None when no type of it scored."""
+    cfg = cfg or {}
+    row = _best_kind_row(device, cfg.get("adapter"), group or effective_type(device, cfg))
+    return row and row["id"]
+
+
+def _best_kind_row(device: dict, adapter: str | None, group: str) -> dict | None:
+    """The row of data/device_kinds.json with the most points (more than zero) in this category; on a tie the first of the table."""
     kinds_out: dict[str, int] = {}
     type_scores(device, adapter, kinds_out)
     best, best_pts = None, 0
     for kd in _kinds():
         if kd["group"] == group and kinds_out.get(kd["id"], 0) > best_pts:
-            best, best_pts = kd["id"], kinds_out[kd["id"]]
+            best, best_pts = kd, kinds_out[kd["id"]]
     return best
 
 

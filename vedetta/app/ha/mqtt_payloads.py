@@ -113,10 +113,12 @@ def device_config(dev: dict, kind: str | None, with_latency: bool) -> dict:
     return {"dev": device, "o": _origin(), "cmps": cmps, "availability_topic": STATUS_TOPIC}
 
 
-def device_attrs(dev: dict, kind: str | None) -> dict:
+def device_attrs(dev: dict, kind: str | None, fine_kind: str | None = None) -> dict:
+    """The attributes of the tracker: "type" is the category (kind), "kind" the finer device type of data/device_kinds.json inside it
+    (fine_kind: "accesspoint", "nas", "tv"...), null when no type of the category scored. Always both keys, so templates stay simple."""
     return {
         "ip": dev.get("ip"), "mac": dev.get("mac"),
-        "brand": dev.get("brand") or dev.get("vendor"), "type": kind,
+        "brand": dev.get("brand") or dev.get("vendor"), "type": kind, "kind": fine_kind,
         "latency_ms": dev.get("latency_ms"),
         "last_seen": None if dev.get("online") else _fmt_time(dev.get("last_seen")),
         "source_type": "router",
@@ -172,30 +174,33 @@ def _j(obj) -> str:
 
 
 def build_desired(devices: dict[str, dict], kinds: dict[str, str], new_count: int,
-                  latency_seen: set[str], shared: set[str] | None = None) -> dict[str, str]:
+                  latency_seen: set[str], shared: set[str] | None = None,
+                  fine_kinds: dict[str, str | None] | None = None) -> dict[str, str]:
     """Map of topic -> payload for everything that must be published right now.
     latency_seen: ids of the devices whose latency has been known at least
     once (it stays a stable entity even when the measurement is missing); updated here.
     shared: ids of the devices the user chose to share with HA (None = all, for tests); the others
     are not published and, if they had been published, disappear from HA (see Sync.diff). Vedetta's counters
-    always count all the devices."""
+    always count all the devices. fine_kinds: {id: finer device type} for the "kind" attribute (missing = null)."""
     out: dict[str, str] = {config_topic(HUB_ID): _j(hub_config()),
                            HUB_STATE_TOPIC: _j(hub_state(list(devices.values()), new_count))}
     for did, dev in devices.items():
         if _is_published(did, shared):
-            _add_device_entries(out, did, dev, kinds.get(did), latency_seen)
+            _add_device_entries(out, did, dev, (kinds.get(did), (fine_kinds or {}).get(did)), latency_seen)
     latency_seen.intersection_update(devices if shared is None else {d for d in devices if d in shared})  # gone/not shared: out of memory
     return out
 
 
-def _add_device_entries(out: dict[str, str], did: str, dev: dict, kind: str | None, latency_seen: set[str]) -> None:
-    """Adds the config, state, attrs (and, once its latency was known, latency) entries of one shared device, in this order."""
+def _add_device_entries(out: dict[str, str], did: str, dev: dict, kinds: tuple, latency_seen: set[str]) -> None:
+    """Adds the config, state, attrs (and, once its latency was known, latency) entries of one shared device, in this order.
+    kinds = (category, finer device type)."""
+    kind, fine_kind = kinds
     if dev.get("latency_ms") is not None:
         latency_seen.add(did)
     topics = device_topics(did)
     out[topics["config"]] = _j(device_config(dev, kind, did in latency_seen))
     out[topics["state"]] = "home" if dev.get("online") else "not_home"
-    out[topics["attrs"]] = _j(device_attrs(dev, kind))
+    out[topics["attrs"]] = _j(device_attrs(dev, kind, fine_kind))
     if did in latency_seen:
         lat = dev.get("latency_ms")
         out[topics["latency"]] = str(round(lat)) if lat is not None else "None"

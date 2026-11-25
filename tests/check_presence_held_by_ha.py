@@ -47,6 +47,15 @@ devices_config.DEVICES_PATH = tmp / "devices.yaml"
 CARDS = [{"id": "phone", "ip": "192.0.2.31", "seq": 1, "name": "Phone of Test"}, {"id": "printer", "ip": "192.0.2.32", "seq": 2, "name": "Printer"}]
 devices_config.DEVICES_PATH.write_text(yaml.safe_dump({"devices": CARDS}), encoding="utf-8")
 netutil.last_network = NET
+
+
+async def fake_net():
+    """The faked main network, also for the cycle: on Linux the real `ip` command would give the runner's own network instead."""
+    netutil.last_network, netutil.last_own = NET, "192.0.2.1"
+    return NET, "192.0.2.1"
+
+
+netutil.get_local_network = fake_net
 os.environ["SUPERVISOR_TOKEN"] = "t0ken"
 
 

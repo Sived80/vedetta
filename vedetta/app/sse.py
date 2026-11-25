@@ -17,23 +17,31 @@ KEEPALIVE = ": keepalive\n\n"      # an SSE comment: the browser's reader skips 
 async def with_keepalive(stream, every: float):
     """The items of the async generator `stream`, with a KEEPALIVE line whenever the next one takes longer than `every` seconds: a silent stream is
     kept open through proxies, and the page can tell a slow search from a lost connection. Closing this generator closes `stream` too."""
-    nxt = None
+    pending: list = []          # the task reading the next item, for the cleanup
     try:
-        while True:
-            if nxt is None:
-                nxt = asyncio.ensure_future(anext(stream))
-            done, _ = await asyncio.wait({nxt}, timeout=every)
-            if not done:
-                yield KEEPALIVE
-                continue
-            try:
-                item = nxt.result()
-            except StopAsyncIteration:
-                return
-            nxt = None
+        async for item in _paced(stream, every, pending):
             yield item
     finally:
-        if nxt is not None and not nxt.done():
-            nxt.cancel()
-            await asyncio.gather(nxt, return_exceptions=True)
-        await stream.aclose()
+        await _stop(pending, stream)
+
+
+async def _paced(stream, every: float, pending: list):
+    while True:
+        if not pending:
+            pending.append(asyncio.ensure_future(anext(stream)))
+        done, _ = await asyncio.wait(pending, timeout=every)
+        if not done:
+            yield KEEPALIVE
+            continue
+        task = pending.pop()
+        if isinstance(task.exception(), StopAsyncIteration):
+            return
+        yield task.result()
+
+
+async def _stop(pending: list, stream) -> None:
+    """The read still waiting is cancelled (the search stream sees its own cancellation), then the stream is closed."""
+    for task in pending:
+        task.cancel()
+    await asyncio.gather(*pending, return_exceptions=True)
+    await stream.aclose()

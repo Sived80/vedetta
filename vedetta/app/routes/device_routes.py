@@ -27,22 +27,54 @@ router = APIRouter()
 
 @router.post("/api/devices/add")
 async def api_devices_add(request: Request):
+    """The cards made, and every candidate left out with its reason (SKIP_REASONS), in the order sent: the page says what it did not add and why."""
     body = await json_dict(request)
-    to_add = [e for e in map(_new_device_entry, list_field(body, "devices", dict)) if e is not None]
+    candidates = list_field(body, "devices", dict)
+    refusals = [_refusal(c) for c in candidates]
+    to_add = [_entry_of(c) for c, why in zip(candidates, refusals) if not why]
     try:
         added = devices_config.add_devices(to_add)
     except Exception:
         logger.exception("Errore aggiungendo dispositivi: %s", [c.get("ip") for c in to_add])
         raise HTTPException(500, "Salvataggio non riuscito")
+    skipped = _skipped(candidates, refusals, added)
     if added:
         await _settle_added(added)
-    return {"added": added}
+    if skipped:
+        logger.info("Non aggiunti %d dispositivi: %s", len(skipped), ", ".join("%s (%s)" % (s["ip"], s["reason"]) for s in skipped))
+    return {"added": added, "skipped": skipped}
+
+
+def _skipped(candidates: list[dict], refusals: list, added: list[dict]) -> list[dict]:
+    """{ip, reason} for every candidate that did not become a card, in the order sent; one that could be added and was not had its address taken
+    by a card already there, or by the same address earlier in the list ("exists")."""
+    made = {d["ip"] for d in added}
+    out = []
+    for c, why in zip(candidates, refusals):
+        if not why and c["ip"] in made:
+            made.discard(c["ip"])
+            continue
+        out.append({"ip": c["ip"] if isinstance(c.get("ip"), str) else "", "reason": why or "exists"})
+    return out
+
+
+SKIP_REASONS = ("exists", "invalid", "off_limits")
+
+
+def _refusal(c: dict) -> str | None:
+    """Why a candidate may not become a card: "invalid" (not an IPv4 address), "off_limits" (an address that may not be touched, K9a); None if it may."""
+    if not scanner.is_valid_ipv4(c.get("ip", "")):
+        return "invalid"
+    return None if registry.may_add(c["ip"]) else "off_limits"
 
 
 def _new_device_entry(c: dict) -> dict | None:
-    """The entry to add for one candidate of the search: only the allowed fields, cleaned; None if its address is not valid."""
-    if not scanner.is_valid_ipv4(c.get("ip", "")) or not registry.may_add(c["ip"]):    # never an address that may not be touched (K9a)
-        return None
+    """The entry to add for one candidate of the search: only the allowed fields, cleaned; None if its address is not valid or may not be touched."""
+    return None if _refusal(c) else _entry_of(c)
+
+
+def _entry_of(c: dict) -> dict:
+    """The entry of a candidate that may be added (_refusal said None)."""
     entry = {"ip": c["ip"], "adapter": c.get("adapter") if c.get("adapter") in ("shelly_gen1", "generic") else "generic"}
     if c.get("name"):
         entry["name"] = str(c["name"])[:80]

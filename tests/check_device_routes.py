@@ -53,8 +53,8 @@ assert len(a["name"]) == 80 and a["adapter"] == "generic" and a["port"] == 8080 
 assert set(a["scan_info"]) == {"http_title", "http_server"} and len(a["scan_info"]["http_title"]) == 200
 assert b["adapter"] == "shelly_gen1" and b.get("name_source") != "nonsense"
 assert sorted(calls["refresh"]) == sorted([a["id"], b["id"]]) and calls["check"] == 1
-assert post("/api/devices/add", {"devices": [{"ip": "10.0.0.5"}]}).json() == {"added": []}, "an address already there is not added twice"
-assert post("/api/devices/add", {"devices": []}).json() == {"added": []}
+assert post("/api/devices/add", {"devices": [{"ip": "10.0.0.5"}]}).json() == {"added": [], "skipped": [{"ip": "10.0.0.5", "reason": "exists"}]}, "an address already there is not added twice"
+assert post("/api/devices/add", {"devices": []}).json() == {"added": [], "skipped": []}
 A, B = a["id"], b["id"]
 
 # --- rename: empty or wrong values refused, mobile only when a real boolean, unknown id 404

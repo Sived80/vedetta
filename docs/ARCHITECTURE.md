@@ -159,6 +159,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/notify_queue.py` | The queue of the notifications (the Sentinel's way out, ha_notify): every message goes to the recipients in their order (the first, the second, the third...), each one after its wait ("delay_s") from the one before, whether the one before took it or not. |
 | `ha/passive_service.py` | Reads the devices that Home Assistant sees (ha_trackers) while the function is on, keeps them (passive_store) and writes their presence into the history. |
 | `ha/passive_view.py` | What the page shows of the devices that Home Assistant sees ("passive" devices): the cards in the same compact format as the devices Vedetta scans, and the list of the ones that can be adopted. |
+| `ha/tracker_hold.py` | Presence held by Home Assistant (1.0.3). |
 
 ### health/
 
@@ -288,7 +289,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
 | `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |
-| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values). |
+| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3). |
 | `storage/starhint.py` | The one-time invitation to star the project on GitHub (config/star_hint.json). |
 | `storage/userlang.py` | The language each Home Assistant user chose in the menu (config/user_lang.json). |
 
@@ -307,8 +308,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 |---|---|---|
 | `js/alerts.js` | 231 | alerts outside this page (the Sentinel's way out) |
 | `js/app.js` | 44 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 313 | guided typing |
-| `js/core-ui.js` | 199 | state |
+| `js/core-menu.js` | 328 | guided typing |
+| `js/core-ui.js` | 200 | state |
 | `js/core.js` | 258 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 163 | deep search |
@@ -323,7 +324,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/health-sim.js` | 49 | network health: made-up findings, debug mode only |
 | `js/ignored.js` | 347 | ignored devices, inside the panel «Networks» |
 | `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
-| `js/live.js` | 264 | update |
+| `js/live.js` | 267 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 224 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
@@ -355,7 +356,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/63-netpanel.css` | 190 | The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
-| `css/66-alerts.css` | 104 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
+| `css/66-alerts.css` | 106 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 281 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 | `css/82-more-month.css` | 19 | "Last 30 days" in the card (#mi-month): the strip of the days, the class, one line on the link, the changes of name and brand. |

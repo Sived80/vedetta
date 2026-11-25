@@ -7,12 +7,13 @@ Since 1.0 step P5 the probe is told the card's usable link (linkview: a link sta
     probes, by the cycle (state_cycle);
   - a card without a usable link is online when somebody answers at its address, unless that MAC is another card's usable link (one guard,
     decision 3A of 12/11).
-Pure but for the verdict it asks (macverdict, in memory)."""
+The machine the app runs on is never in the ARP view (nobody asks itself "who has this IP?"): its own address answers by itself.
+Pure but for the verdict it asks (macverdict, in memory) and the MAC of this computer's interface (scan_arp.own_answer)."""
 import asyncio
 
 from .. import macpresence, macverdict
 from ..networks import registry
-from . import touch_policy
+from . import scan_arp, touch_policy
 from .adapters import ping
 
 
@@ -38,14 +39,16 @@ def _mac_here(device: dict, host: dict) -> str | None:
 
 
 async def complete_with_arp(result: dict, device: dict, ip: str, arp_task) -> dict:
-    """The adapter's result completed by the ARP view: an answer at the address makes the device online (and gives its MAC), unless the answer is positively another device's."""
+    """The adapter's result completed by the ARP view: an answer at the address makes the device online (and gives its MAC), unless the answer is positively another device's.
+    The own address of this computer always answers (scan_arp.own_answer): it is held by this computer, so no other device is there."""
     if arp_task is None:
         return result
     arp = await arp_task
-    arp_info = arp.get(ip)
+    own = scan_arp.own_answer(ip)         # this computer's own address: ARP never lists it, yet it is there while the app runs
+    arp_info = arp.get(ip) or own
     if not arp_info:
         return result
-    if _not_this_card(device, arp_info):
+    if own is None and _not_this_card(device, arp_info):
         return {"online": False}                                # the address passed to another device: this card is not there
     if not result.get("online"):
         result = {**result, "online": True}

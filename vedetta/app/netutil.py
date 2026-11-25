@@ -11,6 +11,7 @@ from .applog import logger
 from .iface import lan_iface
 
 last_network: str | None = None     # the network of the last reading ("10.20.0.0/22"), None before the first one: what the page shows as the size of the LAN
+last_own: str | None = None         # the own address of the last reading: the machine Vedetta runs on (never in the ARP view: nobody asks itself)
 
 
 IP_COMMAND_TIMEOUT_S = 5
@@ -29,8 +30,8 @@ async def communicate_briefly(proc, timeout: float = IP_COMMAND_TIMEOUT_S) -> by
 
 
 async def get_local_network() -> tuple[str, str]:
-    """Returns (CIDR subnet, the container's own IP), and keeps the subnet in last_network."""
-    global last_network
+    """Returns (CIDR subnet, the container's own IP), and keeps them in last_network and last_own."""
+    global last_network, last_own
     proc = await asyncio.create_subprocess_exec(
         "ip", "-o", "-4", "addr", "show", lan_iface(),
         stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
@@ -42,8 +43,8 @@ async def get_local_network() -> tuple[str, str]:
         raise HTTPException(500, "Impossibile determinare la subnet locale")
     iface = ipaddress.ip_interface(match.group(1))
     network = iface.network if iface.network.prefixlen < HOST_PREFIX else await _host_address_network(iface.ip)
-    last_network = str(network)
-    return last_network, str(iface.ip)
+    last_network, last_own = str(network), str(iface.ip)
+    return last_network, last_own
 
 
 HOST_PREFIX = 31            # a /31 or /32 is the address of the host, not a network to watch

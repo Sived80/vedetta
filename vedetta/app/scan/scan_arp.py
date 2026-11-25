@@ -1,6 +1,7 @@
 """scan_arp: moved out of scanner.py (see tools/split_module.py)."""
 import asyncio
 from .scan_common import is_valid_ipv4
+from .. import netutil
 from ..macaddr import device_mac, is_device_mac
 from ..networks import registry
 from .arpplan import parse_neighbor_entries, parse_neighbors
@@ -78,19 +79,31 @@ def with_neighbours(hosts: list[dict], neighbours: list[dict]) -> list[dict]:
     return hosts + [h for h in neighbours if h["ip"] not in seen]
 
 
-def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
-    """The computer the app runs on: ARP never lists it (nobody asks itself
-    "who has this IP?"), so it is added by hand with the MAC of its network interface."""
-    if not own_ip or any(h["ip"] == own_ip for h in arp_hosts):
-        return None
+def _interface_mac() -> str | None:
+    """The MAC of the main interface of this computer (upper case), None when it cannot be read or is no device MAC."""
     try:
         with open(f"/sys/class/net/{registry.main_interface()}/address", encoding="ascii") as fh:
             mac = fh.read().strip().upper()
     except OSError:
         return None
-    if not is_device_mac(mac):
+    return mac if is_device_mac(mac) else None
+
+
+def own_host(own_ip: str | None, arp_hosts: list[dict]) -> dict | None:
+    """The computer the app runs on: ARP never lists it (nobody asks itself
+    "who has this IP?"), so it is added by hand with the MAC of its network interface."""
+    if not own_ip or any(h["ip"] == own_ip for h in arp_hosts):
         return None
-    return {"ip": own_ip, "mac": mac, "vendor": None}
+    mac = _interface_mac()
+    return {"ip": own_ip, "mac": mac, "vendor": None} if mac else None
+
+
+def own_answer(ip: str | None) -> dict | None:
+    """The answer of this computer at its own address (netutil.last_own, the address of the last reading of the network): it is there while
+    the app runs, whatever ARP says, with the MAC of its interface (None when it cannot be read). None for any other address."""
+    if not ip or ip != netutil.last_own:
+        return None
+    return {"ip": ip, "mac": _interface_mac(), "vendor": None}
 
 
 def parse_arp_scan(text: str) -> list[dict]:

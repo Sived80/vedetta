@@ -306,6 +306,14 @@ check("S43 fails when the one silent to broadcast is missing (issue #35)", run_c
 check("S43 fails when the button does not list it (issue #35)", run_campaign.CHECKS["S43"]({"tv_in_button": False, "tv_listed_new": False, "cam_in_button": False, "cards": 0, "rows": 2})[0], "fail")
 check("S43 fails when cards are made by themselves", run_campaign.CHECKS["S43"]({"tv_in_button": True, "tv_listed_new": False, "cam_in_button": True, "cards": 2, "rows": 3})[0], "fail")
 check("S43 is in the campaign", "S43" in scenarios.SCENARIOS and "S43" in {k for k, _, _ in run_campaign.PLAN}, True)
+b44 = {"found": 54, "analysed": 44, "deep_s": 1500, "longest_silence_s": 20, "keepalives": 30, "add": {"seconds": 1, "timed_out": False, "added": 54, "skipped": []},
+       "cards": 54, "untold": 0, "listed_again_with_card": 0}
+check("S44 passes: Add all answers in time and every device found is a card or told back", run_campaign.CHECKS["S44"](b44)[0], "pass")
+check("S44 fails when the add does not answer within the page's limit (the page says Error)", run_campaign.CHECKS["S44"]({**b44, "add": {"seconds": 25, "timed_out": True}})[0], "fail")
+check("S44 fails when a device found is neither a card nor told back", run_campaign.CHECKS["S44"]({**b44, "untold": 2})[0], "fail")
+check("S44 fails when the deep search stays silent longer than the page waits", run_campaign.CHECKS["S44"]({**b44, "longest_silence_s": 150})[0], "fail")
+check("S44 fails when the next search lists cards again", run_campaign.CHECKS["S44"]({**b44, "listed_again_with_card": 1})[0], "fail")
+check("S44 is in the campaign", "S44" in scenarios.SCENARIOS and "S44" in {k for k, _, _ in run_campaign.PLAN}, True)
 check("S42 is in the campaign", "S42" in scenarios.SCENARIOS and "S42" in {k for k, _, _ in run_campaign.PLAN}, True)
 check("S41 is in the campaign and the flat LAN stays flat by default", ("S41" in scenarios.SCENARIOS and "S41" in {k for k, _, _ in run_campaign.PLAN},
       sim_lan.Lan().routed), (True, False))

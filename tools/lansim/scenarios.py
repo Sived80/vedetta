@@ -1,5 +1,6 @@
 """The scenarios: what happens to the cards of Vedetta when the virtual phones do the things that produce doubles or wrong names. Each scenario builds its own
 network and a fresh Vedetta, drives the phones, and returns what the cards say; the expectations are in the docstrings and judged by run_scenarios.py."""
+import json
 import os
 import random
 import sqlite3
@@ -7,11 +8,12 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.request
 from pathlib import Path
 
 from tools.lansim import phases, routed
 from tools.lansim.lan import EXTENDER2_MAC, EXTENDER_MAC, ROUTED_CIDR, ROUTER_MAC, SUBNET, Lan, _ns
-from tools.lansim.vedetta_proc import VedettaProcess
+from tools.lansim.vedetta_proc import ADDRESS as VEDETTA_ADDRESS, PORT as VEDETTA_PORT, VedettaProcess
 
 ANDROID_MAC, IOS_MAC, IOS_MAC_2 = "c6:00:00:00:00:21", "5a:00:00:00:00:22", "5a:00:00:00:00:24"
 SETTLE = 2         # update cycles to wait after a change before looking at the cards
@@ -1146,4 +1148,78 @@ def s17_gateway_slows_down(code_dir: str, baseline_s: int = 4200, slow_s: int = 
                 "samples": len(latency), "slow_from_s": round(slow_at - since), "slow_until_s": round(back_at - since), "judged": _judged(code_dir, vedetta, since, SUBNET + ".1")}
 
 
-SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S35": s35_tv_away_stays_listed, "S37": s37_new_device_found_by_the_slices, "S38": s38_button_lists_the_quiet_tv, "S39": s39_phone_rotates_its_mac, "S40": s40_two_phones_same_model, "S41": s41_routed_new_device, "S42": s42_routed_card_goes_away, "S43": s43_on_at_install_is_listed, "S36": s36_console_at_linked_address, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True)}
+
+# S44 (R8): "Scan network" then "Add all" on a large network, as the page does it: many devices answer, some slowly (a delay on their line), some
+# go quiet between the search and the add. Made-up MACs in a locally administered block.
+S44_ON, S44_SLOW, S44_QUIET = 36, 8, 10           # answering, answering slowly, found and then quiet
+S44_DELAY = "400ms"
+PAGE_ADD_TIMEOUT_S = 25                           # core.js api(): the page gives up on a request after 25 seconds
+
+
+def _s44_mac(i: int) -> str:
+    return "02:00:00:00:44:%02x" % i
+
+
+def _deep_stream(vedetta: VedettaProcess, ips: list[str]) -> dict:
+    """POST /api/scan/deep as the page reads it (server-sent events, one line at a time): the results, how long it took, the longest wait for a byte."""
+    req = urllib.request.Request("http://%s:%d/api/scan/deep" % (VEDETTA_ADDRESS, VEDETTA_PORT), json.dumps({"ips": ips, "hints": {}}).encode(),
+                                 {"Content-Type": "application/json"})
+    start = last = time.time()
+    gap, results, keepalives = 0.0, [], 0
+    with urllib.request.urlopen(req, timeout=1800) as r:
+        for raw in r:
+            now = time.time()
+            gap, last = max(gap, now - last), now
+            line = raw.decode().strip()
+            keepalives += line.startswith(":")
+            if line.startswith("data: "):
+                ev = json.loads(line[6:])
+                if ev.get("type") == "complete":
+                    results = ev.get("results") or []
+    return {"results": results, "seconds": round(time.time() - start), "longest_silence_s": round(gap), "keepalives": keepalives}
+
+
+def _add_like_the_page(vedetta: VedettaProcess, ips: list[str], results: list[dict]) -> dict:
+    """POST /api/devices/add with what the page sends (page.toDevice) and the page's own time limit."""
+    by_ip = {r.get("ip"): r for r in results}
+    devices = [{"ip": ip, "name": (by_ip.get(ip) or {}).get("suggested_name") or ip, "adapter": (by_ip.get(ip) or {}).get("adapter") or "generic",
+                "port": (by_ip.get(ip) or {}).get("suggested_port") or 80} for ip in ips]
+    req = urllib.request.Request("http://%s:%d/api/devices/add" % (VEDETTA_ADDRESS, VEDETTA_PORT), json.dumps({"devices": devices}).encode(),
+                                 {"Content-Type": "application/json"})
+    start = time.time()
+    try:
+        with urllib.request.urlopen(req, timeout=PAGE_ADD_TIMEOUT_S) as r:
+            body = json.loads(r.read())
+    except OSError as exc:              # the page shows "Error" here and puts the rows back, whatever the server did
+        return {"seconds": round(time.time() - start), "timed_out": True, "error": repr(exc)[:120]}
+    return {"seconds": round(time.time() - start), "timed_out": False, "added": len(body.get("added") or []), "skipped": body.get("skipped")}
+
+
+def s44_add_all_large(code_dir: str) -> dict:
+    """R8 (two public reports: "Add all" left a spinner turning and devices out; devices found but "could not be added" and a second search came back empty).
+    A network of 54 devices, 8 of them slow, 10 that go quiet after the search; the page's "Add all": the deep search of everything found, then one add.
+    Expected: the add answers within the page's limit, every device found is a card or is told back with a reason, the stream never stays silent for
+    longer than the page waits, and a second search lists none of the cards."""
+    with Lan() as lan:
+        total = S44_ON + S44_SLOW + S44_QUIET
+        for i in range(total):
+            lan.add_client("a%d" % i, _s44_mac(i), 20 + i)
+        for i in range(S44_ON, S44_ON + S44_SLOW):
+            subprocess.run(["ip", "netns", "exec", _ns("a%d" % i), "tc", "qdisc", "add", "dev", "e0", "root", "netem", "delay", S44_DELAY], check=False)
+        with VedettaProcess(code_dir) as vedetta:
+            vedetta.wait_cycles(1)
+            found = [h["ip"] for h in vedetta.post("/api/scan/quick", {}) if h.get("ip")]
+            for i in range(S44_ON + S44_SLOW, total):
+                lan.link("a%d" % i, False)
+            deep = _deep_stream(vedetta, found)
+            add = _add_like_the_page(vedetta, found, deep["results"])
+            vedetta.wait_cycles(1)
+            cards = {c.get("ip") for c in vedetta.cards()}
+            again = [h["ip"] for h in vedetta.post("/api/scan/quick", {}) if h.get("ip")]
+            told = {s.get("ip") for s in add.get("skipped") or []}
+            return {"found": len(found), "analysed": len(deep["results"]), "deep_s": deep["seconds"], "longest_silence_s": deep["longest_silence_s"],
+                    "keepalives": deep["keepalives"], "add": add, "cards": len(cards & set(found)),
+                    "untold": len([ip for ip in found if ip not in cards and ip not in told]), "listed_again_with_card": len(set(again) & cards)}
+
+
+SCENARIOS = {"S1": s1_stable, "S4": s4_extender_holds, "S5": s5_inherited_name, "S10": s10_two_extenders, "S11": s11_console_takes_address, "S11B": s11b_laptop_comes_back, "S11C": s11c_automatic_name, "S12": s12_camera_ignores_broadcast, "S13": s13_any_pair, "S13L": s13l_link_holds, "S11L": s11l_laptop_followed, "S31": s31_swap, "S32": s32_move, "S33": s33_replaced, "S35": s35_tv_away_stays_listed, "S37": s37_new_device_found_by_the_slices, "S38": s38_button_lists_the_quiet_tv, "S39": s39_phone_rotates_its_mac, "S40": s40_two_phones_same_model, "S41": s41_routed_new_device, "S42": s42_routed_card_goes_away, "S43": s43_on_at_install_is_listed, "S36": s36_console_at_linked_address, "S30": s30_upgrade_and_back, "S14": s14_shared_address, "S14B": s14b_slower_relay, "S14C": s14c_continuous, "S15": s15_drop_together, "S16": s16_restart_every_150s, "S17": s17_gateway_slows_down, "S10D": lambda code_dir: s10_two_extenders(code_dir, dense=True), "S44": s44_add_all_large}

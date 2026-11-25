@@ -22,6 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from tools.lansim import scenarios as sc  # noqa: E402
+from tools.lansim.scenarios import PAGE_ADD_TIMEOUT_S  # noqa: E402
 
 
 def _no_conflict_stored(r: dict) -> str:
@@ -44,7 +45,7 @@ def _link_counts(r: dict) -> dict | None:
 
 def _extra(r: dict) -> dict | None:
     """What a run measured besides its verdict (P5): the share of time online of the phones behind the extenders, how long a card took to follow its device."""
-    got = {k: r[k] for k in ("online_share", "followed_s", "alerts", "tv_in_button", "cam_in_button", "tv_listed_new", "rows") if isinstance(r, dict) and k in r}
+    got = {k: r[k] for k in ("online_share", "followed_s", "alerts", "tv_in_button", "cam_in_button", "tv_listed_new", "rows", "found", "analysed", "deep_s", "longest_silence_s", "keepalives", "add", "cards", "untold") if isinstance(r, dict) and k in r}
     return got or None
 
 
@@ -173,6 +174,23 @@ def _s43(r: dict) -> tuple[str, str]:
     return ("pass", "") if r["cam_in_button"] else ("fail", "the device silent to broadcast (issue #35) is not in the list of the button")
 
 
+PAGE_STALL_S = 90      # new-devices.js: the page stops waiting for the deep search after this long without a byte
+
+
+def _s44(r: dict) -> tuple[str, str]:
+    """R8: "Add all" on a large network ends and says what it did. The add answers within the page's limit (else the page says "Error" while the cards were made, and a
+    second search lists nothing: the second report), every device found is a card or told back with a reason, the deep search never stays silent longer than the page
+    waits, and no card is listed again by the next search."""
+    add = r["add"]
+    if add.get("timed_out"):
+        return "fail", "the add did not answer within %d s (the page says Error); %d of %d found became cards anyway" % (PAGE_ADD_TIMEOUT_S, r["cards"], r["found"])
+    if r["untold"]:
+        return "fail", "%d devices found are neither cards nor told back with a reason" % r["untold"]
+    if r["longest_silence_s"] >= PAGE_STALL_S:
+        return "fail", "the deep search was silent for %d s (the page waits %d)" % (r["longest_silence_s"], PAGE_STALL_S)
+    return ("pass", "") if not r["listed_again_with_card"] else ("fail", "%d cards listed again by the next search" % r["listed_again_with_card"])
+
+
 def _s42(r: dict) -> tuple[str, str]:
     """K1: the card behind the router online, offline when its device is unplugged, online again when it is back. Ping must cross the router of the simulator."""
     if not r["crossing"]:
@@ -249,6 +267,7 @@ CHECKS = {
     "S41": _s41,
     "S42": _s42,
     "S43": _s43,
+    "S44": _s44,
     "S30": _s30,
     "S4": lambda r: ("fail", _no_conflict_stored(r)) if _no_conflict_stored(r) else
           ("pass", "") if len(r["after"]) == 1 and r["before"] and r["after"][0]["name"] == r["before"][0]["name"] else ("fail", str(r["after"])),
@@ -280,7 +299,7 @@ PLAN = [
     ("S13L", 2, lambda n: {}), ("S30", 1, lambda n: {"old_code_dir": OLD_CODE_DIR}),
     ("S11L", 2, lambda n: {}), ("S31", 2, lambda n: {}), ("S32", 2, lambda n: {}), ("S33", 1, lambda n: {}),
     ("S35", 2, lambda n: {}), ("S36", 2, lambda n: {}), ("S37", 2, lambda n: {}), ("S38", 2, lambda n: {}), ("S39", 2, lambda n: {}), ("S40", 2, lambda n: {}),
-    ("S41", 1, lambda n: {}), ("S42", 1, lambda n: {}), ("S43", 1, lambda n: {}),
+    ("S41", 1, lambda n: {}), ("S42", 1, lambda n: {}), ("S43", 1, lambda n: {}), ("S44", 2, lambda n: {}),
 ]
 OLD_CODE_DIR: str | None = None        # set by --old-code-dir (S30)
 FUNCTIONS = {"S10D": sc.s10_two_extenders, **{k: v for k, v in sc.SCENARIOS.items() if k != "S10D"}}

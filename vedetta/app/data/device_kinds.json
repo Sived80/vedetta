@@ -759,6 +759,21 @@
    "upnp": []
   },
   {
+   "id": "airquality",
+   "group": "iot",
+   "icon": "molecule-co2",
+   "words": [
+    "co2",
+    "air quality",
+    "qualita aria",
+    "iaq"
+   ],
+   "tokens": [],
+   "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
    "id": "microcontroller",
    "group": "iot",
    "icon": "chip",
@@ -929,6 +944,22 @@
    "words": [
     "purifier",
     "purificatore"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "ventilation",
+   "group": "climate",
+   "icon": "hvac",
+   "words": [
+    "vmc",
+    "mvhr",
+    "recuperatore",
+    "heat recovery",
+    "ventilazione meccanica"
    ],
    "tokens": [],
    "w": 4,
@@ -1210,6 +1241,22 @@
     "scale"
    ],
    "w": 3,
+   "mdns": [],
+   "upnp": []
+  },
+  {
+   "id": "fitness",
+   "group": "appliance",
+   "icon": "dumbbell",
+   "words": [
+    "gym",
+    "palestra",
+    "fitness",
+    "treadmill",
+    "tapis roulant"
+   ],
+   "tokens": [],
+   "w": 4,
    "mdns": [],
    "upnp": []
   },

@@ -337,7 +337,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/net-rotator.js` | 287 | rotating tile of the Network card |
 | `js/netpanel.js` | 493 | the panel «Networks» (v10) |
 | `js/network.js` | 59 | pause |
-| `js/new-devices.js` | 358 | new devices |
+| `js/new-devices.js` | 393 | new devices |
 | `js/night.js` | 44 | "Last 12 hours": the summary card |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
 | `js/tile.js` | 319 | tile |

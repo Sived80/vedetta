@@ -4,7 +4,7 @@
 set -e
 
 export VEDETTA_DATA_DIR=/data
-export VEDETTA_PORT="$(bashio::addon.ingress_port)"
+export VEDETTA_PORT="$(bashio::app.ingress_port)"
 export VEDETTA_INGRESS_ONLY=1
 LOG_LEVEL="$(bashio::config 'log_level')"
 export VEDETTA_LOG_LEVEL="${LOG_LEVEL}"

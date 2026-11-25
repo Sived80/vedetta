@@ -412,8 +412,8 @@ def _build_kind(k: dict) -> dict:
 def _split_words(words, toks: set) -> list[str]:
     """Substrings for the long or composite words; the short single words are added to `toks` (whole-word matches only)."""
     subs = []
-    for w in words or []:
-        w = fold(w)
+    for raw in words or []:
+        w = fold(raw)
         if " " not in w and "-" not in w and len(w) <= 7:
             toks.add(w)
         else:

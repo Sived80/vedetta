@@ -204,12 +204,11 @@ def rank(source: str, name: str | None) -> int:
 def pick(candidates: list[tuple[str, str | None]]) -> tuple[str | None, str | None]:
     """Best (name, source) among the candidates [(source, raw_name)], or (None, None)."""
     best: tuple[int, str, str] | None = None
-    for source, raw in candidates:
+    for given, raw in candidates:
         name = clean_name(raw)
         if not name:
             continue
-        if is_placeholder(name):
-            source = "weak"
+        source = "weak" if is_placeholder(name) else given
         score = rank(source, name)
         if best is None or score > best[0]:
             best = (score, name, source)

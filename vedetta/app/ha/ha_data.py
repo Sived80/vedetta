@@ -5,7 +5,7 @@ The calculation functions are pure (they take dicts and return
 dicts): they can be tested on their own (tests/check_ha_api.py) without starting the
 service. The HTTP calls live in routes/ha.py."""
 from typing import NamedTuple
-from pathlib import Path
+from pathlib import Path  # noqa: F401  the tests replace ha_data.Path with a fake one
 
 from ..recognition import brand_logo
 from ..storage import devices_config

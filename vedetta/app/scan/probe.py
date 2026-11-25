@@ -8,7 +8,6 @@ from ..formatters import should_show_title, wifi_quality, lan_quality
 from ..recognition import brands, naming
 from ..ha import ha_registry
 from . import mdns_listener
-from ..i18n import t_or as i18n_t_or
 from ..recognition.brands import match_model
 from ..recognition.identity import battery_assess, default_gateway, identify_brand, mobile_assess, presence_churn, presence_mac_changes
 from ..recognition import roles

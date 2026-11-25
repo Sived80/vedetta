@@ -8,7 +8,6 @@ logged-in Home Assistant user made (kept on the server, per user); the cookie of
 not `auto`; the language of Home Assistant; the browser's own (Accept-Language); English. The app name ("Vedetta") is never translated."""
 import contextvars
 import json
-import os
 from pathlib import Path
 
 from .storage import userlang

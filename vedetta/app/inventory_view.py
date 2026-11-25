@@ -10,7 +10,7 @@ import time
 from . import inventory, linkview, macverdict, netutil
 from .networks import registry
 from .storage import newdevices
-from .storage.history import history
+from .storage.history import history  # noqa: F401  the service's database, read through globals() in seen_now; the tests replace it
 
 _counts: dict = {}
 _known: list[str] = []          # the addresses of the devices confirmed or asleep at the last cycle, the most recent first (P8: known_ips)
@@ -31,7 +31,7 @@ def counts() -> dict:
     return {**_counts, "states": dict(_counts["states"]), "sources": dict(_counts["sources"])}
 
 
-def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> dict[str, dict]:
+def seen_now(arp: dict[str, dict], now: float | None = None, history=None) -> dict[str, dict]:  # noqa: F811  the argument is the database of a test
     """address -> {mac, vendor}: the ARP view of the cycle and the confirmed devices of the inventory that did not answer now. `history`: the
     database of the service unless another is given."""
     now = time.time() if now is None else now

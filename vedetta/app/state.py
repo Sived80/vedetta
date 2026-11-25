@@ -73,8 +73,8 @@ class DeviceState(IdentityUpkeep):
         self._stats = CycleStats()
         self._bg: set[asyncio.Future] = set()
         self._presence = state_support.Presence(self._bg)      # who is online: misses, last seen, what the history last recorded (state_support.py)
-        self._activity = state_support.Activity(lambda event: self.emit_event(event), lambda: self.rev)      # scans and searches in progress (state_support.py)
-        self._new = NewDeviceWatch(lambda: self.devices, lambda e: self.emit_event(e), lambda *a, **k: self.emit_alert(*a, **k))
+        self._activity = state_support.Activity(lambda event: self.emit_event(event), lambda: self.rev)  # noqa: PLW0108  read at call time: the tests replace emit_event      # scans and searches in progress (state_support.py)
+        self._new = NewDeviceWatch(lambda: self.devices, lambda e: self.emit_event(e), lambda *a, **k: self.emit_alert(*a, **k))  # noqa: PLW0108  read at call time: the tests replace them
 
     # ---- lifecycle ----
     async def load_history(self) -> None:

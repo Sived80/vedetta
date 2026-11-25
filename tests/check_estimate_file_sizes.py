@@ -15,7 +15,7 @@ tmp = Path(tempfile.mkdtemp())
 
 def run(log_path, data_dir, base=10):
     seen: list = []
-    result = ee._add_log_and_data_file_sizes(log_path, base, data_dir, None, lambda ts, size: seen.append((ts, size)))
+    result = ee._add_log_and_data_file_sizes(log_path, base, data_dir, lambda ts, size: seen.append((ts, size)))
     return result, seen
 
 

@@ -50,4 +50,4 @@ def choose(flags: dict) -> list[Badge]:
 def hidden(flags: dict) -> list[Badge]:
     """The badges that are on but did not fit: the detail of the card tells them."""
     shown = {b.id for b in choose(flags)}
-    return [_badge(k, flags) for k in sorted((k for k in KINDS if _on(k, flags)), key=lambda k: KINDS.index(k)) if k.id not in shown]
+    return [_badge(k, flags) for k in sorted((k for k in KINDS if _on(k, flags)), key=KINDS.index) if k.id not in shown]

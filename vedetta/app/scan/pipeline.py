@@ -26,7 +26,7 @@ import time
 
 from . import arpplan, dhcp, flows, scanner, touch_policy
 from ..recognition import naming
-from .adapters import shelly_gen1
+from .adapters import shelly_gen1  # noqa: F401  the tests replace pipeline.shelly_gen1.probe with a fake one
 from ..applog import logger
 from ..formatters import truncate_name
 from ..networks import registry

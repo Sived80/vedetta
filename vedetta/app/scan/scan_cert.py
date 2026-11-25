@@ -4,8 +4,8 @@
 def parse_ssl_cert(output: str) -> tuple[str | None, str | None]:
     """Subject and issuer of the certificate (ssl-cert text)."""
     subject = issuer = None
-    for line in output.splitlines():
-        line = line.strip()
+    for raw in output.splitlines():
+        line = raw.strip()
         if line.startswith("Subject:") and subject is None:
             subject = line[8:].strip()[:160] or None
         elif line.startswith("Issuer:") and issuer is None:
@@ -16,8 +16,8 @@ def parse_ssl_cert(output: str) -> tuple[str | None, str | None]:
 def parse_ssh_hostkey(output: str) -> str | None:
     """First fingerprint of the host key (ssh-hostkey text): it stays the same even
     if the device changes IP."""
-    for line in output.splitlines():
-        line = line.strip()
+    for raw in output.splitlines():
+        line = raw.strip()
         if line and line[0].isdigit():
             return line[:120]
     return None

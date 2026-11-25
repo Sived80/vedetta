@@ -130,8 +130,8 @@ def _estimate() -> dict:
     _result, data_dir, key, daily, base, mid, add_, db_path, log_path = _open_estimate_buckets()
     if _result is not None:
         return _result
-    ts = _add_database_row_sizes(db_path, add_, mid)
-    base = _add_log_and_data_file_sizes(log_path, base, data_dir, ts, add_)
+    _add_database_row_sizes(db_path, add_, mid)
+    base = _add_log_and_data_file_sizes(log_path, base, data_dir, add_)
     return _cache_estimate_result(daily, base, key)
 
 
@@ -162,7 +162,7 @@ _DAY_SIZES.append("SELECT CAST((? - ts) / 86400.0 AS INTEGER), SUM(COALESCE(leng
 
 
 def _add_database_row_sizes(db_path, add_, mid):
-    """Adds each day's bytes of the database rows (through add_, at the middle of that day). Returns None (kept for the callers)."""
+    """Adds each day's bytes of the database rows (through add_, at the middle of that day)."""
     if not db_path.exists():
         return None
     end = float(mid + 86400)
@@ -193,7 +193,7 @@ def _rows(con, sql, params):
         return
 
 
-def _add_log_and_data_file_sizes(log_path, base, data_dir, ts, add_):
+def _add_log_and_data_file_sizes(log_path, base, data_dir, add_):
     _add_log_line_sizes(log_path, add_)
     return base + _settings_files_size(data_dir)
 

@@ -84,13 +84,13 @@ function renderNewCard() {
   if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; newEl._markup = ""; return; }
   const opening = newEl.hidden;      // the card appears now: it opens (below), instead of the page jumping to it
   newEl.hidden = false;
-  const ad = S.adding;  // during the add: {ips, done (analysed), saved, mode ("single" | "batch"), meta, fresh, jobs, list, batch}
-  let run = 0, analysed = 0, saved = 0;
-  if (ad) Object.keys(ad.ips).forEach(function (ip) { if (ad.saved[ip]) saved++; else if (ad.done[ip]) analysed++; else run++; });
-  const active = run + analysed, total = run + analysed + saved, fin = !!ad && !active && saved > 0;
+  const ad = S.adding;  // during the add: {ips, done (analysed), saved, skip (ip -> why not added), mode ("single" | "batch"), meta, fresh, jobs, list, batch}
+  let run = 0, analysed = 0, saved = 0, skipped = 0;
+  if (ad) Object.keys(ad.ips).forEach(function (ip) { if (ad.saved[ip]) saved++; else if (ad.skip[ip]) skipped++; else if (ad.done[ip]) analysed++; else run++; });
+  const active = run + analysed, total = run + analysed + saved + skipped, fin = !!ad && !active && saved + skipped > 0;
   const none = "<span></span>";
   const rows = list.map(function (d) {
-    const state = ad && ad.ips[d.ip] ? (ad.saved[d.ip] ? "done" : ad.done[d.ip] ? "save" : "run") : "idle";
+    const state = ad && ad.ips[d.ip] ? (ad.saved[d.ip] ? "done" : ad.skip[d.ip] ? "skip" : ad.done[d.ip] ? "save" : "run") : "idle";
     const label = d.ip || d.mac;  // only IP and MAC: names are found later, by analyzing the device
     let cells;
     if (state === "idle") {
@@ -100,19 +100,25 @@ function renderNewCard() {
         : ' data-ignore-mac="' + esc(d.mac) + '"';
       const ignoreBtn = sym("eye-off", t("js.ha.new.ignore"), ignAttrs);
       cells = (d.ip ? sym("plus", t("js.ha.new.add_one"), ' data-add-ip="' + esc(d.ip) + '" data-add-host="' + esc(d.name || "") + '"', "ok") : none) + ignoreBtn;
-    } else if (state === "done") {
+    } else if (state === "done" || state === "skip") {
       cells = none + none;
     } else {
       cells = (ad.mode[d.ip] === "single" ? sym("close", t("js.ha.cancel"), ' data-add-cancel="' + esc(d.ip) + '"') : none) +
         '<span class="nd-status" title="' + esc(t("js.ha.new.working")) + '" role="img" aria-label="' + esc(t("js.ha.new.working")) + '"><svg class="nd-mini" viewBox="0 0 32 32" aria-hidden="true"><circle class="tr" cx="16" cy="16" r="13"/><circle class="sp" cx="16" cy="16" r="13"/></svg></span>';
     }
     const fresh = state === "done" && ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900;
-    return '<div class="nd-row nd-' + state + '" data-ip="' + esc(d.ip || "") + '"><span class="nd-ic">' + (state === "idle" ? icon("devices") : ndRing(state, fresh)) + '</span><div class="nd-text"><div class="nd-name">' + esc(label) +
-      '</div><div class="nd-sub">' + esc(d.ip && d.mac ? d.mac : "") + '</div></div><div class="nd-actions">' + cells + "</div></div>";
+    const ic = state === "idle" ? icon("devices") : state === "skip" ? icon("alert-circle") : ndRing(state, fresh);
+    // A row not added says why in place of its MAC (the reason is what the person needs now).
+    const sub = state === "skip" ? '<span class="nd-why">' + esc(skipText(ad.skip[d.ip])) + "</span>" : esc(d.ip && d.mac ? d.mac : "");
+    return '<div class="nd-row nd-' + state + '" data-ip="' + esc(d.ip || "") + '"><span class="nd-ic">' + ic + '</span><div class="nd-text"><div class="nd-name">' + esc(label) +
+      '</div><div class="nd-sub">' + sub + '</div></div><div class="nd-actions">' + cells + "</div></div>";
   }).join("");
   let title, sub;
   if (active) { title = t("js.ha.new.run_title", { done: saved, total: total }); sub = t("js.ha.new.run_sub"); }
-  else if (fin) { title = t("js.ha.new.added_title", { n: saved }); sub = t("js.ha.new.added_sub"); }
+  else if (fin) {
+    title = saved ? t("js.ha.new.added_title", { n: saved }) : t("js.ha.new.none_added");
+    sub = skipped ? t("js.ha.new.not_added", { n: skipped }) : t("js.ha.new.added_sub");
+  }
   else { title = S.found.length ? t("js.ha.new.found", { n: list.length }) : t("js.ha.new.title", { n: list.length }); sub = t("js.ha.new.hint"); }
   // The bar of the card: always two cells, "Add all" and "Cancel" (or "Close" when everything has ended), under the title.
   const free = list.filter(function (d) { return d.ip && !(ad && ad.ips[d.ip]); }).length;      // "Add all" from two devices on, found by a search or seen by the app
@@ -123,7 +129,7 @@ function renderNewCard() {
   else if (fin) bar = (free > 1 ? all : none) + sym("check", t("js.ha.new.close"), ' data-add-close="1"', "ok");
   else bar = (free > 1 ? all : none) + cancelBtn;
   const markup =
-    '<div class="card-header"><span class="ch-ic ' + (fin ? "ok" : "warn") + '">' + icon(fin ? "check-circle" : "plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +
+    '<div class="card-header"><span class="ch-ic ' + (fin && saved ? "ok" : "warn") + '">' + icon(fin && saved ? "check-circle" : fin ? "alert-circle" : "plus-circle") + '</span><div class="ch-text"><div class="ch-title small">' +
     esc(title) + '</div><div class="ch-sub">' + esc(sub) + "</div></div>" +
     '<div class="nd-bar-actions">' + bar + "</div></div>" +
     '<div class="nd-list">' + rows + "</div>";
@@ -138,13 +144,27 @@ function renderNewCard() {
     if (full > 0) newEl.animate([{ height: "0px", opacity: 0 }, { height: full + "px", opacity: 1 }], { duration: 280, easing: "ease-out" });
   }
 }
+// Why a device was not added (the reasons of POST /api/devices/add; "error" when the add itself did not answer).
+const SKIP_KEYS = { exists: "js.ha.new.skip_exists", invalid: "js.ha.new.skip_invalid", off_limits: "js.ha.new.skip_off_limits" };
+function skipText(reason) { return t(SKIP_KEYS[reason] || "js.ha.new.skip_error"); }
+// The deep search sends a keep-alive line every 20 s (sse.with_keepalive): this long without a byte the stream is lost (a proxy that
+// dropped it, an app put to sleep) and the page stops waiting for it, so "Add all" always ends (R8: a spinner turned for ever).
+export const STALL_MS = 90000;
 // Adding directly from here (in the HA mobile app a link to the classic
 // dashboard would be blocked): associative search on the devices by recommended
-// name and port, then a single save.
+// name and port, then a single save. Resolves to {results, stalled}.
 function scanMany(ips, hosts, onResult, signal) {
   const hints = {}, NL = String.fromCharCode(10);
   ips.forEach(function (ip) { if (hosts[ip]) hints[ip] = hosts[ip]; });
-  let results = [], complete = [];
+  let results = [], complete = [], stalled = false, timer = null;
+  const ctrl = window.AbortController ? new AbortController() : null;
+  if (signal && ctrl) signal.addEventListener("abort", function () { ctrl.abort(); });
+  function arm() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { stalled = true; if (ctrl) ctrl.abort(); }, STALL_MS);
+  }
+  function settle() { clearTimeout(timer); return { results: complete.length ? complete : results, stalled: stalled }; }
+  arm();
   function eat(line) {
     if (line.indexOf("data: ") !== 0) return;
     try {
@@ -155,8 +175,9 @@ function scanMany(ips, hosts, onResult, signal) {
   }
   return fetch("/api/scan/deep", {
     method: "POST", headers: { "Content-Type": "application/json", "X-Lang": LANG },
-    body: JSON.stringify({ ips: ips, hints: hints }), signal: signal
+    body: JSON.stringify({ ips: ips, hints: hints }), signal: ctrl ? ctrl.signal : signal
   }).then(function (r) {
+    arm();
     // Stream reading: each completed device is reported immediately.
     if (!r.body || !r.body.getReader) {
       return r.text().then(function (txt) { txt.split(NL).forEach(eat); });
@@ -165,6 +186,7 @@ function scanMany(ips, hosts, onResult, signal) {
     function pump() {
       return reader.read().then(function (x) {
         if (x.done) { buf.split(NL).forEach(eat); return; }
+        arm();
         buf += dec.decode(x.value, { stream: true });
         const lines = buf.split(NL);
         buf = lines.pop();
@@ -173,7 +195,7 @@ function scanMany(ips, hosts, onResult, signal) {
       });
     }
     return pump();
-  }).then(function () { return complete.length ? complete : results; }).catch(function () { return complete.length ? complete : results; });
+  }).then(settle, settle);
 }
 function toDevice(ip, host, r) {
   return { ip: ip, name: (r && r.suggested_name) || host || ip, adapter: (r && r.adapter) || "generic",
@@ -201,11 +223,21 @@ function closeAdding() {
   S.scanDone = false;
   renderNew();
 }
+// The answer of POST /api/devices/add: the rows it made are saved, every other row says why it was not added.
+function settleAdded(ad, ips, res) {
+  const made = {}, why = {};
+  (Array.isArray(res.added) ? res.added : []).forEach(function (d) { made[d.ip] = true; });
+  (Array.isArray(res.skipped) ? res.skipped : []).forEach(function (s) { why[s.ip] = s.reason; });
+  ips.forEach(function (ip) {
+    if (made[ip]) { ad.saved[ip] = true; ad.fresh[ip] = Date.now(); }
+    else ad.skip[ip] = why[ip] || "error";
+  });
+}
 function addDevices(ips, hosts, mode) {
   // "Adding" state, shared among several parallel additions. Each row goes: analysed (ring turns) -> saved (ring closes into
   // a tick). The other rows stay usable: each new addition starts at once with its own search (the server queues the heavy
   // jobs). mode "batch" = started with "Add all": from then on the only "Cancel" is the one of the bar and it stops them all.
-  const ad = S.adding || (S.adding = { ips: {}, done: {}, saved: {}, mode: {}, meta: {}, fresh: {}, jobs: 0, list: [], batch: false });
+  const ad = S.adding || (S.adding = { ips: {}, done: {}, saved: {}, skip: {}, mode: {}, meta: {}, fresh: {}, jobs: 0, list: [], batch: false });
   if (mode === "batch") {
     ad.batch = true;
     Object.keys(ad.ips).forEach(function (ip) { if (!ad.saved[ip]) ad.mode[ip] = "batch"; });
@@ -227,20 +259,23 @@ function addDevices(ips, hosts, mode) {
     ad.jobs--;
     if (ad.jobs <= 0 && S.adding === ad) {
       ad.batch = false;
-      if (!Object.keys(ad.saved).length) S.adding = null;      // nothing was added: the card goes back to how it was
-      renderNew();                                             // otherwise it stays, green, until "Close"
+      if (!Object.keys(ad.saved).length && !Object.keys(ad.skip).length) S.adding = null;   // nothing was tried: the card goes back to how it was
+      renderNew();                                             // otherwise it stays (green, or saying why) until "Close"
       // A device that the card itself brought (seen on the network, not chosen from a search) has no list to come back to:
       // when it is saved the card goes away by itself, after the tick has been seen.
       var savedIps = Object.keys(ad.saved);
-      if (S.adding === ad && savedIps.length && !S.found.length && savedIps.every(function (ip) { return ad.meta[ip] && ad.meta[ip].src === "new"; })) {
+      if (S.adding === ad && savedIps.length && !Object.keys(ad.skip).length && !S.found.length && savedIps.every(function (ip) { return ad.meta[ip] && ad.meta[ip].src === "new"; })) {
         setTimeout(function () { if (S.adding === ad && !ad.jobs) closeAdding(); }, 2200);
       }
     }
   }
   let use = ips;
-  scanMany(ips, hosts, function (r) { if (ad.ips[r.ip]) ad.done[r.ip] = true; renderNew(); }, job.ctrl && job.ctrl.signal).then(function (results) {
+  scanMany(ips, hosts, function (r) { if (ad.ips[r.ip]) ad.done[r.ip] = true; renderNew(); }, job.ctrl && job.ctrl.signal).then(function (got) {
     const byIp = {};
-    results.forEach(function (r) { byIp[r.ip] = r; });
+    got.results.forEach(function (r) { byIp[r.ip] = r; });
+    // The stream was lost: the searches still running are stopped on the server too; their devices are added with what is known.
+    const lost = got.stalled ? ips.filter(function (ip) { return !byIp[ip]; }) : [];
+    if (lost.length) api("/api/scan/cancel", { method: "POST", json: { ips: lost } }).catch(function () {});
     // Cancelled: only the devices whose analysis had already finished are kept (none, if that row was cancelled by hand).
     use = job.dropAll ? [] : (job.cancelled ? ips.filter(function (ip) { return byIp[ip]; }) : ips);
     use = use.filter(function (ip) { return ad.ips[ip]; });
@@ -250,14 +285,14 @@ function addDevices(ips, hosts, mode) {
     const devices = use.map(function (ip) { return toDevice(ip, hosts[ip], byIp[ip]); });
     return api("/api/devices/add", { method: "POST", json: { devices: devices } });
   }).then(function (res) {
-    if (res) use.forEach(function (ip) { ad.saved[ip] = true; ad.fresh[ip] = Date.now(); });
+    if (res) settleAdded(ad, use, res);
     finish();
     return res ? afterAdd(use) : null;
-  }).catch(function () {
-    ips.forEach(function (ip) { delete ad.ips[ip]; delete ad.done[ip]; delete ad.mode[ip]; delete ad.meta[ip]; });
+  }, function () {
+    // The add did not answer (or failed): every row of this job says so, and the card ends with "Close" instead of turning on.
+    use.forEach(function (ip) { if (ad.ips[ip] && !ad.saved[ip]) ad.skip[ip] = "error"; });
     finish();
     renderNew();
-    snack(t("js.ha.toast.error"), { kind: "error" });
   });
 }
 newEl.addEventListener("click", function (e) {

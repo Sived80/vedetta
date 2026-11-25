@@ -52,7 +52,7 @@ const dom = new JSDOM(html, {
       const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
       if (url === "/api/scan/quick") return ok(HOSTS);
       if (url === "/api/scan/deep") { const s = makeStream(body.ips, opts.signal); streams.push(s); return Promise.resolve({ ok: true, status: 200, body: { getReader: () => s.reader } }); }
-      if (url === "/api/devices/add") return ok({ ok: true });
+      if (url === "/api/devices/add") return ok({ added: body.devices.map((d) => ({ ip: d.ip })), skipped: [] });     // as the server answers (R8)
       if (url.startsWith("/api/new-devices")) return newDevicesDown ? Promise.resolve({ ok: false, status: 500, headers: { get: () => null }, json: () => Promise.resolve({ detail: "down" }) }) : ok([]);
       if (url === "/api/scan/cancel") return ok({ ok: true });
       let b = {};

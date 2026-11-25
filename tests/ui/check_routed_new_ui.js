@@ -42,7 +42,7 @@ const dom = new JSDOM(html, {
       calls.push({ url, method, body });
       const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve(JSON.stringify(b)) });
       if (url === "/api/scan/quick") return ok(HOSTS);
-      if (url === "/api/devices/add") return ok({ ok: true });
+      if (url === "/api/devices/add") return ok({ added: body.devices.map((d) => ({ ip: d.ip })), skipped: [] });     // as the server answers (R8)
       if (url.startsWith("/api/new-devices")) return ok([]);
       if (url === "/api/scan/cancel") return ok({ ok: true });
       let b = {};

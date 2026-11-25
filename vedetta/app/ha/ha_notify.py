@@ -2,7 +2,12 @@
 
 Two channels, through the Supervisor's WebSocket proxy (the same one the registry reads, ha_registry):
   - an EVENT on the bus of Home Assistant for every message: vedetta_new_device, vedetta_device_down, vedetta_device_back, with
-    {card, label, ip} (and "minutes" for a return): an automation or a blueprint can act on it. Off until the person turns it on ("ha_events", decision A of 19/11: nothing is written to Home Assistant by default);
+    {card, label, ip} (and "minutes" for a return) and always {brand, type, kind, reason}: the product brand, the group (as the MQTT
+    "type"), the finer type (as the MQTT "kind": "accesspoint", "nas", "tv"...) and, for a new device, why it is new (NEW_REASONS:
+    "new_mac" = a MAC never seen on the home network, "new_behind_router" = an address never seen on a network behind the router).
+    A value Vedetta does not know (or an event saved by an older version) is null, never absent, so templates stay simple; reason is
+    null on a down or a back. An automation or a blueprint (blueprints/automation/vedetta) can act on it. Off until the person turns
+    it on ("ha_events", decision A of 19/11: nothing is written to Home Assistant by default);
   - a NOTIFICATION to the recipients the person put in order ("notify_order": e.g. first notify.mobile_app_phone, then 30 s later
     notify.living_room_tv): one message per cycle, one line per event, in the language of Home Assistant, handed out by notify_queue
     (in line, each recipient after its wait, whether the one before took it or not). Off until a recipient is chosen.
@@ -18,6 +23,9 @@ from . import ha_registry, notify_queue
 
 EVENT_TYPES = {"new": "vedetta_new_device", "down": "vedetta_device_down", "back": "vedetta_device_back"}
 ALERT_KEYS = {"new": "alert.new_device", "down": "alert.device_down", "back": "alert.device_back"}
+NEW_MAC, NEW_BEHIND_ROUTER = "new_mac", "new_behind_router"
+NEW_REASONS = (NEW_MAC, NEW_BEHIND_ROUTER)
+DETAIL_KEYS = ("brand", "type", "kind", "reason")
 TITLE = "Vedetta"
 _failed_once: set = set()
 _tasks: set = set()
@@ -39,9 +47,11 @@ def lines(events: list[dict], lang: str) -> list[str]:
 
 
 def event_data(ev: dict) -> dict:
-    """Pure: the data of the event on the bus of Home Assistant (numbers and short texts only)."""
+    """Pure: the data of the event on the bus of Home Assistant (numbers and short texts only): the keys of DETAIL_KEYS always, null
+    when not known."""
     p = ev.get("params") or {}
-    data = {"card": ev.get("card"), "label": p.get("label") or ev.get("card"), "ip": p.get("ip") or "-"}
+    data = {"card": ev.get("card"), "label": p.get("label") or ev.get("card"), "ip": p.get("ip") or "-",
+            **{key: p.get(key) or None for key in DETAIL_KEYS}}
     if ev.get("kind") == "back":
         data["minutes"] = max(1, round((p.get("away_s") or 0) / 60))
     return data

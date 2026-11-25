@@ -13,7 +13,7 @@ from collections.abc import Callable
 from . import paths
 from .applog import logger
 from .atomic import write_atomic
-from .ha import ha_data
+from .ha import ha_data, ha_notify
 from .sentinel import BACK, DOWN, Sentinel
 
 STORE = paths.data_path("sentinel.json")
@@ -46,16 +46,26 @@ def on_presence(result: dict, online: bool, ts: float) -> None:
     """A card changed between online and offline (state_support.Presence: only real changes, after the tolerance to missed checks)."""
     try:
         sentinel().presence(result["id"], online, ts, watched=watched(result["id"]), label=result.get("name") or result.get("ip") or result["id"],
-                            ip=result.get("ip") or "-")
+                            ip=result.get("ip") or "-", **ha_data.device_facts(result, ha_data.config_map().get(result["id"])))
     except Exception:
         logger.exception("Sentinella: cambio di presenza non registrato")
 
 
-def on_new_device(mac: str, label: str, ip: str) -> None:
+def on_new_device(mac: str, label: str, ip: str, entry: dict | None = None) -> None:
+    """A new device (entry: its row of the watch, newdevices: MAC, address, host name, maker, brand; "network" when it lives behind the
+    router): its facts and why it is new go with the event, taken from what the watch already has."""
     try:
-        sentinel().new_device(mac, time.time(), label=label, ip=ip)
+        sentinel().new_device(mac, time.time(), label=label, ip=ip, **_new_facts(entry or {}))
     except Exception:
         logger.exception("Sentinella: nuovo dispositivo non registrato")
+
+
+def _new_facts(entry: dict) -> dict:
+    """The facts of a new device, from its row of the watch (it has no card yet: no choice made by hand), and why it is new."""
+    device = {"id": entry.get("mac") or entry.get("ip"), "mac": entry.get("mac"), "ip": entry.get("ip"), "name": entry.get("hostname"),
+              "vendor": entry.get("vendor"), "vendor_role": entry.get("vendor_role"), "brand": entry.get("brand")}
+    reason = ha_notify.NEW_BEHIND_ROUTER if entry.get("network") else ha_notify.NEW_MAC
+    return {**ha_data.device_facts(device), "reason": reason}
 
 
 def after_cycle(devices: dict, emit_alert: Callable[..., None], now: float | None = None) -> list[dict]:

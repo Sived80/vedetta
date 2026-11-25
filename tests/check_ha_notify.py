@@ -23,7 +23,8 @@ NEW = {"kind": "new", "card": "aa:bb", "params": {"label": "Pixel", "ip": "10.0.
 # 1) pure: lines in the language asked, the data of the events, the commands of one cycle
 assert ha_notify.lines([DOWN, BACK], "it") == ["NAS (10.0.0.5) non risponde", "NAS (10.0.0.5) è tornato dopo 21 min"]
 assert ha_notify.lines([NEW], "en") == ["New device on the network: Pixel (10.0.0.9)"]
-assert ha_notify.event_data(BACK) == {"card": "nas", "label": "NAS", "ip": "10.0.0.5", "minutes": 21}
+assert ha_notify.event_data(BACK) == {"card": "nas", "label": "NAS", "ip": "10.0.0.5", "minutes": 21,
+                                      "brand": None, "type": None, "kind": None, "reason": None}      # 1.0.3: the device facts always there, null when not known
 cmds = ha_notify.commands([NEW, DOWN], True, "notify.mobile_app_pixel", "en")
 assert [c["type"] for c in cmds] == ["fire_event", "fire_event", "call_service"]
 assert [c.get("event_type") for c in cmds[:2]] == ["vedetta_new_device", "vedetta_device_down"]

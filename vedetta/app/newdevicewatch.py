@@ -29,7 +29,7 @@ def warn_new(fresh: list[dict], emit_alert: Callable[..., None]) -> None:
         message = f"Nuovo dispositivo in rete: {label} ({ip}) MAC {dev['mac'] or '-'}"
         if alerts_on:
             emit_alert(message, "alert.new_device", label=label, ip=ip)
-            sentinel_view.on_new_device(dev["mac"] or ip, label, ip)
+            sentinel_view.on_new_device(dev["mac"] or ip, label, ip, dev)
         else:
             logger.info(message)
 

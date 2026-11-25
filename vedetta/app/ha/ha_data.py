@@ -80,6 +80,13 @@ def effective_type(device: dict, cfg: dict | None = None) -> str:
     return infer_type(device, cfg.get("adapter"))
 
 
+def device_facts(device: dict, cfg: dict | None = None) -> dict:
+    """Pure: what the events on the bus of Home Assistant say of a device: its product brand (None when unknown: the chip maker is not
+    a brand), its category (effective_type, as the MQTT "type") and its finer type (effective_kind, as the MQTT "kind")."""
+    group = effective_type(device, cfg)
+    return {"brand": device.get("brand") or None, "type": group, "kind": effective_kind(device, cfg, group)}
+
+
 # ---- configuration (adapter, "mobile" choice) with file cache ----
 _cfg_cache: dict = {"mtime": None, "map": {}}
 

@@ -1,6 +1,6 @@
 """The functions that reach the internet, and the add-on options that switch them off (config.yaml: internet_*; run.sh turns them into VEDETTA_INTERNET_*).
 
-  public IP       a DNS query to OpenDNS (scan/internet.py)             every 6 hours
+  public IP       a DNS query to OpenDNS (scan/internet.py)             every 6 hours (no address: one debug query, see internet.py)
   path            a traceroute to a public address, 1.1.1.1 by default  every 6 hours
   MAC database    the download of the IEEE registries (recognition/oui_update.py)
 

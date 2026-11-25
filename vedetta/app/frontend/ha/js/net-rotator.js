@@ -123,6 +123,8 @@ function netTiles() {
 }
 
 // ------------------------------------------------------------ the other tiles
+// The public IP that could not be read (scan/internet.py: public_ip_status): the short text of the box, the whole sentence (tooltip, gateway's card).
+export const IP_MISS = { redirected: ["js.ha.tile.ip_redirected", "js.ha.net.ip_redirected"], no_reply: ["js.ha.tile.ip_no_reply", "js.ha.net.ip_no_reply"] };
 // Connection to the internet: the public IP, how it is reached (direct, CGNAT, double NAT), the hops to the outside.
 // Each of the two checks can be switched off in the add-on options (S.external): what is off says so instead of a value.
 function internetTile() {
@@ -138,16 +140,19 @@ function internetTile() {
     };
   }
   if (!net) return null;
-  const hops = (net.hops || []).length, reachable = ipOn ? !!net.public_ip : hops > 0;
+  // no address: "redirected" (the network answers the DNS in place of OpenDNS) or "no_reply" (tried again) is said, not "–"; the path decides online
+  const hops = (net.hops || []).length, miss = ipOn && !net.public_ip ? IP_MISS[net.public_ip_status] : null;
+  const reachable = ipOn && !!net.public_ip || (pathOn || !ipOn) && hops > 0;
   const kind = t(!pathOn ? "js.ha.tile.net_path_off" : net.cgnat ? "js.ha.tile.net_cgnat" : net.double_nat ? "js.ha.tile.net_double" : net.maybe_double_nat ? "js.ha.tile.net_maybe_double" : "js.ha.tile.net_direct");
-  const ip = ipOn ? (net.public_ip || "–") : t("js.ha.tile.off");
-  const b1 = statBox(t("js.ha.tile.ext_public_ip"), esc(ip), reachable ? color : "var(--error-color)", "tinted");
+  const ip = !ipOn ? t("js.ha.tile.off") : net.public_ip || (miss ? t(miss[0]) : "–");
+  const b1 = statBox(t("js.ha.tile.ext_public_ip"), esc(ip), miss ? "var(--warning-color)" : reachable ? color : "var(--error-color)", "tinted");
   // in the box the label already says "Connection": the direct case is one word there (the tooltip keeps the whole text)
   const direct = pathOn && !net.cgnat && !net.double_nat && !net.maybe_double_nat;
   const b2 = statBox(t("js.ha.tile.connection"), esc(direct ? t("js.ha.tile.net_direct_short") : kind));
   const foot = tileLegend(esc(t("js.ha.tile.hops", { n: pathOn ? hops : "–" })) + " · " + esc(t(reachable ? "js.ha.tile.online" : "js.ha.tile.offline")),
     esc(t("js.ha.tile.checked", { ago: net.ts ? ago(net.ts) : "-" })), pathOn ? hops / 5 * 100 : 0, color);
-  return { id: "internet", tip: t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }), html: cardHTML(color, "earth", name, b1, b2, foot) };
+  const tip = t("js.ha.tile.internet_tip", { kind: kind, hops: pathOn ? hops : "–" }) + (miss ? " · " + t(miss[1]) : "");
+  return { id: "internet", tip: tip, html: cardHTML(color, "earth", name, b1, b2, foot) };
 }
 
 // The three functions that reach the internet: how many are on, and which ones are off.

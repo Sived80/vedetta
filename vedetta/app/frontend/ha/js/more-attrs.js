@@ -4,6 +4,7 @@ import { DEBUG } from "./debug.js";
 import { deepOneBusy } from "./deep.js";
 import { batteryTitle, chipText } from "./filters.js";
 import { viaText } from "./tile.js";
+import { IP_MISS } from "./net-rotator.js";
 import { EV_KEYS, dbgFetch, evApply, evRowCells } from "./more-evidence.js";
 
 export function miDebug(d) {
@@ -78,6 +79,7 @@ export function miAttrs(d) {
   if (net && rr && rr.gateway) {
     var np = [];
     if (net.public_ip) np.push(t("js.ha.net.public", { ip: net.public_ip }));
+    else if (IP_MISS[net.public_ip_status]) np.push(t(IP_MISS[net.public_ip_status][1]));
     const ips = (net.private_hops || []).join(" \u2192 ");
     np.push(net.cgnat ? t("js.ha.net.cgnat") : net.double_nat ? t("js.ha.net.double", { ips: ips }) :
       net.maybe_double_nat ? t("js.ha.net.maybe_double", { ips: ips }) : t("js.ha.net.direct"));

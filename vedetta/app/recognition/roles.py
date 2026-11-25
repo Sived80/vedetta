@@ -39,6 +39,9 @@ _AP_TYPES = ("WLANAccessPointDevice", "WFADevice")
 _ROUTER_TYPES = ("InternetGatewayDevice", "WANDevice", "WANConnectionDevice")
 
 DISCOVER_EVERY_S = 6 * 3600
+# A public IP without any reply (transient) is asked once more after 15 minutes, the public IP only; a second miss waits for the 6 hours.
+# "redirected" (something answers the DNS in place of OpenDNS) does not fix itself: no quick retry.
+INTERNET_RETRY_S = 15 * 60
 
 
 class _Runtime:
@@ -47,7 +50,7 @@ class _Runtime:
     def __init__(self) -> None:
         self.roles: dict = {"by_ip": {}, "via": {}, "names": {}, "types": {}, "dhcp": [], "ts": 0}     # the last result
         self.offers: dict = {"list": [], "ts": 0.0}          # the answer of the last test DHCP DISCOVER
-        self.internet: dict = {"data": None, "ts": 0.0}      # the last check of the way out to the internet
+        self.internet: dict = {"data": None, "ts": 0.0, "quick": False}  # the last check of the way out to the internet (quick: it was the retry)
         # The active network checks are given by main when it starts roles (roles decides WHEN to run them; it does not import the scanner).
         self.dhcp_discover = None
         self.internet_check = None
@@ -275,25 +278,37 @@ async def _start_discovery_jobs(state):
     return jobs, discover, own_ip
 
 
+def _internet_due(now: float) -> str | None:
+    """"full", "ip" (the quick retry of the public IP only) or None."""
+    if _rt.internet_check is None:
+        return None
+    age = now - _rt.internet["ts"]
+    if age > DISCOVER_EVERY_S:
+        return "full"
+    status = (_rt.internet["data"] or {}).get("public_ip_status")
+    return "ip" if status == "no_reply" and not _rt.internet["quick"] and age > INTERNET_RETRY_S else None
+
+
 async def _run_jobs_and_check_internet(jobs):
-    check_net = _rt.internet_check is not None and time.time() - _rt.internet["ts"] > DISCOVER_EVERY_S
-    if check_net:
-        jobs.append(_rt.internet_check())
+    due = _internet_due(time.time())
+    if due:
+        jobs.append(_rt.internet_check(previous=_rt.internet["data"]) if due == "ip" else _rt.internet_check())
     results = await asyncio.gather(*jobs, return_exceptions=True)
-    if check_net:
-        _record_internet(results.pop())
+    if due:
+        _record_internet(results.pop(), quick=due == "ip")
     return results
 
 
-def _record_internet(net):
+def _record_internet(net, quick: bool = False):
     if isinstance(net, Exception):
         logger.warning("Controllo dell'uscita verso internet fallito (%r)", net)
+        _rt.internet["quick"] = _rt.internet["quick"] or quick      # a failed retry is not tried again before the 6 hours
         return
     changed_net = _rt.internet["data"] != net
-    if (net.get("checks") or {}).get("path", True):      # without the path check, "direct" would be a guess: nothing is written
+    if not quick and (net.get("checks") or {}).get("path", True):      # without the path check, "direct" would be a guess: nothing is written
         journal.add("detail", "journal.internet_" + ("cgnat" if net.get("cgnat") else "double" if net.get("double_nat") else "maybe_double" if net.get("maybe_double_nat") else "direct"),
                     icon="router-wireless")
-    _rt.internet.update(data=net, ts=time.time())
+    _rt.internet.update(data=net, ts=time.time(), quick=quick)
     if changed_net and _rt.on_change:
         _rt.on_change(event())
 

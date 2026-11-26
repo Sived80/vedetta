@@ -273,6 +273,7 @@ The functions that were restructured have a reference test that was generated fr
 |---|---|
 | `storage/blocklist.py` | Ignored devices: they do not appear in searches nor in new-device alerts. |
 | `storage/devices_config.py` | The list of monitored devices, saved in devices.yaml: load, add, update, set by hand (override), change of address, automatic name, scan info, remove. |
+| `storage/firststart.py` | When Vedetta first started on this installation (first_start.json), for the notice of the first hours on the page. |
 | `storage/health_hidden.py` | The health findings a person chose to hide (config/health_hidden.json). |
 | `storage/history.py` | The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer. |
 | `storage/history_health.py` | HealthMixin: the findings of the network health (health/) kept on disk, so a restart does not lose the record of what was seen. |
@@ -324,7 +325,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/health-sim.js` | 49 | network health: made-up findings, debug mode only |
 | `js/ignored.js` | 347 | ignored devices, inside the panel «Networks» |
 | `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
-| `js/live.js` | 267 | update |
+| `js/learning.js` | 29 | the notice of the first hours |
+| `js/live.js` | 269 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 226 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
@@ -334,16 +336,16 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-month.js` | 70 | "Last 30 days" in the card |
 | `js/net-gauge.js` | 127 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
-| `js/net-rotator.js` | 287 | rotating tile of the Network card |
+| `js/net-rotator.js` | 295 | rotating tile of the Network card |
 | `js/netpanel.js` | 493 | the panel «Networks» (v10) |
 | `js/network.js` | 59 | pause |
-| `js/new-devices.js` | 393 | new devices |
+| `js/new-devices.js` | 399 | new devices |
 | `js/night.js` | 44 | "Last 12 hours": the summary card |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
 | `js/tile.js` | 319 | tile |
 | `js/update.js` | 34 | update available |
 | `css/10-base.css` | 174 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
-| `css/11-components.css` | 181 | components |
+| `css/11-components.css` | 186 | components |
 | `css/12-motion.css` | 175 | motion |
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/21-export-vlan.css` | 80 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
@@ -351,7 +353,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/40-network.css` | 513 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/42-health.css` | 102 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
 | `css/50-tile.css` | 222 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
-| `css/60-new-devices.css` | 87 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
+| `css/60-new-devices.css` | 85 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/61-night.css` | 13 | "Last 12 hours" (#card-night): the summary card, only when there is something to say; under the network card, above the log. |
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/63-netpanel.css` | 190 | The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel |

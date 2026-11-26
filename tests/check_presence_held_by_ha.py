@@ -11,7 +11,7 @@ router integration of Home Assistant still has it. What this proves, on one real
   - the switch in the menu (setting "phone_hold_ha", on by default): off, a silent phone goes offline by the usual rule, a card already held
     included, and Home Assistant is not read at all (neither asked nor the reading of the passive function);
   - a card with several MACs (1.0.4: a phone uses another private MAC on each Wi-Fi network, the router tracker knows the one of the main network):
-    a tracker "home" for ANY MAC its presence history kept holds it; not for a MAC now behind another card (its last event, or its MAC in this
+    a tracker "home" for ANY private MAC its presence history kept holds it; not for a maker's MAC (another device once at the address), not for a MAC now behind another card (its last event, or its MAC in this
     cycle), not for a MAC lent by a repeater; still one reading of Home Assistant, not one per MAC.
 Home Assistant is a fake websocket; no packet leaves."""
 import asyncio
@@ -280,12 +280,14 @@ check(phone()["online"] and phone().get("presence_held") == "ha", "switch on aga
 from app import macverdict  # noqa: E402
 from app.storage.history import history  # noqa: E402
 M_MAIN, M_LENT, M_GONE = "02:00:00:00:31:11", "02:00:00:00:31:12", "02:00:00:00:31:13"
+M_VENDOR = "00:00:5E:00:53:31"     # the documentation block: a globally unique MAC, invented
 t0 = time.time() - 3600
 history.record_presence("phone", "192.0.2.31", M_MAIN, True, t0)          # the phone on the main network, with its MAC there
 history.record_presence("phone", "192.0.2.31", M_LENT, True, t0 + 1)      # behind a repeater once: a lent MAC
 history.record_presence("phone", "192.0.2.31", M_GONE, True, t0 + 2)      # a MAC that later went behind another card
 history.record_presence("tablet", "192.0.2.40", M_GONE, True, t0 + 3)
 history.record_presence("phone", "192.0.2.31", M_PRINTER, True, t0 + 4)   # long ago at the phone's address: now the printer's MAC
+history.record_presence("phone", "192.0.2.31", M_VENDOR, True, t0 + 4.5)  # a maker's MAC (not private): another device once at the address
 history.record_presence("phone", "192.0.2.31", M_PHONE, True, t0 + 5)
 
 
@@ -307,6 +309,7 @@ held_by([tracker("device_tracker.router_client_1", "not_home", M_PHONE), tracker
 held_by([tracker("device_tracker.router_client_9", "home", M_GONE)], "home for a MAC now behind another card", False)
 held_by([tracker("device_tracker.router_client_9", "home", M_PRINTER)], "home for a MAC that is another card's in this cycle", False)
 held_by([tracker("device_tracker.router_client_9", "home", M_LENT)], "home for a MAC lent by a repeater", False)
+held_by([tracker("device_tracker.router_client_9", "home", M_VENDOR)], "home for a maker's MAC of the card's history (only private ones count)", False)
 held_by([tracker("device_tracker.router_client_9", "home", "02:00:00:00:31:99")], "home for a MAC never behind the card", False)
 
 print("ALL OK" if not failed else "%d FAILED" % failed)

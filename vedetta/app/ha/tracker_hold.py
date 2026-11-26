@@ -3,8 +3,9 @@ router still has it. When a MOBILE card does not answer in a check, the router t
 Vedetta's own MQTT trackers left out by their unique id) are asked about its MAC: "home" keeps it online, marked as held (state_cycle.settle);
 "not_home" or another zone let the usual rule decide; "unavailable", "unknown", no tracker or no reading change nothing.
 A card with several MACs (1.0.4): a phone uses another private MAC on each Wi-Fi network, and the router tracker may know only the one of the main
-network. So when the card's MAC of now is not "home", every MAC the presence history saw behind the card counts too (one "home" holds it), except
-a MAC whose last event is behind another card or that is another card's MAC in this check (taken over), and a MAC lent by a repeater or shared by
+network. So when the card's MAC of now is not "home", every PRIVATE MAC (locally administered: the per-network MACs of a phone) the presence
+history saw behind the card counts too (one "home" holds it); never a maker's MAC (another device once at the address), and never
+a MAC whose last event is behind another card or that is another card's MAC in this check (taken over), nor a MAC lent by a repeater or shared by
 design (macverdict). Still the one reading of Home Assistant: the history is asked once for the MACs at home, not once per MAC. A switch in the menu
 (setting "phone_hold_ha", on by default) turns it off: then nothing is held and Home Assistant is not read.
 
@@ -68,7 +69,7 @@ def _hold(probe_input: dict, result: dict) -> None:
 async def _hold_by_other_macs(inputs: list[dict], results: list, rest: list[int], home: dict) -> None:
     """The silent phones left: held when a MAC at home (never a lent or shared one) was last seen behind that very card and is not another
     card's MAC in this check."""
-    at_home = frozenset(m.upper() for m, on in home.items() if on is True and not macverdict.shared(m))
+    at_home = frozenset(m.upper() for m, on in home.items() if on is True and _private(m) and not macverdict.shared(m))
     if not at_home:
         return
     owner = await _owners_of(at_home)
@@ -81,6 +82,14 @@ async def _hold_by_other_macs(inputs: list[dict], results: list, rest: list[int]
         card = inputs[k].get("id")
         if any(owner.get(m) == card and now_of.get(m, {card}) == {card} for m in at_home):
             _hold(inputs[k], results[k])
+
+
+def _private(mac: str) -> bool:
+    """Locally administered (second hex digit 2, 6, A or E): a MAC made up by the device, as a phone does for each Wi-Fi network."""
+    try:
+        return bool(int(mac[:2], 16) & 2)
+    except ValueError:
+        return False
 
 
 async def _owners_of(macs: frozenset) -> dict:

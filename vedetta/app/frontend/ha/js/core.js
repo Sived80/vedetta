@@ -38,7 +38,20 @@ export let REDUCED = false;
   });
   try { window.parent.postMessage({ type: "home-assistant/subscribe-properties" }, "*"); } catch (err) { /* ignore */ }
 })();
-export const TYPE_ORDER = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
+// The groups in their default order (device_groups.TYPE_ORDER on the server); a group keeps its colour (its place here) whatever the order.
+export const TYPE_DEFAULT = ["router", "server", "pc", "phone", "media", "audio", "iot", "climate", "appliance", "energy", "security", "cover", "water", "printer", "camera", "generic"];
+// The order the page shows the groups in: the person's (setting group_order, the same on every device) or the default one. Changed in place
+// (setTypeOrder), so every module that imported it sees the new order.
+export const TYPE_ORDER = TYPE_DEFAULT.slice();
+// The order the server gave: the unknown groups and the repeats left out, the missing ones after in the default order ([] = the default).
+// True when the order changed.
+export function setTypeOrder(list) {
+  const known = (Array.isArray(list) ? list : []).filter(function (g, i, all) { return TYPE_DEFAULT.indexOf(g) >= 0 && all.indexOf(g) === i; });
+  const next = known.concat(TYPE_DEFAULT.filter(function (g) { return known.indexOf(g) < 0; }));
+  if (next.join() === TYPE_ORDER.join()) return false;
+  TYPE_ORDER.splice.apply(TYPE_ORDER, [0, TYPE_ORDER.length].concat(next));
+  return true;
+}
 export const POLL_WATCHDOG_MS = 90000;
 // The server sends a ping every 15 s on a quiet stream: with nothing for this long the stream is dead.
 export const STREAM_STALE_MS = 40000;

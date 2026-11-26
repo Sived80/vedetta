@@ -103,4 +103,18 @@
   #menu .menu-switch { gap: 12px; padding: 12px 2px 0; }
   :is(#alertsdlg, #invdlg) .mi-actions { padding: 12px 24px 20px; gap: 8px; }
   #invdlg .inv-hint { margin-left: auto; font-size: 12px; color: var(--secondary-text-color); }
+  /* The order of the groups (#orderdlg, from the menu): the frame of #invdlg, one row per group with its icon, its name and up / down. At
+     360 px the name gives way (ellipsis), the two arrows always stay on the row. */
+  #orderdlg { width: min(420px, calc(100vw - 32px)); }
+  #orderdlg .go-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  #orderdlg .go-row { display: flex; align-items: center; gap: 8px; min-height: 44px; min-width: 0; border-bottom: 1px solid var(--divider-color); }
+  #orderdlg .go-row:last-child { border-bottom: 0; }
+  #orderdlg .go-ic { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; color: var(--state-icon-color); }
+  #orderdlg .go-ic .mdi { width: 22px; height: 22px; }
+  #orderdlg .go-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #orderdlg .go-mv { width: 40px; height: 40px; }
+  #orderdlg .go-mv .mdi { width: 22px; height: 22px; }
+  #orderdlg .go-mv[disabled] { opacity: 0.3; cursor: default; background: transparent; }
+  #orderdlg .go-mv:focus-visible { outline: 2px solid var(--focus-color); outline-offset: -2px; }
+  #orderdlg .mi-actions { padding: 12px 24px 20px; gap: 8px; }
 }

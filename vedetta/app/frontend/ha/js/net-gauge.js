@@ -1,4 +1,4 @@
-import { $, TYPE_ORDER, esc, t, typePlural } from "./core.js";
+import { $, TYPE_DEFAULT, TYPE_ORDER, esc, t, typePlural } from "./core.js";
 import { S, animateNumber, pauseLeft } from "./core-ui.js";
 import { newWaitingCount } from "./new-devices.js";
 
@@ -18,7 +18,7 @@ export function gaugeHTML() {
     '<button type="button" class="newdot" id="newdot" hidden></button>';
 }
 
-// Types by quantity (ties in the fixed order), each one keeps its own colour slot: the position in TYPE_ORDER.
+// Types by quantity (ties in the fixed order), each one keeps its own colour slot: the position in TYPE_DEFAULT (the order chosen by the person does not change the colours).
 function typeSegments(c) {
   return TYPE_ORDER.filter(function (k) { return c.types[k]; }).sort(function (a, b) {
     return c.types[b] - c.types[a] || TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b);
@@ -51,7 +51,7 @@ function paintTypes(c) {
   let off = 0, html = "";
   keys.forEach(function (k, i) {
     const arc = arcs[i], len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
-    html += '<circle class="g-seg c' + (TYPE_ORDER.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
+    html += '<circle class="g-seg c' + (TYPE_DEFAULT.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
       '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(typePlural(k) + ": " + c.types[k]) + "</title></circle>";
     off += arc;
   });

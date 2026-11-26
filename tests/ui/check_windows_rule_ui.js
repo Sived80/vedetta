@@ -1,6 +1,6 @@
 // The rule of the windows (17/10, written again 17/11): every page and pop-up of the app has the same head, the X first on the left
 // (an icon button with its name for screen readers), then the title. Opens every window from the menu and from a card and looks at
-// its head: the card of a device, Alerts, Export (and its network guide when it is there), the inventory, the Node-RED flows,
+// its head: the card of a device, Alerts, Export (and its network guide when it is there), the inventory, the order of the groups, the Node-RED flows,
 // Networks and the side panel of one network. A new window with the X on the right, or without the X, fails here.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_windows_rule_ui.js [it|en]
 const fs = require("fs");
@@ -98,6 +98,10 @@ function shut(dlg) { if (dlg.hasAttribute("open")) dlg.close(); }
   await fromMenu("[data-inventory]");
   headRule("Inventario", q("#invdlg .mi-header"));
   shut(q("#invdlg"));
+
+  await fromMenu("[data-grouporder]");
+  headRule("Ordine dei gruppi", q("#orderdlg .mi-header"));
+  shut(q("#orderdlg"));
 
   await fromMenu("[data-flows]");
   headRule("Flussi Node-RED", q("#flows .mi-header"));

@@ -33,7 +33,7 @@ for wrong in ("yes", 1, 0, None, "false"):
     r = client.post("/api/settings", json={"phone_hold_ha": wrong})
     check(r.status_code == 400, "a value that is not a boolean is refused: %r -> %s" % (wrong, r.status_code))
 check(settings.load()["phone_hold_ha"] is False, "and nothing was saved")
-r = client.post("/api/settings", json={"phone_hold_ha": True})
+r = client.post("/api/settings", json={"phone_hold_ha": True, "group_order": []})
 check(r.status_code == 200 and settings.load()["phone_hold_ha"] is True, "POST true turns it on again")
 print("ALL OK" if not failures else "%d FAILED" % len(failures))
 sys.exit(1 if failures else 0)

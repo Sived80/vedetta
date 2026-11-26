@@ -93,10 +93,10 @@ print("ok: validazione")
 # 5) settings: partial, persistence, alerts not lost, reset, corrupted file
 assert settings.flows_update({"deep": ["ports_all", "netbios_snmp"]}) == {**d, "deep": ["netbios_snmp", "ports_all"]}
 assert settings.flows_load()["associative"] == d["associative"]
-assert settings.update({"alerts": False}) == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True}
+assert settings.update({"alerts": False}) == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": []}
 saved = json.loads(settings.SETTINGS_PATH.read_text(encoding="utf-8"))
-assert saved == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "flows": {"deep": ["netbios_snmp", "ports_all"]}}, saved
-assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True}  # load() of the simple settings unchanged
+assert saved == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "flows": {"deep": ["netbios_snmp", "ports_all"]}}, saved
+assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": []}  # load() of the simple settings unchanged
 try:
     settings.flows_update({"initial": ["mdns"], "deep": ["ports_fast"]})
     raise SystemExit("doveva rifiutare")

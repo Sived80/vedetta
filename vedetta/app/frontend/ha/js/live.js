@@ -1,4 +1,4 @@
-import { $, COMPACT, LANG, STREAM_STALE_MS, ago, api, dlg, reloadHost, t } from "./core.js";
+import { $, COMPACT, LANG, STREAM_STALE_MS, ago, api, dlg, reloadHost, setTypeOrder, t } from "./core.js";
 import { S, setConn, snack } from "./core-ui.js";
 import { setStarBadge, setUpdateDot } from "./core-menu.js";
 import { renderLearning } from "./learning.js";
@@ -237,6 +237,7 @@ export function load(opts) {
     api("/api/settings").then(function (s) {
       if (s && s.miss_limit) S.missLimit = s.miss_limit;
       if (s && typeof s.phone_hold_ha === "boolean") S.phoneHold = s.phone_hold_ha;
+      if (s && Array.isArray(s.group_order) && setTypeOrder(s.group_order)) { S.dirty.layout = true; schedule(); }     // the order of the groups chosen in the menu
     }).catch(function () {});
     S.loadFails = 0;
     // A resync (roles, networks, return to the app) keeps a stream that is alive: it already sends every change.

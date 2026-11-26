@@ -1,9 +1,11 @@
 """User settings (config/settings.json):
 "alerts" = show the alerts (new open port, new device...);
 "poll_interval" = seconds between one check and the next (fixed values);
-"phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3).
+"phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3);
+"group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4).
 Unknown keys are ignored: the file contains only the known ones."""
 from ..atomic import write_atomic
+from .. import device_groups
 import functools
 import ipaddress
 import json
@@ -42,7 +44,7 @@ _NOTIFY_SERVICE = re.compile(r"notify\.[a-z0-9_]{1,80}")   # a service of the no
 # higher = fewer false "offline" (sleeping phones), but slower detection.
 MISS_LIMITS = (1, 2, 3, 5, 10)
 
-DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True}
+DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": []}
 
 # The Sentinel's way out (ha/ha_notify.py), keys of the file apart from DEFAULTS like the mqtt_* ones (not in load()/update()):
 # "ha_events" = vedetta_* events on the bus of Home Assistant; "notify_order" = the recipients in their order, each with the wait after
@@ -68,6 +70,8 @@ def valid_value(key: str, value) -> bool:
         return type(value) is int and value in POLL_INTERVALS
     if key == "miss_limit":
         return type(value) is int and value in MISS_LIMITS
+    if key == "group_order":
+        return device_groups.valid_order(value)
     return isinstance(value, type(DEFAULTS[key]))
 
 
@@ -181,6 +185,7 @@ def load() -> dict:
         for key in DEFAULTS:
             if key in data and valid_value(key, data[key]):
                 result[key] = data[key]
+        result["group_order"] = device_groups.full_order(data.get("group_order"))    # written by hand or by a version with other groups: read clean
     return result
 
 
@@ -258,7 +263,7 @@ def update(changes: dict) -> dict:
         if key in changes:
             if not valid_value(key, changes[key]):
                 raise ValueError(key)
-            current[key] = changes[key]
+            current[key] = device_groups.full_order(changes[key]) if key == "group_order" else changes[key]
     _save_all(current, _stored_flows())  # the already configured flows are not lost
     return current
 

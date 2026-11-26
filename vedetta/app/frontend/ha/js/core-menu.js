@@ -6,6 +6,7 @@ import { pauseEl, togglePause } from "./network.js";
 import { openFlows } from "./flows.js";
 import { openAlerts } from "./alerts.js";
 import { openInventory } from "./inventory.js";
+import { openOrder } from "./group-order.js";
 import { inHomeAssistant, openUpdate } from "./update.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
 import { netsCount, openNets } from "./ha-networks.js";
@@ -208,7 +209,8 @@ function buildMenu() {
   const secs = cur ? cur.poll * cur.miss : pollNow * S.missLimit;
   html += menuGroup(t("js.ha.menu.speed"), pills) +
     '<div class="menu-hint">' + esc(t("js.ha.menu.speed_hint", { t: span(secs) })) + "</div>" + holdRow();
-  html += '<button type="button" class="menu-item menu-link rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
+  html += '<button type="button" class="menu-item menu-link rp" data-grouporder="1">' + esc(t("js.ha.order.menu")) + icon("format-list-numbered") + "</button>";
+  html += '<button type="button" class="menu-item menu-link next rp" data-flows="1">' + esc(t("js.ha.menu.flows")) + icon("cog") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-alerts="1">' + esc(t("js.ha.alerts.menu")) + icon("bell-outline") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-netpanel="1">' + esc(t("js.networks.ui.title")) + icon("router-network") + "</button>";
   html += '<button type="button" class="menu-item menu-link next rp" data-nets="1"><span class="menu-lbl">' + esc(t("js.ha.nets.menu")) + netsCountHtml() + "</span>" + icon("lan") + "</button>";
@@ -264,6 +266,7 @@ menuEl.addEventListener("click", function (e) {
   if (e.target.closest("[data-export]")) { toggleMenu(false); openExport(); return; }
   if (e.target.closest("[data-alerts]")) { toggleMenu(false); openAlerts(); return; }
   if (e.target.closest("[data-inventory]")) { toggleMenu(false); openInventory(); return; }
+  if (e.target.closest("[data-grouporder]")) { toggleMenu(false); openOrder(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   if (e.target.closest("[data-hold]")) {
     S.phoneHold = !S.phoneHold;

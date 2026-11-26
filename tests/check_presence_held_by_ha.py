@@ -268,7 +268,7 @@ cycle(set(), [])
 check(not phone()["online"] and not SNAPSHOTS, "switch off: the fresh reading of the passive function is not used either (%d reads)" % len(SNAPSHOTS))
 passive_store.set_enabled(False)
 passive_store.snapshot = real_snapshot
-settings.update({"phone_hold_ha": True})
+settings.update({"phone_hold_ha": True, "group_order": []})
 cycle(BOTH)
 cycle(set(), HOME)
 check(phone()["online"] and phone().get("presence_held") == "ha", "switch on again: held again")

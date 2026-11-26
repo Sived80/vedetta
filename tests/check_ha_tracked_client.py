@@ -33,7 +33,7 @@ tracked = dict(other, ha_registry=card(["onvif"], ["device_tracker"]))
 assert ha_data.type_scores(tracked).get("camera", 0) < ha_data.W_DECLARED, ha_data.type_scores(tracked)   # any integration, any group
 # Integration not in the table: what HA does with the device still says something
 unknown_iot = {"id": "f", "ip": "10.0.0.4", "name": "AC", "extra": {}, "ha_registry": card(["some_new_integration"], ["device_tracker", "climate", "sensor"])}
-assert ha_data.infer_type(unknown_iot) == "climate", ha_data.type_scores(unknown_iot)      # scored as iot, shown in its own group (1.0.4)
+assert ha_data.infer_type(unknown_iot) == "iot", ha_data.type_scores(unknown_iot)
 unknown_player = {"id": "g", "ip": "10.0.0.5", "name": "Box", "extra": {}, "ha_registry": card(["some_new_integration"], ["media_player"])}
 assert ha_data.infer_type(unknown_player) == "media", ha_data.type_scores(unknown_player)
 # a camera with a speaker has a player too (UniFi Protect, a real export): it stays a camera, not a tie that ends in "Other devices"

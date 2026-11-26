@@ -7,8 +7,8 @@ from .. import datafile
 from ..device_groups import HOME_GROUPS, TYPE_ORDER  # noqa: F401  TYPE_ORDER: the order of the groups, read from here by the other modules
 
 
-# Climate, appliances, energy, security, openings and water are smart home devices: they are scored together as one group ("iot"),
-# then the kind that won gives the group shown on the page (ha_data.infer_type; Home Assistant keeps seeing "iot").
+# Climate, appliances, energy, security, openings and water are smart home devices: a single group ("iot"); the precise type stays in the
+# icon and gives the family shown inside the group on the page (device_groups.family_of).
 _MERGED_GROUPS = {group: "iot" for group in HOME_GROUPS}
 
 

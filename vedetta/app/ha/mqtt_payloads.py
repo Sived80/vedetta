@@ -5,7 +5,6 @@ import os
 import re
 import time
 import zlib
-from ..device_groups import ha_group
 
 
 STATUS_TOPIC = "vedetta/status"
@@ -182,13 +181,12 @@ def build_desired(devices: dict[str, dict], kinds: dict[str, str], new_count: in
     once (it stays a stable entity even when the measurement is missing); updated here.
     shared: ids of the devices the user chose to share with HA (None = all, for tests); the others
     are not published and, if they had been published, disappear from HA (see Sync.diff). Vedetta's counters
-    always count all the devices. fine_kinds: {id: finer device type} for the "kind" attribute (missing = null). The category goes out as
-    Home Assistant knew it before 1.0.4: a smart home group of the page (climate...) is "iot" (device_groups.ha_group)."""
+    always count all the devices. fine_kinds: {id: finer device type} for the "kind" attribute (missing = null)."""
     out: dict[str, str] = {config_topic(HUB_ID): _j(hub_config()),
                            HUB_STATE_TOPIC: _j(hub_state(list(devices.values()), new_count))}
     for did, dev in devices.items():
         if _is_published(did, shared):
-            _add_device_entries(out, did, dev, (ha_group(kinds.get(did)), (fine_kinds or {}).get(did)), latency_seen)
+            _add_device_entries(out, did, dev, (kinds.get(did), (fine_kinds or {}).get(did)), latency_seen)
     latency_seen.intersection_update(devices if shared is None else {d for d in devices if d in shared})  # gone/not shared: out of memory
     return out
 

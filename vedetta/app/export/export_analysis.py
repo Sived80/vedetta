@@ -9,14 +9,13 @@ Strict schema with allowlist validation:
 import time
 
 from ..analysis import badges as bg_rules, status as st
-from ..device_groups import TYPE_ORDER
 from ..ha import analysis_view
 from ..state import state
 
 ALLOWED_STATES = frozenset({st.IDENTIFIED, st.SETTLING, st.ANALYSING, st.UNRESOLVED})
 ALLOWED_REASONS = frozenset({"low_certainty", "thin", "override", "close", "expired"})
 ALLOWED_BADGE_IDS = frozenset({"no_touch", "fragile", "analysing", "unresolved", "new", "settling", "twin"})
-ALLOWED_GROUPS = frozenset(TYPE_ORDER)
+ALLOWED_GROUPS = frozenset({"router", "phone", "media", "iot", "camera", "generic", "server", "pc", "audio", "printer"})
 
 
 def _val_enum(val: str | None, allowed: frozenset[str]) -> str | None:

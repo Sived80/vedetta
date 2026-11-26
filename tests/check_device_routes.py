@@ -73,7 +73,12 @@ assert "mobile" not in [d for d in devices_config.load_devices() if d["id"] == A
 assert post("/api/devices/nope/override", {"brand": "X"}).status_code == 404
 assert post(f"/api/devices/{A}/override", {"type": "spaceship"}).status_code == 400
 assert post(f"/api/devices/{A}/override", {"type": "camera"}).json() == {"ok": True}      # a type of its own for cameras (issue #21)
-assert post(f"/api/devices/{A}/override", {"type": "climate"}).json() == {"ok": True}      # a smart home group of its own (1.0.4)
+assert post(f"/api/devices/{A}/override", {"type": "climate"}).status_code == 400          # 1.0.4: ten groups; climate is a family of the smart home group
+assert post(f"/api/devices/{A}/override", {"family": "toaster"}).status_code == 400
+assert post(f"/api/devices/{A}/override", {"family": "climate"}).json() == {"ok": True}
+assert {d["id"]: d for d in devices_config.load_devices()}[A]["family_user"] == "climate"
+assert post(f"/api/devices/{A}/override", {"family": None}).json() == {"ok": True}
+assert not {d["id"]: d for d in devices_config.load_devices()}[A].get("family_user")
 assert post(f"/api/devices/{A}/override", {"brand": " Philips ", "type": "media"}).json() == {"ok": True}
 cfg = {d["id"]: d for d in devices_config.load_devices()}
 assert cfg[A]["brand_user"] == "Philips" and cfg[A]["type_user"] == "media"

@@ -3,6 +3,7 @@ import re
 from functools import lru_cache
 from typing import NamedTuple
 from .. import datafile
+from ..device_groups import family_of
 from ..recognition import roles, signatures
 from .ha_registry import observed_only, tracker_only
 from .ha_type_text import TYPE_ORDER, W_BRAND, W_DECLARED, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PORT_RE, _TOKEN_RE, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _model_text, _word_pts, fold, rules  # noqa: F401
@@ -404,7 +405,7 @@ def _build_kind(k: dict) -> dict:
     toks = {fold(t) for t in k.get("tokens") or []}
     subs = _split_words(k.get("words"), toks)
     toks |= {t + "s" for t in list(toks)}
-    return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "page_group": k["group"], "icon": k["icon"], "subs": subs, "toks": toks,
+    return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "family": family_of(k["id"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
             "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product"))}
 

@@ -10,7 +10,7 @@ from pathlib import Path  # noqa: F401  the tests replace ha_data.Path with a fa
 from ..recognition import brand_logo
 from ..storage import devices_config
 from .. import i18n
-from ..device_groups import HOME_GROUPS, ha_group
+from ..device_groups import FAMILIES, OTHER_FAMILY, ha_group
 from . import identity_shift, tracker_hold
 from ..storage.history import History, history
 from .ha_type_evidence import MARGIN_BELOW, MIN_TYPE_SCORE, TYPE_ORDER, W_BRAND, W_DECLARED, W_PLATFORM_MAX, W_PORTS_MAX, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _FAMILY_PORT, _FAMILY_SERVICE, _FAMILY_UPNP, _MDNS_TYPE, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PLATFORM_KINDS, _PORT_RE, _PORT_SHARED, _PORT_TYPE, _TOKEN_RE, _UPNP_TYPE, _aggregate, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _build_kind, _declared_services, _declares_onvif, _ha_integrations, _ha_table_cache, _has_network_role, _kinds, _kinds_cache, _model_text, _read_kind_rows, _split_words, _word_pts, type_evidence, type_scores  # noqa: F401
@@ -47,16 +47,9 @@ def _best_kind_row(device: dict, adapter: str | None, group: str) -> dict | None
     """The row of data/device_kinds.json with the most points (more than zero) in this category; on a tie the first of the table."""
     kinds_out: dict[str, int] = {}
     type_scores(device, adapter, kinds_out)
-    return _top_kind(kinds_out, group)
-
-
-def _top_kind(kinds_out: dict[str, int], group: str) -> dict | None:
-    """Of the scored kinds, the one with the most points in this group: a smart home group (climate...) looks at its own kinds, "iot"
-    at all the smart home kinds (they are scored together)."""
-    key = "page_group" if group in HOME_GROUPS else "group"
     best, best_pts = None, 0
     for kd in _kinds():
-        if kd[key] == group and kinds_out.get(kd["id"], 0) > best_pts:
+        if kd["group"] == group and kinds_out.get(kd["id"], 0) > best_pts:
             best, best_pts = kd, kinds_out[kd["id"]]
     return best
 
@@ -66,8 +59,7 @@ def infer_type(device: dict, adapter: str | None = None) -> str:
     or the probe "mobile" score) wins over everything."""
     if device.get("is_mobile"):
         return "phone"
-    kinds_out: dict[str, int] = {}
-    scores = type_scores(device, adapter, kinds_out)
+    scores = type_scores(device, adapter)
     if not scores:
         return "generic"
     ranked = sorted(scores.items(), key=lambda kv: (-kv[1], TYPE_ORDER.index(kv[0]) if kv[0] in TYPE_ORDER else 99))
@@ -77,31 +69,42 @@ def infer_type(device: dict, adapter: str | None = None) -> str:
     # Two tied categories with weak clues: no random pick (like Nmap when the two best are close).
     if len(ranked) > 1 and best[1] < MARGIN_BELOW and ranked[1][1] >= MIN_TYPE_SCORE and best[1] - ranked[1][1] < 1:
         return "generic"
-    return _home_group(best[0], kinds_out)
-
-
-def _home_group(group: str, kinds_out: dict[str, int]) -> str:
-    """A smart home device ("iot") goes to the group of the kind that won (a boiler: "climate"); with no such kind it stays "iot"."""
-    if group != "iot":
-        return group
-    row = _top_kind(kinds_out, "iot")
-    return row["page_group"] if row and row["page_group"] in HOME_GROUPS else "iot"
+    return best[0]
 
 
 def effective_type(device: dict, cfg: dict | None = None) -> str:
-    """Category chosen by hand (cfg["type_user"]) or the scored one."""
+    """Category chosen by hand (cfg["type_user"]; a smart home group saved by the debug build with 16 groups is "iot") or the scored one."""
     cfg = cfg or {}
-    chosen = cfg.get("type_user")
+    chosen = ha_group(cfg.get("type_user"))
     if chosen in TYPE_ORDER or chosen == "generic":
         return chosen
     return infer_type(device, cfg.get("adapter"))
 
 
+def effective_family(device: dict, cfg: dict | None = None, group: str | None = None) -> str | None:
+    """The family of a smart home card on the page (device_groups.FAMILIES); None outside the smart home group. group = the category
+    when the caller already has it."""
+    cfg = cfg or {}
+    group = group or effective_type(device, cfg)
+    return _family(group, _best_kind_row(device, cfg.get("adapter"), group) if group == "iot" else None, cfg)
+
+
+def _family(group: str, row: dict | None, cfg: dict) -> str | None:
+    """The family chosen by hand (family_user), else the one of a smart home group chosen by the debug build with 16 groups (type_user
+    "climate"...), else the one of the finer kind that won (no kind: hubs and modules)."""
+    if group != "iot":
+        return None
+    for chosen in (cfg.get("family_user"), cfg.get("type_user")):
+        if chosen in FAMILIES:
+            return chosen
+    return row["family"] if row else OTHER_FAMILY
+
+
 def device_facts(device: dict, cfg: dict | None = None) -> dict:
     """Pure: what the events on the bus of Home Assistant say of a device: its product brand (None when unknown: the chip maker is not
-    a brand), its category (effective_type as Home Assistant knows it: a smart home group is "iot", as the MQTT "type") and its finer type (effective_kind, as the MQTT "kind")."""
+    a brand), its category (effective_type, as the MQTT "type") and its finer type (effective_kind, as the MQTT "kind")."""
     group = effective_type(device, cfg)
-    return {"brand": device.get("brand") or None, "type": ha_group(group), "kind": effective_kind(device, cfg, group)}
+    return {"brand": device.get("brand") or None, "type": group, "kind": effective_kind(device, cfg, group)}
 
 
 # ---- configuration (adapter, "mobile" choice) with file cache ----
@@ -155,6 +158,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "battery_source": device.get("battery_source"),
         "type": _t,
         "icon": icon_for(device, cfg.get("adapter"), _t),
+        "family": effective_family(device, cfg, _t),         # inside the smart home group only (device_groups.FAMILIES)
         "is_mobile": bool(device.get("is_mobile")),
         "mobile_mode": _mobile_mode(cfg.get("mobile")),
         "name_source": cfg.get("name_source"),
@@ -162,7 +166,8 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "ha_share": bool(cfg.get("ha_share")),
         **({"watch": True} if cfg.get("watch") else {}),
         **({"twin_of": device["twin_of"]} if device.get("twin_of") else {}),   # the address of the main card of the same machine (twins.py): the page puts the twin next to it     # "tell me if it disappears" (sentinel_view): only when on, off is the absence
-        "type_user": cfg.get("type_user"),
+        "type_user": ha_group(cfg.get("type_user")),
+        "family_user": cfg.get("family_user") if cfg.get("family_user") in FAMILIES else None,
         "brand_user": cfg.get("brand_user"),
         "focus": bool(cfg.get("focus")),
         "focus_note": cfg.get("focus_note"),

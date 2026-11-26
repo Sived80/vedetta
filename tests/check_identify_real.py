@@ -46,7 +46,7 @@ CASES = [
       "ports": [p("111 · rpcbind"), p("8123 · polipo", cat="web")]}, "Home Assistant", "server"),
     ("10.0.0.87", "5C:CF:7F:00:00:A7", "10.0.0.87",
      {"http_title": "Termostato - Main Menu", "http_server": "Tasmota/13.0.0 (ESP8266EX)",
-      "ports": [p("80 · http", cat="web")]}, "Termostato", "climate"),
+      "ports": [p("80 · http", cat="web")]}, "Termostato", "iot"),
 ]
 
 

@@ -10,7 +10,7 @@ from ..applog import logger
 
 PATH = paths.data_path("passive_devices.json")
 ID_PREFIX = "ha-"
-EDIT_KEYS = ("name", "type", "brand")
+EDIT_KEYS = ("name", "type", "brand", "family")
 _lock = threading.RLock()
 _cache: dict | None = None
 

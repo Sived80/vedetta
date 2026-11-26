@@ -9,7 +9,7 @@ from ..storage import blocklist, devices_config, journal
 from ..networks import registry
 from ..ha import ha_data
 from ..storage.history import history
-from .. import cardlink_cycle, i18n
+from .. import cardlink_cycle, device_groups, i18n
 import ipaddress
 from ..applog import logger
 from ..ha.mqtt_ha import service as mqtt_service
@@ -230,7 +230,7 @@ async def api_device_override(device_id: str, request: Request):
     updated = _set_brand_type(device_id, body) or updated
     if not updated:
         raise HTTPException(404, "Dispositivo non trovato")
-    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "ha_share", "focus", "watch") if k in body})
+    logger.info("Scelta manuale su %s: %s", device_id, {k: body[k] for k in ("brand", "type", "family", "ha_share", "focus", "watch") if k in body})
     # The device is read again behind the answer (a probe over the network takes seconds): the page already shows the choice,
     # and the card is sent again to it (event) as soon as the reading is done.
     _bg(state.refresh_device(device_id))
@@ -265,15 +265,18 @@ def _set_focus(device_id: str, body: dict):
 
 
 def _set_brand_type(device_id: str, body: dict):
-    """Brand and/or type chosen by hand; empty = back to automatic. Returns True when the device was found by any of the changes."""
+    """Brand, type and/or family (inside the smart home group) chosen by hand; empty = back to automatic. Returns True when the device was
+    found by any of the changes."""
     updated = None
-    for key, field in (("brand", "brand_user"), ("type", "type_user")):
+    for key, field in (("brand", "brand_user"), ("type", "type_user"), ("family", "family_user")):
         if key not in body:
             continue
         value = body[key]
         value = str(value).strip()[:40] if value else None
         if key == "type" and value and value not in ha_data.TYPE_ORDER + ("generic",):
             raise HTTPException(400, "Tipo non valido")
+        if key == "family" and value and value not in device_groups.FAMILIES:
+            raise HTTPException(400, "Famiglia non valida")
         updated = devices_config.set_override(device_id, field, value) or updated
     return updated
 

@@ -2,7 +2,6 @@
 from functools import lru_cache
 
 from .. import datafile
-from ..device_groups import HOME_GROUPS
 from ..recognition import brands
 import ipaddress
 import re
@@ -10,7 +9,7 @@ import re
 
 # JSON fields that describe the device, not a person: never rewritten (an icon called like an area, a netmask that looks like an
 # address...). IPs and MACs used as KEYS are still replaced. An SSH key fingerprint is NOT here: it is unique to one machine (_SSH_FP).
-_KEEP = {"icon", "type", "type_user", "adapter", "logo", "logo_color", "brand", "brand_source", "brand_confidence", "vendor",
+_KEEP = {"icon", "type", "type_user", "family_user", "adapter", "logo", "logo_color", "brand", "brand_source", "brand_confidence", "vendor",
          "vendor_role", "name_source", "family", "category", "kind", "netmask", "http_server",
          "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains",
          "state", "reasons", "badges", "scores", "chosen", "group", "corner", "thresholds",
@@ -26,7 +25,7 @@ def products() -> tuple:
 
 
 _TYPE_LABELS = {"router": "Router", "server": "Server", "pc": "PC", "phone": "Phone", "media": "Media", "audio": "Audio",
-                "iot": "IoT", "printer": "Printer", **{group: "IoT" for group in HOME_GROUPS}}     # a smart home group of the page: IoT, as before 1.0.4
+                "iot": "IoT", "printer": "Printer"}
 
 
 _NEVER = {"unknown", "localhost", "homeassistant", "home assistant", "none", "null", "true", "false"}

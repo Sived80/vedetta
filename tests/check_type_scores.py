@@ -27,11 +27,11 @@ cases = [
       "scanned_ports": [port("80 · Mongoose httpd"), port("554 · Hipcam RealServer rtspd")]}, "camera"),
     ({"ip": "192.168.50.103", "name": "Android", "extra": {"mdns_services": "_amzn-wplay._tcp"}}, "media"),
     ({"ip": "192.168.50.201", "name": "Proxmox", "brand": "Proxmox", "scanned_ports": [port("22 · ssh"), port("8006 · pve")]}, "server"),
-    ({"ip": "192.168.50.87", "name": "Termostato", "extra": {"api_source": "tasmota"}}, "climate"),   # 1.0.4: the smart home kinds have their own group on the page
+    ({"ip": "192.168.50.87", "name": "Termostato", "extra": {"api_source": "tasmota"}}, "iot"),
     # the platform (Shelly, Tasmota) says "smart appliance", the name says the function: the name wins
-    ({"ip": "192.168.50.99", "name": "Cancello", "extra": {"api_source": "shelly"}}, "cover"),
+    ({"ip": "192.168.50.99", "name": "Cancello", "extra": {"api_source": "shelly"}}, "iot"),
     ({"ip": "192.168.50.98", "name": "Shelly1", "extra": {"api_source": "shelly"}}, "iot"),
-    ({"ip": "192.168.50.44", "name": "LED allarme esterno", "extra": {"api_source": "esphome"}}, "security"),
+    ({"ip": "192.168.50.44", "name": "LED allarme esterno", "extra": {"api_source": "esphome"}}, "iot"),
     # NAS: SMB ports do not make it a PC
     ({"ip": "10.0.0.5", "name": "nas", "brand": "Synology", "scanned_ports": [port("139 · netbios-ssn"), port("445 · microsoft-ds"), port("5001 · https")]}, "server"),
     # Windows PC: verified remote desktop

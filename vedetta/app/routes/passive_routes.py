@@ -7,7 +7,7 @@ import time
 
 from fastapi import APIRouter, HTTPException, Request
 
-from .. import i18n, netutil
+from .. import device_groups, i18n, netutil
 from ..ha import ha_data, ha_registry, passive_service, passive_view
 from ..state import state
 from ..storage import passive_store
@@ -119,7 +119,7 @@ async def api_passive_override(mac: str, request: Request):
     """Brand and type chosen by hand (empty = back to what Home Assistant says). The flag and the sharing do not exist for these devices."""
     body = await json_dict(request)
     found = _mac_or_404(mac)
-    for key in ("brand", "type"):
+    for key in ("brand", "type", "family"):
         if key in body:
             _set_choice(found, key, body[key])
     return _changed()
@@ -129,6 +129,8 @@ def _set_choice(mac: str, key: str, raw) -> None:
     value = str(raw).strip() if raw else None
     if key == "type" and value and value not in ha_data.TYPE_ORDER + ("generic",):
         raise HTTPException(400, "Tipo non valido")
+    if key == "family" and value and value not in device_groups.FAMILIES:
+        raise HTTPException(400, "Famiglia non valida")
     passive_store.set_edit(mac, key, value[:BRAND_MAX] if value else None)
 
 

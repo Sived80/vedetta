@@ -164,7 +164,7 @@ def update_device(device_id: str, new_name: str, new_port: int | None = None, mo
     return _edit_card(device_id, change)
 
 
-OVERRIDE_FIELDS = ("brand_user", "type_user", "wol_ok", "ha_share", "focus", "focus_note", "watch")   # watch: "tell me if it disappears" (sentinel_view)
+OVERRIDE_FIELDS = ("brand_user", "type_user", "family_user", "wol_ok", "ha_share", "focus", "focus_note", "watch")   # watch: "tell me if it disappears" (sentinel_view)
 FOCUS_MAX = 5           # devices that can be flagged for the report at the same time
 FOCUS_NOTE_MAX = 500
 

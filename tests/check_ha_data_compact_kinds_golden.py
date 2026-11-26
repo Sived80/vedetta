@@ -1,4 +1,4 @@
-"""Golden-master test of ha_data.compact_device and ha_data._kinds. compact_device runs with its collaborators (brand logo, effective_type, icon_for, _signal, i18n, identity_shift) replaced
+"""Golden-master test of ha_data.compact_device and ha_data._kinds. compact_device runs with its collaborators (brand logo, effective_type, icon_for, effective_family, _signal, i18n, identity_shift) replaced
 by in-memory fakes that record every call; _kinds runs with a fake file reader (the content of device_kinds.json: valid, broken, missing key, odd entries) and the module cache reset in every
 case, and is called twice to check the cache. 3000 generated cases must give exactly the same result (key ORDER included, or the exception) AND the same ordered calls as the code before the
 functions were split. tests/golden/ha_data_compact_kinds.json keeps one sha1 per case plus a readable sample.
@@ -61,6 +61,11 @@ def fake_icon_for(device, adapter, t):
     return ["mdi:a", None, "mdi:b"][h("icon", repr(adapter), repr(t)) % 3]
 
 
+def fake_effective_family(device, cfg, t):
+    LOG.append(["effective_family", repr(device.get("id")), repr(t)])
+    return "fam-%s" % t
+
+
 def fake_signal(device):
     LOG.append(["_signal", repr(device.get("id"))])
     if SET.get("signal_fails"):
@@ -87,6 +92,7 @@ def fake_attrs_for(did, tr):
 ha_data.brand_logo = types.SimpleNamespace(logo_for=fake_logo_for)
 ha_data.effective_type = fake_effective_type
 ha_data.icon_for = fake_icon_for
+ha_data.effective_family = fake_effective_family
 ha_data._signal = fake_signal
 ha_data.i18n = types.SimpleNamespace(t=fake_t, t_or=fake_t_or)
 ha_data.identity_shift = types.SimpleNamespace(attrs_for=fake_attrs_for)
@@ -243,7 +249,7 @@ assert mine["sample"] == want["sample"]
 comp = [o[1] for o in out if o[0] == "compact"]
 kin = [o[1] for o in out if o[0] == "kinds"]
 assert sum(1 for c in comp if c["keys"]) > 1000 and sum(1 for c in comp if c["keys"] is None) > 20
-assert all(c["keys"][0] == "id" for c in comp if c["keys"]) and any(c["keys"] and len(c["keys"]) == 40 for c in comp)
+assert all(c["keys"][0] == "id" for c in comp if c["keys"]) and any(c["keys"] and len(c["keys"]) == 42 for c in comp)
 assert sum(1 for c in comp if c["keys"] and c["res"]["attrs"]) > 500 and sum(1 for c in comp if c["keys"] and c["res"]["ports"]) > 150
 assert {c["res"]["mobile_mode"] for c in comp if c["keys"]} == {"auto", "yes", "no"}
 assert any(c["res"]["logo"] == "acme" for c in comp if c["keys"]) and any(c["res"]["logo"] == {} for c in comp if c["keys"])

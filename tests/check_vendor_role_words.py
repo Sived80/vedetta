@@ -31,7 +31,7 @@ CASES = [
     ("dual, only the vendor: Tenda, not a curtain",        card("Tenda", "dual", ports=("12598",)),         "generic", None),
     ("dual, named after its maker: Tenda-1234",            card("Tenda", "dual", name="Tenda-1234"),        "generic", None),
     ("dual, a maker the tables know (Netgear): router",    card("Netgear", "dual", ports=("80 http",)),     "router", None),
-    ("a curtain whose maker is not dual: stays a curtain", card("Shelly", "component", name="Tenda salotto"), "cover", "curtain"),
+    ("a curtain whose maker is not dual: stays a curtain", card("Shelly", "component", name="Tenda salotto"), "iot", "curtain"),
 ]
 
 failed = []

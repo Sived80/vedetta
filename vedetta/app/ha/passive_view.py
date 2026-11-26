@@ -27,8 +27,9 @@ def _brand(mac: str, row: dict, edit: dict) -> tuple[dict, str | None, str | Non
     return info, info["brand"], "mac" if info["brand"] else None
 
 
-def _type(device: dict, edit: dict) -> str:
-    return ha_data.effective_type(device, {"type_user": edit.get("type")})
+def _choices(edit: dict) -> dict:
+    """What the user chose, as the configuration of a scanned card says it."""
+    return {"type_user": edit.get("type"), "family_user": edit.get("family")}
 
 
 def compact(mac: str, item: dict) -> dict:
@@ -37,7 +38,7 @@ def compact(mac: str, item: dict) -> dict:
     info, brand, brand_source = _brand(mac, row, edit)
     name = _name(row, edit, mac)
     device = {"id": passive_store.id_of(mac), "name": name, "ip": row.get("ip"), "mac": mac.upper(), "brand": brand, "vendor": info["vendor"], "vendor_role": info["vendor_role"]}
-    kind = _type(device, edit)
+    kind = ha_data.effective_type(device, _choices(edit))
     online = bool(row.get("online"))
     logo = brand_logo.logo_for(brand)
     return {
@@ -46,7 +47,8 @@ def compact(mac: str, item: dict) -> dict:
         "brand_confidence": None, "brand_evidence": None, "brand_declared": None,
         **ha_data._logo_fields(logo),
         "battery": None, "battery_source": None,
-        "type": kind, "icon": ha_data.icon_for(device, None, kind), "is_mobile": False, "mobile_mode": "auto",
+        "type": kind, "icon": ha_data.icon_for(device, None, kind),
+        "family": ha_data.effective_family(device, _choices(edit), kind), "family_user": edit.get("family"), "is_mobile": False, "mobile_mode": "auto",
         "name_source": "user" if edit.get("name") else SOURCE, "wol_ok": False, "ha_share": False,
         "type_user": edit.get("type"), "brand_user": edit.get("brand"), "focus": False, "focus_note": None,
         "online": online, "last_seen": None if online else item.get("online_at"), "uptime": None, "signal": None,
@@ -96,7 +98,7 @@ def _guess_type(mac: str, row: dict) -> str:
     """The group the card will be in, from what Home Assistant says (the same rules as for any card)."""
     info, brand, _ = _brand(mac, row, {})
     device = {"id": passive_store.id_of(mac), "name": _name(row, {}, mac), "ip": row.get("ip"), "mac": mac.upper(), "brand": brand, "vendor": info["vendor"], "vendor_role": info["vendor_role"]}
-    return _type(device, {})
+    return ha_data.effective_type(device, {})
 
 
 def evidence(item: dict) -> dict:

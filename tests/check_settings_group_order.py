@@ -33,7 +33,7 @@ check(client.get("/api/settings").json().get("group_order") == [], "GET /api/set
 r = client.post("/api/settings", json={"group_order": ["camera", "router"]})
 whole = ["camera", "router"] + [g for g in DEFAULT if g not in ("camera", "router")]
 check(r.status_code == 200 and r.json().get("group_order") == whole, "a partial order is saved whole: %s %s" % (r.status_code, r.text[:200]))
-check(settings.load()["group_order"] == whole and len(whole) == 16, "and read back")
+check(settings.load()["group_order"] == whole and len(whole) == 10, "and read back")
 for wrong in (["router", "router"], ["toaster"], "router", [1], None, {"router": 1}):
     r = client.post("/api/settings", json={"group_order": wrong})
     check(r.status_code == 400, "refused: %r -> %s" % (wrong, r.status_code))
@@ -42,10 +42,11 @@ r = client.post("/api/settings", json={"group_order": []})
 check(r.status_code == 200 and settings.load()["group_order"] == [], "[] goes back to the default order")
 check(settings.load()["phone_hold_ha"] is True and settings.load()["poll_interval"] == 30, "the other settings are untouched")
 
-# a file written by hand (or by a later version with more groups): the unknown names are left out, the missing ones appended
-settings.SETTINGS_PATH.write_text(json.dumps({"group_order": ["water", "toaster", "water", "pc"]}), encoding="utf-8")
+# a file written by hand, or by the debug build with 16 groups (climate, water...): the unknown names are left out silently, the missing
+# ones appended
+settings.SETTINGS_PATH.write_text(json.dumps({"group_order": ["climate", "camera", "toaster", "camera", "water", "pc"]}), encoding="utf-8")
 read = settings.load()["group_order"]
-check(read[:2] == ["water", "pc"] and sorted(read) == sorted(DEFAULT), "a hand-written order is read clean: %s" % read)
+check(read[:2] == ["camera", "pc"] and sorted(read) == sorted(DEFAULT) and len(read) == 10, "a saved order is read clean: %s" % read)
 settings.SETTINGS_PATH.write_text(json.dumps({"group_order": "nonsense"}), encoding="utf-8")
 check(settings.load()["group_order"] == [], "a value that is not a list is the default")
 print("ALL OK" if not failures else "%d FAILED" % len(failures))

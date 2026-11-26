@@ -88,6 +88,7 @@ class Batch:
     upnp_info: dict[str, dict] = field(default_factory=dict)
     wsd_info: dict[str, dict] = field(default_factory=dict)
     igmp_info: dict[str, list] = field(default_factory=dict)
+    shared_pilot: bool = False       # several devices analysed at once («Add all»): the pilot may first run beside other scans (scan_nmap.pilot)
 
 
 # The field of the Batch that each job fills.

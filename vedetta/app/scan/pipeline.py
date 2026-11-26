@@ -159,14 +159,29 @@ def cancel_associative(ips: list[str] | None = None) -> int:
     return n
 
 
+# «Add all» (1.0.4): how many devices are analysed at once. Before, one after the other (each pilot waited to be alone, then its port scan held
+# a heavy slot): about 23 s a device. Three: two port scans at a time (the heavy slots of scan_nmap, unchanged) and a third device on its pilot
+# or its light steps meanwhile. More would only queue on those slots. Each device still gets one nmap at a time, as before: nothing is harder on
+# any single device; the slow ones keep their verdict and their targeted scan (scan_nmap.pilot). For every request together, not each one.
+ASSOCIATIVE_PARALLEL = 3
+_associative_slots = asyncio.Semaphore(ASSOCIATIVE_PARALLEL)
+
+
+async def _associative_batch(ips: list[str]) -> Batch:
+    batch = await prepare_batch(flows.ASSOCIATIVE, ips)
+    batch.shared_pilot = len(ips) > 1
+    return batch
+
+
 def start_associative(ips: list[str], hints: dict) -> list[asyncio.Task]:
     """Start the associative search on several IPs: the tasks start here (outside the
     SSE generator), so they carry on even if the browser disconnects. The
-    batch functions (mDNS, SSDP) run only once, shared."""
-    batch_task = asyncio.create_task(prepare_batch(flows.ASSOCIATIVE, ips))
+    batch functions (mDNS, SSDP) run only once, shared. At most ASSOCIATIVE_PARALLEL devices at once, in the order given."""
+    batch_task = asyncio.create_task(_associative_batch(ips))
 
     async def one(ip: str) -> dict:
-        return await run_associative(ip, hints.get(ip), await batch_task)
+        async with _associative_slots:
+            return await run_associative(ip, hints.get(ip), await batch_task)
 
     tasks = []
     for ip in ips:

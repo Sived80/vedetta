@@ -1,7 +1,7 @@
 """pipeline_probes: moved out of pipeline.py (see tools/split_module.py)."""
 from .pipeline_plan import _log_skipped, compose_nmap_args, resolve_plan
 import asyncio
-from . import discovery, localapi, scanner
+from . import discovery, host_load, localapi, scanner
 from ..applog import logger
 from .adapters import shelly_gen1, shelly_gen2
 
@@ -22,7 +22,7 @@ async def _plan_nmap_scan(batch, ip, slow):
     # on 1000): if it is slow we switch straight to targeted ports, without waiting for the 150 s.
     if nmap_args and "-p-" in nmap_args:
         try:
-            probe = await scanner.pilot(ip)
+            probe = await _pilot(batch, ip)
         except Exception as exc:
             logger.info("%s: prova pilota fallita (%r), scansione normale", ip, exc)
             probe = None
@@ -31,6 +31,17 @@ async def _plan_nmap_scan(batch, ip, slow):
             slow = True
             nmap_args = compose_nmap_args(run, ip, True)
     return chosen, nmap_args, slow
+
+
+async def _pilot(batch, ip):
+    """The pilot of one device. Beside other scans only when several devices are analysed at once and the host is not under pressure;
+    otherwise alone, as always (scan_nmap.pilot)."""
+    if not batch.shared_pilot:
+        return await scanner.pilot(ip)
+    if pressure := host_load.busy():
+        logger.info("%s: prova pilota da sola, il sistema e' sotto pressione (%s)", ip, pressure)
+        return await scanner.pilot(ip)
+    return await scanner.pilot(ip, shared_first=True)
 
 
 async def _run_parallel_probes(nmap_args, ip, slow, chosen):

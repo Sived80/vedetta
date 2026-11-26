@@ -67,11 +67,22 @@ async def _alone():
         yield
 
 
-async def pilot(ip: str) -> dict:
+async def pilot(ip: str, shared_first: bool = False) -> dict:
     """First measures whether the device can handle a scan of all ports. Returns
     {"slow": bool, "elapsed": seconds, "ports": open ports found}. nmap measures its own
-    time (so waiting in the queue does not count), and the pilot waits until it can run alone."""
-    async with _alone():
+    time (so waiting in the queue does not count), and the pilot waits until it can run alone.
+    shared_first («Add all», 1.0.4): a first pilot runs beside the other scans, without waiting. Other scans only make a pilot slower, so its
+    "not slow" is true; its "slow" is never believed: the pilot is run again alone, and that one decides, as always."""
+    if shared_first:
+        first = await _pilot_once(ip, alone=False)
+        if not first["slow"]:
+            return first
+        logger.info("%s: prova pilota lenta accanto ad altre scansioni, ripetuta da sola", ip)
+    return await _pilot_once(ip, alone=True)
+
+
+async def _pilot_once(ip: str, alone: bool) -> dict:
+    async with _alone() if alone else contextlib.nullcontext():
         xml_text = await _run_nmap(["-T4", "--top-ports", "1000", "--host-timeout", f"{PILOT_TIMEOUT_S}s", ip],
                                    semaphore=_LIGHT_NMAP_SEMAPHORE)
     elapsed = PILOT_TIMEOUT_S

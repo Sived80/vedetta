@@ -32,6 +32,21 @@ class MacMemoryMixin:
             out[device_id]["recent"].add(mac)
         return out
 
+    def mac_owners(self, macs: list[str]) -> dict[str, str]:
+        """MAC (upper case, colons) -> the card behind which the presence history saw it last (90 days), for the given MACs only."""
+        keys = sorted({str(m).upper() for m in macs})[:900]      # under SQLite's limit of parameters; a home has far fewer router trackers
+        if not keys:
+            return {}
+        with self._lock:
+            got = self._db.execute(
+                f"""SELECT upper(mac), device_id, MAX(ts) FROM presence_events WHERE upper(mac) IN ({", ".join("?" * len(keys))})
+                   GROUP BY upper(mac), device_id""", keys).fetchall()  # noqa: S608  only placeholders are joined
+        last: dict[str, tuple[float, str]] = {}
+        for mac, device_id, ts in got:
+            if ts > last.get(mac, (-1.0, ""))[0]:
+                last[mac] = (ts, device_id)
+        return {mac: device_id for mac, (_, device_id) in last.items()}
+
     # ---- shadow data per MAC (analysis only) ----
     def mac_memory_set(self, mac: str, device_id: str, ip: str | None, fields: dict, ts: float) -> None:
         with self._lock:

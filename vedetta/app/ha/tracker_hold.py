@@ -1,7 +1,11 @@
 """Presence held by Home Assistant (1.0.3). A phone asleep (Doze) stays on the Wi-Fi but does not answer ARP or ping for long stretches, while the
 router still has it. When a MOBILE card does not answer in a check, the router trackers of Home Assistant (ha_trackers: source "router" only,
 Vedetta's own MQTT trackers left out by their unique id) are asked about its MAC: "home" keeps it online, marked as held (state_cycle.settle);
-"not_home" or another zone let the usual rule decide; "unavailable", "unknown", no tracker or no reading change nothing. A switch in the menu
+"not_home" or another zone let the usual rule decide; "unavailable", "unknown", no tracker or no reading change nothing.
+A card with several MACs (1.0.4): a phone uses another private MAC on each Wi-Fi network, and the router tracker may know only the one of the main
+network. So when the card's MAC of now is not "home", every MAC the presence history saw behind the card counts too (one "home" holds it), except
+a MAC whose last event is behind another card or that is another card's MAC in this check (taken over), and a MAC lent by a repeater or shared by
+design (macverdict). Still the one reading of Home Assistant: the history is asked once for the MACs at home, not once per MAC. A switch in the menu
 (setting "phone_hold_ha", on by default) turns it off: then nothing is held and Home Assistant is not read.
 
 Never a source: a GPS tracker (it says the person is in the home zone, not that the phone is on the network), a Bluetooth one (near a receiver,
@@ -12,20 +16,23 @@ Read only, and light: Home Assistant is asked only in a check where a mobile car
 import asyncio
 import time
 
-from .. import i18n
+from .. import i18n, macverdict
 from ..applog import logger
 from ..storage import passive_store, settings
+from ..storage.history import history
 from . import ha_registry, ha_trackers
 
 HELD = "ha"
 REFRESH_S = 60
 STALE_S = 180          # three readings of the passive function (one a minute) missed: its last one says nothing any more
 _memo: dict = {"at": None, "home": {}}      # the last own reading (monotonic time) and what it said, MAC -> True/False/None
+_owners: dict = {"at": None, "macs": frozenset(), "of": {}}    # the last answer of the history: the MACs at home -> the card each was seen behind
 
 
 def forget() -> None:
-    """The next check reads Home Assistant again (for the tests)."""
+    """The next check reads Home Assistant (and the history) again (for the tests)."""
     _memo.update(at=None, home={})
+    _owners.update(at=None, macs=frozenset(), of={})
 
 
 def _silent_phone(result) -> bool:
@@ -43,10 +50,50 @@ async def mark(inputs: list[dict], results: list) -> None:
     if not waiting or not ha_registry.token() or not settings.phone_hold_ha():      # the switch in the menu off: Home Assistant is not read at all
         return
     home = await _home_by_mac()
+    rest = []
     for k in waiting:
         if home.get(_mac(inputs[k], results[k])) is True:
-            results[k]["presence_held"] = HELD
-            logger.debug("Presenza tenuta da Home Assistant: %s", inputs[k].get("ip"))
+            _hold(inputs[k], results[k])
+        else:
+            rest.append(k)
+    if rest:
+        await _hold_by_other_macs(inputs, results, rest, home)
+
+
+def _hold(probe_input: dict, result: dict) -> None:
+    result["presence_held"] = HELD
+    logger.debug("Presenza tenuta da Home Assistant: %s", probe_input.get("ip"))
+
+
+async def _hold_by_other_macs(inputs: list[dict], results: list, rest: list[int], home: dict) -> None:
+    """The silent phones left: held when a MAC at home (never a lent or shared one) was last seen behind that very card and is not another
+    card's MAC in this check."""
+    at_home = frozenset(m.upper() for m, on in home.items() if on is True and not macverdict.shared(m))
+    if not at_home:
+        return
+    owner = await _owners_of(at_home)
+    now_of = {}
+    for i, r in zip(inputs, results):
+        mac = _mac(i, r if isinstance(r, dict) else {})
+        if mac:
+            now_of.setdefault(mac.upper(), set()).add(i.get("id"))
+    for k in rest:
+        card = inputs[k].get("id")
+        if any(owner.get(m) == card and now_of.get(m, {card}) == {card} for m in at_home):
+            _hold(inputs[k], results[k])
+
+
+async def _owners_of(macs: frozenset) -> dict:
+    """The history asked at most once every REFRESH_S for the same MACs at home (a phone away is silent at every check)."""
+    now = time.monotonic()
+    if _owners["at"] is None or now - _owners["at"] >= REFRESH_S or _owners["macs"] != macs:
+        try:
+            of = await asyncio.to_thread(history.mac_owners, sorted(macs))
+        except Exception:      # the history cannot be read: only the MAC of now counts, as before 1.0.4
+            logger.exception("Storico dei MAC delle schede non letto")
+            of = {}
+        _owners.update(at=now, macs=macs, of=of)
+    return _owners["of"]
 
 
 async def _home_by_mac() -> dict:

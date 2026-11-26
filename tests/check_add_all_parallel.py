@@ -122,6 +122,7 @@ async def main():
 
 async def all_together():
     """1) twelve devices: several at once, within the bound, faster than one after the other."""
+    host_load.busy = lambda reading=None: None      # a calm host: the real reading (Linux pressure files) would make it depend on the machine
     got, took = await add_all(IPS)
     serial = len(IPS) * (PILOT_S + SCAN_S)
     check(all(isinstance(r, dict) for r in got) and sorted(r["ip"] for r in got) == sorted(IPS), "one result per device")

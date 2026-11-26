@@ -26,6 +26,7 @@
   "js.ha.live.offline": "Odpojeno",
   "js.ha.banner.lost": "Spojení se systémem Vedetta bylo ztraceno. Probíhá automatické opětovné připojení…",
   "js.ha.banner.retry": "Zkusit znovu",
+  "js.ha.learning.text": "Vedetta se vaši síť teprve učí: během prvních 24-48 hodin se mohou některé značky a typy změnit.",
   "js.ha.refresh": "Obnovit",
   "js.ha.scan": "Prohledat síť",
   "js.ha.cancel": "Zrušit",

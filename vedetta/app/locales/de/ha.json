@@ -26,6 +26,7 @@
   "js.ha.live.offline": "Getrennt",
   "js.ha.banner.lost": "Verbindung zu Vedetta unterbrochen. Neuverbindung läuft automatisch …",
   "js.ha.banner.retry": "Jetzt erneut versuchen",
+  "js.ha.learning.text": "Vedetta lernt dein Netzwerk noch kennen: In den ersten 24-48 Stunden können sich einige Marken und Typen ändern.",
   "js.ha.refresh": "Jetzt aktualisieren",
   "js.ha.scan": "Netzwerk durchsuchen",
   "js.ha.cancel": "Abbrechen",

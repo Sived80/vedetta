@@ -20,7 +20,7 @@ from ..networks import registry
 from ..export import inventory
 from ..ha import analysis_view, ha_data, ha_tz, ha_update, health_view, passive_view
 from ..ha.device_debug import device_debug
-from ..storage import health_hidden, journal, passive_store, starhint
+from ..storage import firststart, health_hidden, journal, passive_store, starhint
 from ..scan import latency
 from ..recognition import oui_update, roles
 from ..storage.history import history
@@ -147,7 +147,7 @@ async def api_ha_summary(request: Request):
     )
     from ..ha.mqtt_ha import version
     return {**summary, "roles": roles.page_view(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
-            "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info)}
+            "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info), "learning_until": await _learning_until()}
 
 
 def _external_info() -> dict:
@@ -179,6 +179,14 @@ async def _star_hint() -> bool:
 
 
 _first_ts: float | None = None
+
+
+async def _learning_until() -> float | None:
+    """Until when the page shows the notice of the first hours (brands and types can still change), or None (storage/firststart.py)."""
+    at = firststart.known()          # read once (a file, maybe the history): then from memory
+    if at is None:
+        at = await asyncio.to_thread(firststart.first_start, history.first_event_ts)
+    return firststart.learning_until(at)
 
 
 @router.post("/api/ha/star")

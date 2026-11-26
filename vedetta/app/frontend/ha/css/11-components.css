@@ -100,6 +100,11 @@
   }
   .banner .mdi { color: var(--warning-color); }
   .banner-text { flex: 1; }
+  /* The notice of the first hours: information, not a fault (the colour of information, a plain close button) */
+  .banner.learning { background: color-mix(in srgb, var(--info-color) 12%, var(--card-background-color)); border-color: color-mix(in srgb, var(--info-color) 40%, transparent); }
+  .banner.learning .mdi { color: var(--info-color); flex: none; }
+  .banner.learning .banner-text { min-width: 0; font-size: var(--ha-font-size-s, 13px); line-height: 18px; }
+  .banner.learning .icon-btn { flex: none; color: var(--secondary-text-color); }
 
   /* Loading skeletons */
   .skeleton {

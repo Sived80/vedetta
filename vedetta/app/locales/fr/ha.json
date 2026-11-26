@@ -26,6 +26,7 @@
   "js.ha.live.offline": "Déconnecté",
   "js.ha.banner.lost": "Connexion à Vedetta perdue. Reconnexion automatique…",
   "js.ha.banner.retry": "Réessayer maintenant",
+  "js.ha.learning.text": "Vedetta apprend encore votre réseau : pendant les premières 24-48 heures, certaines marques et certains types peuvent changer.",
   "js.ha.refresh": "Actualiser maintenant",
   "js.ha.scan": "Analyser le réseau",
   "js.ha.cancel": "Annuler",

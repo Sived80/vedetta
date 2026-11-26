@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.3 · Orizzonte
+Automations in one click, and fixes from your reports.
+
+- **Ready-made blueprints.** *New device on the network* and *Device went offline*, imported with one button from the README.
+- **Richer events.** The Home Assistant events carry brand, type, kind and reason, and the notification of a new device says its brand and type.
+- **A finer type for Home Assistant.** Each shared device has a `kind` attribute (switch, access point, NAS, TV, plug…) next to `type`, which stays the same.
+- **Sleeping phones stay home.** A phone that stops answering while the router in Home Assistant still sees it at home stays online. *Sleeping phones* in the menu turns this off.
+- **Home Assistant's own machine is always online**, and the accessories of a HomeKit bridge no longer give it their name.
+- **New types:** ventilation, air quality and fitness (#62). Accents no longer matter when matching words.
+- **A camera maker's prefix alone does not make a camera** (#61).
+- **Public IP:** when the network redirects DNS, the Internet tile says so instead of staying empty.
+- ***Add all* always ends** and lists every device it did not add, with the reason.
+- **A large export is encrypted in a moment**, not minutes.
+- Stricter code checks; the new ingress port name of the app base.
+
+**Thank you** to claustro and everyone on Reddit who reported a problem or shared an export.
+
 ## 1.0.2 · Orizzonte
 Fixes from your reports, and Vedetta now speaks French.
 

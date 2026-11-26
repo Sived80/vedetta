@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 1.0.2 · Orizzonte**, released in November 2026. **34 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 1.0.3 · Orizzonte**, released in November 2026. **32 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **1.0.3 · Orizzonte** | 26 Nov | Ready-made blueprints · brand, type and reason in the events · a finer `kind` for each device · sleeping phones stay home · ventilation, air quality and fitness types · *Add all* always ends |
 | **1.0.2 · Orizzonte** | 24 Nov | French · phones keep their MAC · fewer false "offline" · Home Assistant on a /32 address · faster export |
 | **1.0.1 · Orizzonte** | 21 Nov | One tile per network · one machine on several networks recognised by its certificate · a clearer network panel behind the router · Nmap and arp-scan installed at start · safer inside |
 | **1.0.0 · Orizzonte** | 20 Nov | Networks behind the router (VLANs), pinged every 15 minutes · alerts on your phone when a device goes away and when it is back · 30 days of memory per device, the last 12 hours at a glance, the device list as CSV or JSON · a card follows its device by its MAC · one machine on two networks, side by side · *Scan network* lists every device without a card (#35) |
@@ -73,10 +74,8 @@ A ☐ is an idea with a place, not a promise of a date: Vedetta is a one-person,
 </details>
 
 <details>
-<summary><b>🏠 Home Assistant</b> · 6</summary>
+<summary><b>🏠 Home Assistant</b> · 4</summary>
 
-- ☐ Brand, model and reason in the `vedetta_new_device` event
-- ☐ Ready-made blueprints (new device, critical device offline)
 - ☐ More aggregate sensors (new today, unknown)
 - ☐ Weekly digest notification
 - ☐ "This device is also in HA as …" on the card

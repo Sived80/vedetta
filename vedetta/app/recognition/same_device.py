@@ -10,6 +10,8 @@ A policy only says how much evidence a consumer wants before it acts and which f
 not known is None, and an unknown fact never counts."""
 from dataclasses import dataclass
 
+from ..device_groups import ha_group
+
 NETWORK_ROLES = {"gateway", "dhcp", "dns", "router", "ap", "repeater"}
 
 
@@ -92,8 +94,9 @@ def _field_differs(a: dict, b: dict, key: str) -> bool:
 
 
 def _group_differs(a: dict, b: dict) -> bool:
-    """Both profiles have a real recognised group (not missing, not "generic") and the groups are not equal."""
-    return a["grp"] not in (None, "generic") and b["grp"] not in (None, "generic") and a["grp"] != b["grp"]
+    """Both profiles have a real recognised group (not missing, not "generic") and the groups are not equal (a smart home group of the page
+    counts as the "iot" saved before 1.0.4)."""
+    return a["grp"] not in (None, "generic") and b["grp"] not in (None, "generic") and ha_group(a["grp"]) != ha_group(b["grp"])
 
 
 def _ha_model_differs(a: dict, b: dict) -> bool:

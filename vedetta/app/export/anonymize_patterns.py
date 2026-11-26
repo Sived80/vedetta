@@ -2,6 +2,7 @@
 from functools import lru_cache
 
 from .. import datafile
+from ..device_groups import HOME_GROUPS
 from ..recognition import brands
 import ipaddress
 import re
@@ -25,7 +26,7 @@ def products() -> tuple:
 
 
 _TYPE_LABELS = {"router": "Router", "server": "Server", "pc": "PC", "phone": "Phone", "media": "Media", "audio": "Audio",
-                "iot": "IoT", "printer": "Printer"}
+                "iot": "IoT", "printer": "Printer", **{group: "IoT" for group in HOME_GROUPS}}     # a smart home group of the page: IoT, as before 1.0.4
 
 
 _NEVER = {"unknown", "localhost", "homeassistant", "home assistant", "none", "null", "true", "false"}

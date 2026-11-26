@@ -404,7 +404,7 @@ def _build_kind(k: dict) -> dict:
     toks = {fold(t) for t in k.get("tokens") or []}
     subs = _split_words(k.get("words"), toks)
     toks |= {t + "s" for t in list(toks)}
-    return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
+    return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "page_group": k["group"], "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
             "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product"))}
 

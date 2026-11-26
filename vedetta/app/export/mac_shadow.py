@@ -9,16 +9,18 @@ matters, two things are kept in the history database (and so in the anonymised e
 from ..scan import dhcp
 from ..storage.history import history
 from ..ha import ha_data
+from ..device_groups import ha_group
 
 REFRESH_S = 6 * 3600          # an unchanged MAC is written again at most this often (last_seen)
 _cache: dict[str, tuple] = {}  # mac -> (fields tuple, ts of the last write)
 
 
 def _group(device: dict | None) -> str | None:
+    """The group kept in the memory per MAC: as before 1.0.4 (a smart home group of the page is "iot"), so what was saved stays comparable."""
     if not device:
         return None
     try:
-        return ha_data.effective_type(device)
+        return ha_group(ha_data.effective_type(device))
     except Exception:
         return None
 

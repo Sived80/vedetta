@@ -4,6 +4,8 @@ the hysteresis of flap detection), a grace period for a card that has just appea
 age. The numbers are placeholders to be measured on the exports (tools/replay_analysis.py), not taken from a book."""
 from typing import NamedTuple
 
+from ..device_groups import ha_group
+
 IDENTIFIED, SETTLING, ANALYSING, UNRESOLVED = "identified", "settling", "analysing", "unresolved"
 LOW, HIGH = 50, 60          # certainty (0-100): below LOW it enters analysis, at HIGH or more it leaves; in between it keeps its state
 GRACE_S = 2 * 3600          # a card younger than this is only "settling" when its certainty is low (to be measured)
@@ -19,7 +21,7 @@ class Status(NamedTuple):
 def assess(group: dict, *, age_s: float, previous: str | None = None, scores: dict | None = None, chosen: str | None = None, analysing_for_s: float | None = None) -> Status:
     """`group` is the "group" part of the evidence card; scores and chosen (the points per group and the group shown) are optional and tell an override. `analysing_for_s` is how long the card has been
     under analysis without a break: from MAX_ANALYSIS_S on, a card that is still under analysis is «unresolved» (the reason «expired» says why). Its evidence is judged exactly as before: if it improves, the card is identified and the clock stops."""
-    result = _judge(group, age_s, previous, scores, chosen)
+    result = _judge(group, age_s, previous, scores, ha_group(chosen))      # a smart home group of the page was scored as "iot"
     if result.state == ANALYSING and analysing_for_s is not None and analysing_for_s >= MAX_ANALYSIS_S:
         return Status(UNRESOLVED, result.reasons + ["expired"])
     return result

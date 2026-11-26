@@ -10,6 +10,7 @@ How the certainty is worked out (published in the README so nobody has to trust 
 - brand: the MAC maker and the name agree, or the device declares it = high; one clue alone = medium.
 - name: the weight of the source (a name chosen in Home Assistant or on the device itself counts more than a page title)."""
 from . import naming
+from ..device_groups import ha_group
 
 _MOBILE_FULL_SCORE = 8      # mobile score that fills the bar
 
@@ -26,10 +27,11 @@ def _rejected_groups(ranked: list, scores: dict, chosen: str, why: str) -> list[
 
 
 def group_evidence(debug_type: dict, device: dict) -> dict:
-    chosen = debug_type.get("chosen") or "generic"
+    shown = debug_type.get("chosen") or "generic"
+    chosen = ha_group(shown)         # a smart home group of the page (climate...) was scored as "iot": its points and clues are those
     scores = _positive_scores(debug_type)
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
-    out = {"value": chosen, "clues": _top_clues(debug_type, chosen), "reason": None}
+    out = {"value": shown, "clues": _top_clues(debug_type, chosen), "reason": None}
     decided = _manual_or_mobile(out, device, ranked, scores, chosen, bool(debug_type.get("manual")))
     if decided is not None:
         return decided

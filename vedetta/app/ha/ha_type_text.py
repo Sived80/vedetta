@@ -4,15 +4,12 @@ import unicodedata
 from functools import lru_cache
 
 from .. import datafile
+from ..device_groups import HOME_GROUPS, TYPE_ORDER  # noqa: F401  TYPE_ORDER: the order of the groups, read from here by the other modules
 
 
-# Order in which the UI shows the groups by type.
-TYPE_ORDER = ("router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic")
-
-
-# Climate, appliances, energy, security, openings and water are smart home devices: a single
-# group ("iot"); the precise type stays in the icon (data/device_kinds.json).
-_MERGED_GROUPS = {"climate": "iot", "appliance": "iot", "energy": "iot", "security": "iot", "cover": "iot", "water": "iot"}
+# Climate, appliances, energy, security, openings and water are smart home devices: they are scored together as one group ("iot"),
+# then the kind that won gives the group shown on the page (ha_data.infer_type; Home Assistant keeps seeing "iot").
+_MERGED_GROUPS = {group: "iot" for group in HOME_GROUPS}
 
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")

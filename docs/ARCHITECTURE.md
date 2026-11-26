@@ -15,7 +15,7 @@ This page is written to be read in ten minutes. The index at the end is generate
 
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
-- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macaddr`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
+- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `device_groups`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macaddr`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
 - **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `routedinv`, `storage/`, `twins`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
@@ -67,6 +67,7 @@ The functions that were restructured have a reference test that was generated fr
 | `cardlink_cycle.py` | The step of the cycle that keeps the card -> MAC links (1.0 step P4); the cycle reads them through linkview (step P5). |
 | `cyclestats.py` | How the check cycles go: a line in the log only when something is wrong (cycles chained by events, a slow cycle) and one summary an hour. |
 | `datafile.py` | Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures). |
+| `device_groups.py` | The groups of devices shown on the page, in their default order, and the group Home Assistant sees. |
 | `eventbus.py` | Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each. |
 | `external.py` | The functions that reach the internet, and the add-on options that switch them off (config.yaml: internet_*; run.sh turns them into VEDETTA_INTERNET_*). |
 | `formatters.py` | Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded for display, and the quality labels of a Wi-Fi signal and of a LAN link speed. |
@@ -290,7 +291,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
 | `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |
-| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3). |
+| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3); "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4). |
 | `storage/starhint.py` | The one-time invitation to star the project on GitHub (config/star_hint.json). |
 | `storage/userlang.py` | The language each Home Assistant user chose in the menu (config/user_lang.json). |
 
@@ -309,9 +310,9 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 |---|---|---|
 | `js/alerts.js` | 231 | alerts outside this page (the Sentinel's way out) |
 | `js/app.js` | 44 | Log open: reloads by itself (more often at the detailed level, where |
-| `js/core-menu.js` | 328 | guided typing |
+| `js/core-menu.js` | 331 | guided typing |
 | `js/core-ui.js` | 200 | state |
-| `js/core.js` | 258 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
+| `js/core.js` | 271 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 163 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer |
@@ -319,6 +320,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/filters.js` | 249 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
+| `js/group-order.js` | 61 | the order of the groups |
 | `js/ha-networks.js` | 196 | networks seen by Home Assistant |
 | `js/health-card.js` | 278 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
@@ -326,7 +328,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/ignored.js` | 347 | ignored devices, inside the panel «Networks» |
 | `js/inventory.js` | 59 | the list of devices, to keep (CSV or JSON) |
 | `js/learning.js` | 29 | the notice of the first hours |
-| `js/live.js` | 269 | update |
+| `js/live.js` | 270 | update |
 | `js/log.js` | 166 | log |
 | `js/more-attrs.js` | 226 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
 | `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
@@ -350,7 +352,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/21-export-vlan.css` | 80 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 513 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 521 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/42-health.css` | 102 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
 | `css/50-tile.css` | 222 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 85 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
@@ -358,7 +360,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/63-netpanel.css` | 190 | The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
-| `css/66-alerts.css` | 106 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
+| `css/66-alerts.css` | 120 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 281 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 | `css/82-more-month.css` | 19 | "Last 30 days" in the card (#mi-month): the strip of the days, the class, one line on the link, the changes of name and brand. |

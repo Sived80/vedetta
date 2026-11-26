@@ -1,4 +1,4 @@
-import { $, TYPE_DEFAULT, TYPE_ORDER, esc, t, typePlural } from "./core.js";
+import { $, TYPE_ORDER, esc, t, typePlural } from "./core.js";
 import { S, animateNumber, pauseLeft } from "./core-ui.js";
 import { newWaitingCount } from "./new-devices.js";
 
@@ -18,12 +18,20 @@ export function gaugeHTML() {
     '<button type="button" class="newdot" id="newdot" hidden></button>';
 }
 
-// Types by quantity (ties in the fixed order), each one keeps its own colour slot: the position in TYPE_DEFAULT (the order chosen by the person does not change the colours).
+// Types by quantity (ties in the order of the groups), only the ones with devices; each keeps its own colour (.gc-<group>, never red: red
+// says offline). Beyond SHOWN_MAX groups, the smallest after the first SHOWN_KEEP become one grey «Others» arc, last: a ring with more
+// slices than that cannot be read.
+var SHOWN_MAX = 7, SHOWN_KEEP = 6, OTHER = "_other";
 function typeSegments(c) {
-  return TYPE_ORDER.filter(function (k) { return c.types[k]; }).sort(function (a, b) {
+  const keys = TYPE_ORDER.filter(function (k) { return c.types[k]; }).sort(function (a, b) {
     return c.types[b] - c.types[a] || TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b);
   });
+  const segs = keys.map(function (k) { return { k: k, n: c.types[k] }; });
+  if (segs.length <= SHOWN_MAX) return segs;
+  const rest = segs.slice(SHOWN_KEEP).reduce(function (sum, s) { return sum + s.n; }, 0);
+  return segs.slice(0, SHOWN_KEEP).concat([{ k: OTHER, n: rest }]);
 }
+function segName(k) { return k === OTHER ? t("js.ha.gauge.others") : typePlural(k); }
 // The arc of each segment, in the order of the counts: as its share of the devices, but never shorter than its dot (the line and its round
 // caps plus the gap), or a type with one device among many comes out longer than its arc and touches the next one. The arcs held at the
 // minimum are taken out and the others share what is left, until none is below it; the ring always closes.
@@ -44,15 +52,16 @@ function segmentArcs(counts) {
   return arcs;
 }
 function paintTypes(c) {
-  const g = $("g-types"), keys = typeSegments(c), sig = keys.map(function (k) { return k + c.types[k]; }).join();
+  const g = $("g-types"), segs = typeSegments(c), sig = segs.map(function (s) { return s.k + s.n; }).join();
   if (g._sig === sig) return;
   g._sig = sig;
-  const arcs = segmentArcs(keys.map(function (k) { return c.types[k]; }));
+  g._other = segs.length && segs[segs.length - 1].k === OTHER ? segs[segs.length - 1].n : 0;
+  const arcs = segmentArcs(segs.map(function (s) { return s.n; }));
   let off = 0, html = "";
-  keys.forEach(function (k, i) {
+  segs.forEach(function (s, i) {
     const arc = arcs[i], len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
-    html += '<circle class="g-seg c' + (TYPE_DEFAULT.indexOf(k) + 1) + '" data-k="' + k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
-      '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(typePlural(k) + ": " + c.types[k]) + "</title></circle>";
+    html += '<circle class="g-seg gc-' + (s.k === OTHER ? "other" : s.k) + '" data-k="' + s.k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
+      '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(segName(s.k) + ": " + s.n) + "</title></circle>";
     off += arc;
   });
   g.innerHTML = html;
@@ -61,8 +70,8 @@ function paintTypes(c) {
 // The total in the centre; on a type (hover or chosen filter) its count, and the other segments fade.
 function paintCenter(c) {
   const k = hovered || S.filter.type;
-  $("g-of").textContent = k ? typePlural(k) : t("js.ha.gauge.devices");
-  animateNumber($("g-val"), k ? c.types[k] || 0 : c.total);
+  $("g-of").textContent = k ? segName(k) : t("js.ha.gauge.devices");
+  animateNumber($("g-val"), k === OTHER ? $("g-types")._other || 0 : k ? c.types[k] || 0 : c.total);
   $("gauge").classList.toggle("has-hl", !!k);
   document.querySelectorAll("#g-types .g-seg").forEach(function (s) { s.classList.toggle("hl", s.dataset.k === k); });
 }

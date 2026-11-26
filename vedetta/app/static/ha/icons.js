@@ -143,6 +143,7 @@
     "send": "M2,21L23,12L2,3V10L17,12L2,14V21Z",
     "clock-outline": "M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z",
     "information-outline": "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",
+    "format-vertical-align-top": "M8,11H11V21H13V11H16L12,7L8,11M4,3V5H20V3H4Z",
     "format-list-numbered": "M7,13V11H21V13H7M7,19V17H21V19H7M7,7V5H21V7H7M3,8V5H2V4H4V8H3M2,17V16H5V20H2V19H4V18.5H3V17.5H4V17H2M4.25,10A0.75,0.75 0 0,1 5,10.75C5,10.95 4.92,11.14 4.79,11.27L3.12,13H5V14H2V13.08L4,11H2V10H4.25Z",
     "format-list-bulleted-type": "M5,9.5L7.5,14H2.5L5,9.5M3,4H7V8H3V4M5,20A2,2 0 0,0 7,18A2,2 0 0,0 5,16A2,2 0 0,0 3,18A2,2 0 0,0 5,20M9,5V7H21V5H9M9,19H21V17H9V19M9,13H21V11H9V13Z",
     "devices": "M3,6H21V4H3C1.9,4 1,4.9 1,6V18C1,19.1 1.9,20 3,20H7V18H3V6M13,12H9V13.78C8.39,14.33 8,15.11 8,16C8,16.89 8.39,17.67 9,18.22V20H13V18.22C13.61,17.67 14,16.88 14,16C14,15.12 13.61,14.33 13,13.78V12M11,17.5C10.17,17.5 9.5,16.83 9.5,16C9.5,15.17 10.17,14.5 11,14.5A1.5,1.5 0 0,1 12.5,16C12.5,16.83 11.83,17.5 11,17.5M22,8H16C15.5,8 15,8.5 15,9V19C15,19.5 15.5,20 16,20H22C22.5,20 23,19.5 23,19V9C23,8.5 22.5,8 22,8M21,18H17V10H21V18Z",
@@ -168,13 +169,19 @@
     iot: "chip",
     printer: "printer",
     camera: "cctv",
+    generic: "devices"
+  };
+  // Family inside the smart home group (device_groups.FAMILIES on the server) -> icon.
+  var FAMILY_ICON = {
+    lights: "lightbulb",
+    sensors: "thermometer",
     climate: "thermostat",
     appliance: "washing-machine",
     energy: "solar-power",
     security: "shield-home",
     cover: "blinds",
     water: "pump",
-    generic: "devices"
+    hubs: "hub"
   };
 
   function svg(name, cls) {
@@ -182,5 +189,5 @@
     return '<svg class="mdi' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="' + d + '"></path></svg>';
   }
 
-  window.VedettaIcons = { paths: PATHS, typeIcon: TYPE_ICON, svg: svg };
+  window.VedettaIcons = { paths: PATHS, typeIcon: TYPE_ICON, familyIcon: FAMILY_ICON, svg: svg };
 })();

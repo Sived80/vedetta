@@ -65,7 +65,7 @@ A generated name is never counted as evidence for the category — the app does 
 
 ## Certainty bars
 
-Open any device: the rows **Name**, **Brand** and **Type** have a thin **certainty bar** with its percentage and an **(i)**. Press the (i) and a small pop-up says what decided it and which **hypotheses it rejected** (for example "Espressif: the MAC maker, it makes chips, not this product", or "IoT, 3 points: fewer than Network equipment"); press anywhere outside it to close it. The bar is not a mystery number:
+Open any device: the rows **Name**, **Brand** and **Type** have a thin **certainty bar** with its percentage and an **(i)**. Press the (i) and a small pop-up says what decided it and which **hypotheses it rejected** (for example "Espressif: the MAC maker, it makes chips, not this product", or "IoT, 3 points: fewer than Network"); press anywhere outside it to close it. The bar is not a mystery number:
 
 - **Chosen by you:** 100%. It is never changed by itself.
 - **Group:** how far the best group is from the second one, weighted by how much evidence there is. 12 points against 3 is 75%; 2 points and nothing else is 20%; a tie or too little evidence is 0% and the device stays in *Other devices*. A phone or tablet recognized by its signals is measured against the threshold of the mobile score.

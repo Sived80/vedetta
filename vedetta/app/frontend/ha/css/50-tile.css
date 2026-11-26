@@ -28,7 +28,14 @@
   .group.is-closed .hd-chev { transform: rotate(-90deg); }
   .group.is-closed .heading { margin-bottom: 0; }
   .group.is-closed { margin-bottom: 8px; }
-  .tiles[hidden] { display: none; }
+  .tiles[hidden], .fams[hidden] { display: none; }
+  /* The families inside the smart home group: a small subtitle above each grid (each its own list in the list view). */
+  .fams { display: flex; flex-direction: column; gap: 16px; }
+  .fam-head { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 0 8px 4px; color: var(--secondary-text-color); }
+  .fam-ic { display: flex; flex: none; }
+  .fam-ic .mdi { width: 18px; height: 18px; }
+  .fam-title { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--secondary-text-color); }
+  .fam-count { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; }
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 
   /* Tile card */

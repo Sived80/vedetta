@@ -1,4 +1,4 @@
-import { $, I, TYPE_ORDER, api, dlg, esc, icon, t, typeLabel } from "./core.js";
+import { $, FAMILIES, I, TYPE_DEFAULT, api, dlg, esc, familyIcon, familyLabel, icon, t, typeLabel } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { closePopups } from "./core-menu.js";
 import { SKIP_DEEP_KEY, deepOneBusy, runDeep, skipDeepConfirm } from "./deep.js";
@@ -48,7 +48,13 @@ export function renderBrandEdit(d) {
 function showOverride(d, body) {
   // the choice is shown at once (the server sends the card again when it has re-read the device); no full reload, which
   // rebuilt every tile and played all their animations again
+  const family = d.family;
   Object.assign(d, body);
+  if ("family" in body) {          // the family chosen moves the card under its subtitle at once; Auto keeps it where it is until the server says
+    d.family_user = body.family;
+    d.family = body.family || family;
+    S.dirty.layout = true;
+  }
   S.dirty.ids.add(d.id);
   S.dirty.more = true;
   S.dirty.net = true;
@@ -76,22 +82,27 @@ function saveOverride(d, body, atOnce) {
   overrideChain = done;
   return done;
 }
-// Type dropdown menu: inside the dialog (it is modal), with the same rules as the other
-// menus (closes with Esc, click outside and scroll; opening one closes the others).
+// Type dropdown menu (Auto + the ten groups) and, for a smart home card, the family one (Auto + the families): inside the dialog (it is
+// modal), with the same rules as the other menus (closes with Esc, click outside and scroll; opening one closes the others).
 var typeMenu = null;
 function closeTypeMenu() {
   if (typeMenu) { typeMenu.remove(); typeMenu = null; }
 }
-function openTypeMenu(btn, d) {
+var PICKERS = {
+  type: { keys: TYPE_DEFAULT, user: "type_user", label: typeLabel, icon: function (k) { return I.typeIcon[k]; } },
+  family: { keys: FAMILIES, user: "family_user", label: familyLabel, icon: familyIcon },
+};
+function openTypeMenu(btn, d, what) {
   if (typeMenu) { closeTypeMenu(); return; }
   closePopups();
+  const p = PICKERS[what];
   const m = document.createElement("div");
   m.className = "menu type-menu"; m.setAttribute("role", "menu");
-  const cur = d.type_user || "";
-  const items = [["", t("js.ha.type.auto")]].concat(TYPE_ORDER.map(function (k) { return [k, typeLabel(k)]; }));
+  const cur = d[p.user] || "";
+  const items = [["", t("js.ha.type.auto")]].concat(p.keys.map(function (k) { return [k, p.label(k)]; }));
   m.innerHTML = items.map(function (it) {
-    return '<button type="button" class="menu-item rp" role="menuitemradio" data-type="' + esc(it[0]) + '" aria-checked="' + (it[0] === cur) + '">' +
-      (it[0] ? icon(I.typeIcon[it[0]]) : icon("auto-fix")) + "<span>" + esc(it[1]) + "</span></button>";
+    return '<button type="button" class="menu-item rp" role="menuitemradio" data-' + what + '="' + esc(it[0]) + '" aria-checked="' + (it[0] === cur) + '">' +
+      (it[0] ? icon(p.icon(it[0])) : icon("auto-fix")) + "<span>" + esc(it[1]) + "</span></button>";
   }).join("");
   const r = btn.getBoundingClientRect();
   m.style.top = Math.round(r.bottom + 4) + "px";
@@ -100,10 +111,12 @@ function openTypeMenu(btn, d) {
   dlg.appendChild(m);
   typeMenu = m;
   m.addEventListener("click", function (e) {
-    const b = e.target.closest("[data-type]");
+    const b = e.target.closest("[data-" + what + "]");
     if (!b) return;
     closeTypeMenu();
-    saveOverride(d, { type: b.dataset.type || null });
+    const body = {};
+    body[what] = b.getAttribute("data-" + what) || null;
+    saveOverride(d, body);
   });
 }
 // Menu of the three dots in the header of the card: "Customize card" (the edit icons show or hide) and "Ignore device". Same rules as the type menu.
@@ -138,7 +151,7 @@ document.addEventListener("click", function (e) {
 });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape" && cardMenu) { closeCardMenu(); } });
 document.addEventListener("click", function (e) {
-  if (typeMenu && !e.target.closest(".type-menu") && !e.target.closest('[data-act="type-menu"]')) closeTypeMenu();
+  if (typeMenu && !e.target.closest(".type-menu") && !e.target.closest('[data-act="type-menu"], [data-act="family-menu"]')) closeTypeMenu();
 });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape" && typeMenu) { closeTypeMenu(); } });
 window.addEventListener("scroll", function (e) { if (typeMenu && !typeMenu.contains(e.target)) closeTypeMenu(); }, true);
@@ -276,7 +289,8 @@ dlg.addEventListener("click", function (e) {
     case "brand-edit": S.mi.view = "brand"; renderMore(); break;
     case "focus": S.mi.view = "focus"; renderMore(); break;
     case "focus-off": if (d) saveOverride(d, { focus: false }).then(function () { S.mi.view = "main"; renderMore(); snack(t("js.ha.focus.removed"), { kind: "success" }); }); break;
-    case "type-menu": if (d) openTypeMenu(act, d); break;
+    case "type-menu": if (d) openTypeMenu(act, d, "type"); break;
+    case "family-menu": if (d) openTypeMenu(act, d, "family"); break;
     case "ignore": S.mi.view = "ignore"; renderMore(); break;
     case "deep":
       if (d && deepOneBusy(d.id)) break;

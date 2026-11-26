@@ -1,4 +1,4 @@
-import { $, ago, api, canOpen, esc, icon, t, typeLabel } from "./core.js";
+import { $, FAMILY_GROUP, ago, api, canOpen, esc, familyLabel, familyOf, icon, t, typeLabel } from "./core.js";
 import { S } from "./core-ui.js";
 import { DEBUG } from "./debug.js";
 import { deepOneBusy } from "./deep.js";
@@ -99,6 +99,12 @@ export function miAttrs(d) {
   row(t("js.ha.attr.type"), evRowCells("group", t("js.ha.attr.type")),
     '<button type="button" class="icon-btn small touch rp mi-ed" data-act="type-menu" aria-haspopup="true" title="' + esc(t("js.ha.act.edit_type")) +
       '" aria-label="' + esc(t("js.ha.act.edit_type")) + '">' + icon("chevron-down") + "</button>", true, "ev-attr");
+  // inside the smart home group, the family (the subtitle the card is under), chosen by hand too
+  if (d.type === FAMILY_GROUP) {
+    row(t("js.ha.attr.family"), esc(familyLabel(familyOf(d))) + (d.family_user ? ' <span style="opacity:.65">· ' + esc(t("js.ha.type.manual")) + "</span>" : ""),
+      '<button type="button" class="icon-btn small touch rp mi-ed" data-act="family-menu" aria-haspopup="true" title="' + esc(t("js.ha.act.edit_family")) +
+      '" aria-label="' + esc(t("js.ha.act.edit_family")) + '">' + icon("chevron-down") + "</button>", true);
+  }
   const an = S.analysis[d.id];
   if (an) row(t("js.ha.attr.analysis"), esc(t("js.ha.an.state." + an.state)) + '<div class="field-hint">' +
     (an.reasons || []).map(function (k) { return esc(t("js.ha.an.reason." + k)); }).join(" · ") + "</div>", "", true);

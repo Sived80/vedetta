@@ -66,7 +66,7 @@ const ev = (type, target) => target.dispatchEvent(new win.Event(type, { bubbles:
   // --- three dots in the header: a menu with "Customize card" (the edit icons) and "Ignore device"; the edit icons start off and keep their place
   const more = q("#more"), dots = () => q('#more [data-act="card-menu"]'), menu = () => q("#more .card-menu");
   check(!more.classList.contains("edit-on") && !!dots() && !q('#more .mi-name-row [data-act="ignore"]') && !q("#more .mi-edit-toggle"), "la scheda parte con le icone di modifica spente; «Ignora» non e' piu' un tasto: ci sono i tre puntini");
-  check(more.querySelectorAll(".mi-ed").length >= 3 && Array.from(more.querySelectorAll(".mi-ed")).every((b) => /^(rename|brand-edit|type-menu)$/.test(b.dataset.act)), "le matite (nome, marca) e la freccia del tipo sono le icone di modifica");
+  check(more.querySelectorAll(".mi-ed").length >= 3 && Array.from(more.querySelectorAll(".mi-ed")).every((b) => /^(rename|brand-edit|type-menu|family-menu)$/.test(b.dataset.act)), "le matite (nome, marca) e le frecce del tipo e della famiglia (Casa smart) sono le icone di modifica");
   check(!more.querySelector("[data-copy]").classList.contains("mi-ed") && !more.querySelector(".attr-chev").classList.contains("mi-ed"), "«copia MAC» e «Altri attributi» restano sempre");
   dots().click();
   check(!!menu() && dots().getAttribute("aria-expanded") === "true" && Array.from(menu().querySelectorAll(".menu-item")).map((b) => b.textContent.trim()).join("|") === (IT ? "Personalizza scheda|Ignora dispositivo" : "Customize card|Ignore device"), "i tre puntini aprono il menu: «Personalizza scheda» e «Ignora dispositivo»");

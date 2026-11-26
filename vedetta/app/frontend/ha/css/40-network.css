@@ -66,6 +66,18 @@
   .gauge, .g-seg, .newdot, .brands { -webkit-tap-highlight-color: transparent; }
   .gauge, .brands { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
   .gauge.has-hl .g-seg:not(.hl) { opacity: 0.22; }
+  /* The families of the smart home group, shown when the group is chosen in the ring: chips that wrap, never wider than the card. */
+  .fam-chips { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+  .fam-chips[hidden] { display: none; }
+  .fam-chips .chip {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 32px; max-width: 100%; padding: 0 12px 0 8px; border-radius: 8px;
+    border: 1px solid var(--divider-color); background: transparent; color: var(--primary-text-color); font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .fam-chips .chip .mdi { width: 18px; height: 18px; flex: none; color: var(--state-icon-color); }
+  .fam-chips .chip-l { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fam-chips .chip em { font-style: normal; color: var(--secondary-text-color); font-variant-numeric: tabular-nums; }
+  .fam-chips .chip.on { background: color-mix(in srgb, var(--primary-color) 16%, transparent); border-color: var(--primary-color); }
+  .fam-chips .chip:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
   .gauge-value { font-size: 36px; line-height: 40px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .gauge-of { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); margin-top: 2px; text-align: center; }
@@ -275,15 +287,20 @@
   .c6 { --cc: var(--teal-color); }
   .c7 { --cc: var(--amber-color); }
   .c8 { --cc: var(--indigo-color); }
-  .c9 { --cc: var(--cyan-color, #00bcd4); }
-  /* the groups after the ninth (the ring of the types: a group keeps its colour, its place in the default order) */
-  .c10 { --cc: var(--lime-color, #c0ca33); }
-  .c11 { --cc: var(--red-color, #e53935); }
-  .c12 { --cc: var(--brown-color, #8d6e63); }
-  .c13 { --cc: var(--blue-color, #1e88e5); }
-  .c14 { --cc: var(--light-green-color, #7cb342); }
-  .c15 { --cc: var(--deep-orange-color, #f4511e); }
-  .c16 { --cc: var(--grey-color, #9e9e9e); }
+  /* The ring of the groups: each of the ten groups keeps its colour whatever the order and the counts; none is red (red says offline in
+     the page). «Others» (the smallest groups put together when more than seven are present) is grey. */
+  .gc-router { --cc: var(--light-blue-color, #03a9f4); }
+  .gc-server { --cc: var(--orange-color, #ff9800); }
+  .gc-pc { --cc: var(--green-color, #4caf50); }
+  .gc-phone { --cc: var(--purple-color, #9c27b0); }
+  .gc-media { --cc: var(--lime-color, #cddc39); }
+  .gc-audio { --cc: var(--teal-color, #009688); }
+  .gc-iot { --cc: var(--amber-color, #ffc107); }
+  .gc-printer { --cc: var(--indigo-color, #3f51b5); }
+  .gc-camera { --cc: var(--cyan-color, #00bcd4); }
+  .gc-generic { --cc: var(--brown-color, #795548); }
+  .gc-other { --cc: var(--grey-color, #9e9e9e); }
+  .g-seg.gc-other { cursor: default; }
   .c-other { --cc: #78909c; }
   .brand-bar .c1, .brand-bar .c2, .brand-bar .c3, .brand-bar .c4, .brand-bar .c5, .brand-bar .c6, .brand-bar .c7, .brand-bar .c8, .brand-bar .c-other,
   .dot { background: var(--cc); }

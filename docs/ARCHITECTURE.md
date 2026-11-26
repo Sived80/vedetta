@@ -67,7 +67,7 @@ The functions that were restructured have a reference test that was generated fr
 | `cardlink_cycle.py` | The step of the cycle that keeps the card -> MAC links (1.0 step P4); the cycle reads them through linkview (step P5). |
 | `cyclestats.py` | How the check cycles go: a line in the log only when something is wrong (cycles chained by events, a slow cycle) and one summary an hour. |
 | `datafile.py` | Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures). |
-| `device_groups.py` | The groups of devices shown on the page, in their default order, and the group Home Assistant sees. |
+| `device_groups.py` | The groups of devices on the page and, inside the smart home group, the families. |
 | `eventbus.py` | Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each. |
 | `external.py` | The functions that reach the internet, and the add-on options that switch them off (config.yaml: internet_*; run.sh turns them into VEDETTA_INTERNET_*). |
 | `formatters.py` | Small text and number formatting shared by the whole app: the length limit of a device name, which web page titles are worth showing (and which are noise), uptime rounded for display, and the quality labels of a Wi-Fi signal and of a LAN link speed. |
@@ -312,15 +312,15 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/app.js` | 44 | Log open: reloads by itself (more often at the detailed level, where |
 | `js/core-menu.js` | 331 | guided typing |
 | `js/core-ui.js` | 200 | state |
-| `js/core.js` | 271 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
+| `js/core.js` | 277 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 163 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer |
 | `js/export.js` | 271 | export for analysis |
-| `js/filters.js` | 249 | filters |
+| `js/filters.js` | 276 | filters |
 | `js/flows.js` | 141 | search methods (flows) |
 | `js/group-fold.js` | 44 | Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are |
-| `js/group-order.js` | 61 | the order of the groups |
+| `js/group-order.js` | 78 | the order of the groups |
 | `js/ha-networks.js` | 196 | networks seen by Home Assistant |
 | `js/health-card.js` | 278 | network health: the "Health" screen of the Network card |
 | `js/health-model.js` | 69 | network health: what the page says about a finding |
@@ -330,13 +330,13 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/learning.js` | 29 | the notice of the first hours |
 | `js/live.js` | 270 | update |
 | `js/log.js` | 166 | log |
-| `js/more-attrs.js` | 226 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
-| `js/more-edit.js` | 354 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
+| `js/more-attrs.js` | 232 | Always visible: name, IP, MAC, brand, type, state, ports. The rest is in the "Other attributes" dropdown. |
+| `js/more-edit.js` | 368 | "Is it a phone?" is worked out from what is learnt by probing: a device only Home Assistant sees has none of it, the type is chosen in its o |
 | `js/more-evidence.js` | 147 | Evidence on the rows Name, Brand and Type: a thin bar and the certainty next to the (i) that opens a small pop-up with |
 | `js/more-graph.js` | 135 | History chart: a single segmented band (online / offline / no data) |
 | `js/more-info.js` | 99 | "More info" dialog |
 | `js/more-month.js` | 70 | "Last 30 days" in the card |
-| `js/net-gauge.js` | 127 | "living cycle" circle |
+| `js/net-gauge.js` | 136 | "living cycle" circle |
 | `js/net-icons.js` | 23 | Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box). |
 | `js/net-rotator.js` | 295 | rotating tile of the Network card |
 | `js/netpanel.js` | 493 | the panel «Networks» (v10) |
@@ -344,7 +344,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/new-devices.js` | 399 | new devices |
 | `js/night.js` | 44 | "Last 12 hours": the summary card |
 | `js/pause-place.js` | 14 | Where the pause menu goes: a pure function (nothing here touches the page, so a test can feed it any measure). |
-| `js/tile.js` | 319 | tile |
+| `js/tile.js` | 344 | tile |
 | `js/update.js` | 34 | update available |
 | `css/10-base.css` | 174 | Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an |
 | `css/11-components.css` | 186 | components |
@@ -352,15 +352,15 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/20-export.css` | 94 | Export dialog (#exportdlg, xp-*). |
 | `css/21-export-vlan.css` | 80 | An optional extra of the export for the developer (xv-*): a check button in its own advanced section, a small panel with what Home Assistant |
 | `css/30-deep.css` | 51 | Deep search: the menu of #deep-menu, its rows and the badge on the split button. |
-| `css/40-network.css` | 521 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
+| `css/40-network.css` | 538 | Network card: header with the logo, "living cycle" circle, split scan button, search row with the rotating tile, filter badges, |
 | `css/42-health.css` | 102 | Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of  |
-| `css/50-tile.css` | 222 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
+| `css/50-tile.css` | 229 | Device tiles: groups, tiles, compact rows, empty state with the scan button, list view, brand logos. |
 | `css/60-new-devices.css` | 85 | Devices found panel (#card-new, inside the network card). Its .nd-list/.nd-row/.nd-ic/.nd-text/.nd-actions rows are reused by the #ignored d |
 | `css/61-night.css` | 13 | "Last 12 hours" (#card-night): the summary card, only when there is something to say; under the network card, above the log. |
 | `css/62-ha-networks.css` | 42 | Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided bloc |
 | `css/63-netpanel.css` | 190 | The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel |
 | `css/65-update.css` | 17 | Update window (#updatedlg): what is going to happen before the Updates page of Home Assistant opens. The frame, the header with the X on the |
-| `css/66-alerts.css` | 120 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
+| `css/66-alerts.css` | 121 | The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of |
 | `css/70-log.css` | 54 | Log card (#card-log). .log-empty is reused by the #ignored dialog (network). |
 | `css/80-more-info.css` | 281 | More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows. |
 | `css/82-more-month.css` | 19 | "Last 30 days" in the card (#mi-month): the strip of the days, the class, one line on the link, the changes of name and brand. |

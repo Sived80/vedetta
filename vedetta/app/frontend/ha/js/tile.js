@@ -1,4 +1,4 @@
-import { $, BASE, COMPACT, COMPACT_LIMIT, I, REDUCED, TYPE_ORDER, analysisText, canOpen, canWake, devIcon, esc, icon, ipKey, logoTint, logoVar, nowSec, reloadHost, stateText, t, typeIcon, typeLabel, typePlural } from "./core.js";
+import { $, BASE, COMPACT, COMPACT_LIMIT, FAMILIES, FAMILY_GROUP, I, REDUCED, TYPE_ORDER, analysisText, canOpen, canWake, devIcon, esc, familyIcon, familyLabel, familyOf, icon, ipKey, logoTint, logoVar, nowSec, reloadHost, stateText, t, typeIcon, typeLabel, typePlural } from "./core.js";
 import { S, searchClear, searchEl } from "./core-ui.js";
 import { span } from "./core-menu.js";
 import { DEBUG } from "./debug.js";
@@ -13,7 +13,7 @@ export var groupsEl = $("groups");
 
 export function prepare(d) {
   d.type = I.typeIcon[d.type] ? d.type : "generic";
-  d._hay = [d.name, d.ip, d.mac, d.brand, d.vendor, d.title, typeLabel(d.type), typePlural(d.type)]
+  d._hay = [d.name, d.ip, d.mac, d.brand, d.vendor, d.title, typeLabel(d.type), typePlural(d.type), d.type === FAMILY_GROUP ? familyLabel(familyOf(d)) : ""]
     .filter(Boolean).join(" ").toLowerCase();
   return d;
 }
@@ -196,6 +196,45 @@ export function emptyState(kind) {
   return el;
 }
 
+function makeGroup(type) {
+  const sec = document.createElement("section");
+  sec.className = "group";
+  sec.dataset.type = type;
+  // the smart home group holds its families (one subtitle and one grid each); the fold hides the whole holder
+  sec.innerHTML = '<div class="heading" role="button" tabindex="0" aria-expanded="true"><span class="hd-ic">' + icon(typeIcon(type)) + '</span><h2 class="hd-title"></h2>' +
+    '<span class="hd-count"></span><span class="hd-sub"></span><span class="hd-chev">' + icon("chevron-down") + "</span></div>" +
+    (type === FAMILY_GROUP ? '<div class="fams"></div>' : '<div class="tiles"></div>');
+  const g = S.groups[type] = { el: sec, grid: sec.querySelector(".fams, .tiles"), title: sec.querySelector(".hd-title"),
+    count: sec.querySelector(".hd-count"), sub: sec.querySelector(".hd-sub"), fams: {} };
+  g.title.textContent = typePlural(type);
+  paintFold(g, type);
+  return g;
+}
+function tilesOf(items) {
+  return items.map(function (d, i) { return S.tiles.get(d.id) || createTile(d, i); });
+}
+// Inside the smart home group: a subtitle and a grid for each family that has devices, in the fixed order of FAMILIES.
+function familyBlocks(g, items) {
+  const blocks = [];
+  FAMILIES.forEach(function (family) {
+    const mine = items.filter(function (d) { return familyOf(d) === family; });
+    if (!mine.length) return;
+    let b = g.fams[family];
+    if (!b) {
+      const el = document.createElement("div");
+      el.className = "fam";
+      el.dataset.family = family;
+      el.innerHTML = '<div class="fam-head"><span class="fam-ic">' + icon(familyIcon(family)) + '</span><h3 class="fam-title">' + esc(familyLabel(family)) +
+        '</h3><span class="fam-count"></span></div><div class="tiles"></div>';
+      b = g.fams[family] = { el: el, grid: el.querySelector(".tiles"), count: el.querySelector(".fam-count") };
+    }
+    b.count.textContent = String(mine.length);
+    reconcile(b.grid, tilesOf(mine));
+    blocks.push(b.el);
+  });
+  return blocks;
+}
+
 export function layout() {
   if (!S.loaded) return;
   const visible = S.list.filter(matches);
@@ -203,27 +242,12 @@ export function layout() {
   const nodes = [];
   TYPE_ORDER.forEach(function (type) {
     const items = visible.filter(function (d) { return d.type === type; });
-    let g = S.groups[type];
-    if (!g) {
-      var sec = document.createElement("section");
-      sec.className = "group";
-      sec.dataset.type = type;
-      sec.innerHTML = '<div class="heading" role="button" tabindex="0" aria-expanded="true"><span class="hd-ic">' + icon(typeIcon(type)) + '</span><h2 class="hd-title"></h2>' +
-        '<span class="hd-count"></span><span class="hd-sub"></span><span class="hd-chev">' + icon("chevron-down") + '</span></div><div class="tiles"></div>';
-      g = S.groups[type] = { el: sec, grid: sec.querySelector(".tiles"), title: sec.querySelector(".hd-title"),
-        count: sec.querySelector(".hd-count"), sub: sec.querySelector(".hd-sub") };
-      g.title.textContent = typePlural(type);
-      paintFold(g, type);
-    }
+    const g = S.groups[type] || makeGroup(type);
     if (!items.length) return;
     const online = items.filter(function (d) { return d.online; }).length;
     g.count.textContent = String(items.length);
     g.sub.textContent = online === items.length ? "" : t("js.ha.group.online", { n: online });
-    const tiles = items.map(function (d, i) {
-      const el = S.tiles.get(d.id) || createTile(d, i);
-      return el;
-    });
-    reconcile(g.grid, tiles);
+    reconcile(g.grid, type === FAMILY_GROUP ? familyBlocks(g, items) : tilesOf(items));
     items.forEach(function (d) { updateTile(d.id); });
     nodes.push(g.el);
   });
@@ -300,6 +324,7 @@ groupsEl.addEventListener("keydown", function (e) {
 function clearFilters() {
   S.filter.status = "all";
   S.filter.type = null;
+  S.filter.family = null;
   S.filter.q = "";
   searchEl.value = "";
   searchClear.hidden = true;

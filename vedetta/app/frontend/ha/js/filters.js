@@ -1,4 +1,4 @@
-import { $, REDUCED, api, esc, icon, t } from "./core.js";
+import { $, FAMILIES, FAMILY_GROUP, REDUCED, api, esc, familyIcon, familyLabel, familyOf, icon, t } from "./core.js";
 import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
 import { mountHealth } from "./health-card.js";
@@ -17,6 +17,7 @@ export function matches(d) {
   if (f.status === "offline" && d.online) return false;
   if (f.status === "mobile" && !d.is_mobile) return false;
   if (f.type && d.type !== f.type) return false;
+  if (f.family && familyOf(d) !== f.family) return false;
   if (f.shared && !d.ha_share) return false;
   if (f.q && d._hay.indexOf(f.q) < 0) return false;
   return true;
@@ -33,7 +34,8 @@ function counts() {
 function setFilter(kind, value) {
   if (kind === "status") { S.filter.status = value; if (value === "all") S.filter.shared = false; }      // "All" shows all again
   else if (kind === "shared") S.filter.shared = !S.filter.shared;
-  else S.filter.type = S.filter.type === value ? null : value;
+  else if (kind === "family") S.filter.family = S.filter.family === value ? null : value;
+  else if (value !== "_other") { S.filter.type = S.filter.type === value ? null : value; S.filter.family = null; }      // «Others» of the ring is not a group
   S.dirty.layout = true;
   S.dirty.net = true;
   schedule();
@@ -76,6 +78,7 @@ export function buildNetwork() {
     '<div class="search-row" id="search-row"></div>' +
     '<div class="hero-row"><div class="gauge-col"><div class="gauge" id="gauge" role="group">' + gaugeHTML() + '</div><div class="gauge-side">' + scanButtonsHTML() + '</div></div>' +
     '<div class="tile-col" id="tile-col">' + tileHTMLShell() + '</div></div>' +
+    '<div class="fam-chips" id="fam-chips" role="group" hidden></div>' +           // under the ring that chooses the smart home group
     '<div class="badges" id="badges">' + badgesHTML() + '</div>' +
     '<div class="brands" id="brands"></div></div>';
   // The devices to add open between the badges and the brands (the panel survives the rebuild of the card).
@@ -96,6 +99,10 @@ export function buildNetwork() {
   $("badges").addEventListener("click", function (e) {
     const b = e.target.closest(".badge");
     if (b) setFilter("status", S.filter.status === b.dataset.badge ? "all" : b.dataset.badge);
+  });
+  $("fam-chips").addEventListener("click", function (e) {
+    const chip = e.target.closest("[data-family]");
+    if (chip) setFilter("family", chip.dataset.family);
   });
   onSharedFilter(function () { setFilter("shared"); });
   mountTile();
@@ -126,8 +133,28 @@ export function updateNetwork() {
   paintGauge(c);
   paintNewDot();
   paintBadges(c);
+  paintFamilyChips();
   paintTile(false);
   renderBrands();
+}
+
+// The smart home group chosen in the ring: a chip for each of its families that has devices, to narrow the list further.
+function paintFamilyChips() {
+  const el = $("fam-chips");
+  if (!el) return;
+  const n = {};
+  if (S.filter.type === FAMILY_GROUP) S.list.forEach(function (d) { if (d.type === FAMILY_GROUP) n[familyOf(d)] = (n[familyOf(d)] || 0) + 1; });
+  const present = FAMILIES.filter(function (f) { return n[f]; });
+  el.hidden = !present.length;
+  const sig = present.map(function (f) { return f + n[f] + (S.filter.family === f ? "*" : ""); }).join();
+  if (el._sig === sig) return;
+  el._sig = sig;
+  el.setAttribute("aria-label", t("js.ha.type." + FAMILY_GROUP));
+  el.innerHTML = present.map(function (f) {
+    const on = S.filter.family === f;
+    return '<button type="button" class="chip rp' + (on ? " on" : "") + '" data-family="' + f + '" aria-pressed="' + on + '">' + icon(familyIcon(f)) +
+      '<span class="chip-l">' + esc(familyLabel(f)) + "</span> <em>" + n[f] + "</em></button>";
+  }).join("");
 }
 
 var BRAND_COLORS = 8;

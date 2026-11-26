@@ -595,7 +595,6 @@
   "js.ha.export.saved": "File salvato",
   "js.ha.export.err_too_big": "Il file per lo sviluppatore supera {size}: accorcia il periodo.",
   "js.ha.export.err_busy": "Un'altra esportazione è in corso: riprova tra poco.",
-  "js.ha.new.working": "In corso",
   "js.ha.new.run_title": "Aggiunta in corso · {done} di {total}",
   "js.ha.new.run_sub": "Analisi e salvataggio in corso",
   "js.ha.new.added_title_one": "{n} dispositivo aggiunto",

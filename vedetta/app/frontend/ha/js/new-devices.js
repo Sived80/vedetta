@@ -57,12 +57,17 @@ function newRows() {
   rows.sort(function (a, b) { return (a.ip ? ipKey(a.ip) : Infinity) - (b.ip ? ipKey(b.ip) : Infinity); });
   return rows;
 }
-// The ring in the icon of a row: it turns while the device is analysed, closes when it is saved and becomes a tick.
+// The ring in the icon of a row: it turns while the device is analysed, closes when it is saved and stays closed (green) once added.
+// The tick is on the right, in place of "Cancel" (the user, 26/11: one spinner and one tick, not two).
 function ndRing(state, fresh) {
   const c = '<circle class="tr" cx="16" cy="16" r="13"/>';
   if (state === "run") return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true">' + c + '<circle class="sp" cx="16" cy="16" r="13"/></svg>';
   if (state === "save") return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true">' + c + '<circle class="close" cx="16" cy="16" r="13"/></svg>';
-  return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true"><circle class="full' + (fresh ? " fresh" : "") + '" cx="16" cy="16" r="13"/><path class="tick' + (fresh ? " fresh" : "") + '" d="M10 16.5l4 4 8-9"/></svg>';
+  return '<svg class="nd-ring" viewBox="0 0 32 32" aria-hidden="true"><circle class="full' + (fresh ? " fresh" : "") + '" cx="16" cy="16" r="13"/></svg>';
+}
+function ndTick(fresh) {
+  const label = esc(t("js.ha.new.added"));
+  return '<span class="nd-tick" role="img" title="' + label + '" aria-label="' + label + '"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="tick' + (fresh ? " fresh" : "") + '" d="M8 16.5l5 5 11-12"/></svg></span>';
 }
 // A button of the panel is a symbol: the words stay in the tooltip and for screen readers.
 function sym(name, label, attrs, cls) {
@@ -84,7 +89,7 @@ function renderNewCard() {
   if (!list.length) { newEl.hidden = true; newEl.innerHTML = ""; newEl._markup = ""; return; }
   const opening = newEl.hidden;      // the card appears now: it opens (below), instead of the page jumping to it
   newEl.hidden = false;
-  const ad = S.adding;  // during the add: {ips, done (analysed), saved, skip (ip -> why not added), mode ("single" | "batch"), meta, fresh, jobs, list, batch}
+  const ad = S.adding;  // during the add: {ips, done (analysed), saved, skip (ip -> why not added), sending (add asked), meta, fresh, jobs, list, batch}
   let run = 0, analysed = 0, saved = 0, skipped = 0;
   if (ad) Object.keys(ad.ips).forEach(function (ip) { if (ad.saved[ip]) saved++; else if (ad.skip[ip]) skipped++; else if (ad.done[ip]) analysed++; else run++; });
   const active = run + analysed, total = run + analysed + saved + skipped, fin = !!ad && !active && saved + skipped > 0;
@@ -100,11 +105,13 @@ function renderNewCard() {
         : ' data-ignore-mac="' + esc(d.mac) + '"';
       const ignoreBtn = sym("eye-off", t("js.ha.new.ignore"), ignAttrs);
       cells = (d.ip ? sym("plus", t("js.ha.new.add_one"), ' data-add-ip="' + esc(d.ip) + '" data-add-host="' + esc(d.name || "") + '"', "ok") : none) + ignoreBtn;
-    } else if (state === "done" || state === "skip") {
+    } else if (state === "skip") {
       cells = none + none;
+    } else if (state === "done") {
+      cells = none + ndTick(ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900);
     } else {
-      cells = (ad.mode[d.ip] === "single" ? sym("close", t("js.ha.cancel"), ' data-add-cancel="' + esc(d.ip) + '"') : none) +
-        '<span class="nd-status" title="' + esc(t("js.ha.new.working")) + '" role="img" aria-label="' + esc(t("js.ha.new.working")) + '"><svg class="nd-mini" viewBox="0 0 32 32" aria-hidden="true"><circle class="tr" cx="16" cy="16" r="13"/><circle class="sp" cx="16" cy="16" r="13"/></svg></span>';
+      // One "Cancel" per row being added, also in a batch; off once the add is asked (a save cannot be called back).
+      cells = none + sym("close", t("js.ha.cancel"), ' data-add-cancel="' + esc(d.ip) + '"' + (ad.sending[d.ip] ? " disabled" : ""));
     }
     const fresh = state === "done" && ad.fresh[d.ip] && Date.now() - ad.fresh[d.ip] < 900;
     const ic = state === "idle" ? icon("devices") : state === "skip" ? icon("alert-circle") : ndRing(state, fresh);
@@ -235,13 +242,10 @@ function settleAdded(ad, ips, res) {
 }
 function addDevices(ips, hosts, mode) {
   // "Adding" state, shared among several parallel additions. Each row goes: analysed (ring turns) -> saved (ring closes into
-  // a tick). The other rows stay usable: each new addition starts at once with its own search (the server queues the heavy
-  // jobs). mode "batch" = started with "Add all": from then on the only "Cancel" is the one of the bar and it stops them all.
-  const ad = S.adding || (S.adding = { ips: {}, done: {}, saved: {}, skip: {}, mode: {}, meta: {}, fresh: {}, jobs: 0, list: [], batch: false });
-  if (mode === "batch") {
-    ad.batch = true;
-    Object.keys(ad.ips).forEach(function (ip) { if (!ad.saved[ip]) ad.mode[ip] = "batch"; });
-  }
+  // a tick on the right). The other rows stay usable: each new addition starts at once with its own search (the server queues the heavy
+  // jobs). Every row has its own "Cancel"; "batch" = started with "Add all": the bar also has a "Cancel" that stops them all.
+  const ad = S.adding || (S.adding = { ips: {}, done: {}, saved: {}, skip: {}, sending: {}, meta: {}, fresh: {}, jobs: 0, list: [], batch: false });
+  if (mode === "batch") ad.batch = true;
   ips = ips.filter(function (ip) { return !ad.ips[ip]; });
   if (!ips.length) { renderNew(); return; }
   const current = newRows();
@@ -249,10 +253,10 @@ function addDevices(ips, hosts, mode) {
     const row = current.filter(function (r) { return r.ip === ip; })[0];
     ad.meta[ip] = row ? { src: row.src, ip: row.ip, mac: row.mac, name: row.name } : { src: "found", ip: ip };
     ad.ips[ip] = true;
-    ad.mode[ip] = mode === "batch" ? "batch" : "single";
   });
   ad.jobs++;
-  const job = { ips: ips, cancelled: false, dropAll: false, ctrl: window.AbortController ? new AbortController() : null };
+  // dropped: the rows of this job cancelled one by one (the search of the others goes on; these are never added).
+  const job = { ips: ips, cancelled: false, dropAll: false, dropped: {}, ctrl: window.AbortController ? new AbortController() : null };
   ad.list.push(job);
   renderNew();
   function finish() {
@@ -270,7 +274,7 @@ function addDevices(ips, hosts, mode) {
     }
   }
   let use = ips;
-  scanMany(ips, hosts, function (r) { if (ad.ips[r.ip]) ad.done[r.ip] = true; renderNew(); }, job.ctrl && job.ctrl.signal).then(function (got) {
+  scanMany(ips, hosts, function (r) { if (ad.ips[r.ip] && !job.dropped[r.ip]) ad.done[r.ip] = true; renderNew(); }, job.ctrl && job.ctrl.signal).then(function (got) {
     const byIp = {};
     got.results.forEach(function (r) { byIp[r.ip] = r; });
     // The stream was lost: the searches still running are stopped on the server too; their devices are added with what is known.
@@ -278,8 +282,8 @@ function addDevices(ips, hosts, mode) {
     if (lost.length) api("/api/scan/cancel", { method: "POST", json: { ips: lost } }).catch(function () {});
     // Cancelled: only the devices whose analysis had already finished are kept (none, if that row was cancelled by hand).
     use = job.dropAll ? [] : (job.cancelled ? ips.filter(function (ip) { return byIp[ip]; }) : ips);
-    use = use.filter(function (ip) { return ad.ips[ip]; });
-    use.forEach(function (ip) { ad.done[ip] = true; });
+    use = use.filter(function (ip) { return ad.ips[ip] && !job.dropped[ip]; });
+    use.forEach(function (ip) { ad.done[ip] = true; ad.sending[ip] = true; });
     renderNew();
     if (!use.length) return null;
     const devices = use.map(function (ip) { return toDevice(ip, hosts[ip], byIp[ip]); });
@@ -313,13 +317,15 @@ newEl.addEventListener("click", function (e) {
   }
   const rowCancel = e.target.closest("[data-add-cancel]");
   if (rowCancel && S.adding) {
-    // "Cancel" on a row: that device goes back to how it was and is not added.
+    // "Cancel" on a row (alone or in a batch): that device goes back to how it was and is not added; the others go on.
     var ad1 = S.adding, ip1 = rowCancel.dataset.addCancel;
-    var job1 = (ad1.list || []).filter(function (j) { return !j.cancelled && j.ips.indexOf(ip1) >= 0; })[0];
+    if (ad1.sending[ip1] || ad1.saved[ip1]) return;                         // already being saved: too late (the button is off)
+    var job1 = (ad1.list || []).filter(function (j) { return !j.cancelled && !j.dropped[ip1] && j.ips.indexOf(ip1) >= 0; })[0];
     var wasDone = !!ad1.done[ip1];
-    delete ad1.ips[ip1]; delete ad1.done[ip1]; delete ad1.mode[ip1]; delete ad1.meta[ip1];
+    delete ad1.ips[ip1]; delete ad1.done[ip1]; delete ad1.meta[ip1];
     if (job1) {
-      if (job1.ips.length === 1) { job1.dropAll = true; job1.cancelled = true; if (job1.ctrl) job1.ctrl.abort(); }
+      job1.dropped[ip1] = true;
+      if (job1.ips.every(function (ip) { return job1.dropped[ip]; })) { job1.dropAll = true; job1.cancelled = true; if (job1.ctrl) job1.ctrl.abort(); }
       if (!wasDone) api("/api/scan/cancel", { method: "POST", json: { ips: [ip1] } }).catch(function () {});
     }
     renderNew();
@@ -335,7 +341,7 @@ newEl.addEventListener("click", function (e) {
       job.ips.forEach(function (ip) { if (ad2.ips[ip] && !ad2.done[ip]) pending.push(ip); });
       if (job.ctrl) job.ctrl.abort();
     });
-    pending.forEach(function (ip) { delete ad2.ips[ip]; delete ad2.mode[ip]; delete ad2.meta[ip]; });
+    pending.forEach(function (ip) { delete ad2.ips[ip]; delete ad2.meta[ip]; });
     ad2.batch = false;
     if (pending.length) api("/api/scan/cancel", { method: "POST", json: { ips: pending } }).catch(function () {});
     renderNew();

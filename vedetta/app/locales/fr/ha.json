@@ -595,7 +595,6 @@
   "js.ha.export.saved": "Fichier enregistré",
   "js.ha.export.err_too_big": "Le fichier pour le développeur dépasse {size} : réduisez la période.",
   "js.ha.export.err_busy": "Un autre export est en cours : réessayez dans un instant.",
-  "js.ha.new.working": "En cours",
   "js.ha.new.run_title": "Ajout · {done} sur {total}",
   "js.ha.new.run_sub": "Analyse et enregistrement",
   "js.ha.new.added_title_one": "{n} appareil ajouté",

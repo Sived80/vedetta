@@ -105,8 +105,9 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
 
   // --- 2. add one, cancel it
   await click("#card-new [data-add-ip='192.168.178.201']");
-  check(rowState(0) === "nd-run" && /Annulla|Cancel/.test(cells(0)[0]) && /In corso|In progress/.test(cells(0)[1]), "«Aggiungi» su una riga: «Annulla» al suo posto e «Ignora» diventa «In corso»");
-  check(!!rows()[0].querySelector(".nd-ring .sp"), "nell'icona un anello gira");
+  check(rowState(0) === "nd-run" && cells(0)[0] === "" && /Annulla|Cancel/.test(cells(0)[1]), "«Aggiungi» su una riga: a destra un solo «Annulla» (al posto di «Ignora»)");
+  check(!!rows()[0].querySelector(".nd-ic .nd-ring .sp"), "nell'icona a sinistra un anello gira");
+  check(!q("#card-new .nd-mini, #card-new .nd-status") && qa("#card-new .sp").length === 1, "nessun secondo spinner a destra: gira solo l'anello a sinistra");
   check(q("#newdot").textContent === "+2", "la riga che si sta aggiungendo non conta piu' nel +N: +2");
   check(bar().length === 2 && bar()[1] === "" && !q("#card-new [data-ignore-all]"), "l'«Annulla» in alto e' sparito");
   check(streams.length === 1 && streams[0].ips.join() === "192.168.178.201", "parte la ricerca di quel solo dispositivo");
@@ -122,22 +123,31 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   await click("#card-new [data-add-ip='192.168.178.201']");
   await click("#card-new [data-add-all]");
   check(streams.length === 3 && streams[2].ips.join() === "192.168.178.202,192.168.178.203", "«Aggiungi tutti» cerca gli altri due");
-  check(cells(0)[0] === "" && /In corso|In progress/.test(cells(0)[1]), "l'«Annulla» della riga sparisce");
+  check(rows().every((_, i) => cells(i)[0] === "" && /Annulla|Cancel/.test(cells(i)[1])), "ogni riga in aggiunta, anche del gruppo, ha il suo «Annulla» a destra");
   check(bar()[0].indexOf("(spento)") > 0 && /Annulla|Cancel/.test(bar()[1]) && !!q("#card-new [data-add-cancel-all]"), "in alto «Aggiungi tutti» e' in corso e accanto c'e' «Annulla»");
-  check(!qa("#card-new [data-add-cancel]").length, "nessuna riga ha piu' un suo «Annulla»");
+  check(qa("#card-new [data-add-cancel]").length === 3 && !q("#card-new .nd-mini, #card-new .nd-status"), "tre «Annulla» di riga, nessuno spinner a destra");
   check(/0 di 3|0 of 3/.test(title()), "il titolo dice quanti sono: 0 di 3");
 
   // --- 4. the first one is analysed, then the whole batch is cancelled
   streams[1].progress("192.168.178.201");
   await wait(60);
-  check(rowState(0) === "nd-save" && !!rows()[0].querySelector(".nd-ring .close"), "analizzato: l'anello si chiude (sta salvando)");
+  check(rowState(0) === "nd-save" && !!rows()[0].querySelector(".nd-ring .close") && /Annulla|Cancel/.test(cells(0)[1]), "analizzato: l'anello si chiude (sta salvando), «Annulla» resta");
+  // «Annulla» on ONE row of the batch: only that device leaves, the others go on
+  const cancelsBefore = calls.filter((c) => c.url === "/api/scan/cancel").length;
+  await click("#card-new [data-add-cancel='192.168.178.202']");
+  await wait(60);
+  check(rowState(1) === "nd-idle" && rowState(2) === "nd-run", "«Annulla» su una riga del gruppo: torna com'era solo quella, l'altra continua");
+  const cancels = calls.filter((c) => c.url === "/api/scan/cancel").slice(cancelsBefore);
+  check(cancels.length === 1 && cancels[0].body.ips.join() === "192.168.178.202", "sul server si ferma l'analisi di quel solo dispositivo");
+  check(!streams[2].aborted(), "la ricerca del gruppo non e' interrotta per gli altri");
   await click("#card-new [data-add-cancel-all]");
   await wait(120);
   check(rowState(1) === "nd-idle" && rowState(2) === "nd-idle", "«Annulla» in alto: gli altri due tornano in lista");
   check(streams[2].aborted(), "e la loro ricerca e' fermata");
   const adds = calls.filter((c) => c.url === "/api/devices/add");
   check(adds.length === 1 && adds[0].body.devices.length === 1 && adds[0].body.devices[0].ip === "192.168.178.201", "solo quello gia' analizzato viene aggiunto");
-  check(rowState(0) === "nd-done" && !!rows()[0].querySelector(".nd-ring .tick") && cells(0).every((c) => c === ""), "e la sua riga diventa verde con la spunta, senza scritte");
+  check(rowState(0) === "nd-done" && !!rows()[0].querySelector(".nd-ic .nd-ring .full") && !rows()[0].querySelector(".nd-ic .tick"), "a sinistra l'anello chiuso, verde, senza spunta");
+  check(cells(0)[0] === "" && /Aggiunto|added/i.test(cells(0)[1]) && !!rows()[0].querySelector(".nd-actions .tick") && !rows()[0].querySelector("[data-add-cancel]"), "a destra la spunta al posto di «Annulla»");
   check(/Chiudi|Close/.test(bar()[1]) && /^1 /.test(title()) && /aggiunt|added/.test(title()), "in alto «Annulla» e' diventato «Chiudi» e il titolo dice «1 dispositivo aggiunto»");
   check(!q("#card-new .nd-prog"), "e non c'e' nemmeno a fine aggiunta");
 
@@ -154,10 +164,27 @@ const rowState = (i) => Array.from(rows()[i].classList).filter((c) => /^nd-(idle
   HOSTS.forEach((h) => s.progress(h.ip)); s.push({ type: "complete", results: HOSTS.map((h) => ({ ip: h.ip, adapter: "generic" })) }); s.end();
   await wait(200);
   check(rows().length === 3 && rows().every((_, i) => rowState(i) === "nd-done"), "tutti aggiunti: tre righe verdi");
+  check(rows().every((r) => !!r.querySelector(".nd-actions .tick") && !r.querySelector(".nd-ic .tick")), "ogni riga aggiunta ha la spunta a destra, una sola");
   check(q("#newdot").hidden, "aggiunti: le righe verdi restano fino a «Chiudi», ma il +N sparisce subito");
   check(/^3 /.test(title()) && /Chiudi|Close/.test(bar()[1]), "titolo «3 dispositivi aggiunti» e «Chiudi» in alto");
   await click("#card-new [data-add-close]");
   check(q("#card-new").hidden, "«Chiudi»: finito tutto la scheda sparisce");
+
+  // --- 6b. "Add all", one row cancelled, the server still reports it: it is not added, the others are
+  await click("#btn-scan");
+  await wait(120);
+  await click("#card-new [data-add-all]");
+  const s6 = streams[streams.length - 1];
+  await click("#card-new [data-add-cancel='192.168.178.202']");
+  s6.progress("192.168.178.202");
+  await wait(30);
+  check(rowState(1) === "nd-idle", "una riga del gruppo annullata non torna «in corso» se il server la riporta");
+  HOSTS.forEach((h) => s6.progress(h.ip)); s6.push({ type: "complete", results: HOSTS.map((h) => ({ ip: h.ip, adapter: "generic" })) }); s6.end();
+  await wait(200);
+  const add6 = calls.filter((c) => c.url === "/api/devices/add").pop();
+  check(add6.body.devices.map((d) => d.ip).join() === "192.168.178.201,192.168.178.203", "si aggiungono solo gli altri due");
+  check(rowState(0) === "nd-done" && rowState(1) === "nd-idle" && rowState(2) === "nd-done", "le due righe aggiunte verdi, quella annullata a riposo");
+  await click("#card-new [data-add-close]");
 
   // --- 7. devices seen on the network by the app (not chosen from a search): "Cancel" closes the card until something new appears
   const seen = (mac, ip) => ({ mac, ip, hostname: "n" + ip.split(".")[3] });

@@ -170,6 +170,9 @@ async function scanWith(...ns) {
   await scanWith(51, 52);
   await click("#card-new [data-add-all]");
   streams[streams.length - 1].finish();
+  await wait(60);
+  const c5 = q('#card-new [data-add-cancel="192.0.2.51"]');
+  check(!!c5 && c5.disabled, "while the add is sent the row's «Cancel» is off (the save cannot be undone any more)");
   await wait(600);
   check(stateOf(51) === "nd-skip" && stateOf(52) === "nd-skip" && !turning() && !!closeBtn(), "an add with no answer ends too, with the rows saying it");
   await click(closeBtn());

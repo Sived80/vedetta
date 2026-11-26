@@ -608,7 +608,6 @@
   "js.ha.export.saved": "Soubor uložen",
   "js.ha.export.err_too_big": "Soubor pro vývojáře přesahuje velikost {size}: zkraťte časové období.",
   "js.ha.export.err_busy": "Probíhá jiný export: zkuste to znovu za chvíli.",
-  "js.ha.new.working": "Probíhá",
   "js.ha.new.run_title": "Přidávání · {done} z {total}",
   "js.ha.new.run_sub": "Probíhá analýza a ukládání",
   "js.ha.new.added_title_one": "Přidáno {n} zařízení",

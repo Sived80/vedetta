@@ -53,7 +53,6 @@
   #card-new .nd-row { flex-wrap: wrap; min-height: 56px; box-sizing: border-box; padding: 6px 0; gap: 4px 12px; }
   #card-new .nd-text { flex: 1 1 130px; }
   #card-new .nd-sub { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
-  #card-new .nd-status { padding: 0; font-size: 13px; color: var(--secondary-text-color); }
   /* Plain icon buttons as in HA: no background, the 24 px icon centred in 36 px, like the three lines of the menu (same right edge as
      the menu button: on narrow windows the header padding is 12 and the content 16, hence the 4 px). The action that adds is blue. */
   #card-new .nd-sym .mdi, #card-new .nd-sym svg { width: 24px; height: 24px; top: 0; }
@@ -73,15 +72,14 @@
   .nd-ring .close { stroke: var(--primary-color); stroke-linecap: round; stroke-dasharray: 82; stroke-dashoffset: 82; transform: rotate(-90deg); transform-origin: 50% 50%; animation: nd-draw 0.7s linear forwards; }
   .nd-ring .full { stroke: var(--success-color); stroke-dasharray: 82; stroke-dashoffset: 0; transform: rotate(-90deg); transform-origin: 50% 50%; }
   .nd-ring .full.fresh { stroke-dashoffset: 82; animation: nd-draw 0.45s ease-out forwards; }
-  .nd-ring .tick { fill: none; stroke: var(--success-color); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 20; stroke-dashoffset: 0; }
-  .nd-ring .tick.fresh { stroke-dashoffset: 20; animation: nd-draw 0.35s 0.3s ease-out forwards; }
-  .nd-mini { width: 18px; height: 18px; }
-  .nd-mini circle { fill: none; stroke-width: 4; }
-  .nd-mini .tr { stroke: var(--divider-color); }
-  .nd-mini .sp { stroke: var(--primary-color); stroke-linecap: round; stroke-dasharray: 50 100; transform-origin: 50% 50%; animation: nd-spin 0.9s linear infinite; }
+  /* the tick of a row added: on the right, in the cell of "Cancel", drawn after the ring has closed */
+  #card-new .nd-tick svg { width: 24px; height: 24px; display: block; }
+  .nd-tick .tick { fill: none; stroke: var(--success-color); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 26; stroke-dashoffset: 0; }
+  .nd-tick .tick.fresh { stroke-dashoffset: 26; animation: nd-draw 0.35s 0.3s ease-out forwards; }
+  #card-new .nd-actions > .btn:disabled { opacity: 0.4; cursor: default; }
   @keyframes nd-spin { to { transform: rotate(360deg); } }
   @keyframes nd-draw { to { stroke-dashoffset: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .nd-ring .sp, .nd-mini .sp { animation: none; }
+    .nd-ring .sp { animation: none; }
   }
 }

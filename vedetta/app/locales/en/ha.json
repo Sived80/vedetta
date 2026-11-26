@@ -595,7 +595,6 @@
   "js.ha.export.saved": "File saved",
   "js.ha.export.err_too_big": "The file for the developer is over {size}: shorten the period.",
   "js.ha.export.err_busy": "Another export is running: try again in a moment.",
-  "js.ha.new.working": "In progress",
   "js.ha.new.run_title": "Adding · {done} of {total}",
   "js.ha.new.run_sub": "Analysing and saving",
   "js.ha.new.added_title_one": "{n} device added",

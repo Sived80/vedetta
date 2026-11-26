@@ -249,14 +249,24 @@ def update_auto_name(device_id: str, name: str, source: str, force: bool = False
     return _edit_card(device_id, change) is not None
 
 
+_HEARD_NAMES = ("mdns_name", "upnp_name", "api_name", "netbios_name", "onvif_name", "http_title")
+
+
+def _heard(d: dict, name: str) -> bool:
+    """The name is one the deep search recorded from the device itself (scan_info): an automatic name, not one chosen by hand."""
+    scan = d.get("scan_info") or {}
+    return any(scan.get(key) == name for key in _HEARD_NAMES)
+
+
 @_locked
 def set_twin_name(device_id: str, name: str) -> bool:
     """The name of a twin card (twins.py): the main card's name and the network. Never over a name chosen by hand, here or in Home Assistant,
-    nor over a name with no origin that is not a placeholder (presumed chosen by hand, as naming.is_better says)."""
+    nor over a name with no origin that is not a placeholder (presumed chosen by hand, as naming.is_better says) unless the deep search heard
+    that very name from the device (an old version saved it with no origin: an app's mDNS service on Home Assistant's own address, 26/11)."""
     def change(d: dict) -> bool | None:
         source, current = d.get("name_source"), d.get("name")
         unsourced_hand = (source not in naming.PRIORITY and source != "twin" and current and current != d.get("ip")
-                          and not naming.is_placeholder(current))
+                          and not naming.is_placeholder(current) and not _heard(d, current))
         if source in ("user", "ha", "ha_user") or unsourced_hand or (current == name and source == "twin"):
             return False
         d["name"], d["name_source"] = name, "twin"

@@ -155,7 +155,13 @@ function internetTile() {
   return { id: "internet", tip: tip, html: cardHTML(color, "earth", name, b1, b2, foot) };
 }
 
-// The three functions that reach the internet: how many are on, and which ones are off.
+// The app's Configuration page in Home Assistant, where the three functions are switched on and off: asked of the host (as the Updates page,
+// update.js), only inside Home Assistant and when the server knows the slug of the app.
+function settingsOpener(ext) {
+  if (window.parent === window || !ext.app_slug) return null;
+  return function () { window.parent.postMessage({ type: "home-assistant/navigate", path: "/hassio/addon/" + ext.app_slug + "/config" }, "*"); };
+}
+// The three functions that reach the internet: how many are on, and which ones are off; the foot is the button to their settings when it can open them.
 function externalTile() {
   const ext = S.external;
   if (!ext) return null;
@@ -165,10 +171,12 @@ function externalTile() {
   const b1 = statBox(t("js.ha.tile.ext_on_lbl"), esc(t("js.ha.tile.ext_count", { n: n, total: rows.length })), n ? "var(--success-color)" : "var(--secondary-text-color)", "tinted");
   const b2 = statBox(t("js.ha.tile.ext_off_lbl"), off.length ? esc(off.join(", ")) : "–");
   const onNames = rows.filter(function (r) { return r[0]; }).map(function (r) { return t(r[1]); }).join(", ");      // the legend: the ones that are on
+  const settings = settingsOpener(ext);
   return {
     id: "external",
+    open: settings,
     tip: t("js.ha.tile.external_tip", { n: n, total: rows.length }),
-    html: cardHTML(color, "toggle-switch", esc(t("js.ha.tile.external")), b1, b2, tileLegend(esc(onNames), "", n / rows.length * 100, color))
+    html: cardHTML(color, "toggle-switch", esc(t("js.ha.tile.external")), b1, b2, settings ? goButton(t("js.ha.tile.ext_settings")) : tileLegend(esc(onNames), "", n / rows.length * 100, color))
   };
 }
 

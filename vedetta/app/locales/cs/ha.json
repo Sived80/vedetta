@@ -62,6 +62,7 @@
   "js.ha.tile.on": "Zapnuto",
   "js.ha.tile.off": "Vypnuto",
   "js.ha.tile.external_tip": "Funkce směřující do internetu: {n} z {total} zapnuto (nastavuje se v konfiguraci doplňku)",
+  "js.ha.tile.ext_settings": "Nastavení",
   "js.ha.tile.net_path_off": "Cesta se nezjišťuje",
   "js.ha.tile.net_all_off": "Kontroly vypnuty",
   "js.ha.tile.no_checks": "Žádné kontroly",

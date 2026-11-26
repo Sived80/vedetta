@@ -15,6 +15,11 @@ assert ha_update.parse({"version": "0.7.1-debug", "version_latest": "0.7.1-debug
 assert ha_update.parse({"version": "0.7.1"}) == {"available": False, "installed": "0.7.1", "latest": ""}       # a field missing is "no update", not an error
 for bad in (None, {}, [], "x", {"version": ""}, {"update_available": True}):
     assert ha_update.parse(bad) is None, bad
+# the slug of the app (its Configuration page in Home Assistant): only letters, digits and underscores get through
+assert ha_update.slug_of({"slug": "0123abcd_vedetta"}) == "0123abcd_vedetta"
+assert ha_update.slug_of({"slug": "local_vedetta_debug"}) == "local_vedetta_debug"
+for bad in (None, {}, {"slug": ""}, {"slug": "../x"}, {"slug": "a/b"}, {"slug": "x" * 80}, {"slug": 5}):
+    assert ha_update.slug_of(bad) is None, bad
 
 CALLS: list = []
 
@@ -28,10 +33,12 @@ async def go():
 
     async def ok(tok):
         CALLS.append(tok)
-        return {"version": "0.7.1", "version_latest": "0.7.2", "update_available": True}
+        return {"version": "0.7.1", "version_latest": "0.7.2", "update_available": True, "slug": "0123abcd_vedetta"}
+    assert ha_update.app_slug() is None
     ha_update._fetch = ok
     assert await ha_update.refresh() == ha_update.REFRESH_S
     assert CALLS == ["tok"], CALLS
+    assert ha_update.app_slug() == "0123abcd_vedetta"
     assert ha_update.snapshot() == {"available": True, "installed": "0.7.1", "latest": "0.7.2"}
 
     async def down(tok):
@@ -39,6 +46,7 @@ async def go():
     ha_update._fetch = down
     assert await ha_update.refresh() == ha_update.RETRY_S
     assert ha_update.snapshot()["latest"] == "0.7.2"                                              # the last answer stays
+    assert ha_update.app_slug() == "0123abcd_vedetta"
 
     async def slow(tok):
         await asyncio.sleep(5)

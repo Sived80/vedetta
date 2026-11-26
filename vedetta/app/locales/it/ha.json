@@ -61,6 +61,7 @@
   "js.ha.tile.on": "Acceso",
   "js.ha.tile.off": "Spento",
   "js.ha.tile.external_tip": "Funzioni che escono verso Internet: {n} su {total} accese (si cambiano nella configurazione dell'add-on)",
+  "js.ha.tile.ext_settings": "Impostazioni",
   "js.ha.tile.net_path_off": "Percorso non verificato",
   "js.ha.tile.net_all_off": "Controlli spenti",
   "js.ha.tile.no_checks": "Nessun controllo",

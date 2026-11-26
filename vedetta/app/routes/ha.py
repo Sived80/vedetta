@@ -151,8 +151,10 @@ async def api_ha_summary(request: Request):
 
 
 def _external_info() -> dict:
-    """The three functions that reach the internet and whether each is on (add-on options): the page shows them in a tile."""
-    return {**external.status(), "mac_database": {"on": oui_update.auto_update_enabled(), "updated": oui_update.meta()["updated"]}}
+    """The three functions that reach the internet and whether each is on (add-on options): the page shows them in a tile, with a button to the
+    app's Configuration page in Home Assistant where they are set (its slug; None outside Home Assistant: no button)."""
+    return {**external.status(), "mac_database": {"on": oui_update.auto_update_enabled(), "updated": oui_update.meta()["updated"]},
+            "app_slug": ha_update.app_slug()}
 
 
 def _mqtt_info() -> dict:

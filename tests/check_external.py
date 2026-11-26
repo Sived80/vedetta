@@ -109,5 +109,10 @@ env(public_ip="false", path="true", mac_db="true", path_target="9.9.9.9")
 from app.routes import ha as routes_ha  # noqa: E402
 info = routes_ha._external_info()
 assert info["public_ip"] == {"on": False} and info["path"] == {"on": True, "target": "9.9.9.9"} and info["mac_database"]["on"] is True and "updated" in info["mac_database"], info
-assert set(info) == {"public_ip", "path", "mac_database"}, "only these: nothing else of the configuration (no credential) goes to the page"
+assert set(info) == {"public_ip", "path", "mac_database", "app_slug"}, "only these: nothing else of the configuration (no credential) goes to the page"
+assert info["app_slug"] is None, "outside Home Assistant the page has no Configuration page to open"
+from app.ha import ha_update  # noqa: E402
+ha_update._slug = "0123abcd_vedetta"
+assert routes_ha._external_info()["app_slug"] == "0123abcd_vedetta", "the tile's Settings button opens the app's own Configuration page"
+ha_update._slug = None
 print("ALL OK")

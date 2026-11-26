@@ -61,6 +61,7 @@
   "js.ha.tile.on": "An",
   "js.ha.tile.off": "Aus",
   "js.ha.tile.external_tip": "Funktionen, die das Internet erreichen: {n} von {total} an (einstellbar in der Konfiguration der App)",
+  "js.ha.tile.ext_settings": "Einstellungen",
   "js.ha.tile.net_path_off": "Pfad nicht geprüft",
   "js.ha.tile.net_all_off": "Prüfungen aus",
   "js.ha.tile.no_checks": "Keine Prüfungen",

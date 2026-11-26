@@ -61,6 +61,7 @@
   "js.ha.tile.on": "Activé",
   "js.ha.tile.off": "Désactivé",
   "js.ha.tile.external_tip": "Fonctions qui accèdent à internet : {n} sur {total} activées (réglé dans la configuration de l'add-on)",
+  "js.ha.tile.ext_settings": "Paramètres",
   "js.ha.tile.net_path_off": "Chemin non vérifié",
   "js.ha.tile.net_all_off": "Vérifications désactivées",
   "js.ha.tile.no_checks": "Aucune vérification",

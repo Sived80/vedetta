@@ -312,7 +312,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/app.js` | 44 | Log open: reloads by itself (more often at the detailed level, where |
 | `js/core-menu.js` | 331 | guided typing |
 | `js/core-ui.js` | 200 | state |
-| `js/core.js` | 277 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
+| `js/core.js` | 278 | Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries. |
 | `js/debug.js` | 49 | Origin and reliability of brand and name: data for analysis, not for the user. Enabled with |
 | `js/deep.js` | 163 | deep search |
 | `js/export-vlan.js` | 108 | an optional extra of the export for the developer |

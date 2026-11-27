@@ -268,8 +268,9 @@ class _Clues:
         return any(e["group"] == group for e in self.ev)
 
     def kind_word_pts(self, kd: dict, w: _Words) -> int:
-        """Points of the words of a type found in the text (0 if none); reported unless the type only tells the platform."""
-        if not (any(s in w.text for s in kd["subs"]) or w.tokens & kd["toks"]):
+        """Points of the words of a type found in the text (0 if none; a word that is also a place, "place" in the table, counts only with one
+        of "with": «Presa garage» is a plug in the garage); reported unless the type only tells the platform."""
+        if not (_said(w, kd["subs"], kd["toks"]) or (_said(w, *kd["place"]) and _said(w, *kd["with"]))):
             return 0
         word_pts = _word_pts(kd["w"], kd["subs"], kd["toks"], w.model)
         if kd["id"] not in _PLATFORM_KINDS:
@@ -365,7 +366,7 @@ def _build_index(kinds: list[dict]) -> _KindIndex:
     """For each word, token, service, UPnP type and brand: the positions of the kinds that list it."""
     index = _KindIndex({}, {}, {}, {}, {})
     for position, kd in enumerate(kinds):
-        for table, keys in ((index.subs, kd["subs"]), (index.tokens, kd["toks"]), (index.mdns, kd["mdns"]), (index.upnp, kd["upnp"]), (index.brands, kd["brands"])):
+        for table, keys in ((index.subs, kd["subs"] + kd["place"][0]), (index.tokens, kd["toks"] | kd["place"][1]), (index.mdns, kd["mdns"]), (index.upnp, kd["upnp"]), (index.brands, kd["brands"])):
             for key in keys:
                 table.setdefault(key, []).append(position)
     return index
@@ -407,7 +408,20 @@ def _build_kind(k: dict) -> dict:
     toks |= {t + "s" for t in list(toks)}
     return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "family": family_of(k["id"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
-            "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product"))}
+            "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product")),
+            "place": _words_of(k.get("place")), "with": _words_of(k.get("with"))}
+
+
+def _words_of(words) -> tuple[list[str], set[str]]:
+    """The words of a list of the table as (substrings, whole words with the plural)."""
+    toks: set[str] = set()
+    subs = _split_words(words, toks)
+    return subs, toks | {t + "s" for t in toks}
+
+
+def _said(w: _Words, subs, toks) -> bool:
+    """One of these words is in the text of the device."""
+    return any(s in w.text for s in subs) or bool(w.tokens & toks)
 
 
 def _split_words(words, toks: set) -> list[str]:

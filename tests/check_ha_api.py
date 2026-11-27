@@ -90,7 +90,7 @@ c = ha_data.compact_device(d, {"adapter": "shelly_gen1", "mobile": None})
 keys = {"id", "name", "ip", "port", "mac", "vendor", "vendor_role", "brand", "brand_source", "brand_confidence", "brand_evidence", "brand_declared", "logo", "logo_color", "battery", "battery_source", "type", "icon", "family", "family_user", "is_mobile", "mobile_mode", "name_source", "wol_ok", "ha_share", "type_user", "brand_user", "focus", "focus_note", "online", "last_seen", "uptime",
         "signal", "latency_ms", "latency_color", "ports", "url", "title", "scanned_at", "web_open", "deep_empty_at", "attrs"}
 assert set(c) == keys, set(c) ^ keys
-assert c["type"] == "iot" and c["family"] == "hubs" and c["family_user"] is None and c["mobile_mode"] == "auto" and c["online"] is False and c["last_seen"] == 1234.5
+assert c["type"] == "iot" and c["family"] == "other" and c["family_user"] is None and c["mobile_mode"] == "auto" and c["online"] is False and c["last_seen"] == 1234.5
 assert c["signal"]["display"] == "-58 dBm · 2.4 GHz" and c["signal"]["text"] == "Good", c["signal"]
 assert c["ports"] == [{"label": "80 · http", "category": "web", "confirmed": True}]
 assert c["title"] == "Pagina" and [a["key"] for a in c["attrs"]] == ["model", "title"], c["attrs"]

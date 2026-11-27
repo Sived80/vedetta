@@ -174,14 +174,11 @@
   // Family inside the smart home group (device_groups.FAMILIES on the server) -> icon.
   var FAMILY_ICON = {
     lights: "lightbulb",
-    sensors: "thermometer",
     climate: "thermostat",
-    appliance: "washing-machine",
-    energy: "solar-power",
     security: "shield-home",
-    cover: "blinds",
-    water: "pump",
-    hubs: "hub"
+    energy: "solar-power",
+    appliance: "washing-machine",
+    other: "hub"
   };
 
   function svg(name, cls) {

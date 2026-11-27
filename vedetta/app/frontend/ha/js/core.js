@@ -40,9 +40,10 @@ export let REDUCED = false;
 })();
 // The ten groups in their default order (device_groups.TYPE_ORDER on the server: the groups Home Assistant sees).
 export const TYPE_DEFAULT = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
-// Inside the smart home group, the families in the order the page shows them (device_groups.FAMILIES on the server); "hubs" takes the rest.
+// Inside the smart home group, the families in the order the page shows them (device_groups.FAMILIES on the server: the summaries of the
+// Home dashboard of Home Assistant, then appliances); "other" takes the rest.
 export const FAMILY_GROUP = "iot";
-export const FAMILIES = ["lights", "sensors", "climate", "appliance", "energy", "security", "cover", "water", "hubs"];
+export const FAMILIES = ["lights", "climate", "security", "energy", "appliance", "other"];
 // The order the page shows the groups in: the person's (setting group_order, the same on every device) or the default one. Changed in place
 // (setTypeOrder), so every module that imported it sees the new order.
 export const TYPE_ORDER = TYPE_DEFAULT.slice();
@@ -162,9 +163,9 @@ export function canWake(d) {
 }
 export function typeLabel(type) { return t("js.ha.type1." + (I.typeIcon[type] ? type : "generic")); }
 export function typePlural(type) { return t("js.ha.type." + (I.typeIcon[type] ? type : "generic")); }
-export function familyOf(d) { return FAMILIES.indexOf(d && d.family) >= 0 ? d.family : "hubs"; }
-export function familyLabel(family) { return t("js.ha.family." + (FAMILIES.indexOf(family) >= 0 ? family : "hubs")); }
-export function familyIcon(family) { return I.familyIcon[family] || I.familyIcon.hubs; }
+export function familyOf(d) { return FAMILIES.indexOf(d && d.family) >= 0 ? d.family : "other"; }
+export function familyLabel(family) { return t("js.ha.family." + (FAMILIES.indexOf(family) >= 0 ? family : "other")); }
+export function familyIcon(family) { return I.familyIcon[family] || I.familyIcon.other; }
 export function nowSec() { return Date.now() / 1000; }
 
 export function ago(ts) {

@@ -10,7 +10,7 @@ from pathlib import Path  # noqa: F401  the tests replace ha_data.Path with a fa
 from ..recognition import brand_logo
 from ..storage import devices_config
 from .. import i18n
-from ..device_groups import FAMILIES, OTHER_FAMILY, ha_group
+from ..device_groups import OTHER_FAMILY, chosen_family, ha_group
 from . import identity_shift, tracker_hold
 from ..storage.history import History, history
 from .ha_type_evidence import MARGIN_BELOW, MIN_TYPE_SCORE, TYPE_ORDER, W_BRAND, W_DECLARED, W_PLATFORM_MAX, W_PORTS_MAX, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _FAMILY_PORT, _FAMILY_SERVICE, _FAMILY_UPNP, _MDNS_TYPE, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PLATFORM_KINDS, _PORT_RE, _PORT_SHARED, _PORT_TYPE, _TOKEN_RE, _UPNP_TYPE, _aggregate, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _build_kind, _declared_services, _declares_onvif, _ha_integrations, _ha_table_cache, _has_network_role, _kinds, _kinds_cache, _model_text, _read_kind_rows, _split_words, _word_pts, type_evidence, type_scores  # noqa: F401
@@ -91,13 +91,15 @@ def effective_family(device: dict, cfg: dict | None = None, group: str | None = 
 
 def _family(group: str, row: dict | None, cfg: dict) -> str | None:
     """The family chosen by hand (family_user), else the one of a smart home group chosen by the debug build with 16 groups (type_user
-    "climate"...), else the one of the finer kind that won (no kind: hubs and modules)."""
+    "climate"...), else the one of the finer kind that won (no kind: other devices). A family saved before 1.0.4 finds its place."""
     if group != "iot":
         return None
+    auto = row["family"] if row else OTHER_FAMILY
     for chosen in (cfg.get("family_user"), cfg.get("type_user")):
-        if chosen in FAMILIES:
-            return chosen
-    return row["family"] if row else OTHER_FAMILY
+        family = chosen_family(chosen, auto)
+        if family:
+            return family
+    return auto
 
 
 def device_facts(device: dict, cfg: dict | None = None) -> dict:
@@ -158,7 +160,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         "battery_source": device.get("battery_source"),
         "type": _t,
         "icon": icon_for(device, cfg.get("adapter"), _t),
-        "family": effective_family(device, cfg, _t),         # inside the smart home group only (device_groups.FAMILIES)
+        "family": (_fam := effective_family(device, cfg, _t)),       # inside the smart home group only (device_groups.FAMILIES)
         "is_mobile": bool(device.get("is_mobile")),
         "mobile_mode": _mobile_mode(cfg.get("mobile")),
         "name_source": cfg.get("name_source"),
@@ -167,7 +169,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         **({"watch": True} if cfg.get("watch") else {}),
         **({"twin_of": device["twin_of"]} if device.get("twin_of") else {}),   # the address of the main card of the same machine (twins.py): the page puts the twin next to it     # "tell me if it disappears" (sentinel_view): only when on, off is the absence
         "type_user": ha_group(cfg.get("type_user")),
-        "family_user": cfg.get("family_user") if cfg.get("family_user") in FAMILIES else None,
+        "family_user": chosen_family(cfg.get("family_user"), _fam),     # a family saved before 1.0.4 as the one it became
         "brand_user": cfg.get("brand_user"),
         "focus": bool(cfg.get("focus")),
         "focus_note": cfg.get("focus_note"),

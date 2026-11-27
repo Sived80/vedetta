@@ -7,6 +7,7 @@ import ipaddress
 import time
 
 from .. import i18n
+from ..device_groups import chosen_family
 from ..recognition import brand_logo
 from ..recognition.vendor_lookup import resolve_vendor_info
 from ..storage import passive_store
@@ -39,6 +40,7 @@ def compact(mac: str, item: dict) -> dict:
     name = _name(row, edit, mac)
     device = {"id": passive_store.id_of(mac), "name": name, "ip": row.get("ip"), "mac": mac.upper(), "brand": brand, "vendor": info["vendor"], "vendor_role": info["vendor_role"]}
     kind = ha_data.effective_type(device, _choices(edit))
+    family = ha_data.effective_family(device, _choices(edit), kind)
     online = bool(row.get("online"))
     logo = brand_logo.logo_for(brand)
     return {
@@ -48,7 +50,7 @@ def compact(mac: str, item: dict) -> dict:
         **ha_data._logo_fields(logo),
         "battery": None, "battery_source": None,
         "type": kind, "icon": ha_data.icon_for(device, None, kind),
-        "family": ha_data.effective_family(device, _choices(edit), kind), "family_user": edit.get("family"), "is_mobile": False, "mobile_mode": "auto",
+        "family": family, "family_user": chosen_family(edit.get("family"), family), "is_mobile": False, "mobile_mode": "auto",
         "name_source": "user" if edit.get("name") else SOURCE, "wol_ok": False, "ha_share": False,
         "type_user": edit.get("type"), "brand_user": edit.get("brand"), "focus": False, "focus_note": None,
         "online": online, "last_seen": None if online else item.get("online_at"), "uptime": None, "signal": None,

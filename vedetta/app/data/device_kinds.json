@@ -1,5 +1,5 @@
 {
- "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND). brand_alone false: la marca da sola non basta (chi fa telecamere fa anche centrali d'allarme), conferma solo un indizio del gruppo gia' trovato.",
+ "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND). brand_alone false: la marca da sola non basta (chi fa telecamere fa anche centrali d'allarme), conferma solo un indizio del gruppo gia' trovato. place: parole che sono anche un luogo (garage, giardino, piscina): contano per il tipo solo insieme a una parola di with (porta, valvola, pompa...); da sole o con una parola di un altro tipo (\"Presa garage\") non dicono il tipo.",
  "kinds": [
   {
    "id": "accesspoint",
@@ -990,11 +990,19 @@
    "words": [
     "irrigat",
     "sprinkler",
-    "irrigazione",
-    "giardino"
+    "irrigazione"
    ],
-   "tokens": [
+   "tokens": [],
+   "place": [
+    "giardino",
     "garden"
+   ],
+   "with": [
+    "valvola",
+    "valve",
+    "rubinetto",
+    "goccia",
+    "drip"
    ],
    "w": 4,
    "mdns": [],
@@ -1005,11 +1013,30 @@
    "group": "water",
    "icon": "pool",
    "words": [
-    "pool",
-    "piscina",
     "swimming"
    ],
    "tokens": [],
+   "place": [
+    "pool",
+    "piscina"
+   ],
+   "with": [
+    "pompa",
+    "pump",
+    "filtro",
+    "filter",
+    "cloro",
+    "chlorine",
+    "cloratore",
+    "clorinatore",
+    "robot",
+    "pulitore",
+    "cleaner",
+    "redox",
+    "elettrolisi",
+    "centralina",
+    "controller"
+   ],
    "w": 4,
    "mdns": [],
    "upnp": []
@@ -1492,6 +1519,20 @@
    "upnp": []
   },
   {
+   "id": "awning",
+   "group": "cover",
+   "icon": "awning",
+   "words": [
+    "awning",
+    "tenda da sole",
+    "markise"
+   ],
+   "tokens": [],
+   "w": 4,
+   "mdns": [],
+   "upnp": []
+  },
+  {
    "id": "curtain",
    "group": "cover",
    "icon": "curtains",
@@ -1511,11 +1552,28 @@
    "group": "cover",
    "icon": "garage",
    "words": [
-    "garage",
     "basculante",
-    "sezionale"
+    "sezionale",
+    "garagentor"
    ],
    "tokens": [],
+   "place": [
+    "garage"
+   ],
+   "with": [
+    "porta",
+    "porte",
+    "portone",
+    "door",
+    "opener",
+    "apertura",
+    "apriporta",
+    "serranda",
+    "basculante",
+    "sezionale",
+    "tor",
+    "vrata"
+   ],
    "w": 4,
    "mdns": [],
    "upnp": []
@@ -1528,25 +1586,13 @@
     "cancello",
     "portone",
     "barrier",
-    "sbarra"
+    "sbarra",
+    "cancelletto",
+    "cancellino"
    ],
    "tokens": [
     "gate"
    ],
-   "w": 4,
-   "mdns": [],
-   "upnp": []
-  },
-  {
-   "id": "awning",
-   "group": "cover",
-   "icon": "awning",
-   "words": [
-    "awning",
-    "tenda da sole",
-    "markise"
-   ],
-   "tokens": [],
    "w": 4,
    "mdns": [],
    "upnp": []

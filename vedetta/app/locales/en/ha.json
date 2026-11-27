@@ -273,6 +273,8 @@
   "js.ha.log.flap": "changed state {n} times · now {state}",
   "js.ha.menu.flows": "Search methods",
   "js.ha.menu.repo": "Vedetta repository on GitHub",
+  "js.ha.menu.no_warranty": "no warranty",
+  "js.ha.menu.source_code": "source code",
   "js.ha.menu.update_tip": "Update available: Vedetta {latest}. Opens the Updates page of Home Assistant (it first explains what happens).",
   "js.ha.update.title": "Update available",
   "js.ha.update.sub": "Vedetta {installed} → {latest}",

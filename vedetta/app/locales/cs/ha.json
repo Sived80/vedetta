@@ -281,6 +281,8 @@
   "js.ha.log.flap": "změna stavu {n}x · nyní {state}",
   "js.ha.menu.flows": "Metody vyhledávání",
   "js.ha.menu.repo": "Repozitář Vedetta na GitHubu",
+  "js.ha.menu.no_warranty": "bez záruky",
+  "js.ha.menu.source_code": "zdrojový kód",
   "js.ha.menu.update_tip": "Je dostupná aktualizace: Vedetta {latest}. Otevře stránku Aktualizace v Home Assistantu (nejdřív vysvětlí, co se stane).",
   "js.ha.update.title": "Je dostupná aktualizace",
   "js.ha.update.sub": "Vedetta {installed} → {latest}",

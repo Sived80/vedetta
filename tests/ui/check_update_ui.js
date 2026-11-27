@@ -75,7 +75,7 @@ function open(update, inHA) {
   const foot = menu.querySelector(".menu-foot");
   const repo = foot && foot.querySelector("a.menu-repo");
   const up = foot && foot.querySelector("button[data-update]");
-  check(foot && menu.lastElementChild === foot, "in fondo al menu c'e' la riga del piede");
+  check(foot && menu.lastElementChild === foot.nextElementSibling && foot.nextElementSibling.classList.contains("menu-legal"), "in fondo al menu c'e' la riga del piede, sotto solo la riga legale (GPL-3.0)");
   check(repo && repo.href === "https://github.com/Sived80/vedetta" && repo.target === "_blank" && /noopener/.test(repo.rel), "a sinistra il link della repository, in una nuova scheda e senza referente");
   check(up && foot.lastElementChild === up && repo.nextElementSibling === up, "a destra del link c'e' la freccia dell'aggiornamento");
   check(up && /0\.7\.2/.test(up.title) && up.title === up.getAttribute("aria-label"), "sopra la freccia il testo dice cosa fa e quale versione (" + (up && up.title) + ")");

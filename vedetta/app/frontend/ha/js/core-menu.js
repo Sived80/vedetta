@@ -172,7 +172,16 @@ function menuFoot() {
   const up = updateAvailable() && inHomeAssistant()
     ? '<button type="button" class="menu-upd rp" data-update="1" title="' + tip + '" aria-label="' + tip + '">' + icon("upload") + "</button>" : "";
   return '<div class="menu-foot"><a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) +
-    '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>";
+    '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>" + legalLine();
+}
+// The Appropriate Legal Notices of the GPL-3.0 (sections 0 and 5d), under the foot: copyright, license, no warranty, source code. LEGAL_LINE is the
+// copyright of the original; a modified version keeps here, next to its own, the line NOTICE (b) asks for: "Based on Vedetta by Sived80 — " + REPO_URL.
+var LEGAL_LINE = "Vedetta © 2026 Sived80";
+var LICENSE_URL = REPO_URL + "/blob/main/LICENSE";
+function legalLine() {
+  const ext = '" target="_blank" rel="noopener noreferrer">';
+  const parts = [esc(LEGAL_LINE), '<a href="' + LICENSE_URL + ext + "GPL-3.0</a>", esc(t("js.ha.menu.no_warranty")), '<a href="' + REPO_URL + ext + esc(t("js.ha.menu.source_code")) + "</a>"];
+  return '<div class="menu-legal"><span>' + parts.join("</span> · <span>") + "</span></div>";      // each part on one line: a narrow menu wraps only at the dots
 }
 // The number of clients Home Assistant sees that can be adopted, after the name of the entry, only when there are some.
 function netsCountHtml() {

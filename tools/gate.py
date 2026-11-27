@@ -24,8 +24,13 @@ def sh(*cmd):
     return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
 
 
+def _code_lines(path: Path) -> int:
+    """Lines of the file without the one-line licence header (GPL-3.0 SPDX line, 1.0.4): a licence comment is not growth of the code."""
+    return sum(1 for line in path.read_text(encoding="utf-8").splitlines() if not line.startswith("# SPDX-License-Identifier:"))
+
+
 def snapshot():
-    snap = {"lines": {f: len((ROOT / f).read_text(encoding="utf-8").splitlines()) for f in BIG}}
+    snap = {"lines": {f: _code_lines(ROOT / f) for f in BIG}}
     cc = sh(sys.executable, "-m", "radon", "cc", "-s", "-n", "C", "vedetta/app")   # grade C and worse (the project has C functions; D alone would show nothing)
     snap["worst"] = gate_rules.worst_complexity(cc.stdout)
     st = sh(sys.executable, "tests/check_structure.py").stdout

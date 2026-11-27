@@ -54,6 +54,11 @@ And of course it names every device: name, brand, model and type, with every clu
 
 > [!NOTE]
 > **Home Assistant Container?** No App store there: run Vedetta with Docker Compose, same app with a login of its own. [Docker guide](docs/DOCKER.md)
+> ```bash
+> curl -fsSLO https://raw.githubusercontent.com/Sived80/vedetta/main/docker-compose.yml && touch ha_token.txt && chmod 600 ha_token.txt
+> sudo docker compose up -d     # after the three lines marked EDIT
+> sudo docker logs vedetta      # the one-time code to choose the password
+> ```
 
 **1. Add** the repository, or add `https://github.com/Sived80/vedetta` by hand in the App store.<br>
 <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta"><img src="docs/images/button-add.svg" alt="Add to my Home Assistant" height="40"></a>

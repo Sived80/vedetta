@@ -6,6 +6,10 @@ In Docker the page is on a port of the network, so every request needs the sessi
 - /login and /setup (the forms to get one; /setup only before a password exists);
 - /healthz, and only from the container itself (the healthcheck of Compose): from the network it is 404, it says nothing.
 
+The Host of the request must be an address (IPv4, IPv6), localhost, a local name (.local, .lan, .home.arpa, .internal) or one of
+VEDETTA_ALLOWED_HOSTS: a page of another site that points one of its own names to the LAN address of Vedetta (DNS rebinding) would
+otherwise be "same origin" for the browser.
+
 The headers only the Supervisor may send (X-Ingress-Path: the prefix of the URLs; X-Remote-User-ID: the person logged in Home Assistant)
 are removed from every request: here anyone could write them.
 
@@ -13,11 +17,15 @@ Every request that changes something (POST, PUT, PATCH, DELETE) must come from t
 then Origin or Referer): Sec-Fetch-Site same-origin, or an Origin equal to the address asked. The API calls also carry the header
 X-Vedetta-Request, which a form of another site cannot send. A missing session gets 303 to the login for a page and 401 for the rest.
 Pure ASGI, like ingress.py: it must not buffer the SSE stream."""
+import ipaddress
+import os
+import secrets
 from http.cookies import CookieError, SimpleCookie
 from urllib.parse import quote, urlsplit
 
 from . import runtime
 from .auth import store
+from .ingress import security_headers
 
 SESSION_COOKIE = "vedetta_session"
 SECURE_SESSION_COOKIE = "__Host-vedetta_session"      # a name the browser accepts only with Secure, Path=/ and no Domain (HTTPS)
@@ -26,6 +34,25 @@ UNSAFE = {"POST", "PUT", "PATCH", "DELETE"}
 LOOPBACK = {"127.0.0.1", "::1"}
 API_HEADER = b"x-vedetta-request"
 _SUPERVISOR_ONLY = {b"x-ingress-path", b"x-remote-user-id"}
+LOCAL_SUFFIXES = (".local", ".lan", ".home.arpa", ".internal")
+
+
+def allowed_host(value: str) -> bool:
+    """The Host header names this app: an address, localhost, a local name or a name of VEDETTA_ALLOWED_HOSTS (port ignored)."""
+    value = (value or "").strip().lower()
+    if not value or any(c in value for c in "/\\@ "):
+        return False
+    if value.startswith("["):                               # [IPv6]:port
+        host = value[1:value.find("]")] if "]" in value else ""
+    else:
+        host = value.rsplit(":", 1)[0] if value.count(":") == 1 else value
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        pass
+    extra = {h.strip().lower() for h in os.environ.get("VEDETTA_ALLOWED_HOSTS", "").replace(",", " ").split() if h.strip()}
+    return host == "localhost" or host.endswith(LOCAL_SUFFIXES) or host in extra
 
 
 def session_id(scope) -> str | None:
@@ -82,25 +109,28 @@ class AccessMiddleware:
             return
         scope["headers"] = [(k, v) for k, v in scope.get("headers", []) if k not in _SUPERVISOR_ONLY]
         path, method = scope.get("path", ""), scope.get("method", "GET")
+        if scope["type"] == "http" and not allowed_host(_header(scope, b"host")):
+            await _plain(send, 400, b"Host not allowed: add it to VEDETTA_ALLOWED_HOSTS (see DOCKER.md)", path=path)
+            return
         client = (scope.get("client") or ("",))[0]
         if path == "/healthz":
             if client in LOOPBACK:
                 await self.app(scope, receive, send)
             else:
-                await _plain(send, 404, b"Not Found")
+                await _plain(send, 404, b"Not Found", path=path)
             return
         if scope["type"] == "websocket":                  # the app has no websocket of its own: nothing to open from the network
             await send({"type": "websocket.close", "code": 1008})
             return
         if method in UNSAFE and not same_origin(scope):
-            await _plain(send, 403, b"Forbidden")
+            await _plain(send, 403, b"Forbidden", path=path)
             return
         if path in PUBLIC:
             await self.app(scope, receive, send)
             return
         if store.valid(session_id(scope)):
             if method in UNSAFE and path.startswith("/api/") and _header(scope, API_HEADER) != "1":
-                await _plain(send, 403, b"Forbidden")
+                await _plain(send, 403, b"Forbidden", path=path)
                 return
             await self.app(scope, receive, send)
             return
@@ -108,19 +138,23 @@ class AccessMiddleware:
             target = "/setup" if not store.has_password() else "/login"
             if target == "/login" and path not in ("/", "/ha"):
                 target += "?next=" + quote(path, safe="/")
-            await _redirect(send, target)
+            await _redirect(send, target, path)
             return
-        await _plain(send, 401, b'{"detail":"login required"}', b"application/json")
+        await _plain(send, 401, b'{"detail":"login required"}', b"application/json", path)
 
 
-async def _plain(send, status: int, body: bytes, kind: bytes = b"text/plain; charset=utf-8") -> None:
+def _headers(path: str) -> list:
+    """The security headers of the app (ingress.py), on the answers of this check too."""
+    return [h for h in security_headers(secrets.token_urlsafe(16), path) if h[0] != b"cache-control"] + [(b"cache-control", b"no-store")]
+
+
+async def _plain(send, status: int, body: bytes, kind: bytes = b"text/plain; charset=utf-8", path: str = "") -> None:
     await send({"type": "http.response.start", "status": status, "headers": [
-        (b"content-type", kind), (b"content-length", str(len(body)).encode()), (b"cache-control", b"no-store"),
-        (b"x-content-type-options", b"nosniff")]})
+        (b"content-type", kind), (b"content-length", str(len(body)).encode())] + _headers(path)})
     await send({"type": "http.response.body", "body": body})
 
 
-async def _redirect(send, location: str) -> None:
+async def _redirect(send, location: str, path: str = "") -> None:
     await send({"type": "http.response.start", "status": 303, "headers": [
-        (b"location", location.encode("latin-1")), (b"content-length", b"0"), (b"cache-control", b"no-store")]})
+        (b"location", location.encode("latin-1")), (b"content-length", b"0")] + _headers(path)})
     await send({"type": "http.response.body", "body": b""})

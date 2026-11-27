@@ -6,8 +6,8 @@ How to install Vedetta in Home Assistant, what happens at the first launch, and 
 
 > [!NOTE]
 > **Before you start.** Vedetta is a Home Assistant *app* (older versions call it an *add-on*). Open Home Assistant and go to
-> **Settings**: if you see **Apps** (or **Add-ons**, or **Applicazioni** in Italian), you are ready. If you run Home Assistant *Container* or *Core*, there is no
-> app store and Vedetta cannot run. It needs **Home Assistant OS** or **Supervised**.
+> **Settings**: if you see **Apps** (or **Add-ons**, or **Applicazioni** in Italian), you are ready. If you run Home Assistant *Container*, there is no
+> app store: run Vedetta with Docker Compose instead, see the [Docker guide](DOCKER.md).
 
 Pick **one** of the two ways below. Both end the same way: Vedetta appears in your sidebar.
 

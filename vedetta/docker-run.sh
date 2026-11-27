@@ -21,7 +21,8 @@ fi
 chmod 700 "$VEDETTA_DATA_DIR" 2>/dev/null || true      # the map of the network, the password hash and the sessions: for the owner only
 
 if [ -n "${VEDETTA_HA_URL:-}" ]; then
-    log "Home Assistant: ${VEDETTA_HA_URL}"
+    # Only scheme, host and port: a user and a password written in the address by mistake never reach the log (the app refuses them).
+    log "Home Assistant: $(printf '%s' "$VEDETTA_HA_URL" | sed -E 's#^([A-Za-z]+://)[^/@]*@#\1#; s#^([A-Za-z]+://[^/]*).*#\1#')"
 else
     log "Home Assistant not configured (VEDETTA_HA_URL): Vedetta works on its own, without the data of Home Assistant"
 fi

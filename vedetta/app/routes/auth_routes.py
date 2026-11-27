@@ -3,16 +3,19 @@
 
 GET/POST /login: the password, then a new session in a cookie (HttpOnly, SameSite=Lax; Secure with the __Host- name when the page is
 HTTPS, also behind a trusted proxy). GET/POST /setup: only while no password exists, with the one-time code of the log. POST /logout:
-the session ends on the server. Wrong attempts wait (auth/throttle.py); one scrypt at a time (it takes 128 MiB). Every refusal shows
-the same words and status: nothing says whether the code, the password or the wait was wrong beyond what the person needs to retry.
-The pages are plain HTML forms with no script (the page's CSP allows none here)."""
+the session ends on the server. The pages are plain HTML forms with no script (the page's CSP allows none here).
+
+Guessing (security review of 27/11): one check at a time (scrypt takes 128 MiB), and an attempt that arrives while another is being
+checked is refused at once (429) instead of waiting in a queue; each attempt is counted as wrong BEFORE its check and cleared when it
+was right, so attempts sent together cannot all pass the wait first (auth/throttle.py: the long wait per address, a short one for the
+whole app). The body of a form is refused above MAX_FORM_BYTES by its Content-Length and read only up to that size."""
 import asyncio
 import os
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .. import i18n, runtime
@@ -26,10 +29,18 @@ from ..paths import env_base_path
 
 router = APIRouter()
 templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates", context_processors=[template_context])
-throttle = Throttle()
+throttle_login = Throttle()
+throttle_setup = Throttle()            # counted apart: wrong logins never block the first setup, nor the other way round
 setup_code = SetupCode()
-_hashing = asyncio.Lock()
+_checking = asyncio.Lock()
 MAX_FORM_BYTES = 4096
+MAX_FIELDS = 8
+
+
+class FormError(Exception):
+    def __init__(self, status: int) -> None:
+        super().__init__(status)
+        self.status = status
 
 
 def announce_setup() -> None:
@@ -82,10 +93,42 @@ def _logged_in(request: Request, target: str) -> RedirectResponse:
 
 
 async def _form(request: Request) -> dict:
-    body = await request.body()
-    if len(body) > MAX_FORM_BYTES:
-        raise HTTPException(413)
-    return {k: v[0] for k, v in parse_qs(body.decode("utf-8", errors="replace"), max_num_fields=8).items()}
+    """The fields of a small form: 413 above MAX_FORM_BYTES (by Content-Length first, then while reading), 400 for a broken or crowded one."""
+    try:
+        declared = int(request.headers.get("content-length") or 0)
+    except ValueError:
+        raise FormError(400) from None
+    if declared > MAX_FORM_BYTES:
+        raise FormError(413)
+    body = b""
+    async for chunk in request.stream():
+        body += chunk
+        if len(body) > MAX_FORM_BYTES:
+            raise FormError(413)
+    try:
+        fields = parse_qs(body.decode("utf-8"), max_num_fields=MAX_FIELDS, strict_parsing=False)
+    except (ValueError, UnicodeDecodeError):
+        raise FormError(400) from None
+    return {k: v[0] for k, v in fields.items()}
+
+
+async def _checked(throttle: Throttle, client: str, check) -> bool | None:
+    """Runs check() (a scrypt, in a thread) for one attempt: None when it must wait (the address or the app is waiting, or another
+    attempt is being checked right now), else whether it was right. The attempt counts as wrong before the check."""
+    if _checking.locked() or throttle.wait(client) > 0:
+        return None
+    async with _checking:
+        if throttle.wait(client) > 0:
+            return None
+        throttle.failed(client)
+        ok = await asyncio.to_thread(check)
+    if ok:
+        throttle.succeeded(client)
+    return ok
+
+
+def _wait_seconds(throttle: Throttle, client: str) -> int:
+    return max(1, int(throttle.wait(client)) + 1)
 
 
 def _docker_only() -> None:
@@ -104,21 +147,22 @@ async def login_page(request: Request, next: str = "/ha"):      # noqa: A002  th
 @router.post("/login")
 async def login(request: Request):
     _docker_only()
-    form, client = await _form(request), _client(request)
+    client = _client(request)
+    try:
+        form = await _form(request)
+    except FormError as exc:
+        return PlainTextResponse("Bad request", status_code=exc.status)
     target = _next(form.get("next"))
-    wait = throttle.wait(client)
-    if wait > 0:
-        return _page(request, "login.html", status=429, target=target, error="auth.wait", seconds=int(wait) + 1)
     stored = store.password_hash()
-    async with _hashing:
-        ok = bool(stored) and await asyncio.to_thread(passwords.verify, form.get("password", ""), stored)
+    password = form.get("password", "")
+    ok = await _checked(throttle_login, client, lambda: bool(stored) and passwords.verify(password, stored))
+    if ok is None:
+        return _page(request, "login.html", status=429, target=target, error="auth.wait", seconds=_wait_seconds(throttle_login, client))
     if not ok:
-        throttle.failed(client)
         logger.info("Accesso rifiutato da %s", client)
         return _page(request, "login.html", status=401, target=target, error="auth.wrong")
-    throttle.succeeded(client)
     if passwords.needs_rehash(stored):
-        store.set_password_hash(await asyncio.to_thread(passwords.hash_password, form["password"]))
+        store.set_password_hash(await asyncio.to_thread(passwords.hash_password, password))
     logger.info("Accesso da %s", client)
     return _logged_in(request, target)
 
@@ -136,25 +180,27 @@ async def setup(request: Request):
     _docker_only()
     if store.has_password():
         raise HTTPException(404)
-    form, client = await _form(request), _client(request)
-    wait = throttle.wait(client)
-    if wait > 0:
-        return _page(request, "setup.html", status=429, error="auth.wait", seconds=int(wait) + 1, expired=False)
-    if not setup_code.matches(form.get("code", "")):
-        throttle.failed(client)
+    client = _client(request)
+    try:
+        form = await _form(request)
+    except FormError as exc:
+        return PlainTextResponse("Bad request", status_code=exc.status)
+    ok = await _checked(throttle_setup, client, lambda: setup_code.matches(form.get("code", "")))
+    if ok is None:
+        return _page(request, "setup.html", status=429, error="auth.wait", seconds=_wait_seconds(throttle_setup, client), expired=False)
+    if not ok:
         logger.info("Codice di configurazione errato da %s", client)
         return _page(request, "setup.html", status=401, error="auth.code_wrong", expired=not setup_code.active())
     password = form.get("password", "")
     problem = passwords.problem(password) or (None if password == form.get("confirm") else "mismatch")
     if problem:
         return _page(request, "setup.html", status=400, error="auth." + problem, expired=False)
-    async with _hashing:
+    async with _checking:
         stored = await asyncio.to_thread(passwords.hash_password, password)
-    if store.has_password():                       # two forms at once: the first one won
+    if store.has_password() or not setup_code.active():       # two forms at once: the first one won
         raise HTTPException(404)
     store.set_password_hash(stored)
     setup_code.used()
-    throttle.succeeded(client)
     logger.warning("Password di Vedetta impostata dalla pagina (da %s)", client)
     return _logged_in(request, "/ha")
 

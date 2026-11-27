@@ -84,3 +84,41 @@ jobs:
           subject-name: ${{ steps.v.outputs.name }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+
+  # Docker (Home Assistant Container, 1.1): one name for every architecture, ghcr.io/sived80/vedetta:X.Y.Z, made of the two images built
+  # above (a multi-architecture index: Docker picks the right one), with its own signed provenance. The images are not built again.
+  manifest:
+    needs: image
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1    # v7.0.1
+      - name: Version
+        id: v
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          version="$(cat vedetta/VERSION)"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then tag="$version"; else tag="${INPUT_TAG:-$version-test}"; fi
+          echo "$tag" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+)?$' || { echo "unexpected tag: $tag"; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069    # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550    # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Multi-architecture index
+        id: index
+        env:
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          docker buildx imagetools create -t "ghcr.io/sived80/vedetta:$TAG" \
+            "ghcr.io/sived80/amd64-vedetta:$TAG" "ghcr.io/sived80/aarch64-vedetta:$TAG"
+          digest="$(docker buildx imagetools inspect "ghcr.io/sived80/vedetta:$TAG" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          echo "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8    # v4.2.2
+        with:
+          subject-name: ghcr.io/sived80/vedetta
+          subject-digest: ${{ steps.index.outputs.digest }}
+          push-to-registry: true

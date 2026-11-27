@@ -3,7 +3,8 @@
 #
 #   1. Put this file in an empty folder, e.g. /opt/vedetta, and edit the three lines marked EDIT.
 #   2. Optional, for the data of Home Assistant: save a long-lived access token in ha_token.txt next to this file
-#      (Home Assistant > your profile > Security; a dedicated non-admin user is enough) and keep it private: chmod 600 ha_token.txt
+#      (Home Assistant > your profile > Security; a dedicated non-admin user is enough), owned by root and private:
+#      sudo chown root:root ha_token.txt && sudo chmod 600 ha_token.txt
 #   3. docker compose up -d   then   docker logs vedetta   shows the one-time code to choose the password at http://<host>:8765
 #
 # Why each line is here (DOCKER.md, "Security"): the host network is how a network scanner sees the LAN (ARP, mDNS, DHCP);
@@ -29,6 +30,7 @@ services:
       # VEDETTA_PORT: "8765"                      # the port of the page
       # VEDETTA_INTERNET_UPDATE_CHECK: "false"    # no question to GitHub about new versions
       # VEDETTA_TRUSTED_PROXIES: "127.0.0.1"      # a reverse proxy on another host: its address
+      # VEDETTA_ALLOWED_HOSTS: "vedetta.example.org"   # a host name that is not an address, localhost or *.local/.lan/.home.arpa/.internal
     secrets:
       - ha_token
     volumes:
@@ -39,7 +41,7 @@ services:
       driver: json-file
       options: {max-size: 10m, max-file: "3"}
     healthcheck:
-      test: ["CMD", "curl", "-fs", "-o", "/dev/null", "http://127.0.0.1:8765/healthz"]
+      test: ["CMD-SHELL", "curl -fs -o /dev/null http://127.0.0.1:$${VEDETTA_PORT:-8765}/healthz"]
       interval: 60s
       timeout: 10s
       start_period: 180s

@@ -32,13 +32,14 @@ def check(cond: bool, msg: str) -> None:
     failed += 0 if cond else 1
 
 
-ORIGIN = {"Origin": "http://testserver"}
+ORIGIN = {"Origin": "http://192.0.2.200:8765"}
 SAME = {"Sec-Fetch-Site": "same-origin"}
 API = {**SAME, "X-Vedetta-Request": "1"}
 GOOD = "correct horse battery staple"
 
 
 def client(**kw) -> TestClient:
+    kw.setdefault("base_url", "http://192.0.2.200:8765")
     return TestClient(app, raise_server_exceptions=False, follow_redirects=False, **kw)
 
 
@@ -81,7 +82,7 @@ check(web.post("/api/refresh", headers=SAME).status_code == 403, "a change witho
 check(web.post("/api/refresh", headers={"X-Vedetta-Request": "1"}).status_code == 403, "a change without origin is refused")
 check(web.post("/api/refresh", headers={"X-Vedetta-Request": "1", "Sec-Fetch-Site": "cross-site"}).status_code == 403, "a change from another site is refused")
 check(web.post("/api/refresh", headers=API).status_code == 200, "a change from the page goes through")
-check(web.post("/api/refresh", headers={"X-Vedetta-Request": "1", "Origin": "http://testserver"}).status_code == 200, "Origin equal to the address is enough without fetch metadata")
+check(web.post("/api/refresh", headers={"X-Vedetta-Request": "1", "Origin": "http://192.0.2.200:8765"}).status_code == 200, "Origin equal to the address is enough without fetch metadata")
 page = web.get("/ha", headers={"X-Ingress-Path": "/api/hassio_ingress/evil"})
 check("hassio_ingress" not in page.text, "X-Ingress-Path is ignored in Docker")
 check('"docker": true' in page.text, "the page knows it runs in Docker (logout, updates)")
@@ -112,15 +113,15 @@ check(old.get("/api/ha/summary").status_code == 200, "the session works")
 first = old.cookies.get("vedetta_session")
 old.post("/login", data={"password": GOOD}, headers=ORIGIN)
 check(old.cookies.get("vedetta_session") != first, "a new session id at each login")
-https = client(base_url="https://testserver")
-r = https.post("/login", data={"password": GOOD}, headers={"Origin": "https://testserver"})
+https = client(base_url="https://192.0.2.200:8765")
+r = https.post("/login", data={"password": GOOD}, headers={"Origin": "https://192.0.2.200:8765"})
 check("__Host-vedetta_session=" in r.headers.get("set-cookie", "") and "Secure" in r.headers.get("set-cookie", ""), "on HTTPS the cookie is __Host- and Secure")
 bad = client(client=("192.0.2.77", 1))
 codes = [bad.post("/login", data={"password": "wrong password number %d" % i}, headers=ORIGIN).status_code for i in range(7)]
 check(codes[:5] == [401] * 5 and codes[5] == 429, "five wrong attempts, then a wait: %s" % codes)
 page = bad.post("/login", data={"password": GOOD}, headers=ORIGIN)
 check(page.status_code == 429, "during the wait even the right password waits")
-auth_routes.throttle.succeeded("192.0.2.77")
+auth_routes.throttle_login.succeeded("192.0.2.77")
 check(web.post("/login", data={"password": GOOD}, headers={"Origin": "http://192.0.2.66"}).status_code == 403, "a login form from another site is refused")
 
 # ---- 5) a password set from the host closes every session at once (another process: only the files change)

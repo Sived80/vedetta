@@ -8,7 +8,10 @@
 Both files are written atomically, readable by their owner only (0600: mkstemp), and are never part of an export (export/: the
 files it reads are named one by one, and the final check refuses a "scrypt$" text). A session ends after IDLE_S without a request
 or ABSOLUTE_S after the login, at the logout, and for every session when the password changes. At most MAX_SESSIONS stay (the
-oldest go first). A lock guards the in-memory copy: the requests of the page arrive in parallel."""
+oldest go first). A lock guards the in-memory copy: the requests of the page arrive in parallel.
+
+A session made before the last change of the password (auth.json "changed_at") is never valid, whatever sessions.json says: the command
+that sets the password runs in another process, and the app could write the old sessions back in the same instant (security review)."""
 import hashlib
 import json
 import secrets
@@ -58,8 +61,11 @@ def has_password() -> bool:
 
 def set_password_hash(stored: str) -> None:
     """Saves a new password hash and closes every session (the old password, or whoever knew it, is out)."""
+    global _changed_at
     with _lock:
-        _write(AUTH_PATH, {"password": stored, "changed_at": int(time.time())})
+        now = int(time.time())
+        _write(AUTH_PATH, {"password": stored, "changed_at": now})
+        _changed_at = now
         drop_all()
 
 
@@ -78,21 +84,25 @@ def _stamp() -> tuple:
 
 
 _seen_stamp: tuple | None = None
+_changed_at = 0
 
 
 def _all() -> dict[str, dict]:
-    global _sessions, _seen_stamp
+    global _sessions, _seen_stamp, _changed_at
     stamp = _stamp()
     if _sessions is None or stamp != _seen_stamp:
         raw = _read(SESSIONS_PATH)
         _sessions = {k: v for k, v in raw.items() if isinstance(k, str) and len(k) == 64 and isinstance(v, dict)}
+        changed = _read(AUTH_PATH).get("changed_at")
+        _changed_at = changed if isinstance(changed, int) else 0
         _seen_stamp = stamp
     return _sessions
 
 
 def _alive(row: dict, now: float) -> bool:
     created, seen = row.get("created", 0), row.get("seen", 0)
-    return isinstance(created, (int, float)) and isinstance(seen, (int, float)) and now - created < ABSOLUTE_S and now - seen < IDLE_S
+    return (isinstance(created, (int, float)) and isinstance(seen, (int, float)) and created >= _changed_at
+            and now - created < ABSOLUTE_S and now - seen < IDLE_S)
 
 
 def new_session() -> str:

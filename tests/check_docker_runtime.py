@@ -3,7 +3,7 @@
 - runtime: the mode (Supervisor token = app of Home Assistant), secrets from a file first, the websocket of Home Assistant from its
   address (no user or password in the URL), the token of Docker only with an address;
 - passwords: scrypt with the OWASP minimum, the NIST rules (15 to 128, no composition, common ones refused), a stored text that is not ours;
-- throttle: five free attempts, then 1 s doubling up to 15 minutes, never a permanent lock, per address and for the whole app;
+- throttle: five free attempts per address, then 1 s doubling up to 15 minutes; the whole app only slowed (at most 30 s); never a permanent lock;
 - setup code: one hour, once, spaces/dashes/case do not matter;
 - update check of Docker: only a newer plain version is "available", drafts and test tags are not.
 Invented values only.
@@ -93,7 +93,7 @@ for _ in range(5):
 check(abs(t.wait("192.0.2.1") - 1.0) < 1e-6, "after five wrong attempts: 1 s")
 t.failed("192.0.2.1")
 check(abs(t.wait("192.0.2.1") - 2.0) < 1e-6, "then 2 s")
-check(t.wait("192.0.2.2") > 0, "another address waits too (one account: the count is also global)")
+check(t.wait("192.0.2.2") == 0, "another address does not wait for the mistakes of one (the global count only slows many addresses together)")
 for _ in range(30):
     t.failed("192.0.2.1")
 check(abs(t.wait("192.0.2.1") - throttle.MAX_WAIT_S) < 1e-6, "never more than 15 minutes")

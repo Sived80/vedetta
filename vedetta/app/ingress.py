@@ -92,21 +92,27 @@ class IngressMiddleware:
         await self.app(scope, receive, _with_security_headers(send, nonce, scope.get("path", "")) if scope["type"] == "http" else send)
 
 
-def _with_security_headers(send, nonce: str, path: str = ""):
-    """The security headers on every answer. In Docker also DOCKER_HEADERS and no cache for the API; with other frame ancestors there is
-    no X-Frame-Options (CSP3: frame-ancestors wins, and an old browser reading SAMEORIGIN would refuse the frame of Home Assistant)."""
+def security_headers(nonce: str, path: str = "") -> list:
+    """The security headers of an answer. In Docker also DOCKER_HEADERS and no cache for the API; with other frame ancestors there is no
+    X-Frame-Options (CSP3: frame-ancestors wins, and an old browser reading SAMEORIGIN would refuse the frame of Home Assistant)."""
     ancestors = frame_ancestors()
-    extra = [(b"content-security-policy", csp(nonce, ancestors).encode())]
-    base = [h for h in SECURITY_HEADERS if not (ancestors and h[0] == b"x-frame-options")]
+    headers = [h for h in SECURITY_HEADERS if not (ancestors and h[0] == b"x-frame-options")]
+    headers.append((b"content-security-policy", csp(nonce, ancestors).encode()))
     if runtime.is_docker():
-        extra += DOCKER_HEADERS + ([(b"cache-control", b"no-store")] if path.startswith("/api/") else [])
+        headers += DOCKER_HEADERS + ([(b"cache-control", b"no-store")] if path.startswith("/api/") else [])
+    return headers
+
+
+def _with_security_headers(send, nonce: str, path: str = ""):
+    extra = security_headers(nonce, path)
+    replaces_cache = any(h[0] == b"cache-control" for h in extra)
 
     async def wrapped(message) -> None:
         if message["type"] == "http.response.start":
             headers = list(message.get("headers", []))
-            if extra and any(h[0] == b"cache-control" for h in extra):
+            if replaces_cache:
                 headers = [h for h in headers if h[0].lower() != b"cache-control"]
-            message = {**message, "headers": headers + base + extra}
+            message = {**message, "headers": headers + extra}
         await send(message)
     return wrapped
 

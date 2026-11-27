@@ -1,16 +1,22 @@
 # SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-"""The wait after wrong attempts (login and first setup).
+"""The wait after wrong attempts (login and first setup: one Throttle each, they count apart).
 
-OWASP (Authentication Cheat Sheet) asks to slow down guessing without locking the owner out for good: after FREE wrong attempts each
-new one must wait, 1 second doubling up to MAX_WAIT_S (15 minutes); a right password clears the count. The count is kept both per
-address and for the whole app: one address cannot try faster by itself, many addresses together cannot either (there is one account).
-In memory only: a restart of the container clears it, which needs access to the host anyway."""
+OWASP (Authentication Cheat Sheet) asks to slow down guessing without locking the owner out. Two counts:
+- per address: after FREE wrong attempts each new one waits 1 second, doubling up to MAX_WAIT_S (15 minutes);
+- for the whole app (many addresses together, there is one account): after GLOBAL_FREE wrong attempts it waits 1 second, doubling up to
+  GLOBAL_MAX_WAIT_S only (30 seconds). A short global wait, so a stranger failing now and then cannot keep the owner out from another
+  address (security review of 27/11); the long wait stays on the address that guesses.
+A right password clears the count of its address and the global one. The caller counts an attempt as failed BEFORE checking it
+(routes/auth_routes.py), so attempts sent at the same moment cannot all pass the check of the wait first. In memory only: a restart of
+the container clears it, which needs access to the host anyway."""
 import threading
 import time
 
 FREE = 5
 FIRST_WAIT_S = 1.0
 MAX_WAIT_S = 15 * 60
+GLOBAL_FREE = 20
+GLOBAL_MAX_WAIT_S = 30
 MAX_ADDRESSES = 1000
 GLOBAL = "*"
 
@@ -19,13 +25,14 @@ class Throttle:
     def __init__(self, clock=time.monotonic) -> None:
         self._clock = clock
         self._lock = threading.Lock()
-        self._fails: dict[str, tuple[int, float]] = {}       # address -> (wrong attempts in a row, time of the last one)
+        self._fails: dict[str, tuple[int, float]] = {}       # address (or GLOBAL) -> (wrong attempts in a row, time of the last one)
 
     def _wait_of(self, key: str, now: float) -> float:
         count, last = self._fails.get(key, (0, 0.0))
-        if count < FREE:
+        free, cap = (GLOBAL_FREE, GLOBAL_MAX_WAIT_S) if key == GLOBAL else (FREE, MAX_WAIT_S)
+        if count < free:
             return 0.0
-        wait = min(MAX_WAIT_S, FIRST_WAIT_S * 2 ** (count - FREE))
+        wait = min(cap, FIRST_WAIT_S * 2 ** min(count - free, 30))
         return max(0.0, last + wait - now)
 
     def wait(self, address: str) -> float:

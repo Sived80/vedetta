@@ -4,7 +4,7 @@
 
 **The Home Assistant app that finds and follows every device on your network and your VLANs, and tells your phone when one goes away.**
 
-<a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Supervised-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.3-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-607d8b?style=for-the-badge" alt="License" height="20"></a> <a href="https://scorecard.dev/viewer/?uri=github.com/Sived80/vedetta"><img src="https://api.scorecard.dev/projects/github.com/Sived80/vedetta/badge?style=for-the-badge" alt="OpenSSF Scorecard" height="20"></a> <a href="https://sived80.github.io/vedetta/"><img src="https://img.shields.io/badge/%F0%9F%8C%90%20Live%20Demo-try%20it%20in%20your%20browser-ff9800?style=for-the-badge" alt="Live Demo" height="20"></a>
+<a href="docs/INSTALLATION.md"><img src="https://img.shields.io/badge/Home%20Assistant-OS%20%7C%20Container-03a9f4?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant" height="20"></a> <a href="vedetta/CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.3-43a047?style=for-the-badge" alt="Version" height="20"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-607d8b?style=for-the-badge" alt="License" height="20"></a> <a href="https://scorecard.dev/viewer/?uri=github.com/Sived80/vedetta"><img src="https://api.scorecard.dev/projects/github.com/Sived80/vedetta/badge?style=for-the-badge" alt="OpenSSF Scorecard" height="20"></a> <a href="https://sived80.github.io/vedetta/"><img src="https://img.shields.io/badge/%F0%9F%8C%90%20Live%20Demo-try%20it%20in%20your%20browser-ff9800?style=for-the-badge" alt="Live Demo" height="20"></a>
 
 <a href="docs/PRIVACY.md"><img src="docs/images/icon-no-cloud.svg" alt="No cloud" title="No cloud: everything stays in your home" width="96"><img src="docs/images/icon-no-accounts.svg" alt="No accounts" title="No accounts: nothing to sign up for" width="96"><img src="docs/images/icon-no-telemetry.svg" alt="No telemetry" title="No telemetry: nothing is sent out" width="96"><img src="docs/images/icon-read-only.svg" alt="Read-only access to Home Assistant" title="Read-only access to Home Assistant: it writes only when you turn on alerts" width="96"><img src="docs/images/icon-masked-exports.svg" alt="Exports masked before they are created" title="Exports masked before they are created" width="96"><img src="docs/images/icon-never-logs-in.svg" alt="Never logs in to your devices" title="Never logs in to your devices or tries a password; SNMP reads your router only with the community you write" width="96"></a>
 
@@ -53,7 +53,7 @@ And of course it names every device: name, brand, model and type, with every clu
 > **Give it a day or two**: phones sleep and names are announced now and then. [Why](docs/TROUBLESHOOTING.md)
 
 > [!NOTE]
-> Needs **Home Assistant OS** or **Supervised**. *Container* and *Core* have no App store.
+> **Home Assistant Container?** No App store there: run Vedetta with Docker Compose, same app with a login of its own. [Docker guide](docs/DOCKER.md)
 
 **1. Add** the repository, or add `https://github.com/Sived80/vedetta` by hand in the App store.<br>
 <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FSived80%2Fvedetta"><img src="docs/images/button-add.svg" alt="Add to my Home Assistant" height="40"></a>
@@ -81,7 +81,7 @@ Turn on *Events in Home Assistant* (Menu → Alerts), then import a ready-made b
 
 ## Docs
 
-**Start** · [Installation](docs/INSTALLATION.md) · [How it works](docs/HOW_IT_WORKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)<br>
+**Start** · [Installation](docs/INSTALLATION.md) · [Docker](docs/DOCKER.md) · [How it works](docs/HOW_IT_WORKS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)<br>
 **Inside** · [Recognition](docs/RECOGNITION.md) · [Networks and VLANs](docs/NETWORKS.md) · [Network doctor](docs/NETWORK_DOCTOR.md) · [Home Assistant](docs/HOME_ASSISTANT.md) · [MQTT](docs/MQTT.md)<br>
 **About** · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md) · [How it is tested](docs/TESTING.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](vedetta/CHANGELOG.md)
 
@@ -91,4 +91,4 @@ English · Italiano · Deutsch · Čeština (thanks to the community). Adding yo
 
 ## License and credits
 
-[GPL-3.0-only](LICENSE) with additional terms in [NOTICE](NOTICE): keep the attribution, mark a modified version as different, and give it another name and logo. Versions up to 1.0.3 are MIT. Everything it builds on, with its license: [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). Nmap and arp-scan are installed from Alpine on your Home Assistant when the app starts, not shipped here. MAC vendors from the IEEE registries, icons from Material Design Icons. Brand names only describe devices; not affiliated with any of them.
+[GPL-3.0-only](LICENSE) with additional terms in [NOTICE](NOTICE): keep the attribution, mark a modified version as different, and give it another name and logo. Versions up to 1.0.3 are MIT. Everything it builds on, with its license: [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). Nmap and arp-scan are installed from Alpine on your Home Assistant when the app starts (in Docker, when the container starts), not shipped here. MAC vendors from the IEEE registries, icons from Material Design Icons. Brand names only describe devices; not affiliated with any of them.

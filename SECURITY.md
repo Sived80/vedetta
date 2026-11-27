@@ -19,4 +19,6 @@ Vedetta is made by one person, so the checks are automatic and public:
 - **An outside score:** [OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/Sived80/vedetta), updated every week.
 - **Home Assistant updates the app only when the version changes**, and every version is in the [changelog](vedetta/CHANGELOG.md).
 
+**In Docker** (Home Assistant Container) the page has a login of its own, the container keeps only two network capabilities and secrets stay in files: [Docker guide, Security](docs/DOCKER.md#security).
+
 What the app may do on your network, and why, is in [DOCS.md](vedetta/DOCS.md#permissions-and-what-each-one-is-for) (permissions) and [PRIVACY.md](docs/PRIVACY.md).

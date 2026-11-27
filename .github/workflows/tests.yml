@@ -34,3 +34,14 @@ jobs:
       - run: npm ci
         working-directory: tests/ui
       - run: python tools/run_tests.py
+
+  # Docker (Home Assistant Container): the image built from this commit, started with the docker-compose.yml of the repository, checked
+  # from the outside (login, CSRF, capabilities, secrets): tools/ci/docker_smoke.sh.
+  docker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1    # v7.0.1
+      - name: Build the image
+        run: docker build -t vedetta:ci vedetta
+      - name: Run it as a person would, and check it
+        run: sh tools/ci/docker_smoke.sh vedetta:ci

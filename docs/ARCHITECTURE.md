@@ -125,7 +125,7 @@ The functions that were restructured have a reference test that was generated fr
 | `auth/passwords.py` | The password of the owner: its rules and its hash. |
 | `auth/setup.py` | The first start: there is no password yet and the page asks to choose one, but only to whoever can read the log of the container. |
 | `auth/store.py` | The password hash and the open sessions, on disk. |
-| `auth/throttle.py` | The wait after wrong attempts (login and first setup). |
+| `auth/throttle.py` | The wait after wrong attempts (login and first setup: one Throttle each, they count apart). |
 
 ### export/
 

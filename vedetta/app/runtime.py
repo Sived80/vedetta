@@ -38,7 +38,7 @@ def secret(name: str, warn=None) -> str | None:
     var = "VEDETTA_" + name.upper()
     for path in (os.environ.get(var + "_FILE", "").strip(), str(SECRETS_DIR / name)):
         if path:
-            value = _read(Path(path))
+            value = _read(Path(path), name, warn)
             if value:
                 return value
     value = os.environ.get(var, "").strip()
@@ -48,9 +48,16 @@ def secret(name: str, warn=None) -> str | None:
     return value or None
 
 
-def _read(path: Path) -> str | None:
+def _read(path: Path, name: str = "", warn=None) -> str | None:
+    """The content of a secret file; None when there is none. A file that exists but cannot be read is told once (with every capability
+    dropped, root in the container cannot read a file of another user with mode 600: the usual mistake, and otherwise a silent one)."""
     try:
         return path.read_text(encoding="utf-8").strip() or None
+    except PermissionError:
+        if warn and ("unreadable:" + name) not in _warned:
+            _warned.add("unreadable:" + name)
+            warn("The secret file %s (%s) cannot be read: on the host make it owned by root, sudo chown root:root <file> && sudo chmod 600 <file>" % (path, name))
+        return None
     except (OSError, UnicodeDecodeError):
         return None
 

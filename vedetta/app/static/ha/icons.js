@@ -176,6 +176,7 @@
     lights: "lightbulb",
     climate: "thermostat",
     security: "shield-home",
+    access: "gate",
     energy: "solar-power",
     appliance: "washing-machine",
     other: "hub"

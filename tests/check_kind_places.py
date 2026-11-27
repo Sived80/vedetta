@@ -29,15 +29,15 @@ def seen(name: str) -> tuple:
 CASES = (
     ("Presa garage", "plug", "lights"),             # the type word wins over the place
     ("Luce garage", "light", "lights"),
-    ("Cancelletto", "gate", "security"),            # the diminutive of cancello
-    ("Cancellino ingresso", "gate", "security"),
-    ("Cancello", "gate", "security"),
-    ("Portone", "gate", "security"),
-    ("Porta garage", "garage", "security"),         # the place with an opening word: the garage door
-    ("Portone garage", "garage", "security"),
-    ("Apertura garage", "garage", "security"),
-    ("Garage door opener", "garage", "security"),
-    ("Basculante", "garage", "security"),
+    ("Cancelletto", "gate", "access"),            # the diminutive of cancello
+    ("Cancellino ingresso", "gate", "access"),
+    ("Cancello", "gate", "access"),
+    ("Portone", "gate", "access"),
+    ("Porta garage", "garage", "access"),         # the place with an opening word: the garage door
+    ("Portone garage", "garage", "access"),
+    ("Apertura garage", "garage", "access"),
+    ("Garage door opener", "garage", "access"),
+    ("Basculante", "garage", "access"),
     ("Tapparella sala", "blinds", "climate"),
     ("Tenda da sole", "awning", "climate"),
     ("Sensore temperatura", "temperature", "climate"),

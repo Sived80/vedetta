@@ -1,5 +1,5 @@
 {
- "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND). brand_alone false: la marca da sola non basta (chi fa telecamere fa anche centrali d'allarme), conferma solo un indizio del gruppo gia' trovato. place: parole che sono anche un luogo (garage, giardino, piscina): contano per il tipo solo insieme a una parola di with (porta, valvola, pompa...); da sole o con una parola di un altro tipo (\"Presa garage\") non dicono il tipo.",
+ "_comment": "Tipi di dispositivo di casa: gruppo, icona MDI e parole generiche (nessuna marca). Vedi ha_data.type_scores. brands: produttori che fanno quasi solo quel tipo di apparecchio (indizio di categoria, peso W_BRAND). brand_alone false: la marca da sola non basta (chi fa telecamere fa anche centrali d'allarme), conferma solo un indizio del gruppo gia' trovato. purpose: parole del NOME (o del modello dichiarato in HA) che dicono a cosa serve il dispositivo (allarme, sirena; gateway: bridge, proxy, beacon, IRK): vincono su com'e' fatto, anche sulle entita' di HA, se il resto non porta a un gruppo diverso dalla casa intelligente o dal loro (una telecamera resta telecamera). place: parole che sono anche un luogo (garage, giardino, piscina): contano per il tipo solo insieme a una parola di with (porta, valvola, pompa...); da sole o con una parola di un altro tipo (\"Presa garage\") non dicono il tipo.",
  "kinds": [
   {
    "id": "accesspoint",
@@ -83,21 +83,44 @@
   },
   {
    "id": "hub",
-   "group": "iot",
+   "group": "router",
    "icon": "hub",
    "words": [
     "bridge",
     "coordinator",
-    "zigbee",
-    "z-wave",
-    "zwave"
+    "border router"
    ],
    "tokens": [
     "hub"
    ],
    "w": 4,
    "mdns": [],
-   "upnp": []
+   "upnp": [],
+   "purpose": [
+    "bridge",
+    "coordinator",
+    "border router",
+    "proxy",
+    "beacon",
+    "irk"
+   ],
+   "place": [
+    "zigbee",
+    "z-wave",
+    "zwave",
+    "thread",
+    "bluetooth",
+    "ble",
+    "matter"
+   ],
+   "with": [
+    "gateway",
+    "bridge",
+    "coordinator",
+    "proxy",
+    "hub",
+    "router"
+   ]
   },
   {
    "id": "nas",
@@ -1393,7 +1416,13 @@
    "tokens": [],
    "w": 2,
    "mdns": [],
-   "upnp": []
+   "upnp": [],
+   "purpose": [
+    "alarm",
+    "allarme",
+    "antifurto",
+    "burglar"
+   ]
   },
   {
    "id": "siren",
@@ -1406,7 +1435,11 @@
    "tokens": [],
    "w": 4,
    "mdns": [],
-   "upnp": []
+   "upnp": [],
+   "purpose": [
+    "siren",
+    "sirena"
+   ]
   },
   {
    "id": "lock",

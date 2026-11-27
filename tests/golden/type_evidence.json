@@ -589,7 +589,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -720,7 +720,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -737,6 +737,12 @@
 "source": "mDNS _printer._tcp"
 },
 {
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
+},
+{
 "family": "platform",
 "group": "iot",
 "pts": 3,
@@ -744,7 +750,7 @@
 }
 ],
 "kinds": {
-"hub": 4,
+"hub": 24,
 "printer": 8,
 "raspberrypi": 3,
 "router": 8
@@ -1424,7 +1430,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -2089,7 +2095,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -2098,10 +2104,16 @@
 "group": "server",
 "pts": 3,
 "source": "parola: raspberrypi"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 }
 ],
 "kinds": {
-"hub": 4,
+"hub": 24,
 "raspberrypi": 3
 }
 },
@@ -2139,7 +2151,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -2154,10 +2166,16 @@
 "group": "pc",
 "pts": 8,
 "source": "parola: laptop"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 }
 ],
 "kinds": {
-"hub": 4,
+"hub": 24,
 "laptop": 8,
 "raspberrypi": 8
 }
@@ -3703,7 +3721,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -7035,7 +7053,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -8788,7 +8806,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -11598,7 +11616,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -11655,7 +11673,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -11688,12 +11706,18 @@
 "group": "iot",
 "pts": 8,
 "source": "parola: doorbell"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 }
 ],
 "kinds": {
 "camera": 3,
 "doorbell": 8,
-"hub": 4,
+"hub": 24,
 "light": 2,
 "plug": 2,
 "raspberrypi": 3,
@@ -12030,7 +12054,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -12906,9 +12930,15 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 },
 {
 "family": "platform",
@@ -12918,7 +12948,7 @@
 }
 ],
 "kinds": {
-"hub": 4
+"hub": 24
 }
 },
 {
@@ -15202,9 +15232,16 @@
 "group": "server",
 "pts": 3,
 "source": "parola: raspberrypi"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 }
 ],
 "kinds": {
+"hub": 20,
 "raspberrypi": 3,
 "router": 8
 }
@@ -16596,7 +16633,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -17369,7 +17406,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 8,
 "source": "parola: hub"
 },
@@ -17384,13 +17421,19 @@
 "group": "iot",
 "pts": 4,
 "source": "parola: doorbell"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 }
 ],
 "kinds": {
 "accesspoint": 8,
 "camera": 3,
 "doorbell": 4,
-"hub": 8,
+"hub": 28,
 "router": 2
 }
 },
@@ -18575,7 +18618,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -19083,7 +19126,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -19094,6 +19137,12 @@
 "source": "parola: camera"
 },
 {
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
+},
+{
 "family": "platform",
 "group": "iot",
 "pts": 2,
@@ -19102,7 +19151,7 @@
 ],
 "kinds": {
 "camera": 3,
-"hub": 4
+"hub": 24
 }
 },
 {
@@ -20421,9 +20470,15 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
+},
+{
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
 },
 {
 "family": "platform",
@@ -20433,7 +20488,7 @@
 }
 ],
 "kinds": {
-"hub": 4
+"hub": 24
 }
 },
 {
@@ -21184,7 +21239,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -21840,7 +21895,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -23203,7 +23258,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -23459,7 +23514,7 @@
 },
 {
 "family": "words",
-"group": "iot",
+"group": "router",
 "pts": 4,
 "source": "parola: hub"
 },
@@ -23476,6 +23531,12 @@
 "source": "marca: speaker"
 },
 {
+"family": "purpose",
+"group": "router",
+"pts": 20,
+"source": "scopo: hub"
+},
+{
 "family": "platform",
 "group": "iot",
 "pts": 3,
@@ -23483,7 +23544,7 @@
 }
 ],
 "kinds": {
-"hub": 4,
+"hub": 24,
 "raspberrypi": 3,
 "speaker": 3
 }

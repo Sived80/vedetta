@@ -35,14 +35,14 @@ assert card["type"] == "router" and card["family"] is None, card           # a f
 print("ok: a boiler is smart home on the page, family climate")
 
 # the families come from the table of kinds, in one place
-# the summaries of the Home dashboard of Home Assistant (lights, climate, security, energy), then appliances and other devices
-assert device_groups.FAMILIES == ("lights", "climate", "security", "energy", "appliance", "other"), device_groups.FAMILIES
+# the summaries of the Home dashboard of Home Assistant (lights, climate, security, energy), gates and doors apart (27/11), then appliances and other devices
+assert device_groups.FAMILIES == ("lights", "climate", "security", "access", "energy", "appliance", "other"), device_groups.FAMILIES
 assert device_groups.family_of("light", "iot") == "lights" and device_groups.family_of("plug", "iot") == "lights"
 assert device_groups.family_of("humidity", "iot") == "climate" and device_groups.family_of("temperature", "iot") == "climate"
 assert device_groups.family_of("airquality", "iot") == "other"          # not in the climate view of Home Assistant
-# covers: blinds, curtains and awnings in climate, garage doors and gates in security (the cover device classes of Home Assistant)
+# covers: blinds, curtains and awnings in climate, garage doors and gates in their own family, access (27/11) (the cover device classes of Home Assistant)
 assert [device_groups.family_of(k, "cover") for k in ("blinds", "curtain", "awning")] == ["climate"] * 3
-assert [device_groups.family_of(k, "cover") for k in ("garage", "gate")] == ["security"] * 2
+assert [device_groups.family_of(k, "cover") for k in ("garage", "gate")] == ["access"] * 2
 assert device_groups.family_of("inverter", "energy") == "energy" and device_groups.family_of("washer", "appliance") == "appliance"
 assert device_groups.family_of("pump", "water") == "other" and device_groups.family_of("bluetooth", "iot") == "other"
 assert device_groups.family_of("hub", "iot") == "other" and device_groups.family_of("microcontroller", "iot") == "other"
@@ -75,12 +75,12 @@ assert old["type"] == "iot" and old["family"] == "climate", old
 assert ha_data.device_facts(washer, {"type_user": "climate"})["type"] == "iot"
 print("ok: the family chosen by hand")
 
-# a family saved before the six families of 1.0.4: sensors -> climate, hubs and water -> other; cover -> the climate or security family
-# its kind says (a blind stays in climate, a gate goes to security), climate when the kind says neither
+# a family saved before the six families of 1.0.4: sensors -> climate, hubs and water -> other; cover -> the climate or access family
+# its kind says (a blind stays in climate, a gate goes to access), climate when the kind says neither
 blind = {"id": "c1", "ip": "192.0.2.45", "name": "Tapparella sala", "mac": "02:00:00:00:00:45", "online": True, "extra": {}}
 gate = {"id": "g1", "ip": "192.0.2.46", "name": "Cancello", "mac": "02:00:00:00:00:46", "online": True, "extra": {}}
 for saved, device, family in (("sensors", washer, "climate"), ("hubs", boiler, "other"), ("water", boiler, "other"), ("cover", blind, "climate"),
-                              ("cover", gate, "security"), ("cover", washer, "climate")):
+                              ("cover", gate, "access"), ("cover", washer, "climate")):
     card = ha_data.compact_device(device, {"family_user": saved})
     assert (card["family"], card["family_user"]) == (family, family), (saved, device["name"], card["family"], card["family_user"])
     assert ha_data.compact_device(device, {"type_user": saved})["family"] == family, (saved, device["name"])   # a type of the debug build with 16 groups

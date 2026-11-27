@@ -56,7 +56,7 @@ def seen(dev: dict, cfg: dict | None = None) -> tuple:
 
 
 CASES = (
-    ("Presa garage", ["cover.gate"], "gate", "security"),                                      # HA says gate: the plug word does not decide
+    ("Presa garage", ["cover.gate"], "gate", "access"),                                        # HA says gate: the plug word does not decide
     ("Garage", ["switch.outlet", "sensor.power", "sensor.energy"], "plug", "lights"),           # a plug that measures power is a plug
     ("Sala", ["cover.shutter", "sensor.temperature"], "blinds", "climate"),                     # the actuator beats its sensor
     ("Sala", ["climate", "sensor.temperature", "sensor.humidity"], "thermostat", "climate"),

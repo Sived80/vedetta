@@ -149,6 +149,7 @@
   "kind.raspberrypi": "Raspberry Pi",
   "kind.homeassistant": "Home Assistant",
   "kind.router": "Router",
+  "kind.hub": "Gateway",
   "kind.accesspoint": "Access Point",
   "kind.repeater": "Repeater",
   "kind.modem": "Modem",

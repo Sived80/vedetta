@@ -15,6 +15,9 @@ MIN_TYPE_SCORE = 2
 
 
 W_PLATFORM_MAX = 3
+# A word of the name that says what the device is for ("purpose" in data/device_kinds.json: alarm, siren, gateway): above every other clue of a
+# smart home device, the entities of Home Assistant included ("LED allarme esterno" is a light entity of the alarm).
+W_PURPOSE = 20
 
 
 _PLATFORM_KINDS = {"microcontroller", "bluetooth"}   # types that only tell the hardware platform
@@ -158,6 +161,7 @@ class _Clues:
         self.homeassistant()
         self.kinds(_without_dual_maker(words, self.device))
         self.entity_kind(self.device.get("ha_registry") or {})
+        self.purpose()
         return self.finish(upnp_types, port_numbers)
 
     def signals(self, upnp_types: list, services: list) -> None:
@@ -260,6 +264,28 @@ class _Clues:
             kind = _finer_kind(found, self.kinds_out)
             self.kinds_out[kind] = self.kinds_out.get(kind, 0) + found.pts
 
+    def purpose(self) -> None:
+        """The purpose the person wrote in the name (or the model Home Assistant declares): the first kind with a "purpose" word of data/device_kinds.json
+        takes W_PURPOSE, unless the other clues lead to a group other than the smart home and its own (a camera named for the alarm stays a camera).
+        Only the name and the declared model: the web title or the menus of a device ("Alarm settings") say nothing of what it is for."""
+        text, tokens = _purpose_text(self.device)
+        if not text:
+            return
+        for kd in _kinds():
+            subs, toks = kd["purpose"]
+            if not (subs or toks):
+                continue
+            paired = any(s in text for s in kd["place"][0]) or tokens & kd["place"][1]
+            paired = paired and (any(s in text for s in kd["with"][0]) or tokens & kd["with"][1])
+            if not (any(s in text for s in subs) or tokens & toks or paired):      # a purpose word, or a "place" word with a "with" one (zigbee + gateway)
+                continue
+            if _lead_group(self.ev, self.platform) not in (None, "iot", kd["group"]):
+                return
+            self.add(kd["group"], W_PURPOSE, "purpose", "scopo: " + kd["id"])
+            if self.kinds_out is not None:
+                self.kinds_out[kd["id"]] = self.kinds_out.get(kd["id"], 0) + W_PURPOSE
+            return
+
     def kinds(self, w: _Words) -> None:
         """The clues of the device types (data/device_kinds.json): words, declared services, brand."""
         for kd in _candidate_kinds(w):
@@ -348,6 +374,22 @@ def _declared_group_elsewhere(ha_card: dict, group: str) -> bool:
     """A known integration of the card that is not a platform declares a group other than the kind's."""
     entries = [_ha_integrations().get(d) for d in ha_card.get("domains") or []]
     return any(e and not e.get("platform") and _MERGED_GROUPS.get(e["group"], e["group"]) != group for e in entries)
+
+
+def _purpose_text(device: dict) -> tuple[str, set]:
+    """The name of the device (not one the app built) and the model Home Assistant declares, folded, with their words."""
+    reg = device.get("ha_registry") or {}
+    parts = [None if device.get("name_generated") else device.get("name"), (device.get("extra") or {}).get("ha_model"), reg.get("model")]
+    text = fold(" ".join(str(p) for p in parts if p))
+    return text, set(_TOKEN_RE.findall(text))
+
+
+def _lead_group(ev: list, platform: int) -> str | None:
+    """The group the clues found so far lead to (the platform counted as smart home, as finish does); None with no clue."""
+    scores = _aggregate(ev)
+    if platform:
+        scores["iot"] = scores.get("iot", 0) + min(platform, W_PLATFORM_MAX)
+    return max(scores, key=lambda g: scores[g]) if scores else None
 
 
 def _finer_kind(found, kinds_out: dict) -> str:
@@ -449,7 +491,7 @@ def _build_kind(k: dict) -> dict:
     return {"id": k["id"], "group": _MERGED_GROUPS.get(k["group"], k["group"]), "family": family_of(k["id"], k["group"]), "icon": k["icon"], "subs": subs, "toks": toks,
             "w": int(k.get("w", 2)), "mdns": set(k.get("mdns") or []), "upnp": set(k.get("upnp") or []),
             "brands": {fold(b) for b in k.get("brands") or []}, "brand_alone": k.get("brand_alone", True) is not False, "product": bool(k.get("product")),
-            "place": _words_of(k.get("place")), "with": _words_of(k.get("with"))}
+            "place": _words_of(k.get("place")), "with": _words_of(k.get("with")), "purpose": _words_of(k.get("purpose"))}
 
 
 def _words_of(words) -> tuple[list[str], set[str]]:

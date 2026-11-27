@@ -394,6 +394,7 @@
   "js.ha.family.lights": "Lights & plugs",
   "js.ha.family.climate": "Climate",
   "js.ha.family.security": "Security",
+  "js.ha.family.access": "Gates & doors",
   "js.ha.family.energy": "Energy",
   "js.ha.family.appliance": "Appliances",
   "js.ha.family.other": "Other devices",

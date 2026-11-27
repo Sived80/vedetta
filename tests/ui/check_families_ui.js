@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The smart home group and its families (1.0.4): the page has the ten groups Home Assistant sees; inside «Smart home» the devices are shown
-// under the subtitles of their families (lights, climate, security, energy as in the Home dashboard of Home Assistant, appliances, other), only the families that have devices, in a fixed order. When the smart home
+// under the subtitles of their families (lights, climate, security, energy as in the Home dashboard of Home Assistant, gates and doors apart, appliances, other), only the families that have devices, in a fixed order. When the smart home
 // group is chosen in the ring, chips of its families narrow the list further. The ring shows only the groups present: beyond seven, the
 // smallest after the sixth become one grey «Others» arc, shown last; a group keeps its colour and no group is red (red is offline). The
 // type of a card is chosen among Auto + the ten groups; a smart home card has a «Family» picker too.
@@ -159,7 +159,7 @@ const shownTiles = () => [...doc.querySelectorAll("#groups .tile")].filter((el) 
     famBtn.click();
     await wait(40);
     const items = [...dlg.querySelectorAll(".type-menu [data-family]")].map((b) => b.dataset.family);
-    check(items.join() === ",lights,climate,security,energy,appliance,other", "the family picker: Auto and the six families of the Home dashboard: " + items.join());
+    check(items.join() === ",lights,climate,security,access,energy,appliance,other", "the family picker: Auto and the seven families: " + items.join());
     const labels = [...dlg.querySelectorAll(".type-menu [data-family]")].slice(1).map((b) => b.textContent.trim());
     check(labels.every((l, i) => l === LOCALE["js.ha.family." + items[i + 1]]), "each family of the picker has its name: " + labels.join("|"));
     dlg.querySelector('.type-menu [data-family="security"]').click();
@@ -175,14 +175,14 @@ const shownTiles = () => [...doc.querySelectorAll("#groups .tile")].filter((el) 
   check(!dlg.querySelector('[data-act="family-menu"]'), "a card outside the smart home group has no family picker");
 
   // every family has its name in the five languages, and a family the page does not know (saved before 1.0.4) is shown as «other»
-  const FAMS = ["lights", "climate", "security", "energy", "appliance", "other"];
+  const FAMS = ["lights", "climate", "security", "access", "energy", "appliance", "other"];
   ["en", "it", "de", "cs", "fr"].forEach((l) => {
     const loc = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "locales", l, "ha.json"), "utf8"));
     const fams = Object.keys(loc).filter((k) => k.indexOf("js.ha.family.") === 0).map((k) => k.slice(13));
-    check(fams.join() === FAMS.join() && fams.every((f) => loc["js.ha.family." + f]), l + ": the six families have a name, none more: " + fams.join());
+    check(fams.join() === FAMS.join() && fams.every((f) => loc["js.ha.family." + f]), l + ": the seven families have a name, none more: " + fams.join());
   });
   const core = fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "js", "core.js"), "utf8");
-  check(core.indexOf('export const FAMILIES = ["lights", "climate", "security", "energy", "appliance", "other"];') >= 0 && core.indexOf('d.family : "other"') >= 0, "the page knows the six families; an unknown one is «other»");
+  check(core.indexOf('export const FAMILIES = ["lights", "climate", "security", "access", "energy", "appliance", "other"];') >= 0 && core.indexOf('d.family : "other"') >= 0, "the page knows the seven families; an unknown one is «other»");
 
   check(errors.length === 0, "no error in the page: " + errors.join(" | "));
   console.log(failed ? "FAILED: " + failed : "ALL OK");

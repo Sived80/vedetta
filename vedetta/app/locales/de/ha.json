@@ -394,6 +394,7 @@
   "js.ha.family.lights": "Beleuchtung & Steckdosen",
   "js.ha.family.climate": "Raumklima",
   "js.ha.family.security": "Sicherheit",
+  "js.ha.family.access": "Tore & Türen",
   "js.ha.family.energy": "Energie",
   "js.ha.family.appliance": "Haushaltsgeräte",
   "js.ha.family.other": "Andere Geräte",

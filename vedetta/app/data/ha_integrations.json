@@ -39,7 +39,7 @@
    "platform": true
   },
   "zha": {
-   "group": "iot",
+   "group": "router",
    "kind": "hub",
    "platform": true
   },

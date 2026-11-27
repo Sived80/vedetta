@@ -150,6 +150,7 @@
   "kind.raspberrypi": "Raspberry Pi",
   "kind.homeassistant": "Home Assistant",
   "kind.router": "router",
+  "kind.hub": "brána",
   "kind.accesspoint": "přístupový bod",
   "kind.repeater": "opakovač signálu",
   "kind.modem": "modem",

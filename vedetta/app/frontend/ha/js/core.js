@@ -42,9 +42,9 @@ export let REDUCED = false;
 // The ten groups in their default order (device_groups.TYPE_ORDER on the server: the groups Home Assistant sees).
 export const TYPE_DEFAULT = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
 // Inside the smart home group, the families in the order the page shows them (device_groups.FAMILIES on the server: the summaries of the
-// Home dashboard of Home Assistant, then appliances); "other" takes the rest.
+// Home dashboard of Home Assistant, gates and doors apart, then appliances); "other" takes the rest.
 export const FAMILY_GROUP = "iot";
-export const FAMILIES = ["lights", "climate", "security", "energy", "appliance", "other"];
+export const FAMILIES = ["lights", "climate", "security", "access", "energy", "appliance", "other"];
 // The order the page shows the groups in: the person's (setting group_order, the same on every device) or the default one. Changed in place
 // (setTypeOrder), so every module that imported it sees the new order.
 export const TYPE_ORDER = TYPE_DEFAULT.slice();

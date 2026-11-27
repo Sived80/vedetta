@@ -12,16 +12,18 @@ TYPE_ORDER = ("router", "server", "pc", "phone", "media", "audio", "iot", "print
 HOME_GROUPS = ("climate", "appliance", "energy", "security", "cover", "water")
 
 # The families of the smart home group, in the order the page shows them: the summaries of the Home dashboard of Home Assistant (lights,
-# climate, security, energy: the same devices under the same headings in both places), then appliances and "other", which takes any
-# smart home kind not listed (a hub, a module, a board, a pump, a kind added to the table later) and a card with no kind at all.
-FAMILIES = ("lights", "climate", "security", "energy", "appliance", "other")
+# climate, security, energy: the same devices under the same headings in both places), "access" right after security (gates, garage doors,
+# doors: Home Assistant shows them in its security summary, the person wanted them apart, 27/11), then appliances and "other", which takes
+# any smart home kind not listed (a module, a board, a pump, a kind added to the table later) and a card with no kind at all. The gateways
+# (hub: Zigbee, Z-Wave, Thread, Bluetooth bridges and proxies) are not here: they are network (group "router").
+FAMILIES = ("lights", "climate", "security", "access", "energy", "appliance", "other")
 OTHER_FAMILY = "other"
 # Lights: Home Assistant has only lights, plugs and relays are here too. Climate: the temperature and humidity sensors of the rooms and the
-# window coverings (cover device classes awning, blind, curtain, shade, shutter); security: the garage doors and the gates (garage, gate).
+# window coverings (cover device classes awning, blind, curtain, shade, shutter); access: the garage doors and the gates (garage, gate).
 _FAMILY_OF_KIND = {"light": "lights", "ledstrip": "lights", "plug": "lights", "dimmer": "lights", "switch": "lights",
-                   "temperature": "climate", "humidity": "climate", "garage": "security", "gate": "security"}
+                   "temperature": "climate", "humidity": "climate", "garage": "access", "gate": "access"}
 _FAMILY_OF_GROUP = {"climate": "climate", "appliance": "appliance", "energy": "energy", "security": "security", "cover": "climate"}
-# The families saved before 1.0.4 (family_user, and the types of the debug build with 16 groups): "cover" goes to the climate or security
+# The families saved before 1.0.4 (family_user, and the types of the debug build with 16 groups): "cover" goes to the climate or access
 # family its kind says (None here), climate when the kind says neither.
 _OLD_FAMILIES = {"sensors": "climate", "hubs": OTHER_FAMILY, "water": OTHER_FAMILY, "cover": None}
 
@@ -43,7 +45,7 @@ def chosen_family(value, auto: str) -> str | None:
         return value
     if not isinstance(value, str) or value not in _OLD_FAMILIES:
         return None
-    return _OLD_FAMILIES[value] or (auto if auto in ("climate", "security") else "climate")
+    return _OLD_FAMILIES[value] or (auto if auto in ("climate", "access") else "climate")
 
 
 def valid_order(value) -> bool:

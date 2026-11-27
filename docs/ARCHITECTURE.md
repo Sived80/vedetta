@@ -309,7 +309,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 
 | part | lines | what it is for |
 |---|---|---|
-| `js/about.js` | 32 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/about.js` | 37 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/alerts.js` | 232 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/app.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/core-menu.js` | 334 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -350,7 +350,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/update.js` | 35 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/10-base.css` | 175 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/11-components.css` | 187 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `css/12-motion.css` | 181 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `css/12-motion.css` | 188 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/20-export.css` | 95 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/21-export-vlan.css` | 81 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/30-deep.css` | 52 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

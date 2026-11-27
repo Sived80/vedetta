@@ -394,6 +394,7 @@
   "js.ha.family.lights": "Lumières et prises",
   "js.ha.family.climate": "Climatisation",
   "js.ha.family.security": "Sécurité",
+  "js.ha.family.access": "Portails et portes",
   "js.ha.family.energy": "Énergie",
   "js.ha.family.appliance": "Électroménager",
   "js.ha.family.other": "Autres appareils",

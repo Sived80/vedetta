@@ -7537,7 +7537,7 @@ true
 "mac_known": "00:17:88:12:34:56",
 "mobile_reason": null,
 "mobile_score": 0,
-"name": "Philips Hue",
+"name": "Philips Hue gateway",
 "name_generated": true,
 "online": true,
 "port": 80,

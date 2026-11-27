@@ -4,12 +4,13 @@ What is built, release by release, and what is planned.
 
 [← Back to the README](../README.md)
 
-**Now: version 1.0.3 · Orizzonte**, released in November 2026. **32 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
+**Now: version 1.1.0 · Approdo**, released in November 2026. **32 planned**. Something you need sooner? [Open an issue](https://github.com/Sived80/vedetta/issues/new/choose) and say which: it moves it up.
 
 ## Release by release
 
 | Version | Date | What came with it |
 |---|---|---|
+| **1.1.0 · Approdo** | 28 Nov | Vedetta in Docker for Home Assistant Container, with a login of its own · groups as Home Assistant sees them, families inside *Smart home*, an order you choose · the type from Home Assistant's entities · the name tells the purpose · gateways in the network group · GPL-3.0 |
 | **1.0.3 · Orizzonte** | 26 Nov | Ready-made blueprints · brand, type and reason in the events · a finer `kind` for each device · sleeping phones stay home · ventilation, air quality and fitness types · *Add all* always ends |
 | **1.0.2 · Orizzonte** | 24 Nov | French · phones keep their MAC · fewer false "offline" · Home Assistant on a /32 address · faster export |
 | **1.0.1 · Orizzonte** | 21 Nov | One tile per network · one machine on several networks recognised by its certificate · a clearer network panel behind the router · Nmap and arp-scan installed at start · safer inside |

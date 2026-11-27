@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 name: Vedetta
-version: "1.0.3"
+version: "1.1.0"
 slug: vedetta
 image: ghcr.io/sived80/{arch}-vedetta
 description: "Local network dashboard: finds and recognizes the devices on your network, shows them in Home Assistant and shares what you choose"

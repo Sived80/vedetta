@@ -1,14 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The service's own log: a rotating file in the data folder (dashboard.log) and a short in-memory list of the latest entries, which the log page and the export read.
-The time zone is given by Home Assistant through set_zone_provider: this module sits at the bottom of the layers and imports nothing from the app except paths."""
+In Docker the same lines go to the standard output too (docker logs).
+The time zone is given by Home Assistant through set_zone_provider: this module sits at the bottom of the layers and imports nothing from the app except paths and runtime."""
 import logging
 import os
+import sys
 from collections import deque
 from datetime import datetime, timezone
 from logging.handlers import RotatingFileHandler
 from zoneinfo import ZoneInfo
 
 from .paths import DATA_DIR as CONFIG_DIR
+from . import runtime
 LOG_PATH = CONFIG_DIR / "dashboard.log"
 _MAX_ENTRIES = 500
 _SEP = "\t"
@@ -82,6 +85,12 @@ def _setup() -> None:
         # Without writing to disk the log stays in memory only: better
         # that than preventing the service from starting.
         pass
+    if runtime.is_docker():
+        # Docker: `docker logs vedetta` is where a person looks (the one-time code of the first setup is there), so the log goes to the
+        # standard output too, one line per entry like the file.
+        stream = logging.StreamHandler(sys.stdout)
+        stream.setFormatter(_FileFormatter())
+        logger.addHandler(stream)
     logger.propagate = True  # it still reaches systemd/journalctl too
 
 

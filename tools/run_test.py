@@ -15,7 +15,7 @@ data = tempfile.mkdtemp(prefix="vedetta-test-")
 try:
     env = {"VEDETTA_DATA_DIR": data}
     import os
-    code = subprocess.run([sys.executable, "-B", str(ROOT / "tests" / sys.argv[1])], cwd=ROOT / "vedetta", env={**os.environ, **env}).returncode
+    code = subprocess.run([sys.executable, "-B", str(ROOT / "tests" / sys.argv[1])], cwd=ROOT / "vedetta", env={"VEDETTA_MODE": "addon", **os.environ, **env}).returncode      # as under the Supervisor unless the caller says docker
 finally:
     shutil.rmtree(data, ignore_errors=True)
 sys.exit(code)

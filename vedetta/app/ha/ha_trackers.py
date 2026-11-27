@@ -78,8 +78,8 @@ async def fetch() -> list[dict]:
     import websockets
     tok = ha_registry.token()
     if not tok:
-        raise RuntimeError("SUPERVISOR_TOKEN assente (fuori da Home Assistant o homeassistant_api spento)")
-    async with websockets.connect(ha_registry.WS_URL, max_size=64 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
+        raise RuntimeError(ha_registry.missing_token())
+    async with websockets.connect(ha_registry.ws_url(), max_size=64 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
         await ha_registry._authenticate(ws, tok)
         states = await ha_registry._command(ws, 1, "get_states")
         registry = await ha_registry._command(ws, 2, "config/entity_registry/list")

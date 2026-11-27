@@ -9,7 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 9 5 15 M12 9 19 15' stroke='%2303a9f4' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='6' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='5' cy='18' r='3.2' fill='%2303a9f4'/%3E%3Ccircle cx='19' cy='18' r='3.2' fill='%2303a9f4'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="{{ base }}/static/ha/ha.css?v={{ static_version('ha/ha.css') }}">
   {#- issue #48: the start data is a block of data (never run: no CSP of a reverse proxy can stop it), boot.js reads it before the first paint #}
-  <script type="application/json" id="vedetta-boot">{{ {"base": base|default(""), "lang": lang, "lang_auto": lang_auto|default(true), "i18n": js_strings, "langs": languages}|tojson }}</script>
+  <script type="application/json" id="vedetta-boot">{{ {"base": base|default(""), "lang": lang, "lang_auto": lang_auto|default(true), "i18n": js_strings, "langs": languages, "docker": docker|default(false)}|tojson }}</script>
   <script src="{{ base }}/static/ha/boot.js?v={{ static_version('ha/boot.js') }}"></script>
 </head>
 <body>

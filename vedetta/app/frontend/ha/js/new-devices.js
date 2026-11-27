@@ -182,7 +182,7 @@ function scanMany(ips, hosts, onResult, signal) {
     } catch (err) { /* invalid row: ignored */ }
   }
   return fetch("/api/scan/deep", {
-    method: "POST", headers: { "Content-Type": "application/json", "X-Lang": LANG },
+    method: "POST", headers: { "Content-Type": "application/json", "X-Lang": LANG, "X-Vedetta-Request": "1" },
     body: JSON.stringify({ ips: ips, hints: hints }), signal: ctrl ? ctrl.signal : signal
   }).then(function (r) {
     arm();

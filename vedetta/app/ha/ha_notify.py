@@ -121,8 +121,8 @@ async def send(cmds: list[dict]) -> None:
     import websockets
     tok = ha_registry.token()
     if not tok:
-        raise RuntimeError("SUPERVISOR_TOKEN assente")
-    async with websockets.connect(ha_registry.WS_URL, open_timeout=ha_registry.TIMEOUT_S) as ws:
+        raise RuntimeError(ha_registry.missing_token())
+    async with websockets.connect(ha_registry.ws_url(), open_timeout=ha_registry.TIMEOUT_S) as ws:
         await ha_registry._authenticate(ws, tok)
         refusals = [await _refusal(ws, number, cmd) for number, cmd in enumerate(cmds, start=1)]
     refused = next((r for r in refusals if r), None)
@@ -164,7 +164,7 @@ async def notify_services() -> list[str]:
     if not tok:
         return []
     try:
-        async with websockets.connect(ha_registry.WS_URL, max_size=16 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
+        async with websockets.connect(ha_registry.ws_url(), max_size=16 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
             await ha_registry._authenticate(ws, tok)
             await ws.send(json.dumps({"id": 1, "type": "get_services"}))
             msg = await _answer(ws, 1)

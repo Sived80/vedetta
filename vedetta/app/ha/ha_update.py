@@ -6,13 +6,19 @@ installed version, the latest one and whether an update is available. No new per
 `update` and `security`), no call to the internet (the Supervisor already knows the latest version) and no guessing which entity is ours.
 Asked at start and then every ten minutes; a Supervisor that is down or slow keeps the last answer and is asked again in two minutes. The page only
 reads the answer kept here (see routes/ha.py): it never waits for the Supervisor.
-The same card says the slug of the app, for the Settings button of the Permissions tile (its Configuration page in Home Assistant)."""
+The same card says the slug of the app, for the Settings button of the Permissions tile (its Configuration page in Home Assistant).
+
+In Docker there is no Supervisor: the latest release of Vedetta is asked to GitHub (its public API, no account, no cookie, a User-Agent
+with only the name and the version of the app), every 12 hours, unless VEDETTA_INTERNET_UPDATE_CHECK=false. The page then explains how to
+update the container (docker compose pull); Vedetta never updates itself."""
 import asyncio
 import os
 import re
 
+from .. import external, runtime
 from ..applog import logger
 from . import ha_registry
+from .mqtt_payloads import version
 
 SUPERVISOR_URL = os.environ.get("VEDETTA_SUPERVISOR_URL", "http://supervisor")
 REFRESH_S = 600
@@ -22,6 +28,49 @@ _value: dict | None = None
 _slug: str | None = None
 _task: asyncio.Task | None = None
 _SLUG = re.compile(r"^[a-z0-9_]{1,64}$")
+RELEASES_URL = "https://api.github.com/repos/Sived80/vedetta/releases/latest"
+DOCKER_REFRESH_S = 12 * 3600
+DOCKER_RETRY_S = 3600
+_VERSION = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
+
+
+def _numbers(text: str) -> tuple | None:
+    found = _VERSION.match((text or "").strip())
+    return tuple(int(x) for x in found.groups()) if found else None
+
+
+def parse_release(release, installed: str) -> dict | None:
+    """The latest release of GitHub as {available, installed, latest}; None when its tag is not a plain version (a draft, a test tag).
+    available only when it is newer than the installed one (a debug or test build: never)."""
+    tag = release.get("tag_name") if isinstance(release, dict) else None
+    latest, mine = _numbers(tag or ""), _numbers(installed)
+    if latest is None or release.get("draft") or release.get("prerelease"):
+        return None
+    shown = "%d.%d.%d" % latest
+    return {"available": bool(mine and latest > mine), "installed": installed, "latest": shown}
+
+
+async def _fetch_release() -> dict:
+    import httpx
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "Vedetta/" + version()}
+    async with httpx.AsyncClient(timeout=TIMEOUT_S, follow_redirects=False) as client:
+        reply = await client.get(RELEASES_URL, headers=headers)
+        reply.raise_for_status()
+        return reply.json() or {}
+
+
+async def _refresh_docker() -> int:
+    global _value
+    if not external.update_check_enabled():
+        _value = None
+        return DOCKER_REFRESH_S
+    try:
+        release = await asyncio.wait_for(_fetch_release(), TIMEOUT_S)
+    except Exception as exc:   # offline, GitHub slow or limiting: the dot simply does not change
+        logger.info("Ultima versione non letta da GitHub (%s)", type(exc).__name__)
+        return DOCKER_RETRY_S
+    _value = parse_release(release, version()) or _value
+    return DOCKER_REFRESH_S
 
 
 def parse(info) -> dict | None:
@@ -56,8 +105,10 @@ async def _fetch(tok: str) -> dict:
 
 
 async def refresh() -> int:
-    """Asks the Supervisor once; returns the seconds to wait before the next time."""
+    """Asks the Supervisor (in Docker: GitHub) once; returns the seconds to wait before the next time."""
     global _value, _slug
+    if runtime.is_docker():
+        return await _refresh_docker()
     tok = ha_registry.token()
     if not tok:
         return RETRY_S

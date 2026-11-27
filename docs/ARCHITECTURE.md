@@ -15,13 +15,13 @@ This page is written to be read in ten minutes. The index at the end is generate
 
 A module may import from its own layer or from a lower one, never from a higher one. `tests/check_structure.py` enforces it (and forbids import cycles), so the dependencies always point down:
 
-- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `device_groups`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macaddr`, `macverdict`, `netutil`, `paths`, `procfs`, `sentinel`, `sse`
-- **layer 1**: `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `routedinv`, `storage/`, `twins`
+- **layer 0**: `applog`, `assets`, `atomic`, `cyclestats`, `datafile`, `device_groups`, `eventbus`, `external`, `formatters`, `identity_changes`, `iface`, `macaddr`, `macverdict`, `netutil`, `paths`, `procfs`, `runtime`, `sentinel`, `sse`
+- **layer 1**: `auth/`, `frontend_serving`, `i18n`, `inventory`, `lifecycle`, `linkview`, `macclassify`, `macidentity`, `maclayer`, `macpresence`, `networks/`, `pause`, `routedinv`, `storage/`, `twins`
 - **layer 2**: `analysis/`, `cardlink`, `health/`, `recognition/`, `topology/`
 - **layer 3**: `scan/`
 - **layer 4**: `arpview`, `cardlink_cycle`, `ha/`, `identity_upkeep`, `inventory_view`, `maintenance`, `name_origin`, `newdevicewatch`, `routedwatch`, `sentinel_view`, `state_cycle`, `state_support`, `state`
 - **layer 5**: `export/`
-- **layer 6**: `ingress`, `routes/`
+- **layer 6**: `access`, `ingress`, `routes/`
 - **layer 7**: `main`
 
 A few modules sit at another layer than their folder (for example `scan/dhcp.py` and `scan/mdns_listener.py` are base modules that import only the standard library); they are listed by name in `tests/check_structure.py`.
@@ -59,6 +59,7 @@ The functions that were restructured have a reference test that was generated fr
 
 | module | what it is for |
 |---|---|
+| `access.py` | Who may use the app when it runs as a container of its own (Docker). |
 | `applog.py` | The service's own log: a rotating file in the data folder (dashboard.log) and a short in-memory list of the latest entries, which the log page and the export read. |
 | `arpview.py` | The view of the network that ARP gives: who answers at which address and with which MAC. |
 | `assets.py` | The front-end of the /ha page, kept in several files. |
@@ -97,6 +98,7 @@ The functions that were restructured have a reference test that was generated fr
 | `procfs.py` | Tolerant, lazy reading of the text tables the kernel exposes (/proc/net/route, /proc/net/arp, /proc/self/status). |
 | `routedinv.py` | The inventory by address of a network behind the router (1.0 step P11, decisions 1A and 2A): what one ping sweep of the network found, merged with what is already known of it. |
 | `routedwatch.py` | The ping sweep of the networks behind the router (1.0 step P11, decision 1A): every ROUTED_SWEEP_S, and when the person presses «Scan network», each confirmed network seen through the router (not paused, at most a /22 as model.validate allows) gets one ping per address (networks.trial.sweep: the excluded ranges never). |
+| `runtime.py` | Where Vedetta runs: as an app of Home Assistant (under the Supervisor) or as a container of its own (Docker, for Home Assistant Container), and the settings that change with it. |
 | `sentinel.py` | Sentinel: which changes of the network become a message for the person, and when. |
 | `sentinel_view.py` | The Sentinel at work (the rules are in sentinel.py): it is told what changed by the cycle (a card online/offline, a new device), and at the end of each cycle it sends what is ready. |
 | `sse.py` | sse: moved out of main.py (see tools/split_module.py). |
@@ -114,6 +116,16 @@ The functions that were restructured have a reference test that was generated fr
 | `analysis/quality.py` | The quality of a device's link, from what Vedetta already keeps: the response times (one average a minute, 7 days) and the presence segments (the holes of Vedetta off already cut out). |
 | `analysis/recurrence.py` | How a device comes and goes over the last 30 days: seen once, occasional, recurring or stable. |
 | `analysis/status.py` | Is a device identified, settling or under analysis? Phase 1: read-only, from the evidence card the app already builds (recognition/evidence.py); it sends nothing. |
+
+### auth/
+
+| module | what it is for |
+|---|---|
+| `auth/cli.py` | `vedetta-passwd`: sets the password of the page from the host, the way to reset a forgotten one (Docker mode). |
+| `auth/passwords.py` | The password of the owner: its rules and its hash. |
+| `auth/setup.py` | The first start: there is no password yet and the page asks to choose one, but only to whoever can read the log of the container. |
+| `auth/store.py` | The password hash and the open sessions, on disk. |
+| `auth/throttle.py` | The wait after wrong attempts (login and first setup). |
 
 ### export/
 
@@ -208,6 +220,7 @@ The functions that were restructured have a reference test that was generated fr
 
 | module | what it is for |
 |---|---|
+| `routes/auth_routes.py` | The login pages of Docker mode (access.py lets them through without a session; under the Supervisor they answer 404). |
 | `routes/bodies.py` | The body of a modifying request: a JSON dictionary or a 400, in one place (a body that was a list, a string or not JSON used to give a 500 with a traceback in the log). |
 | `routes/brands.py` | Brand recognition API: rules created from the interface and update of the MAC prefix database from the web. |
 | `routes/device_routes.py` | device_routes: moved out of main.py (see tools/split_module.py). |
@@ -312,9 +325,9 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/about.js` | 37 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/alerts.js` | 232 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/app.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/core-menu.js` | 334 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/core-menu.js` | 344 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/core-ui.js` | 201 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/core.js` | 279 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/core.js` | 280 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/debug.js` | 50 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/deep.js` | 164 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/export-vlan.js` | 109 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -347,7 +360,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/night.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/pause-place.js` | 15 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/tile.js` | 345 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/update.js` | 35 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/update.js` | 44 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/10-base.css` | 175 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/11-components.css` | 187 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/12-motion.css` | 188 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

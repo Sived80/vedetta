@@ -1,5 +1,19 @@
 # SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py)."""
+import os
+
+from .. import runtime
+from ..applog import logger
+
+
+def environment() -> dict:
+    """The variables of the process, with the MQTT password taken from its secret file when there is one (Docker:
+    VEDETTA_MQTT_PASSWORD_FILE or /run/secrets/mqtt_password, see runtime.secret)."""
+    env = dict(os.environ)
+    password = runtime.secret("mqtt_password", logger.warning)
+    if password:
+        env["VEDETTA_MQTT_PASSWORD"] = password
+    return env
 
 
 # ---------------- configuration ----------------

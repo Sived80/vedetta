@@ -1,0 +1,5 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
+# Sets the password of the Vedetta page (Docker mode): docker exec -it vedetta vedetta-passwd
+export VEDETTA_DATA_DIR="${VEDETTA_DATA_DIR:-/data}"
+cd /app && exec /opt/venv/bin/python -m app.auth.cli "$@"

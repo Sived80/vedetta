@@ -53,7 +53,7 @@ def run_one(name: str, cmd: list[str]) -> tuple[str, int, str, float]:
         for attempt in (1, 2):
             try:
                 proc = subprocess.run(cmd, cwd=ROOT / "vedetta", capture_output=True, text=True, timeout=TEST_TIMEOUT_S, creationflags=LOW_PRIORITY,
-                                      env={**os.environ, "PYTHON": sys.executable, "VEDETTA_DATA_DIR": data})
+                                      env={"VEDETTA_MODE": "addon", **os.environ, "PYTHON": sys.executable, "VEDETTA_DATA_DIR": data})      # the app as under the Supervisor unless a test says docker (the login of Docker is tested on purpose)
                 break
             except subprocess.TimeoutExpired:   # a stuck test must not freeze the run (the whole suite takes under a minute)
                 if attempt == 2:

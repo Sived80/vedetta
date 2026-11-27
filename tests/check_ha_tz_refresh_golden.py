@@ -91,7 +91,7 @@ def fake_set_language(lang):
 
 ha_tz.time = FakeTime
 ha_tz.logger = FakeLogger
-ha_tz.ha_registry = types.SimpleNamespace(token=fake_token, WS_URL="ws://fake/ws", TIMEOUT_S=7)
+ha_tz.ha_registry = types.SimpleNamespace(token=fake_token, ws_url=lambda: "ws://fake/ws", TIMEOUT_S=7)
 ha_tz.i18n = types.SimpleNamespace(set_system_language=fake_set_language)
 
 ZONES = ["Europe/Rome", "UTC", "America/New_York", "Invalid/Zone", None, "", "Asia/Tokyo"]

@@ -40,7 +40,7 @@ for base in ("", "/api/hassio_ingress/abc"):
     blocks = [body for attrs, body in tags if 'id="vedetta-boot"' in attrs]
     assert len(blocks) == 1, "one block of start data"
     boot = json.loads(blocks[0])
-    assert boot == {"base": base, "lang": "en", "lang_auto": True, "i18n": STRINGS, "langs": [["en", "English"], ["it", "Italiano"]]}, boot
+    assert boot == {"base": base, "lang": "en", "lang_auto": True, "i18n": STRINGS, "langs": [["en", "English"], ["it", "Italiano"]], "docker": False}, boot
     assert "</script><script>alert" not in html, "the data cannot close its block"
     srcs = re.findall(r'<script\b[^>]*\bsrc="([^"]+)"', html)
     assert srcs[0].startswith(base + "/static/ha/boot.js"), ("boot.js first, before every other file", srcs)

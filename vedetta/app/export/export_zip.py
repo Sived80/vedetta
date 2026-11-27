@@ -28,6 +28,10 @@ MAPPING_FILE = "export_mapping.local"   # kept next to the data but skipped by t
 MAX_DB_BYTES = 40 * 1024 * 1024    # above this size the database is not included
 MAX_LOG_BYTES = 2 * 1024 * 1024    # for logs only the tail is kept
 FOCUS_DAYS = 14                    # history of a flagged device that goes in the export
+# The files of the login of Docker (auth/store.py): the password hash and the digests of the sessions, and their temporary copies while
+# they are written. Never in an export, whatever their content says.
+LOGIN_FILES = ("auth.json", "sessions.json")
+LOGIN_TEMP = (".auth-", ".sessions-")
 SKIP_WORDS = ("key", "token", "secret", "pass", "community", "user_lang")   # files or fields that might hold credentials (the SNMP community is one), or the ids of the Home Assistant users
 
 
@@ -323,7 +327,12 @@ def _put_data_files(z: _Zip, data_dir: Path) -> None:
 
 def _skip_data_file(f: Path) -> bool:
     """Not a file to export: directories, the database, the mapping, anything whose name hints at credentials."""
-    return not f.is_file() or f.name.startswith("vedetta.db") or f.name == MAPPING_FILE or any(w in f.name.lower() for w in SKIP_WORDS)
+    return not f.is_file() or f.name.startswith("vedetta.db") or f.name == MAPPING_FILE or login_file(f.name) or any(w in f.name.lower() for w in SKIP_WORDS)
+
+
+def login_file(name: str) -> bool:
+    """A file of the login of Docker (LOGIN_FILES, or one of their temporary copies)."""
+    return name in LOGIN_FILES or name.startswith(LOGIN_TEMP)
 
 
 def _put_one_data_file(z: _Zip, f: Path) -> None:

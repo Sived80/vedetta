@@ -111,8 +111,8 @@ def _gather_data_files(p, data_dir):
 
 
 def _is_skipped_data_file(f: Path) -> bool:
-    """What is not copied: anything but a file, the database (copied apart), the mapping file and the names that may hold a credential."""
-    return not f.is_file() or f.name.startswith("vedetta.db") or f.name == legacy.MAPPING_FILE or any(w in f.name.lower() for w in legacy.SKIP_WORDS)
+    """What is not copied: anything but a file, the database (copied apart), the mapping file, the files of the login and the names that may hold a credential."""
+    return not f.is_file() or f.name.startswith("vedetta.db") or f.name == legacy.MAPPING_FILE or legacy.login_file(f.name) or any(w in f.name.lower() for w in legacy.SKIP_WORDS)
 
 
 def _collect_data_file(p: Prepared, f: Path) -> None:

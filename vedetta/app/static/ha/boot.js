@@ -13,6 +13,7 @@
   window.VEDETTA_LANG_AUTO = boot.lang_auto !== false;
   window.VEDETTA_I18N = boot.i18n || {};
   window.VEDETTA_LANGS = boot.langs || [];
+  window.VEDETTA_DOCKER = boot.docker === true;     // a container of its own (Docker): login, logout, updates with docker compose
   // Theme before the first paint: the ?theme= parameter already written by the server wins; without it, the last choice made in the menu.
   try {
     if (!new URLSearchParams(location.search).has("theme")) {

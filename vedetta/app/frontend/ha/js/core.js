@@ -6,6 +6,7 @@
 export const I = window.VedettaIcons;
 export const LANG = window.VEDETTA_LANG || "en";
 export const BASE = window.VEDETTA_BASE || ""; // HA ingress prefix (empty at the root)
+export const DOCKER = window.VEDETTA_DOCKER === true; // a container of its own: the page has a login (logout in the menu) and updates with docker compose
 export const params = new URLSearchParams(location.search);
 export const ROOT = document.documentElement;
 export const COMPACT = ROOT.getAttribute("data-compact") === "1";
@@ -239,7 +240,7 @@ export function api(path, opts) {
   const method = opts.method || "GET";
   let url = path;
   if (method === "GET") url += (path.indexOf("?") < 0 ? "?" : "&") + "lang=" + encodeURIComponent(LANG);
-  const headers = { "X-Lang": LANG };
+  const headers = { "X-Lang": LANG, "X-Vedetta-Request": "1" };      // Docker: a change must come from this page (access.py), a form of another site cannot send it
   let body;
   if (opts.json !== undefined) {
     headers["Content-Type"] = "application/json";

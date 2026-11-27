@@ -212,7 +212,7 @@ function xpSave() {
   if (mine.saving || mine.saved || !id) return;
   mine.saving = true;
   xpRender();
-  fetch("/api/export/jobs/" + id + "/file", { method: "POST", headers: { "X-Lang": LANG }, cache: "no-store" }).then(function (r) {
+  fetch("/api/export/jobs/" + id + "/file", { method: "POST", headers: { "X-Lang": LANG, "X-Vedetta-Request": "1" }, cache: "no-store" }).then(function (r) {
     if (!r.ok) throw new Error("HTTP " + r.status);
     const m = /filename="([^"]+)"/.exec(r.headers.get("Content-Disposition") || "");
     return r.blob().then(function (blob) { return { blob: blob, name: m ? m[1] : "vedetta-export" }; });

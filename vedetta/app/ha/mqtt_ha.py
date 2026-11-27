@@ -19,7 +19,7 @@ import logging
 import os
 
 from ..storage import settings
-from .mqtt_config import _env_config, _port, _stored_config, resolve_config  # noqa: F401
+from .mqtt_config import _env_config, _port, _stored_config, environment, resolve_config  # noqa: F401
 from .mqtt_payloads import DISCOVERY_PREFIX, HUB_ID, HUB_STATE_TOPIC, SCAN_TOPIC, STATUS_TOPIC, _SLUG_RE, _add_device_entries, _fmt_time, _is_published, _j, _origin, build_desired, config_topic, device_attrs, device_config, device_topics, hub_config, hub_state, slug, version  # noqa: F401
 from . import ha_data
 
@@ -122,7 +122,7 @@ class MqttService:
 
     async def _apply_config(self) -> None:
         try:
-            self.cfg = resolve_config(settings.mqtt_load(), os.environ)
+            self.cfg = resolve_config(settings.mqtt_load(), environment())
         except Exception:
             logger.exception("MQTT: configurazione non leggibile")
             self.cfg = None
@@ -295,7 +295,7 @@ class MqttService:
 
     def status(self) -> dict:
         stored = settings.mqtt_load()
-        cfg = self.cfg or resolve_config(stored, os.environ)
+        cfg = self.cfg or resolve_config(stored, environment())
         return {
             **self.link(),
             "source": cfg["source"] if cfg else None,

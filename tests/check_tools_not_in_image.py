@@ -30,17 +30,18 @@ docker = read("vedetta", "Dockerfile")
 apk_lines = [line for line in docker.splitlines() if "apk add" in line]
 check(not any(re.search(r"\b(nmap|nmap-scripts|arp-scan)\b", line) for line in apk_lines), "the image does not install nmap or arp-scan: " + "; ".join(apk_lines))
 
-run = read("vedetta", "run.sh")
-install = run.find("apk add")
-start = run.find("python -m uvicorn")
-check(install != -1 and re.search(r"apk add[^\n]*\bnmap\b[^\n]*\bnmap-scripts\b[^\n]*\barp-scan\b", run) is not None,
-      "run.sh installs nmap, nmap-scripts and arp-scan from Alpine")
-check(-1 < install < start, "before the server starts")
-check(re.search(r"command -v nmap", run) is not None and re.search(r"command -v arp-scan", run) is not None, "only when they are missing (a restart of the same container does not download them again)")
-check(re.search(r"for \w+ in 1 2 3", run) is not None, "with a few retries (the network may come up after the app)")
-block = run[install - 400:start]
-check(not re.search(r"^\s*(bashio::exit\S*|exit)\b", block, re.M) and re.search(r"while sleep \d+", block) is not None,
+tools = read("vedetta", "install-tools.sh")        # shared by run.sh (app of Home Assistant) and docker-run.sh (Docker, 1.1)
+check(re.search(r"apk add[^\n]*\bnmap\b[^\n]*\bnmap-scripts\b[^\n]*\barp-scan\b", tools) is not None, "install-tools.sh installs nmap, nmap-scripts and arp-scan from Alpine")
+for name in ("run.sh", "docker-run.sh"):
+    starter = read("vedetta", name)
+    install = starter.find(". /install-tools.sh")
+    start = starter.find("python -m uvicorn")
+    check(-1 < install < start, "%s installs them before the server starts" % name)
+check(re.search(r"command -v nmap", tools) is not None and re.search(r"command -v arp-scan", tools) is not None, "only when they are missing (a restart of the same container does not download them again)")
+check(re.search(r"for \w+ in 1 2 3", tools) is not None, "with a few retries (the network may come up after the app)")
+check(not re.search(r"^\s*(bashio::exit\S*|exit)\b", tools, re.M) and re.search(r"while sleep \d+", tools) is not None,
       "a failed install does not stop the app: the server starts and the install is tried again later in the background")
+check("install-tools.sh" in read("vedetta", "Dockerfile"), "the image carries the shared installer (not the tools)")
 
 notices = read("THIRD_PARTY_NOTICES.md")
 check("when the app starts" in notices and "not part of the published image" in notices, "the notices say they are installed when the app starts and are not in the image")

@@ -57,7 +57,7 @@ async def refresh(force: bool = False) -> bool:
 async def _read_zone(token: str) -> ZoneInfo | None:
     """Connects to Home Assistant, sets the system language from its configuration and returns its time zone (None if it names none or an unknown one)."""
     import websockets
-    async with websockets.connect(ha_registry.WS_URL, open_timeout=ha_registry.TIMEOUT_S) as ws:
+    async with websockets.connect(ha_registry.ws_url(), open_timeout=ha_registry.TIMEOUT_S) as ws:
         await _authenticate(ws, token)
         config = await _get_config(ws)
         i18n.set_system_language((config or {}).get("language"))   # the same answer tells the language of Home Assistant

@@ -79,7 +79,7 @@ out = fetch(HELLO + answers([{"id": "d1"}], [{"entity_id": "light.a"}], [{"area_
 assert out == {"devices": [{"id": "d1"}], "entities": [{"entity_id": "light.a"}], "areas": [{"area_id": "kitchen"}], "entries": [{"entry_id": "e1"}]}, out
 assert SENT == [{"type": "auth", "access_token": "tok"}, {"id": 1, "type": "config/device_registry/list"}, {"id": 2, "type": "config/entity_registry/list"},
                 {"id": 3, "type": "config/area_registry/list"}, {"id": 4, "type": "config_entries/get"}], SENT
-assert CONNECT[0][0] == ha_registry.WS_URL and CONNECT[0][1] == {"max_size": 64 * 1024 * 1024, "open_timeout": ha_registry.TIMEOUT_S}, CONNECT
+assert CONNECT[0][0] == ha_registry.ws_url() and CONNECT[0][1] == {"max_size": 64 * 1024 * 1024, "open_timeout": ha_registry.TIMEOUT_S}, CONNECT
 
 # 2) events with another id in between are skipped; an empty or missing result is a list
 mixed = HELLO + [{"type": "event", "id": 99}] + answers([1])[:1] + [{"id": 7, "type": "result", "success": True, "result": [9]}] + [

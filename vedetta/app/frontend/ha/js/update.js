@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, esc, icon, t } from "./core.js";
+import { $, DOCKER, esc, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
 
 // ------------------------------------------------- update available
@@ -8,19 +8,28 @@ import { S } from "./core-ui.js";
 var updDlg = $("updatedlg");
 var HOST_PATH = "/config/updates";
 var STEPS = ["js.ha.update.step1", "js.ha.update.step2", "js.ha.update.step3", "js.ha.update.step4"];      // written out: the keys of the words are checked by name
+// Docker: no Supervisor, no Updates page. The window gives the two commands of Compose and a link to the notes of the release (a new tab).
+var DOCKER_STEPS = ["js.ha.update.docker_step1", "js.ha.update.docker_step2", "js.ha.update.docker_step3"];
+var RELEASES = "https://github.com/Sived80/vedetta/releases/tag/v";
 export function inHomeAssistant() { return window.parent !== window; }
 function closeUpdate() {
   if (updDlg.open && typeof updDlg.close === "function") updDlg.close(); else updDlg.removeAttribute("open");
 }
+function updateGoButton(u) {
+  if (!DOCKER) return '<button type="button" class="btn filled rp" data-upd="go">' + icon("upload") + "<span>" + esc(t("js.ha.update.go")) + "</span></button>";
+  const tag = /^\d+\.\d+\.\d+$/.test(u.latest || "") ? u.latest : "";
+  return '<a class="btn filled rp" data-upd="notes" href="' + RELEASES + esc(tag) + '" target="_blank" rel="noopener noreferrer">' + icon("open-in-new") +
+    "<span>" + esc(t("js.ha.update.docker_notes")) + "</span></a>";
+}
 function updateHTML(u) {
-  const steps = STEPS.map(function (key) { return "<li>" + esc(t(key)) + "</li>"; });
+  const steps = (DOCKER ? DOCKER_STEPS : STEPS).map(function (key) { return "<li>" + esc(t(key)) + "</li>"; });
   return '<div class="mi"><div class="mi-header"><button type="button" class="icon-btn touch rp" data-upd="close" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") +
     '</button><div class="mi-titles"><h2 class="mi-title" id="updatedlg-title">' + esc(t("js.ha.update.title")) + '</h2><div class="mi-sub">' +
     esc(t("js.ha.update.sub", { installed: u.installed || "", latest: u.latest || "" })) + "</div></div></div>" +
-    '<div class="mi-body upd-body"><p class="upd-intro">' + esc(t("js.ha.update.intro")) + '</p><div class="upd-what">' + esc(t("js.ha.update.what")) +
+    '<div class="mi-body upd-body"><p class="upd-intro">' + esc(t(DOCKER ? "js.ha.update.docker_intro" : "js.ha.update.intro")) + '</p><div class="upd-what">' + esc(t("js.ha.update.what")) +
     '</div><ol class="upd-steps">' + steps.join("") + "</ol></div>" +
     '<div class="mi-actions"><button type="button" class="btn text rp" data-upd="close">' + esc(t("js.ha.cancel")) + '</button>' +
-    '<button type="button" class="btn filled rp" data-upd="go">' + icon("upload") + "<span>" + esc(t("js.ha.update.go")) + "</span></button></div></div>";
+    updateGoButton(u) + "</div></div>";
 }
 export function openUpdate() {
   updDlg.innerHTML = updateHTML(S.update || {});

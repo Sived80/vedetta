@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse, Response, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 
-from .. import applog, external, i18n
+from .. import applog, external, i18n, runtime
 from ..analysis import digest, quality, recurrence
 from ..networks import registry
 from ..export import inventory
@@ -64,7 +64,7 @@ async def ha_page(request: Request, theme: str = "auto", bg: str = "", compact: 
         {
             "lang": lang, "lang_auto": not chosen, "languages": i18n.available(), "js_strings": i18n.js_table(lang),
             "theme": theme, "transparent": bg == "transparent", "compact": _flag(compact),
-            "limit": max(1, min(limit, 30)),
+            "limit": max(1, min(limit, 30)), "docker": runtime.is_docker(),
         },
     )
 

@@ -1,0 +1,13 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE -->
+{% extends "auth_base.html" %}
+{% block sub %}<p class="sub">{{ tr("auth.login_sub") }}</p>{% endblock %}
+{% block form %}
+    <form method="post" action="{{ base }}/login" autocomplete="on">
+      <input type="hidden" name="next" value="{{ target }}">
+      <input type="text" name="username" value="vedetta" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
+      <label for="password">{{ tr("auth.password") }}</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="128" autofocus>
+      <button type="submit">{{ tr("auth.login") }}</button>
+    </form>
+    <p class="hint">{{ tr("auth.forgot") }}</p>
+{% endblock %}

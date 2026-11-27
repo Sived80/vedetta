@@ -191,7 +191,7 @@ async def _read_home_assistant() -> tuple[dict, list]:
     if not tok:
         raise SurveyError("no token: outside Home Assistant, or homeassistant_api is off")
     registry = await ha_registry._fetch()
-    async with websockets.connect(ha_registry.WS_URL, max_size=64 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
+    async with websockets.connect(ha_registry.ws_url(), max_size=64 * 1024 * 1024, open_timeout=ha_registry.TIMEOUT_S) as ws:
         await ha_registry._authenticate(ws, tok)
         return registry, await fetch_trackers(ws)
 

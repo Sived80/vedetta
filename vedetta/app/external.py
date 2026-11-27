@@ -4,6 +4,7 @@
   public IP       a DNS query to OpenDNS (scan/internet.py)             every 6 hours (no address: one debug query, see internet.py)
   path            a traceroute to a public address, 1.1.1.1 by default  every 6 hours
   MAC database    the download of the IEEE registries (recognition/oui_update.py)
+  update check    Docker only: the latest release of Vedetta on GitHub (ha/ha_update.py)  every 12 hours (under the Supervisor HA knows it)
 
 Everything is on unless the option says otherwise. Outside the add-on (no variable at all) the first two stay on, as they always were, and the MAC database
 follows its own setting file (off by default). Nothing here reads a file or the network: it only reads the environment, so a test can set it."""
@@ -49,6 +50,12 @@ def path_target() -> str:
         return raw
     logger.warning("Riferimento del traceroute non valido (%r): uso %s", raw[:40], DEFAULT_PATH_TARGET)
     return DEFAULT_PATH_TARGET
+
+
+def update_check_enabled() -> bool:
+    """Docker only (VEDETTA_INTERNET_UPDATE_CHECK): asks GitHub for the latest release, for the dot on the menu button. On unless switched off."""
+    flag = _flag("VEDETTA_INTERNET_UPDATE_CHECK")
+    return True if flag is None else flag
 
 
 def any_internet_check() -> bool:

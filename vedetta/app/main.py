@@ -18,13 +18,14 @@ from .state_support import _process_info
 from .recognition import roles
 from .applog import logger
 from .ingress import IngressMiddleware, template_context
+from .access import AccessMiddleware
 from .maintenance import nightly_loop
 from .assets import static_version
 from .frontend_serving import mount_frontend
 from .routes import flows as routes_flows
 from .routes.bodies import json_dict
 from .routes import brands as routes_brands, export_routes as routes_export, ignored as routes_ignored, ha as routes_ha, mqtt as routes_mqtt, passive_routes as routes_passive
-from .routes import network_routes as routes_network
+from .routes import network_routes as routes_network, auth_routes as routes_auth
 from .ha.mqtt_ha import service as mqtt_service
 from .state import state
 from .sse import SSE_HEADERS, _sse  # noqa: F401
@@ -72,6 +73,7 @@ async def lifespan(_: FastAPI):
     routedwatch.start()   # the ping sweep of the networks behind the router, every 15 minutes (step P11)
     sentinel_view.add_sender(ha_notify.sender)   # the Sentinel's messages reach Home Assistant: events and the chosen notify service
     _journal_damaged_settings()
+    routes_auth.announce_setup()   # Docker with no password yet: the one-time code of the first setup, in the log
     logger.info("Servizio avviato")
     yield
     dhcp.stop(dhcp_transport)   # closes the listener and writes the DHCP memory not yet saved
@@ -102,10 +104,12 @@ app.include_router(routes_scan_routes.router)
 app.include_router(routes_device_routes.router)
 app.include_router(routes_settings_routes.router)
 app.include_router(routes_network.router)
+app.include_router(routes_auth.router)
 
 
 mount_frontend(app, BASE_DIR / "static")
 app.add_middleware(IngressMiddleware)  # ingress prefix -> request.state.base; optional 403 outside the Supervisor
+app.add_middleware(AccessMiddleware)  # Docker: the login of the owner on every request (outermost: it runs first)
 templates = Jinja2Templates(directory=BASE_DIR / "templates", context_processors=[template_context])  # `base` in the templates
 
 

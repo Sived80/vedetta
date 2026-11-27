@@ -20,7 +20,10 @@ RUN python3 -m venv /opt/venv \
 COPY VERSION /app/VERSION
 COPY LICENSE NOTICE /app/
 COPY app /app/app
-COPY run.sh /run.sh
-RUN chmod a+x /run.sh
+COPY run.sh docker-run.sh install-tools.sh /
+COPY vedetta-passwd /usr/local/bin/vedetta-passwd
+RUN chmod a+x /run.sh /docker-run.sh /install-tools.sh /usr/local/bin/vedetta-passwd
+# Docker (Home Assistant Container): the page of the app; under the Supervisor the port is the ingress one and this changes nothing.
+EXPOSE 8765
 
 CMD ["/run.sh"]

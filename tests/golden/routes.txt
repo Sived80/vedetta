@@ -40,6 +40,8 @@
 ['GET'] /api/snmp
 ['GET'] /ha
 ['GET'] /healthz
+['GET'] /login
+['GET'] /setup
 ['GET'] /static/ha/ha.css
 ['POST'] /api/brands/auto-update
 ['POST'] /api/brands/preview
@@ -87,5 +89,8 @@
 ['POST'] /api/settings
 ['POST'] /api/snmp
 ['POST'] /api/snmp/test
+['POST'] /login
+['POST'] /logout
+['POST'] /setup
 [] /static
 [] /static/ha/js

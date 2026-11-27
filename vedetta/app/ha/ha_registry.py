@@ -4,20 +4,19 @@
 Read-ONLY, only documented WebSocket commands not reserved to administrators
 (config/device_registry/list, config/entity_registry/list, config/area_registry/list, config_entries/get, and
 config/entity_registry/get_entries for the device classes of the entities),
-through the Supervisor proxy (requires `homeassistant_api: true` and the SUPERVISOR_TOKEN variable).
-Without a token (outside Home Assistant) or with HA down the source is simply empty: the app carries on with the
+through the Supervisor proxy (requires `homeassistant_api: true` and the SUPERVISOR_TOKEN variable) or, in Docker, the address and the
+long-lived access token the person gives (app/runtime.py). Without a token or with HA down the source is simply empty: the app carries on with the
 others. The copy is saved in /data to have something even when HA is unreachable.
 
 The join is by MAC (connections["mac"]). Devices created by Vedetta itself (MQTT, identifiers
 "vedetta_*") are excluded: they would be its own data coming back."""
 import asyncio
 import json
-import os
 import re
 import time
 from functools import lru_cache
 
-from .. import datafile, paths
+from .. import datafile, paths, runtime
 from ..applog import logger
 from ..atomic import write_atomic
 from ..recognition import naming
@@ -25,7 +24,6 @@ from ..storage import settings
 import contextlib
 from ..macaddr import device_mac
 
-WS_URL = os.environ.get("VEDETTA_HA_WS", "ws://supervisor/core/websocket")
 REFRESH_S = 600
 TIMEOUT_S = 20
 CACHE_PATH = paths.data_path("ha_registry.json")
@@ -61,7 +59,20 @@ _task: asyncio.Task | None = None
 
 
 def token() -> str | None:
-    return os.environ.get("SUPERVISOR_TOKEN") or None
+    """The token for the API of Home Assistant; None when there is no Home Assistant to reach (in Docker: no address or no token)."""
+    return runtime.ha_token(logger.warning) if ws_url() else None
+
+
+def ws_url() -> str | None:
+    """The websocket of Home Assistant (app/runtime.py): the Supervisor's proxy, or in Docker the one of the address the person gave."""
+    return runtime.ha_ws_url()
+
+
+def missing_token() -> str:
+    """Why there is no token, for the status shown on the page and the log."""
+    if runtime.mode() == runtime.ADDON:
+        return "SUPERVISOR_TOKEN assente (fuori da Home Assistant o homeassistant_api spento)"
+    return "Home Assistant non configurato (VEDETTA_HA_URL e il token: vedi DOCKER.md)"
 
 
 def norm_mac(mac) -> str | None:
@@ -247,8 +258,8 @@ async def _fetch() -> dict:
     import websockets
     tok = token()
     if not tok:
-        raise RuntimeError("SUPERVISOR_TOKEN assente (fuori da Home Assistant o homeassistant_api spento)")
-    async with websockets.connect(WS_URL, max_size=64 * 1024 * 1024, open_timeout=TIMEOUT_S) as ws:
+        raise RuntimeError(missing_token())
+    async with websockets.connect(ws_url(), max_size=64 * 1024 * 1024, open_timeout=TIMEOUT_S) as ws:
         await _authenticate(ws, tok)
         raw = {key: await _command(ws, i, cmd) for i, (key, cmd) in enumerate(_COMMANDS.items(), start=1)}
         raw["entities"] = await _with_classes(ws, len(_COMMANDS) + 1, raw["entities"])

@@ -1,0 +1,21 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE -->
+{% extends "auth_base.html" %}
+{% block sub %}<p class="sub">{{ tr("auth.setup_sub") }}</p>{% endblock %}
+{% block form %}
+  {% if expired %}
+    <p class="error" role="alert">{{ tr("auth.code_expired") }}</p>
+  {% else %}
+    <form method="post" action="{{ base }}/setup" autocomplete="off">
+      <label for="code">{{ tr("auth.code") }}</label>
+      <input id="code" name="code" type="text" required maxlength="20" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" autofocus>
+      <p class="hint">{{ tr("auth.code_hint") }}</p>
+      <input type="text" name="username" value="vedetta" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
+      <label for="password">{{ tr("auth.new_password") }}</label>
+      <input id="password" name="password" type="password" autocomplete="new-password" required minlength="{{ min_length }}" maxlength="128">
+      <p class="hint">{{ tr("auth.password_rule", min=min_length) }}</p>
+      <label for="confirm">{{ tr("auth.confirm") }}</label>
+      <input id="confirm" name="confirm" type="password" autocomplete="new-password" required minlength="{{ min_length }}" maxlength="128">
+      <button type="submit">{{ tr("auth.save") }}</button>
+    </form>
+  {% endif %}
+{% endblock %}

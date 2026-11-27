@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, LANG, LANG_KEY, ROOT, api, esc, goLang, icon, t } from "./core.js";
+import { $, BASE, DOCKER, LANG, LANG_KEY, ROOT, api, esc, goLang, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
 import { openExport } from "./export.js";
 import { deepMenuEl, toggleDeepMenu } from "./deep.js";
@@ -171,10 +171,18 @@ function langGroup() {
 // The arrow needs the page to be inside Home Assistant (that is where the Updates page is).
 function menuFoot() {
   const tip = esc(t("js.ha.menu.update_tip", { latest: S.update ? S.update.latest : "" }));
-  const up = updateAvailable() && inHomeAssistant()
+  const up = updateAvailable() && (inHomeAssistant() || DOCKER)      // Docker: the window says how to update the container
     ? '<button type="button" class="menu-upd rp" data-update="1" title="' + tip + '" aria-label="' + tip + '">' + icon("upload") + "</button>" : "";
   return '<div class="menu-foot"><button type="button" class="menu-repo rp" data-about="1">' + icon("information-outline") + "<span>" + esc(t("js.ha.menu.about")) +
     "</span></button>" + up + "</div>";
+}
+// Docker: the logout ends the session on the server (POST /logout, a form of this page: access.py checks its origin), then the login page.
+function logout() {
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = BASE + "/logout";
+  document.body.appendChild(form);
+  form.submit();
 }
 // The number of clients Home Assistant sees that can be adopted, after the name of the entry, only when there are some.
 function netsCountHtml() {
@@ -219,6 +227,7 @@ function buildMenu() {
   html += '<button type="button" class="menu-item menu-link next rp" data-inventory="1">' + esc(t("js.ha.inv.menu")) + icon("format-list-bulleted-type") + "</button>";
   // Export for analysis: almost invisible on purpose (small, faded icon).
   html += '<button type="button" class="menu-item menu-link menu-export next rp" data-export="1">' + esc(t("js.ha.export.title")) + icon("download") + "</button>";
+  if (DOCKER) html += '<button type="button" class="menu-item menu-link rp" data-logout="1">' + esc(t("js.ha.menu.logout")) + icon("logout") + "</button>";
   html += menuFoot();
   menuEl.innerHTML = html;
 }
@@ -271,6 +280,7 @@ menuEl.addEventListener("click", function (e) {
   if (e.target.closest("[data-grouporder]")) { toggleMenu(false); openOrder(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   if (e.target.closest("[data-about]")) { toggleMenu(false); openAbout(); return; }
+  if (e.target.closest("[data-logout]")) { logout(); return; }
   if (e.target.closest("[data-hold]")) {
     S.phoneHold = !S.phoneHold;
     api("/api/settings", { method: "POST", json: { phone_hold_ha: S.phoneHold } }).catch(function () {});

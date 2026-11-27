@@ -56,6 +56,12 @@ code = auth_routes.setup_code.make().replace("-", "")
 page = web.get("/setup")
 check(page.status_code == 200 and 'name="code"' in page.text and "<script" not in page.text, "the setup page asks the code and has no script")
 check("no-store" in page.headers.get("cache-control", ""), "the setup page is not cached")
+# 27/11, the first real browser: a referrer policy "no-referrer" in the page makes the browser send "Origin: null" with the form, and on
+# plain HTTP it sends no Sec-Fetch-Site: the form was refused (403). The pages must keep the Origin of a same-origin form.
+check('name="referrer"' not in page.text and page.headers.get("referrer-policy") in ("same-origin", "strict-origin-when-cross-origin"),
+      "the setup page keeps the Origin of its own form (no no-referrer): %s" % page.headers.get("referrer-policy"))
+r = web.post("/setup", data={"code": "x"}, headers={"Origin": "null"})
+check(r.status_code == 403, "a form with Origin null is still refused")
 r = web.post("/setup", data={"code": code, "password": GOOD, "confirm": GOOD})
 check(r.status_code == 403, "a setup form without origin is refused (CSRF)")
 r = web.post("/setup", data={"code": code, "password": GOOD, "confirm": GOOD}, headers={"Origin": "http://192.0.2.66"})

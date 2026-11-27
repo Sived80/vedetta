@@ -8,6 +8,7 @@ For Home Assistant **Container**, which has no App store. Same app, same image, 
 
 - **Linux with Docker Engine** and Compose. A Raspberry Pi, a mini PC, a VM or an LXC container (Proxmox: unprivileged, with *nesting* on) are all fine.
 - **On the same network as your devices.** Vedetta listens to the LAN itself (ARP, mDNS, DHCP), so it uses the host network.
+- **VLANs: a network interface on each one, if you want their MACs.** Without one, Vedetta still sees a VLAN behind the router, by ping: MACs only where Home Assistant knows them, so fewer brands and phones. [Networks](NETWORKS.md)
 - **Not supported:** Docker Desktop on Windows or macOS (its host network does not reach the LAN; Home Assistant Container does not support it either) and rootless Docker (its host network is not the LAN).
 
 ## Start

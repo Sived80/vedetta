@@ -148,12 +148,12 @@ def _text_of(path: Path) -> str | None:
 
 
 def _convert_data_text(f: Path, text: str, since: float | None, until: float | None) -> str:
-    """Credentials replaced in the json files, the period applied to the logs and journals."""
+    """Credentials replaced in the json files, the period applied to the logs and journals, the one-time code taken out of the logs."""
     kind = _kind(f)
     if kind == ".json":
         return json.dumps(legacy._redact(json.loads(text)), ensure_ascii=False, indent=1)
-    if kind == ".log" and since is not None:
-        return filter_log(text, since, until)
+    if kind == ".log":
+        return legacy.mask_setup_code(filter_log(text, since, until) if since is not None else text)
     if kind == ".jsonl" and since is not None:
         return filter_jsonl(text, since, until)
     return text

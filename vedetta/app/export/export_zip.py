@@ -5,6 +5,7 @@ file (anonymize.py), and no upload: the user downloads the file and hands it ove
 import io
 import json
 import platform
+import re
 import sqlite3
 import tempfile
 import time
@@ -32,6 +33,10 @@ FOCUS_DAYS = 14                    # history of a flagged device that goes in th
 # they are written. Never in an export, whatever their content says.
 LOGIN_FILES = ("auth.json", "sessions.json")
 LOGIN_TEMP = (".auth-", ".sessions-")
+# The one-time code of the first start in Docker (auth_routes.announce_setup writes it in the log): replaced in every exported log, for
+# me as for the developer. The line stays: it says when the first start happened.
+_SETUP_CODE = re.compile(r"(One-time code[^:\n]{0,40}:\s*)[A-Za-z0-9]{4}(?:-[A-Za-z0-9]{4}){2}")
+_SETUP_CODE_BYTES = re.compile(_SETUP_CODE.pattern.encode())   # the older zip copies the log tail as bytes
 SKIP_WORDS = ("key", "token", "secret", "pass", "community", "user_lang")   # files or fields that might hold credentials (the SNMP community is one), or the ids of the Home Assistant users
 
 
@@ -340,9 +345,14 @@ def _put_one_data_file(z: _Zip, f: Path) -> None:
     if f.suffix == ".json":
         z.put(f"data/{f.name}", json.dumps(_redact(json.loads(f.read_text(encoding="utf-8"))), ensure_ascii=False, indent=1))
     elif f.suffix in (".log", ".jsonl"):
-        z.put(f"data/{f.name}", _tail(f, MAX_LOG_BYTES))
+        z.put(f"data/{f.name}", _SETUP_CODE_BYTES.sub(rb"\1XXXX-XXXX-XXXX", _tail(f, MAX_LOG_BYTES)))
     else:
         z.put(f"data/{f.name}", f.read_bytes())
+
+
+def mask_setup_code(text: str) -> str:
+    """A log without the one-time code of the first start (see _SETUP_CODE)."""
+    return _SETUP_CODE.sub(r"\1XXXX-XXXX-XXXX", text)
 
 
 def _tail(path: Path, limit: int) -> bytes:

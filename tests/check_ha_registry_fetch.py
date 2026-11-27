@@ -1,5 +1,5 @@
 """The reading of the Home Assistant registries over the websocket (ha_registry._fetch), with a fake websocket: the token is needed; the server must greet with auth_required and accept the token; the four
-registries are asked one after the other with ids 1 to 4 and the answer with the same id is the one that counts (events with other ids that arrive in between are skipped); a refused command is an error
+registries are asked one after the other with ids 1 to 4 (then the device classes of the entities of a device) and the answer with the same id is the one that counts (events with other ids that arrive in between are skipped); a refused command is an error
 that names it; a result that is empty becomes an empty list. Written on the code before it was flattened and kept passing after it (differential proof). Nothing here talks to a real server."""
 import asyncio
 import json
@@ -85,6 +85,16 @@ mixed = HELLO + [{"type": "event", "id": 99}] + answers([1])[:1] + [{"id": 7, "t
     {"id": 2, "type": "result", "success": True, "result": None}, {"id": 3, "type": "result", "success": True}, {"id": 4, "type": "result", "success": True, "result": []}]
 out = fetch(mixed)
 assert out == {"devices": [1], "entities": [], "areas": [], "entries": []}, out
+
+# 2b) the entities of a device are asked again with config/entity_registry/get_entries (id 5): the list does not carry the device classes;
+# a refused request (an older Home Assistant) leaves the entities as they were
+ENT = [{"entity_id": "cover.a", "device_id": "d1"}, {"entity_id": "light.b"}, {"entity_id": "switch.c", "device_id": "d1", "disabled_by": "user"}]
+ext = {"cover.a": {"entity_id": "cover.a", "device_class": None, "original_device_class": "gate", "capabilities": {"x": 1}}}
+out = fetch(HELLO + answers([], ENT, [], []) + [{"id": 5, "type": "result", "success": True, "result": ext}])
+assert SENT[-1] == {"id": 5, "type": "config/entity_registry/get_entries", "entity_ids": ["cover.a"]}, SENT[-1]
+assert out["entities"] == [{"entity_id": "cover.a", "device_id": "d1", "device_class": None, "original_device_class": "gate"}, ENT[1], ENT[2]], out["entities"]
+out = fetch(HELLO + answers([], ENT, [], []) + [{"id": 5, "type": "result", "success": False, "error": "unknown_command"}])
+assert out["entities"] == ENT, out["entities"]
 
 # 3) the errors
 fails([], "SUPERVISOR_TOKEN", token=None)

@@ -1,0 +1,68 @@
+{
+  "_comment": "Entities of a Home Assistant device -> device kind (data/device_kinds.json). Each entity is a signature: its domain ('switch') or domain.device_class ('cover.gate', the class chosen by the user first, then the integration's); config and diagnostic entities are never read (ha_registry). A key without a dot matches every entity of that domain. The FIRST tier with a matching signature decides, and inside it the first key in the order of the file: an actuator beats its sensors (a shutter with a temperature sensor is a shutter, a plug with power sensors is a plug), the sensors of a function beat the sensors of the room, power alone says a meter. Signatures not listed (battery, signal_strength, button, number, update...) never decide. weight: declared = W_DECLARED (a declared fact, above a word of the name), service = W_SERVICE, word = W_WORD (weak: a word of the name says more). finer: kinds of the same function that a word of the device may name more precisely (a climate entity on an air conditioner); the finer kind with the most word points takes the points. No brand here: only the standard domains and device classes of Home Assistant.",
+  "tiers": [
+    {
+      "weight": "declared",
+      "kinds": {
+        "alarm_control_panel": {"kind": "alarm"},
+        "lock": {"kind": "lock"},
+        "vacuum": {"kind": "vacuum"},
+        "lawn_mower": {"kind": "mower"},
+        "climate": {"kind": "thermostat", "finer": ["heatpump", "aircon", "heater", "underfloor", "boiler"]},
+        "water_heater": {"kind": "boiler", "finer": ["heatpump"]},
+        "humidifier": {"kind": "humidifier"},
+        "fan": {"kind": "fan", "finer": ["ventilation", "purifier"]},
+        "cover.garage": {"kind": "garage"},
+        "cover.gate": {"kind": "gate"},
+        "cover.awning": {"kind": "awning"},
+        "cover.curtain": {"kind": "curtain"},
+        "cover.blind": {"kind": "blinds"},
+        "cover.shutter": {"kind": "blinds"},
+        "cover.shade": {"kind": "blinds"},
+        "siren": {"kind": "siren"},
+        "light": {"kind": "light", "finer": ["ledstrip", "dimmer"]},
+        "switch.outlet": {"kind": "plug"}
+      }
+    },
+    {
+      "weight": "service",
+      "kinds": {
+        "binary_sensor.smoke": {"kind": "smoke"},
+        "binary_sensor.gas": {"kind": "smoke"},
+        "binary_sensor.carbon_monoxide": {"kind": "smoke"},
+        "binary_sensor.moisture": {"kind": "leak"},
+        "binary_sensor.garage_door": {"kind": "opening"},
+        "binary_sensor.door": {"kind": "opening"},
+        "binary_sensor.window": {"kind": "opening"},
+        "binary_sensor.opening": {"kind": "opening"},
+        "binary_sensor.motion": {"kind": "motion"},
+        "binary_sensor.occupancy": {"kind": "motion"},
+        "binary_sensor.presence": {"kind": "motion"}
+      }
+    },
+    {
+      "weight": "service",
+      "kinds": {
+        "sensor.carbon_dioxide": {"kind": "airquality"},
+        "sensor.pm25": {"kind": "airquality"},
+        "sensor.pm10": {"kind": "airquality"},
+        "sensor.pm1": {"kind": "airquality"},
+        "sensor.aqi": {"kind": "airquality"},
+        "sensor.volatile_organic_compounds": {"kind": "airquality"},
+        "sensor.volatile_organic_compounds_parts": {"kind": "airquality"},
+        "sensor.temperature": {"kind": "temperature"},
+        "sensor.humidity": {"kind": "humidity"}
+      }
+    },
+    {
+      "weight": "word",
+      "kinds": {
+        "switch": {"kind": "switch"},
+        "cover": {"kind": "blinds", "finer": ["garage", "gate", "awning", "curtain"]},
+        "valve.water": {"kind": "irrigation"},
+        "sensor.power": {"kind": "meter"},
+        "sensor.energy": {"kind": "meter"}
+      }
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import re
 # address...). IPs and MACs used as KEYS are still replaced. An SSH key fingerprint is NOT here: it is unique to one machine (_SSH_FP).
 _KEEP = {"icon", "type", "type_user", "family_user", "adapter", "logo", "logo_color", "brand", "brand_source", "brand_confidence", "vendor",
          "vendor_role", "name_source", "family", "category", "kind", "netmask", "http_server",
-         "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains",
+         "manufacturer", "model", "mdns_model", "mdns_manufacturer", "sw_version", "domains", "entity_classes",
          "state", "reasons", "badges", "scores", "chosen", "group", "corner", "thresholds",
          "version", "generated", "since", "age_s", "analysing_for_s"}
 

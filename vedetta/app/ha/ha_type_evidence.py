@@ -5,6 +5,7 @@ from typing import NamedTuple
 from .. import datafile
 from ..device_groups import family_of
 from ..recognition import roles, signatures
+from .ha_entity_kinds import declared_kind
 from .ha_registry import observed_only, tracker_only
 from .ha_type_text import TYPE_ORDER, W_BRAND, W_DECLARED, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PORT_RE, _TOKEN_RE, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _model_text, _word_pts, fold, rules  # noqa: F401
 
@@ -155,6 +156,7 @@ class _Clues:
         self.words(words)
         self.homeassistant()
         self.kinds(_without_dual_maker(words, self.device))
+        self.entity_kind(self.device.get("ha_registry") or {})
         return self.finish(upnp_types, port_numbers)
 
     def signals(self, upnp_types: list, services: list) -> None:
@@ -241,6 +243,22 @@ class _Clues:
             return
         self.platform += 2
 
+    def entity_kind(self, ha_card: dict) -> None:
+        """The kind Home Assistant declares through the domains and device classes of the entities (data/ha_entity_kinds.json): stronger than a word of the
+        name. Its points go to the finer kind of the same function that a word names, if any. The group is told only when no known integration declares
+        another one (a TV with a switch stays a TV); a camera or a player, a tracked or observed client, say nothing here."""
+        found = declared_kind(ha_card.get("entity_classes"))
+        if not found or not _entities_say_kind(ha_card):
+            return
+        row = next((kd for kd in _kinds() if kd["id"] == found.kind), None)
+        if row is None:
+            return
+        if not _declared_group_elsewhere(ha_card, row["group"]):
+            self.add(row["group"], found.pts, "ha_entities", "entita HA " + found.signature)
+        if self.kinds_out is not None:
+            kind = _finer_kind(found, self.kinds_out)
+            self.kinds_out[kind] = self.kinds_out.get(kind, 0) + found.pts
+
     def kinds(self, w: _Words) -> None:
         """The clues of the device types (data/device_kinds.json): words, declared services, brand."""
         for kd in _candidate_kinds(w):
@@ -314,6 +332,27 @@ def _observed_client(entry: dict, ha_card: dict) -> bool:
     """An integration that OBSERVES the network (data/ha_integrations.json, "observer") declares the device only when it owns it (see ha_registry.observed_only): its clients have entities
     too (tracker, bandwidth sensors, block switches), which say they are on the network, not what they are."""
     return bool(entry.get("observer")) and observed_only(ha_card, {d for d, e in _ha_integrations().items() if e.get("observer")})
+
+
+def _entities_say_kind(ha_card: dict) -> bool:
+    """The entities of the card tell its function: not a camera or a player (unlisted_entities), not a client a router tracks or observes."""
+    if tracker_only(ha_card) or {"camera", "media_player"} & set(ha_card.get("entity_domains") or []):
+        return False
+    observers = {d for d, e in _ha_integrations().items() if e.get("observer")}
+    domains = ha_card.get("domains") or []
+    return not (domains and all(d in observers for d in domains) and observed_only(ha_card, observers))
+
+
+def _declared_group_elsewhere(ha_card: dict, group: str) -> bool:
+    """A known integration of the card that is not a platform declares a group other than the kind's."""
+    entries = [_ha_integrations().get(d) for d in ha_card.get("domains") or []]
+    return any(e and not e.get("platform") and _MERGED_GROUPS.get(e["group"], e["group"]) != group for e in entries)
+
+
+def _finer_kind(found, kinds_out: dict) -> str:
+    """The finer kind of the same function with the most points from the other clues (the first of the table on a tie), else the declared one."""
+    best = max(found.finer, key=lambda k: kinds_out.get(k, 0), default=None)
+    return best if best and kinds_out.get(best, 0) > 0 else found.kind
 
 
 def _brand_tokens(device: dict) -> set:

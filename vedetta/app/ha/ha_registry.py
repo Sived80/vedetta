@@ -1,7 +1,8 @@
 """Home Assistant registry as a source of name, brand, model and area of the network devices.
 
 Read-ONLY, only documented WebSocket commands not reserved to administrators
-(config/device_registry/list, config/entity_registry/list, config/area_registry/list, config_entries/get),
+(config/device_registry/list, config/entity_registry/list, config/area_registry/list, config_entries/get, and
+config/entity_registry/get_entries for the device classes of the entities),
 through the Supervisor proxy (requires `homeassistant_api: true` and the SUPERVISOR_TOKEN variable).
 Without a token (outside Home Assistant) or with HA down the source is simply empty: the app carries on with the
 others. The copy is saved in /data to have something even when HA is unreachable.
@@ -11,6 +12,7 @@ The join is by MAC (connections["mac"]). Devices created by Vedetta itself (MQTT
 import asyncio
 import json
 import os
+import re
 import time
 from functools import lru_cache
 
@@ -185,6 +187,7 @@ def _card(dev: dict, domains: list, entry_ids: list, area_name: dict, title_of: 
         "sw_version": dev.get("sw_version"),
         "entity_names": _entity_names(ents),
         "entity_domains": _entity_domains(ents),
+        "entity_classes": _entity_classes(ents),
     }
 
 
@@ -197,6 +200,24 @@ def _entity_names(ents: list) -> list:
 def _entity_domains(ents: list) -> list:
     """Kinds of entities of the device (device_tracker, sensor...): a client that a router integration only tracks has just device_tracker."""
     return sorted({str(e.get("entity_id") or "").split(".")[0] for e in ents if e.get("entity_id")})
+
+
+_CLASS_WORD = re.compile(r"[a-z0-9_]{1,40}")
+CLASSES_MAX = 16
+
+
+def _entity_classes(ents: list) -> list:
+    """What the primary entities of the device are, as Home Assistant declares it: "domain" or "domain.device_class" ("cover.gate", "switch.outlet",
+    "sensor.temperature"), sorted. The class chosen by the user (device_class) first, then the integration's (original_device_class); a class that is
+    not a standard word is left out (the domain stays). Config and diagnostic entities (entity_category) say how the device is set or doing, not what it is."""
+    sigs = set()
+    for e in ents:
+        domain = str(e.get("entity_id") or "").split(".")[0]
+        if not _CLASS_WORD.fullmatch(domain) or e.get("entity_category"):
+            continue
+        cls = e.get("device_class") or e.get("original_device_class")
+        sigs.add(domain + "." + cls if isinstance(cls, str) and _CLASS_WORD.fullmatch(cls) else domain)
+    return sorted(sigs)[:CLASSES_MAX]
 
 
 async def refresh() -> bool:
@@ -228,7 +249,35 @@ async def _fetch() -> dict:
         raise RuntimeError("SUPERVISOR_TOKEN assente (fuori da Home Assistant o homeassistant_api spento)")
     async with websockets.connect(WS_URL, max_size=64 * 1024 * 1024, open_timeout=TIMEOUT_S) as ws:
         await _authenticate(ws, tok)
-        return {key: await _command(ws, i, cmd) for i, (key, cmd) in enumerate(_COMMANDS.items(), start=1)}
+        raw = {key: await _command(ws, i, cmd) for i, (key, cmd) in enumerate(_COMMANDS.items(), start=1)}
+        raw["entities"] = await _with_classes(ws, len(_COMMANDS) + 1, raw["entities"])
+        return raw
+
+
+ENTRIES_BATCH = 500
+
+
+async def _with_classes(ws, number: int, entities: list) -> list:
+    """The entities with their device classes: the list of the registry does not carry them, config/entity_registry/get_entries does (read-only, not
+    reserved to administrators), asked in batches for the enabled entities of a device. A refused batch (an older Home Assistant) leaves the list as it was."""
+    wanted = [e["entity_id"] for e in entities if e.get("device_id") and e.get("entity_id") and not e.get("disabled_by")]
+    found: dict = {}
+    for start in range(0, len(wanted), ENTRIES_BATCH):
+        try:
+            got = await _command(ws, number, "config/entity_registry/get_entries", entity_ids=wanted[start:start + ENTRIES_BATCH])
+        except RuntimeError as exc:
+            logger.info("Classi delle entita di Home Assistant non lette (%s)", str(exc)[:200])
+            return entities
+        found.update(got if isinstance(got, dict) else {})
+        number += 1
+    return [{**e, **_class_fields(found.get(e.get("entity_id")))} for e in entities]
+
+
+def _class_fields(entry) -> dict:
+    """The two device classes of one extended registry entry (nothing for a missing one)."""
+    if not isinstance(entry, dict):
+        return {}
+    return {k: entry.get(k) for k in ("device_class", "original_device_class")}
 
 
 async def _receive(ws) -> dict:
@@ -246,9 +295,9 @@ async def _authenticate(ws, tok: str) -> None:
         raise RuntimeError(f"autenticazione rifiutata: {ok.get('type')}")
 
 
-async def _command(ws, number: int, cmd: str) -> list:
+async def _command(ws, number: int, cmd: str, **fields) -> list:
     """Asks one registry; the answer with the same id is the one that counts (events that arrive in between are skipped)."""
-    await ws.send(json.dumps({"id": number, "type": cmd}))
+    await ws.send(json.dumps({"id": number, "type": cmd, **fields}))
     while True:
         msg = await _receive(ws)
         if msg.get("id") != number:

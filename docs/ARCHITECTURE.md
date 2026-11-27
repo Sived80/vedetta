@@ -144,6 +144,7 @@ The functions that were restructured have a reference test that was generated fr
 | `ha/analysis_view.py` | The state of every card (identified, settling, analysing) for the page. |
 | `ha/device_debug.py` | What debug mode shows for a device: the clues that decided its group, the candidates for its name, brand, mobile score, DHCP, roles, scan data and the registry/mDNS memory. |
 | `ha/ha_data.py` | Data for the Home Assistant-style dashboard (/ha): inferred device type, compact format for the UI, summary, event log. |
+| `ha/ha_entity_kinds.py` | The kind of a device as Home Assistant declares it: the domains and device classes of its entities (ha_registry "entity_classes") turned into a kind of data/device_kinds.json by data/ha_entity_kinds.json. |
 | `ha/ha_notify.py` | The Sentinel's way out of the browser (step 3): what sentinel_view sends at the end of a cycle reaches Home Assistant. |
 | `ha/ha_registry.py` | Home Assistant registry as a source of name, brand, model and area of the network devices. |
 | `ha/ha_trackers.py` | The clients that a router integration of Home Assistant tracks on the network (UniFi, FRITZ!, MikroTik, nmap...), read from the states of Home Assistant. |

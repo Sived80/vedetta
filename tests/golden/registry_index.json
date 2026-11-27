@@ -11,6 +11,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -32,6 +35,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -52,6 +59,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -76,6 +86,7 @@
 "6a:a3:b5:d1:e4:37": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -98,6 +109,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -118,6 +132,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -144,6 +161,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -163,6 +183,10 @@
 "c8:58:c2:f9:41:fa": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -187,6 +211,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -210,6 +237,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -231,6 +261,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -251,6 +284,9 @@
 "area": "Cucina",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -275,6 +311,7 @@
 "10.0.6.207": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -289,6 +326,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -313,6 +353,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -329,6 +370,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -352,6 +396,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -374,6 +422,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -394,6 +445,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -417,6 +469,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -433,6 +486,10 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -456,6 +513,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -481,6 +542,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -500,6 +562,10 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -522,6 +588,9 @@
 "1a:25:de:ba:4c:36": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -540,6 +609,9 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -563,6 +635,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -585,6 +661,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -614,6 +694,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -636,6 +719,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -661,6 +747,7 @@
 "192.168.9.1": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -676,6 +763,10 @@
 "32:4d:a1:9e:57:b5": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -695,6 +786,10 @@
 "38:db:28:e2:67:7f": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -715,6 +810,9 @@
 "70:44:d0:e4:68:5e": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -732,6 +830,9 @@
 "8a:62:0e:b1:9f:1f": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -751,6 +852,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -769,6 +871,9 @@
 "e2:21:7c:2d:31:37": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -792,6 +897,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -814,6 +922,7 @@
 "10.0.11.84": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -830,6 +939,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -852,6 +964,10 @@
 "192.168.11.98": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -872,6 +988,10 @@
 "4a:39:a8:7b:57:06": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -891,6 +1011,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -915,6 +1039,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -937,6 +1064,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -965,6 +1096,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -986,6 +1120,10 @@
 "domains": [
 "cast",
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1011,6 +1149,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -1032,6 +1173,9 @@
 "9c:4f:e5:36:2a:f4": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -1051,6 +1195,10 @@
 "domains": [
 "cast",
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1076,6 +1224,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -1097,6 +1248,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1119,6 +1271,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -1138,6 +1293,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1155,6 +1311,10 @@
 "domains": [
 "cast",
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1181,6 +1341,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1201,6 +1362,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -1225,6 +1389,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1257,6 +1422,10 @@
 "10.0.18.175": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -1279,6 +1448,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1296,6 +1466,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1314,6 +1485,7 @@
 "06:49:09:7c:57:26": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1328,6 +1500,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -1358,6 +1533,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -1379,6 +1557,9 @@
 "02:d1:02:85:cc:7a": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -1398,6 +1579,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1418,6 +1600,9 @@
 "10.0.20.219": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -1437,6 +1622,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1450,6 +1636,9 @@
 "192.168.20.85": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -1471,6 +1660,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -1489,6 +1681,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -1512,6 +1707,10 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -1537,6 +1736,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -1557,6 +1759,9 @@
 "70:73:e5:08:ba:b7": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -1575,6 +1780,10 @@
 "area": "Studio",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1600,6 +1809,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -1621,6 +1833,10 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1650,6 +1866,7 @@
 "10.0.23.10": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1664,6 +1881,10 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -1691,6 +1912,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -1714,6 +1939,9 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -1740,6 +1968,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1755,6 +1984,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1772,6 +2002,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1787,6 +2018,9 @@
 "domains": [
 "fritz",
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -1816,6 +2050,9 @@
 "cast",
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -1841,6 +2078,9 @@
 "cast",
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -1865,6 +2105,7 @@
 "192.168.26.36": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1880,6 +2121,11 @@
 "6e:c8:ed:6a:69:3d": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "light",
@@ -1901,6 +2147,7 @@
 "9e:dc:b9:0e:bf:fe": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -1925,6 +2172,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1942,6 +2190,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -1964,6 +2215,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -1981,6 +2233,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -2006,6 +2261,9 @@
 "10.0.29.94": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -2030,6 +2288,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2049,6 +2308,9 @@
 "domains": [
 "fritz",
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -2075,6 +2337,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2092,6 +2355,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2110,6 +2374,7 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2129,6 +2394,9 @@
 "domains": [
 "fritz",
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -2159,6 +2427,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2176,6 +2445,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2192,6 +2462,7 @@
 "192.168.31.187": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2209,6 +2480,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2226,6 +2498,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -2251,6 +2527,10 @@
 "192.168.32.204": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -2272,6 +2552,10 @@
 "3a:e0:f4:8b:ff:0c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -2291,6 +2575,10 @@
 "9a:e9:bf:67:a0:29": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -2314,6 +2602,10 @@
 "192.168.33.203": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -2339,6 +2631,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -2363,6 +2658,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -2392,6 +2691,9 @@
 "10.0.36.161": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -2411,6 +2713,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2424,6 +2727,7 @@
 "192.168.36.107": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2437,6 +2741,7 @@
 "192.168.36.209": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2450,6 +2755,7 @@
 "192.168.36.33": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2465,6 +2771,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2483,6 +2790,7 @@
 "12:eb:87:c3:26:3a": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -2498,6 +2806,7 @@
 "6e:da:11:2d:75:26": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2511,6 +2820,7 @@
 "7e:7a:07:c5:dd:ab": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2526,6 +2836,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2544,6 +2855,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2560,6 +2872,7 @@
 "a0:fc:77:d7:3a:46": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2573,6 +2886,9 @@
 "f6:1a:c1:cb:67:92": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -2600,6 +2916,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -2615,6 +2932,7 @@
 "192.168.38.164": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2632,6 +2950,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2646,6 +2965,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -2670,6 +2992,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2686,6 +3009,7 @@
 "192.168.39.3": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2701,6 +3025,7 @@
 "0a:03:75:5f:3d:b9": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2716,6 +3041,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2738,6 +3064,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2758,6 +3085,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2778,6 +3106,10 @@
 "192.168.41.175": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -2799,6 +3131,9 @@
 "78:00:24:99:b3:a7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -2817,6 +3152,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -2843,6 +3181,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -2866,6 +3207,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -2886,6 +3230,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -2912,6 +3259,7 @@
 "9e:76:0e:76:e1:f9": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -2926,6 +3274,9 @@
 "area": "Sala",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -2948,6 +3299,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -2975,6 +3329,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -2996,6 +3351,9 @@
 "10.0.45.192": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -3015,6 +3373,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original"
@@ -3037,6 +3396,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa",
@@ -3061,6 +3421,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3079,6 +3440,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original",
@@ -3102,6 +3464,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -3124,6 +3489,9 @@
 "06:3c:f0:02:57:8b": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -3143,6 +3511,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -3161,6 +3530,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -3184,6 +3556,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original",
@@ -3205,6 +3578,9 @@
 "b2:91:b1:dd:3a:3e": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -3222,6 +3598,10 @@
 "d2:a0:f1:31:53:17": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -3244,6 +3624,7 @@
 "10.0.47.22": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3257,6 +3638,9 @@
 "192.168.47.102": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -3276,6 +3660,7 @@
 "0a:28:28:40:ab:ea": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3290,6 +3675,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -3312,6 +3700,9 @@
 "192.168.48.142": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -3329,6 +3720,9 @@
 "192.168.48.232": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -3346,6 +3740,7 @@
 "192.168.48.81": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3365,6 +3760,9 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -3393,6 +3791,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3411,6 +3810,9 @@
 "192.168.50.144": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -3432,6 +3834,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -3450,6 +3853,7 @@
 "192.168.50.73": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original"
@@ -3469,6 +3873,7 @@
 "3e:41:fb:f5:12:90": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3484,6 +3889,9 @@
 "78:46:de:f2:d7:35": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -3504,6 +3912,9 @@
 "96:bc:ac:df:34:8c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -3523,6 +3934,9 @@
 "ae:d9:1f:a9:11:8e": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -3544,6 +3958,7 @@
 "192.168.51.56": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3559,6 +3974,7 @@
 "0c:65:5a:58:52:0c": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3572,6 +3988,7 @@
 "36:d8:3c:0f:72:fc": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3588,6 +4005,9 @@
 "5c:a4:17:bd:f1:07": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -3606,6 +4026,9 @@
 "f4:ee:f8:a3:bf:14": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -3629,6 +4052,7 @@
 "192.168.52.39": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3653,6 +4077,7 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3677,6 +4102,7 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3694,6 +4120,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -3719,6 +4148,7 @@
 "26:1f:aa:45:dd:03": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3734,6 +4164,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3750,6 +4181,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -3772,6 +4206,9 @@
 "fc:2b:23:50:d3:fc": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -3792,6 +4229,7 @@
 "2a:85:30:d0:0e:45": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3807,6 +4245,7 @@
 "b8:23:72:92:61:5c": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3820,6 +4259,7 @@
 "f4:3c:90:9e:41:d3": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -3840,6 +4280,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3857,6 +4298,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -3880,6 +4324,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -3901,6 +4348,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -3932,6 +4382,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -3951,6 +4404,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -3969,6 +4423,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -3989,6 +4446,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4006,6 +4466,9 @@
 "d8:43:0c:d9:4e:60": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4023,6 +4486,9 @@
 "de:76:e4:1b:dc:5a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4047,6 +4513,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4066,6 +4535,9 @@
 "192.168.60.206": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4087,6 +4559,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -4106,6 +4582,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -4127,6 +4606,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -4154,6 +4636,9 @@
 "cast",
 "mobile_app"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4176,6 +4661,7 @@
 "cast",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -4194,6 +4680,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -4220,6 +4710,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -4244,6 +4738,7 @@
 "cast",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -4262,6 +4757,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -4284,6 +4783,10 @@
 "90:39:49:4c:eb:01": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -4303,6 +4806,10 @@
 "e0:79:05:b5:8b:9c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -4327,6 +4834,9 @@
 "10:20:a9:51:f2:e5": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4342,6 +4852,10 @@
 "10:48:0f:e7:27:57": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -4367,6 +4881,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4387,6 +4904,9 @@
 "5a:79:50:e5:13:93": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -4404,6 +4924,10 @@
 "80:fe:2e:9c:e8:76": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -4427,6 +4951,10 @@
 "bc:3b:1b:4c:cd:85": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -4453,6 +4981,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4470,6 +4999,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -4493,6 +5023,9 @@
 "10.0.65.225": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4518,6 +5051,7 @@
 "192.168.66.36": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4538,6 +5072,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -4556,6 +5091,7 @@
 "40:25:5c:da:31:ea": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4570,6 +5106,10 @@
 "area": "Cucina",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -4598,6 +5138,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4620,6 +5163,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4639,6 +5185,7 @@
 "192.168.68.9": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4655,6 +5202,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -4676,6 +5226,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -4699,6 +5253,7 @@
 "4e:59:52:8b:50:d6": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -4714,6 +5269,9 @@
 "72:c4:4a:1d:ef:e7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -4733,6 +5291,9 @@
 "area": "Cucina",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -4754,6 +5315,7 @@
 "c0:38:82:12:9f:1f": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4768,6 +5330,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -4794,6 +5359,9 @@
 "dc:ca:7e:62:28:ac": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -4818,6 +5386,7 @@
 "cc:5b:0e:9f:6f:d0": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -4837,6 +5406,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -4855,6 +5425,10 @@
 "192.168.71.245": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -4876,6 +5450,10 @@
 "82:18:30:c3:4a:bc": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -4897,6 +5475,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -4917,6 +5496,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -4939,6 +5519,9 @@
 "192.168.72.167": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4958,6 +5541,9 @@
 "6a:13:b7:f1:10:be": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -4975,6 +5561,9 @@
 "ee:7a:4f:79:e8:85": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -4996,6 +5585,10 @@
 "10.0.73.176": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -5021,6 +5614,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5037,6 +5631,9 @@
 "192.168.74.201": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -5055,6 +5652,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5077,6 +5677,9 @@
 "24:ff:49:0d:dc:a8": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -5096,6 +5699,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5111,6 +5715,9 @@
 "5a:af:c7:0f:84:85": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -5129,6 +5736,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5151,6 +5761,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -5179,6 +5792,9 @@
 "cast",
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -5201,6 +5817,9 @@
 "d6:f1:b8:f8:5c:18": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -5223,6 +5842,10 @@
 "6a:0c:fa:da:19:3a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -5242,6 +5865,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5267,6 +5893,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -5287,6 +5916,10 @@
 "area": "Cucina",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -5313,6 +5946,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5330,6 +5964,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5346,6 +5981,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -5376,6 +6015,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -5402,6 +6044,7 @@
 "10.0.79.81": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original"
@@ -5418,6 +6061,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -5440,6 +6086,9 @@
 "domains": [
 "fritz",
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5467,6 +6116,9 @@
 "mobile_app",
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -5486,6 +6138,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -5512,6 +6168,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5528,6 +6185,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -5550,6 +6210,9 @@
 "domains": [
 "fritz",
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5576,6 +6239,9 @@
 "domains": [
 "fritz",
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5604,6 +6270,10 @@
 "10.0.80.146": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -5627,6 +6297,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -5648,6 +6322,7 @@
 "bc:a2:ec:5c:f4:eb": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -5663,6 +6338,10 @@
 "e0:b3:e3:4a:83:ef": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -5688,6 +6367,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5706,6 +6386,9 @@
 "area": "Studio",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -5726,6 +6409,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -5745,6 +6431,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Sensor"
@@ -5766,6 +6453,9 @@
 "10.0.82.60": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -5785,6 +6475,9 @@
 "9e:1e:b2:ca:9e:53": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -5804,6 +6497,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5821,6 +6515,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5840,6 +6535,7 @@
 "10.0.83.155": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -5855,6 +6551,9 @@
 "192.168.83.30": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -5874,6 +6573,11 @@
 "7c:9e:ec:59:55:e7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "sensor",
@@ -5897,6 +6601,7 @@
 "10.0.84.112": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -5911,6 +6616,10 @@
 "area": "Sala",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -5936,6 +6645,7 @@
 "54:f2:51:1e:04:d1": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Sensor"
@@ -5951,6 +6661,9 @@
 "68:13:85:5c:25:62": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -5969,6 +6682,9 @@
 "68:5e:e5:06:20:59": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -5989,6 +6705,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -6015,6 +6734,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -6040,6 +6763,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6060,6 +6784,7 @@
 "c2:ed:05:9b:68:e5": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6079,6 +6804,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6106,6 +6832,10 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -6127,6 +6857,9 @@
 "area": "Studio",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -6150,6 +6883,7 @@
 "3e:d4:44:b9:92:82": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6164,6 +6898,9 @@
 "area": "Studio",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -6186,6 +6923,10 @@
 "area": "Garage",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -6213,6 +6954,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6232,6 +6974,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6250,6 +6993,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6271,6 +7015,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6287,6 +7032,9 @@
 "192.168.91.166": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -6306,6 +7054,9 @@
 "38:a1:12:8f:07:7e": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -6325,6 +7076,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6350,6 +7102,7 @@
 "f2:27:74:4c:f2:22": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6370,6 +7123,9 @@
 "area": "Sala",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -6394,6 +7150,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -6415,6 +7174,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -6435,6 +7197,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -6458,6 +7223,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -6488,6 +7257,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original",
@@ -6508,6 +7278,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -6537,6 +7311,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6556,6 +7331,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6571,6 +7347,9 @@
 "6a:c7:d0:03:69:b1": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -6590,6 +7369,7 @@
 "6a:f0:a8:5a:18:d3": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -6607,6 +7387,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6633,6 +7414,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -6651,6 +7433,10 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -6684,6 +7470,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -6705,6 +7494,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -6736,6 +7528,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -6756,6 +7551,9 @@
 "area": "Studio",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -6781,6 +7579,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original"
@@ -6805,6 +7604,11 @@
 "2a:6b:2d:3a:22:9c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "light",
@@ -6827,6 +7631,7 @@
 "50:25:50:df:7c:55": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6840,6 +7645,7 @@
 "62:df:37:12:5a:ff": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6853,6 +7659,7 @@
 "92:41:3a:73:be:a3": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6866,6 +7673,7 @@
 "a2:a7:f5:89:ee:64": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Sensor"
@@ -6883,6 +7691,11 @@
 "da:59:c5:b4:f2:45": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "light",
@@ -6911,6 +7724,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -6929,6 +7743,7 @@
 "192.168.105.125": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -6943,6 +7758,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -6968,6 +7786,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -6989,6 +7810,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -7012,6 +7834,9 @@
 "94:35:19:f4:90:35": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -7035,6 +7860,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original",
@@ -7056,6 +7882,7 @@
 "0e:84:fa:1c:0f:bb": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7069,6 +7896,7 @@
 "a2:7c:be:a4:53:80": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7082,6 +7910,7 @@
 "de:f4:ec:2e:d8:40": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7099,6 +7928,7 @@
 "10.0.108.13": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7113,6 +7943,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -7133,6 +7966,7 @@
 "192.168.108.64": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7149,6 +7983,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -7174,6 +8012,10 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -7196,6 +8038,7 @@
 "38:3c:d8:ae:9c:af": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7215,6 +8058,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7229,6 +8073,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -7257,6 +8105,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7270,6 +8119,9 @@
 "de:6b:36:90:6b:69": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7293,6 +8145,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7309,6 +8162,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -7332,6 +8188,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -7350,6 +8209,9 @@
 "82:45:22:23:67:40": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7370,6 +8232,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7391,6 +8254,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -7412,6 +8276,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -7435,6 +8300,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7455,6 +8323,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -7484,6 +8356,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7498,6 +8371,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -7518,6 +8394,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -7535,6 +8414,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -7553,6 +8433,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -7576,6 +8459,9 @@
 "2a:9d:0b:fb:73:a9": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -7593,6 +8479,9 @@
 "a6:da:e3:f3:0d:5a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7616,6 +8505,10 @@
 "10.0.115.178": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -7636,6 +8529,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -7660,6 +8556,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -7679,6 +8578,10 @@
 "9e:cc:23:4a:f6:66": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -7699,6 +8602,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -7723,6 +8629,9 @@
 "192.168.116.100": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7743,6 +8652,7 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7760,6 +8670,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7780,6 +8691,7 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7795,6 +8707,9 @@
 "b4:3a:26:f3:18:f4": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7814,6 +8729,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7833,6 +8749,9 @@
 "192.168.117.205": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -7850,6 +8769,9 @@
 "192.168.117.32": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7869,6 +8791,10 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -7896,6 +8822,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -7917,6 +8846,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -7934,6 +8864,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -7957,6 +8890,9 @@
 "10.0.118.50": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -7977,6 +8913,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -8001,6 +8940,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -8022,6 +8964,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -8040,6 +8983,10 @@
 "192.168.119.134": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -8058,6 +9005,7 @@
 "192.168.119.175": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -8072,6 +9020,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -8095,6 +9046,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8114,6 +9066,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8129,6 +9082,7 @@
 "be:4a:40:1b:0c:35": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -8143,6 +9097,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -8172,6 +9130,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8192,6 +9151,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8214,6 +9174,10 @@
 "domains": [
 "cast",
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -8239,6 +9203,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -8262,6 +9230,10 @@
 "c2:13:ea:8d:7f:e5": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -8281,6 +9253,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -8307,6 +9282,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8327,6 +9303,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8345,6 +9322,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8366,6 +9344,10 @@
 "b4:4e:59:0a:2d:87": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -8386,6 +9368,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -8409,6 +9394,11 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -8436,6 +9426,9 @@
 "192.168.125.20": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -8454,6 +9447,9 @@
 "area": "Garage",
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -8479,6 +9475,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8496,6 +9493,9 @@
 "area": "Garage",
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -8517,6 +9517,9 @@
 "80:6a:87:9f:29:4c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -8542,6 +9545,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8557,6 +9561,9 @@
 "8e:f6:cd:74:ca:c9": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -8582,6 +9589,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -8605,6 +9615,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8624,6 +9635,9 @@
 "192.168.128.243": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -8643,6 +9657,9 @@
 "00:04:0b:3c:6b:d7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -8662,6 +9679,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -8680,6 +9701,7 @@
 "9e:a5:c2:aa:f6:10": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -8694,6 +9716,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -8715,6 +9740,9 @@
 "ce:f9:a1:d6:ca:ab": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -8733,6 +9761,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -8754,6 +9785,7 @@
 "dc:2b:89:cf:78:6b": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -8772,6 +9804,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -8795,6 +9830,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -8813,6 +9849,7 @@
 "mobile_app",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -8832,6 +9869,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -8847,6 +9885,7 @@
 "b6:f9:45:94:2a:ab": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -8862,6 +9901,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -8879,6 +9919,9 @@
 "domains": [
 "mobile_app",
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -8899,6 +9942,10 @@
 "d4:70:48:f9:c3:61": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -8921,6 +9968,10 @@
 "10.0.130.16": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -8940,6 +9991,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -8963,6 +10017,11 @@
 "26:c2:8e:48:e4:c1": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "light",
@@ -8985,6 +10044,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9003,6 +10063,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9024,6 +10085,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9040,6 +10102,10 @@
 "area": "Cucina",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -9067,6 +10133,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9089,6 +10156,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9104,6 +10172,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9119,6 +10188,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9134,6 +10204,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9157,6 +10228,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9176,6 +10248,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Sensor"
@@ -9194,6 +10267,7 @@
 "56:7d:de:08:47:3c": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9217,6 +10291,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -9238,6 +10315,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -9263,6 +10343,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -9283,6 +10366,9 @@
 "e6:d3:7c:bc:70:6c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -9308,6 +10394,10 @@
 "192.168.138.109": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -9328,6 +10418,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -9346,6 +10439,9 @@
 "192.168.138.72": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -9367,6 +10463,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -9387,6 +10486,7 @@
 "2e:23:89:d3:4c:a7": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9400,6 +10500,7 @@
 "70:59:38:79:50:9a": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9414,6 +10515,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -9436,6 +10541,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -9460,6 +10568,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -9481,6 +10592,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -9506,6 +10620,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9523,6 +10638,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9544,6 +10660,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -9564,6 +10684,11 @@
 "192.168.140.204": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "sensor",
@@ -9584,6 +10709,7 @@
 "192.168.140.211": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9599,6 +10725,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9615,6 +10742,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -9639,6 +10769,10 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -9660,6 +10794,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -9696,6 +10834,9 @@
 "36:04:46:95:a7:4d": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -9715,6 +10856,9 @@
 "a0:af:a1:8f:4e:6e": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -9738,6 +10882,7 @@
 "192.168.144.19": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -9758,6 +10903,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9776,6 +10922,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9793,6 +10940,9 @@
 "00:d8:5a:c2:32:f3": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -9812,6 +10962,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9828,6 +10979,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -9850,6 +11005,7 @@
 "ea:6a:7b:dd:86:3a": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -9871,6 +11027,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9898,6 +11055,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -9917,6 +11075,10 @@
 "domains": [
 "hue",
 "shelly"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -9942,6 +11104,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -9962,6 +11127,9 @@
 "area": "Garage",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -9986,6 +11154,9 @@
 "10.0.149.41": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -10003,6 +11174,7 @@
 "192.168.149.116": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10019,6 +11191,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -10043,6 +11218,9 @@
 "192.168.150.101": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -10064,6 +11242,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -10084,6 +11266,9 @@
 "7e:12:39:97:e9:ca": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -10103,6 +11288,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10119,6 +11305,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -10147,6 +11337,9 @@
 "area": "Cucina",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -10179,6 +11372,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10196,6 +11390,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10213,6 +11408,7 @@
 "16:ab:c2:15:c9:66": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10226,6 +11422,9 @@
 "1e:f5:f8:46:6a:f8": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -10245,6 +11444,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10267,6 +11467,7 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10287,6 +11488,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10305,6 +11507,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -10324,6 +11527,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10344,6 +11548,9 @@
 "10.0.155.69": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -10362,6 +11569,7 @@
 "192.168.155.124": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa",
@@ -10382,6 +11590,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10400,6 +11609,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -10419,6 +11629,7 @@
 "10:53:06:d9:4b:e2": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10435,6 +11646,9 @@
 "area": "Sala",
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -10456,6 +11670,7 @@
 "60:8d:da:c3:66:df": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10472,6 +11687,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -10495,6 +11713,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -10522,6 +11743,7 @@
 "0a:4d:b6:19:a9:4e": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10536,6 +11758,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -10556,6 +11781,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -10578,6 +11804,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10595,6 +11822,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -10620,6 +11850,7 @@
 "192.168.158.100": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10633,6 +11864,7 @@
 "192.168.158.107": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10648,6 +11880,7 @@
 "6c:80:3a:22:8c:48": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10662,6 +11895,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -10684,6 +11920,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10706,6 +11943,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10727,6 +11965,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -10751,6 +11993,10 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -10784,6 +12030,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -10803,6 +12050,9 @@
 "192.168.162.15": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -10822,6 +12072,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -10844,6 +12095,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -10862,6 +12114,7 @@
 "3c:11:63:83:2a:7e": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10875,6 +12128,7 @@
 "54:ee:4b:58:97:5a": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -10893,6 +12147,9 @@
 "10:e5:5d:54:53:9b": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -10910,6 +12167,10 @@
 "46:2a:32:e6:f7:d4": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -10928,6 +12189,9 @@
 "90:82:49:fd:9f:3a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -10948,6 +12212,9 @@
 "e2:6e:a8:6c:62:b3": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -10974,6 +12241,10 @@
 "area": "Sala",
 "domains": [
 "cast"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -11002,6 +12273,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -11025,6 +12299,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11051,6 +12329,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -11072,6 +12353,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light",
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -11097,6 +12383,9 @@
 "192.168.166.41": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11115,6 +12404,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11143,6 +12437,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11159,6 +12454,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light",
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -11186,6 +12486,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -11208,6 +12511,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11238,6 +12546,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11261,6 +12572,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11282,6 +12596,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11302,6 +12619,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -11327,6 +12647,10 @@
 "02:7e:29:ea:50:3a": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -11347,6 +12671,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -11369,6 +12696,9 @@
 "192.168.169.204": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -11387,6 +12717,10 @@
 "area": "Studio",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11411,6 +12745,9 @@
 "12:54:58:1a:16:82": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -11428,6 +12765,9 @@
 "be:32:31:6a:8b:37": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -11451,6 +12791,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11474,6 +12815,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11495,6 +12837,10 @@
 "domains": [
 "cast",
 "hue"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -11521,6 +12867,10 @@
 "cast",
 "hue"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -11545,6 +12895,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11568,6 +12919,10 @@
 "10.0.172.54": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -11588,6 +12943,10 @@
 "area": "Sala",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11614,6 +12973,10 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -11638,6 +13001,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11660,6 +13026,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11681,6 +13050,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11697,6 +13067,11 @@
 "area": "Sala",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -11725,6 +13100,10 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -11750,6 +13129,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -11771,6 +13151,10 @@
 "192.168.174.225": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -11794,6 +13178,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11814,6 +13199,10 @@
 "10.0.175.8": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -11832,6 +13221,9 @@
 "6e:f1:2a:1f:3c:d8": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -11851,6 +13243,10 @@
 "70:ac:73:4d:d3:7a": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -11877,6 +13273,9 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -11899,6 +13298,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -11923,6 +13325,10 @@
 "192.168.178.147": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -11945,6 +13351,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -11964,6 +13373,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -11980,6 +13390,10 @@
 "3a:05:60:d1:df:d5": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -12000,6 +13414,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -12019,6 +13436,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12035,6 +13453,9 @@
 "ea:7f:7e:9c:6f:78": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -12058,6 +13479,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -12086,6 +13508,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -12110,6 +13536,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12129,6 +13558,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -12151,6 +13583,9 @@
 "08:72:bb:58:7c:f8": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -12170,6 +13605,9 @@
 "62:35:1f:d9:b4:52": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -12190,6 +13628,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -12214,6 +13655,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -12240,6 +13685,7 @@
 "4a:bf:b9:2c:95:8b": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -12253,6 +13699,7 @@
 "4c:e1:71:33:32:03": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12270,6 +13717,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12285,6 +13733,7 @@
 "f8:c4:c1:6c:f1:ed": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12307,6 +13756,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -12326,6 +13778,7 @@
 "3a:fd:e8:bf:5b:14": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12341,6 +13794,9 @@
 "52:87:cc:07:bf:94": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12366,6 +13822,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12385,6 +13842,9 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -12407,6 +13867,7 @@
 "7c:0a:41:40:1d:b6": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -12426,6 +13887,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -12444,6 +13906,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -12468,6 +13933,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12484,6 +13950,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -12507,6 +13976,9 @@
 "192.168.186.3": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12528,6 +14000,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12543,6 +14016,9 @@
 "9e:8e:ce:a7:bc:44": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12572,6 +14048,7 @@
 "cast",
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12587,6 +14064,9 @@
 "66:28:b2:7b:2a:33": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -12611,6 +14091,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12626,6 +14107,10 @@
 "b6:a0:70:99:7c:f6": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -12647,6 +14132,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12668,6 +14154,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12693,6 +14180,9 @@
 "10.0.192.182": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -12714,6 +14204,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12731,6 +14222,10 @@
 "area": "Garage",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -12759,6 +14254,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12780,6 +14276,10 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -12806,6 +14306,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -12828,6 +14332,10 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -12857,6 +14365,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12878,6 +14387,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -12898,6 +14410,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -12922,6 +14438,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -12948,6 +14465,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12970,6 +14490,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -12990,6 +14513,10 @@
 "b0:6e:b0:b3:80:47": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -13011,6 +14538,9 @@
 "d6:08:b3:b4:4a:a0": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -13030,6 +14560,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -13055,6 +14588,7 @@
 "192.168.197.136": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13070,6 +14604,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -13090,6 +14625,7 @@
 "0e:be:ef:f7:58:98": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13109,6 +14645,9 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -13131,6 +14670,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -13157,6 +14701,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -13179,6 +14726,7 @@
 "cast",
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13199,6 +14747,9 @@
 "10.0.199.50": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -13216,6 +14767,10 @@
 "192.168.199.192": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -13241,6 +14796,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -13264,6 +14822,7 @@
 "fritz",
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13280,6 +14839,11 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -13307,6 +14871,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -13325,6 +14892,9 @@
 "ae:ba:bc:d7:52:19": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -13345,6 +14915,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13364,6 +14935,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13383,6 +14955,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13400,6 +14973,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13416,6 +14990,7 @@
 "84:66:7f:32:f8:6c": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13429,6 +15004,9 @@
 "ba:db:98:64:ef:db": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -13452,6 +15030,7 @@
 "192.168.2.167": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13467,6 +15046,7 @@
 "8a:30:85:b3:84:fd": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13484,6 +15064,9 @@
 "192.168.3.16": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -13504,6 +15087,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13523,6 +15107,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13540,6 +15125,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -13562,6 +15150,10 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -13583,6 +15175,10 @@
 "74:aa:1e:0e:fb:1d": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -13603,6 +15199,11 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -13628,6 +15229,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13649,6 +15251,10 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -13672,6 +15278,11 @@
 "b0:85:3d:05:d0:15": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "light",
@@ -13693,6 +15304,10 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -13720,6 +15335,9 @@
 "192.168.5.7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -13741,6 +15359,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13754,6 +15373,7 @@
 "dc:4f:30:87:ee:93": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13767,6 +15387,9 @@
 "ea:f8:ac:de:2a:00": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -13791,6 +15414,10 @@
 "domains": [
 "fritz",
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -13823,6 +15450,9 @@
 "fritz",
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -13845,6 +15475,7 @@
 "72:03:3b:fc:39:34": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13865,6 +15496,9 @@
 "area": "Studio",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -13890,6 +15524,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13907,6 +15542,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -13933,6 +15572,10 @@
 "192.168.9.215": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -13954,6 +15597,7 @@
 "e2:b9:be:d7:85:6c": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -13973,6 +15617,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -13988,6 +15633,9 @@
 "192.168.10.163": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -14007,6 +15655,7 @@
 "08:64:d4:d4:56:20": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14023,6 +15672,7 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14047,6 +15697,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -14069,6 +15722,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -14090,6 +15746,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -14115,6 +15774,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -14137,6 +15799,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14153,6 +15816,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -14172,6 +15838,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -14202,6 +15871,9 @@
 "10.0.14.66": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -14223,6 +15895,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -14242,6 +15917,9 @@
 "96:ad:ac:23:1e:57": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -14259,6 +15937,9 @@
 "b0:2d:62:f7:51:03": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -14283,6 +15964,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14302,6 +15984,7 @@
 "192.168.16.74": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14321,6 +16004,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -14344,6 +16030,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14364,6 +16051,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14380,6 +16068,9 @@
 "area": "Cucina",
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -14401,6 +16092,9 @@
 "area": "Cucina",
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -14425,6 +16119,7 @@
 "10.0.18.17": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -14441,6 +16136,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -14465,6 +16163,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -14484,6 +16185,9 @@
 "dc:cd:ce:b7:42:5d": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -14506,6 +16210,10 @@
 "1e:55:77:16:9a:c6": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -14531,6 +16239,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14550,6 +16259,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14571,6 +16281,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14588,6 +16299,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -14605,6 +16317,7 @@
 "192.168.21.216": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14620,6 +16333,7 @@
 "24:9f:22:84:aa:bb": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14633,6 +16347,7 @@
 "48:98:24:ab:ab:8e": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14648,6 +16363,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -14667,6 +16383,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14682,6 +16399,10 @@
 "bc:f4:ef:b9:9e:28": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -14707,6 +16428,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14727,6 +16449,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14745,6 +16468,7 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14764,6 +16488,7 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14784,6 +16509,9 @@
 "192.168.23.211": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -14803,6 +16531,9 @@
 "50:d5:79:9c:cd:22": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -14820,6 +16551,9 @@
 "a2:da:8e:46:24:14": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -14837,6 +16571,7 @@
 "b6:f3:a5:de:b3:55": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -14856,6 +16591,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14871,6 +16607,7 @@
 "192.168.24.177": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -14888,6 +16625,10 @@
 "domains": [
 "fritz",
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -14918,6 +16659,10 @@
 "fritz",
 "hue"
 ],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -14942,6 +16687,10 @@
 "20:69:cf:74:77:97": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -14962,6 +16711,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14979,6 +16729,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -14994,6 +16745,10 @@
 "ce:83:dc:7d:90:46": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -15019,6 +16774,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -15043,6 +16801,9 @@
 "c8:34:bc:b0:21:c4": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -15075,6 +16836,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15096,6 +16858,10 @@
 "10.0.29.95": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -15116,6 +16882,10 @@
 "ee:d3:9e:c7:27:ae": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -15141,6 +16911,7 @@
 "hue",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15157,6 +16928,9 @@
 "192.168.30.217": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -15176,6 +16950,7 @@
 "be:ee:dc:29:8f:04": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -15195,6 +16970,10 @@
 "192.168.31.137": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -15221,6 +17000,9 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -15244,6 +17026,9 @@
 "domains": [
 "cast",
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -15269,6 +17054,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -15290,6 +17078,7 @@
 "7a:72:5c:57:40:05": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15304,6 +17093,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -15327,6 +17119,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15343,6 +17136,7 @@
 "9e:17:c9:ad:0a:5d": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15358,6 +17152,9 @@
 "domains": [
 "cast",
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -15384,6 +17181,7 @@
 "10.0.33.130": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15404,6 +17202,9 @@
 "10.0.34.40": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -15423,6 +17224,9 @@
 "28:1d:43:7d:20:07": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -15443,6 +17247,10 @@
 "5e:02:11:68:7c:a4": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -15464,6 +17272,7 @@
 "c0:f6:c3:ce:ee:1e": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -15479,6 +17288,9 @@
 "de:80:ed:a8:98:6e": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -15504,6 +17316,9 @@
 "78:54:fd:2b:38:fe": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -15521,6 +17336,10 @@
 "c2:83:a5:35:6d:f4": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -15543,6 +17362,7 @@
 "192.168.36.162": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15558,6 +17378,9 @@
 "10:5b:fc:54:d6:35": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -15575,6 +17398,10 @@
 "d0:cd:91:92:74:29": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -15604,6 +17431,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -15625,6 +17455,9 @@
 "area": "Garage",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -15651,6 +17484,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15670,6 +17504,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15685,6 +17520,7 @@
 "3e:74:89:07:55:49": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15699,6 +17535,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -15723,6 +17562,7 @@
 "10.0.39.26": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15736,6 +17576,7 @@
 "192.168.39.7": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15761,6 +17602,7 @@
 "10.0.41.28": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15776,6 +17618,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15794,6 +17637,7 @@
 "50:59:1d:1a:55:6a": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15809,6 +17653,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15832,6 +17677,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15855,6 +17701,10 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -15874,6 +17724,7 @@
 "4c:82:9f:52:55:e3": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -15891,6 +17742,9 @@
 "area": "Garage",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -15919,6 +17773,9 @@
 "42:2a:df:72:b1:4a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -15937,6 +17794,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -15958,6 +17818,7 @@
 "7a:9b:1c:04:fe:32": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -15977,6 +17838,10 @@
 "area": "Garage",
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -16004,6 +17869,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16019,6 +17885,7 @@
 "192.168.47.117": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16035,6 +17902,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -16060,6 +17930,11 @@
 "area": "Cucina",
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"device_tracker",
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -16087,6 +17962,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -16108,6 +17986,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16123,6 +18002,7 @@
 "62:9a:5a:4a:ec:21": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16138,6 +18018,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16158,6 +18039,10 @@
 "1a:f6:d1:03:7e:8a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16176,6 +18061,10 @@
 "26:67:35:da:a7:01": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16197,6 +18086,7 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16212,6 +18102,10 @@
 "46:d8:5b:99:c8:c2": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -16230,6 +18124,7 @@
 "7e:7b:30:d8:c6:83": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16245,6 +18140,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16262,6 +18158,9 @@
 "192.168.50.68": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -16282,6 +18181,9 @@
 "area": "Sala",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -16304,6 +18206,9 @@
 "area": "Sala",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -16331,6 +18236,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -16353,6 +18261,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Sensor"
@@ -16371,6 +18280,10 @@
 "192.168.51.62": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16394,6 +18307,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16409,6 +18323,7 @@
 "66:4d:4f:ab:ba:41": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16423,6 +18338,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -16443,6 +18361,7 @@
 "9e:60:62:13:47:0d": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16457,6 +18376,9 @@
 "area": null,
 "domains": [
 "hue"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -16480,6 +18402,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -16500,6 +18425,9 @@
 "area": "Cucina",
 "domains": [
 "hue"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -16531,6 +18459,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16546,6 +18475,7 @@
 "192.168.53.33": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16563,6 +18493,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Original"
@@ -16586,6 +18517,9 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -16607,6 +18541,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -16634,6 +18571,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -16654,6 +18594,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -16680,6 +18624,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -16701,6 +18648,10 @@
 "10.0.56.90": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16721,6 +18672,7 @@
 "192.168.56.174": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16737,6 +18689,7 @@
 "192.168.56.184": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16752,6 +18705,9 @@
 "192.168.56.194": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -16774,6 +18730,10 @@
 "78:d3:5b:0d:f4:2b": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16794,6 +18754,7 @@
 "80:47:0e:fc:de:e3": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16810,6 +18771,10 @@
 "e2:5b:95:03:74:f3": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -16830,6 +18795,7 @@
 "e6:3f:88:26:47:80": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16851,6 +18817,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16868,6 +18835,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16883,6 +18851,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -16902,6 +18871,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -16925,6 +18897,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16946,6 +18919,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -16973,6 +18949,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -16995,6 +18972,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17014,6 +18992,10 @@
 "domains": [
 "fritz",
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -17045,6 +19027,10 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -17067,6 +19053,9 @@
 "46:77:4b:69:7d:ad": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -17084,6 +19073,7 @@
 "ae:22:03:e7:7a:a0": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17101,6 +19091,7 @@
 "10.0.63.158": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17114,6 +19105,7 @@
 "192.168.63.183": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17130,6 +19122,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -17153,6 +19148,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17169,6 +19165,9 @@
 "4a:11:90:4c:53:d7": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -17186,6 +19185,7 @@
 "ba:5c:75:df:2c:fb": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17204,6 +19204,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -17228,6 +19232,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -17250,6 +19257,7 @@
 "2c:38:95:16:bb:0d": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17265,6 +19273,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17286,6 +19295,9 @@
 "area": "Sala",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -17309,6 +19321,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17325,6 +19338,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -17345,6 +19361,7 @@
 "192.168.65.87": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17362,6 +19379,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17379,6 +19397,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17397,6 +19416,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17414,6 +19434,9 @@
 "area": "Sala",
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -17436,6 +19459,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -17466,6 +19493,10 @@
 "mobile_app",
 "shelly"
 ],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -17492,6 +19523,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17510,6 +19542,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -17532,6 +19565,10 @@
 "domains": [
 "fritz",
 "mobile_app"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -17557,6 +19594,9 @@
 "192.168.67.133": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -17579,6 +19619,9 @@
 "domains": [
 "fritz",
 "mobile_app"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -17603,6 +19646,9 @@
 "3e:1e:ff:c3:20:1a": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -17622,6 +19668,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker"
 ],
 "entity_domains": [
 "device_tracker"
@@ -17646,6 +19695,9 @@
 "10.0.68.128": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -17666,6 +19718,10 @@
 "domains": [
 "hue",
 "mobile_app"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -17689,6 +19745,10 @@
 "192.168.68.68": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -17711,6 +19771,9 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -17736,6 +19799,10 @@
 "hue",
 "mobile_app"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -17756,6 +19823,9 @@
 "de:6a:11:f2:5b:3c": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -17777,6 +19847,7 @@
 "10.0.69.210": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17794,6 +19865,9 @@
 "domains": [
 "mobile_app",
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -17822,6 +19896,10 @@
 "fritz",
 "shelly"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -17847,6 +19925,7 @@
 "domains": [
 "fritz"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -17865,6 +19944,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light",
+"switch"
 ],
 "entity_domains": [
 "light",
@@ -17888,6 +19971,10 @@
 "34:57:57:bf:4d:2f": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"switch"
+],
 "entity_domains": [
 "device_tracker",
 "switch"
@@ -17908,6 +19995,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -17930,6 +20021,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -17958,6 +20053,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -17981,6 +20079,10 @@
 "192.168.73.53": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -18006,6 +20108,9 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -18033,6 +20138,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -18050,6 +20156,7 @@
 "192.168.75.249": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -18065,6 +20172,9 @@
 "192.168.75.32": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -18086,6 +20196,9 @@
 "domains": [
 "cast",
 "hue"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -18115,6 +20228,9 @@
 "fritz",
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -18143,6 +20259,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -18162,6 +20281,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18177,6 +20297,9 @@
 "1a:22:fd:2d:b6:6f": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -18195,6 +20318,10 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -18217,6 +20344,9 @@
 "bc:97:3d:f8:21:0c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -18234,6 +20364,10 @@
 "ca:6a:b6:42:aa:c6": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -18257,6 +20391,9 @@
 "64:97:95:67:e2:6c": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -18275,6 +20412,9 @@
 "area": null,
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -18300,6 +20440,10 @@
 "c4:ec:08:b3:01:91": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -18326,6 +20470,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18341,6 +20486,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18360,6 +20506,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18378,6 +20525,9 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -18404,6 +20554,9 @@
 "10.0.82.102": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -18423,6 +20576,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18440,6 +20594,10 @@
 "area": "Studio",
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -18463,6 +20621,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -18488,6 +20650,9 @@
 "2c:f1:9d:67:7f:ff": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"light"
+],
 "entity_domains": [
 "light"
 ],
@@ -18507,6 +20672,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18527,6 +20693,9 @@
 "10.0.83.156": {
 "area": "Garage",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -18550,6 +20719,7 @@
 "10.0.84.242": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18567,6 +20737,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18584,6 +20755,11 @@
 "domains": [
 "fritz",
 "hue"
+],
+"entity_classes": [
+"device_tracker",
+"light",
+"switch"
 ],
 "entity_domains": [
 "device_tracker",
@@ -18610,6 +20786,7 @@
 "74:7d:46:b1:81:05": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18624,6 +20801,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"sensor"
 ],
 "entity_domains": [
 "sensor"
@@ -18652,6 +20832,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -18671,6 +20852,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -18692,6 +20877,7 @@
 "c0:5a:44:8f:07:51": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Temperatura"
@@ -18717,6 +20903,9 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -18738,6 +20927,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -18758,6 +20948,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18777,6 +20968,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -18801,6 +20996,7 @@
 "domains": [
 "mqtt"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18819,6 +21015,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18834,6 +21031,9 @@
 "ae:ec:1b:c1:3d:2e": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -18856,6 +21056,10 @@
 "28:35:e1:c0:35:9f": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -18875,6 +21079,10 @@
 "74:10:bc:c7:e1:96": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"device_tracker",
+"light"
+],
 "entity_domains": [
 "device_tracker",
 "light"
@@ -18901,6 +21109,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -18922,6 +21131,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18939,6 +21149,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18958,6 +21169,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -18974,6 +21186,9 @@
 "area": null,
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -18996,6 +21211,9 @@
 "area": "Studio",
 "domains": [
 "fritz"
+],
+"entity_classes": [
+"switch"
 ],
 "entity_domains": [
 "switch"
@@ -19023,6 +21241,10 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [
+"device_tracker",
+"sensor"
+],
 "entity_domains": [
 "device_tracker",
 "sensor"
@@ -19047,6 +21269,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"sensor",
+"switch"
+],
 "entity_domains": [
 "sensor",
 "switch"
@@ -19070,6 +21296,7 @@
 "domains": [
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -19088,6 +21315,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -19113,6 +21344,7 @@
 "cast",
 "shelly"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19130,6 +21362,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"light",
+"sensor"
 ],
 "entity_domains": [
 "light",
@@ -19152,6 +21388,7 @@
 "b0:93:a8:33:f6:21": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -19166,6 +21403,10 @@
 "area": null,
 "domains": [
 "shelly"
+],
+"entity_classes": [
+"device_tracker",
+"sensor"
 ],
 "entity_domains": [
 "device_tracker",
@@ -19193,6 +21434,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -19217,6 +21462,10 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [
+"light",
+"sensor"
+],
 "entity_domains": [
 "light",
 "sensor"
@@ -19239,6 +21488,7 @@
 "domains": [
 "cast"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19255,6 +21505,10 @@
 "area": null,
 "domains": [
 "cast"
+],
+"entity_classes": [
+"sensor",
+"switch"
 ],
 "entity_domains": [
 "sensor",
@@ -19283,6 +21537,9 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -19308,6 +21565,7 @@
 "domains": [
 "hue"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19328,6 +21586,9 @@
 "84:50:8c:e8:e2:f1": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"switch"
+],
 "entity_domains": [
 "switch"
 ],
@@ -19350,6 +21611,7 @@
 "0c:86:44:5b:0a:9f": {
 "area": null,
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [
 "Presa"
@@ -19371,6 +21633,10 @@
 "area": null,
 "domains": [
 "mobile_app"
+],
+"entity_classes": [
+"device_tracker",
+"light"
 ],
 "entity_domains": [
 "device_tracker",
@@ -19396,6 +21662,9 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -19415,6 +21684,9 @@
 "b6:d3:ed:0d:82:c4": {
 "area": "Sala",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -19433,6 +21705,9 @@
 "area": "Sala",
 "domains": [
 "mqtt"
+],
+"entity_classes": [
+"light"
 ],
 "entity_domains": [
 "light"
@@ -19453,6 +21728,7 @@
 "domains": [
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19472,6 +21748,7 @@
 "fritz",
 "mobile_app"
 ],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19494,6 +21771,7 @@
 "192.168.98.164": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -19507,6 +21785,9 @@
 "192.168.98.53": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -19524,6 +21805,7 @@
 "10:10:3d:c5:dc:bc": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [
@@ -19540,6 +21822,9 @@
 "18:0f:1b:67:84:fa": {
 "area": null,
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -19555,6 +21840,9 @@
 "3e:5f:12:95:90:ed": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -19574,6 +21862,10 @@
 "4e:27:a0:18:cb:ef": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [
+"light",
+"switch"
+],
 "entity_domains": [
 "light",
 "switch"
@@ -19595,6 +21887,7 @@
 "82:85:68:12:9d:12": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],
@@ -19608,6 +21901,9 @@
 "d0:0f:f9:28:4e:43": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"sensor"
+],
 "entity_domains": [
 "sensor"
 ],
@@ -19629,6 +21925,9 @@
 "e0:ea:24:42:1c:3c": {
 "area": "Studio",
 "domains": [],
+"entity_classes": [
+"device_tracker"
+],
 "entity_domains": [
 "device_tracker"
 ],
@@ -19646,6 +21945,7 @@
 "f2:78:30:10:87:87": {
 "area": "Cucina",
 "domains": [],
+"entity_classes": [],
 "entity_domains": [],
 "entity_names": [],
 "entry_titles": [],

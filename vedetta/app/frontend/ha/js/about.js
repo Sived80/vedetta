@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, esc, icon, t } from "./core.js";
 import { versionText } from "./filters.js";
+import { logoHTML } from "./net-icons.js";
 
 // ------------------------------------------------- about
 // The Appropriate Legal Notices of the GPL-3.0 (sections 0 and 5d) behind one entry at the foot of the menu, as section 0 allows: the copyright, the
@@ -14,12 +15,16 @@ var NEW_TAB = '" target="_blank" rel="noopener noreferrer"';
 function closeAbout() {
   if (aboutDlg.open && typeof aboutDlg.close === "function") aboutDlg.close(); else aboutDlg.removeAttribute("open");
 }
+// Centred, like the About window of an app: the logo, the name and the version large on top, the copyright under them; then, smaller, the
+// license and no warranty; at the bottom Close and Open on GitHub.
 function aboutHTML() {
   const version = versionText().replace(/^v/, "");      // the same number as the title of the Network card
   return '<div class="mi"><div class="mi-header"><button type="button" class="icon-btn touch rp" data-about="close" aria-label="' + esc(t("js.ha.more.close")) + '">' + icon("close") +
-    '</button><div class="mi-titles"><h2 class="mi-title" id="aboutdlg-title">Vedetta</h2><div class="mi-sub">' + esc(t("js.ha.about.sub", { version: version })) + "</div></div></div>" +
-    '<div class="mi-body ab-body"><p class="ab-copy">' + esc(COPYRIGHT) + "</p><p>" + esc(t("js.ha.about.free")) + "</p><p>" + esc(t("js.ha.about.warranty")) + "</p>" +
-    '<p><a class="ab-link" href="' + LICENSE_URL + NEW_TAB + ">" + esc(t("js.ha.about.license")) + "</a></p></div>" +
+    "</button></div>" +
+    '<div class="mi-body ab-body"><div class="ab-hero">' + logoHTML() + '<h2 class="mi-title" id="aboutdlg-title">Vedetta</h2><div class="mi-sub">' +
+    esc(t("js.ha.about.sub", { version: version })) + '</div><div class="ab-copy">' + esc(COPYRIGHT) + "</div></div>" +
+    '<div class="ab-legal"><p>' + esc(t("js.ha.about.free")) + "</p><p>" + esc(t("js.ha.about.warranty")) + "</p>" +
+    '<p><a class="ab-link" href="' + LICENSE_URL + NEW_TAB + ">" + esc(t("js.ha.about.license")) + "</a></p></div></div>" +
     '<div class="mi-actions"><button type="button" class="btn text rp" data-about="close">' + esc(t("js.ha.more.close")) + "</button>" +
     '<a class="btn filled rp" href="' + REPO_URL + NEW_TAB + ">" + icon("open-in-new") + "<span>" + esc(t("js.ha.about.github")) + "</span></a></div></div>";
 }

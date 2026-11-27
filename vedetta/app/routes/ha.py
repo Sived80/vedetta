@@ -148,7 +148,8 @@ async def api_ha_summary(request: Request):
     )
     from ..ha.mqtt_ha import version
     return {**summary, "roles": roles.page_view(), "mqtt": _mqtt_info(), "version": version(), "star_hint": await _star_hint(),
-            "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info), "learning_until": await _learning_until()}
+            "update": ha_update.snapshot(), "external": await asyncio.to_thread(_external_info), "learning_until": await _learning_until(),
+            "ha_link": await asyncio.to_thread(ha_registry.link) if runtime.is_docker() else None}
 
 
 def _external_info() -> dict:

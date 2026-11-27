@@ -31,9 +31,18 @@ The code exists only in the log of the container, so only someone who can run Do
 
 Vedetta reads names, brands, models and areas from Home Assistant, and sends your alerts through it. It needs an address and a **long-lived access token**:
 
-1. In Home Assistant create a user just for Vedetta (*Settings → People → Add person*, allow login), **not an administrator**, and tick *Can only log in from the local network*.
-2. Log in as that user, open its profile → *Security* → *Long-lived access tokens* → *Create token*.
-3. Paste the token in `ha_token.txt` (one line), then `docker compose up -d`. The file must be owned by root (`sudo chown root:root ha_token.txt && sudo chmod 600 ha_token.txt`): the container keeps no capability to read files of other users, and if it cannot read it the log says so.
+1. **A user just for Vedetta.** In Home Assistant open your profile and turn on *Advanced mode* (the *Users* tab is hidden without it). Then *Settings → People → Users* tab *→ Add user*: name it *Vedetta*, choose a password, turn on **Local access only**, leave **Administrator off**, *Create*.
+2. **Its token.** Log in as that user (a private window of the browser is the easiest way), open its profile → *Security* → *Long-lived access tokens* → *Create token*, name it *vedetta-docker*, and copy it: Home Assistant shows it only once.
+3. **Give it to Vedetta.** On the Docker host paste the token in `ha_token.txt` (one line, next to `docker-compose.yml`), check `VEDETTA_HA_URL` (the address of Home Assistant, e.g. `http://192.168.1.10:8123`), then:
+
+   ```bash
+   sudo chown root:root ha_token.txt && sudo chmod 600 ha_token.txt
+   sudo docker compose up -d
+   ```
+
+   The file must be owned by root: the container keeps no capability to read files of other users (if it cannot read it, the log says so).
+
+**Is it connected?** On the page, the *Home Assistant* tile of the carousel at the top says it: green *Connected* with the number of its devices, grey *Not connected*, red *Token refused* or *No answer*; a tap on it shows these steps again. The page also opens them by itself after the login while Home Assistant is not connected (*Do not show again* stops that). In the log: `docker logs vedetta | grep "Home Assistant"` shows *Home Assistant connected: N devices*, or what went wrong.
 
 The token reaches Vedetta as a Compose secret (`/run/secrets/ha_token`): it is not in the environment, so `docker inspect` does not show it, and it never appears in the log, on the page or in an export. `VEDETTA_HA_TOKEN_FILE` can point to another file.
 

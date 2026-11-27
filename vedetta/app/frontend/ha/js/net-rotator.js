@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, REDUCED, ago, api, esc, icon, t } from "./core.js";
 import { S } from "./core-ui.js";
+import { openHaHelp } from "./ha-help.js";
 
 // ------------------------------------------------------------ rotating tile of the Network card
 // One tile that shows, in turn, a datum: one tile per network (its gateway's latency in the main one), internet, the outside functions,
@@ -223,11 +224,31 @@ function mqttTile() {
   };
 }
 
+// Docker only (S.haLink from the summary): whether Home Assistant is connected. Green with its devices; grey when it is not configured, red
+// when it refuses the token or does not answer; the foot opens the window that explains how to connect it (ha-help.js).
+var HA_STATE = { no_url: "js.ha.tile.ha_not_configured", no_token: "js.ha.tile.ha_not_configured", refused: "js.ha.tile.ha_refused",
+  unreachable: "js.ha.tile.ha_unreachable" };
+function haTile() {
+  const link = S.haLink;
+  if (!link) return null;
+  const on = !!link.connected, fault = link.problem === "refused" || link.problem === "unreachable";
+  const color = on ? "var(--success-color)" : fault ? "var(--error-color)" : "var(--secondary-text-color)";
+  const state = statBox(t("js.ha.tile.ha_state"), esc(t(on ? "js.ha.tile.ha_connected" : HA_STATE[link.problem] || "js.ha.tile.ha_not_configured")), color, "tinted");
+  const count = statBox(t("js.ha.tile.ha_devices"), on ? String(link.devices) : "–");
+  const foot = on ? tileLegend(esc(t("js.ha.tile.ha_read", { ago: link.at ? ago(link.at) : "–" })), "", 100, color) : goButton(t("js.ha.tile.ha_how"));
+  return {
+    id: "ha",
+    open: on ? null : function () { openHaHelp(); },
+    tip: t(on ? "js.ha.tile.ha_tip_on" : "js.ha.tile.ha_tip_off"),
+    html: cardHTML("var(--primary-color)", "home-assistant", esc(t("js.ha.tile.ha")), state, count, foot)
+  };
+}
+
 // One tile that fails (a field missing, an answer of an unexpected shape) is left out: the others are still shown.
 function safe(make) { try { return make(); } catch (err) { return null; } }
 function tiles() {
   const own = extra ? safe(extra) : null;
-  const list = netTiles().concat([internetTile, externalTile, lensTile, mqttTile].map(safe)).filter(Boolean);
+  const list = netTiles().concat([haTile, internetTile, externalTile, lensTile, mqttTile].map(safe)).filter(Boolean);
   return own ? list.concat([own]) : list;
 }
 

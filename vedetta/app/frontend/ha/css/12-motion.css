@@ -100,6 +100,11 @@
   .ab-legal p { margin: 0 0 10px; line-height: 1.5; overflow-wrap: break-word; }
   .ab-link { color: var(--primary-color); }
   #aboutdlg .mi-actions { justify-content: center; }
+  /* How to connect Home Assistant (ha-help.js, Docker): the state under the title in its colour, the checkbox under the steps. */
+  .hh-state.hh-connected { color: var(--success-color); }
+  .hh-state.hh-refused, .hh-state.hh-unreachable { color: var(--error-color); }
+  .hh-hide { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: var(--ha-font-size-s); color: var(--secondary-text-color); cursor: pointer; }
+  .hh-hide input { width: 18px; height: 18px; margin: 0; accent-color: var(--primary-color); }
   .ab-link:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 2px; border-radius: 4px; }
 
   /* Menu entries that open a dialog: one line each, one under the other, icon on the right. */

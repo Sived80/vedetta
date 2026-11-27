@@ -3,6 +3,7 @@ import { $, COMPACT, LANG, STREAM_STALE_MS, ago, api, dlg, reloadHost, setTypeOr
 import { S, setConn, snack } from "./core-ui.js";
 import { setStarBadge, setUpdateDot } from "./core-menu.js";
 import { renderLearning } from "./learning.js";
+import { maybeHaHelp } from "./ha-help.js";
 import { buildNetwork, netEl, networkBuilt, refreshDone, updateNetwork, updateScan } from "./filters.js";
 import { emptyState, flash, groupsEl, layout, prepare, rebuildList, reconcile, updateTile } from "./tile.js";
 import { newEl, renderNew } from "./new-devices.js";
@@ -214,6 +215,7 @@ export function load(opts) {
     }
     S.mqtt = sum.mqtt || null;
     S.external = sum.external || null;      // which of the functions that reach the internet are on (add-on options)
+    S.haLink = sum.ha_link || null;         // Docker: whether Home Assistant is connected (null under the Supervisor)
     S.version = sum.version || "";
     if (!S.starMenu) { S.starHint = !!sum.star_hint; setStarBadge(); }
     S.update = sum.update || null;
@@ -233,6 +235,7 @@ export function load(opts) {
     armNew();
     updateNetwork();
     updateScan();
+    maybeHaHelp();      // Docker, first summary: how to connect Home Assistant, if it is not (and the person did not hide it)
     fetchLog();
     fetchHist();
     api("/api/settings").then(function (s) {

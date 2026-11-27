@@ -232,6 +232,37 @@ def _entity_classes(ents: list) -> list:
     return sorted(sigs)[:CLASSES_MAX]
 
 
+_REFUSED = "autenticazione rifiutata"
+_link = {"kind": None}          # the last state told in the log (Docker): connected, refused, unreachable
+
+
+def link() -> dict:
+    """Docker: whether Home Assistant is connected, for the page (a tile, and the window that explains how to connect it) and the log.
+    problem: no_url (no VEDETTA_HA_URL), no_token (no token file), refused (Home Assistant refused the token), unreachable (anything else);
+    None when connected. help_hidden: the person ticked «Do not show again» in that window (setting ha_help_hidden)."""
+    connected = bool(_state["at"]) and not _state["error"]
+    if not ws_url():
+        problem = "no_url"
+    elif not token():
+        problem = "no_token"
+    elif connected:
+        problem = None
+    else:
+        problem = "refused" if (_state["error"] or "").startswith("RuntimeError: " + _REFUSED) else ("unreachable" if _state["error"] else None)
+    return {"connected": connected and problem is None, "problem": problem, "devices": _state["counts"].get("devices", 0) if connected else 0,
+            "at": _state["at"] or None, "help_hidden": settings.ha_help_hidden()}
+
+
+def _tell(kind: str, text: str) -> None:
+    """Docker: one line in English in the log when the state of the connection changes (docker logs is where a person looks)."""
+    if runtime.is_docker() and _link["kind"] != kind:
+        _link["kind"] = kind
+        if kind == "connected":
+            logger.info(text)
+        else:
+            logger.warning(text)
+
+
 async def refresh() -> bool:
     try:
         raw = await _fetch()
@@ -243,10 +274,17 @@ async def refresh() -> bool:
         with contextlib.suppress(OSError):
             write_atomic(CACHE_PATH, lambda f: json.dump(cache, f, ensure_ascii=False), ".ha-registry-", durable=False)   # a cache: rebuilt if lost
         logger.info("Registro di Home Assistant letto: %d dispositivi, %d con MAC, %d con IP", len(raw["devices"]), len(index["by_mac"]), len(index["by_ip"]))
+        n = len(raw["devices"])
+        _tell("connected", "Home Assistant connected: %d device%s in its registry" % (n, "" if n == 1 else "s"))
         return True
     except Exception as exc:   # HA down, missing permission, network: never an error for the user
         _state["error"] = f"{type(exc).__name__}: {exc}"[:200]
         logger.info("Registro di Home Assistant non letto (%s)", _state["error"])
+        if token():
+            if _state["error"].startswith("RuntimeError: " + _REFUSED):
+                _tell("refused", "Home Assistant refused the token: create a new long-lived access token (DOCKER.md, Home Assistant)")
+            else:
+                _tell("unreachable", "Home Assistant cannot be reached at VEDETTA_HA_URL (%s): Vedetta tries again in 10 minutes" % type(exc).__name__)
         return False
 
 
@@ -304,7 +342,7 @@ async def _authenticate(ws, tok: str) -> None:
     await ws.send(json.dumps({"type": "auth", "access_token": tok}))
     ok = await _receive(ws)
     if ok.get("type") != "auth_ok":
-        raise RuntimeError(f"autenticazione rifiutata: {ok.get('type')}")
+        raise RuntimeError(f"{_REFUSED}: {ok.get('type')}")
 
 
 async def _command(ws, number: int, cmd: str, **fields) -> list:

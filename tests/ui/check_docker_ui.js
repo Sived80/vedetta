@@ -29,7 +29,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
 function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
-function open(docker, update) {
+function open(docker, update, haLink) {
   const errors = [], calls = [], posted = [];
   const html = page.replace(/"docker": (true|false)/, '"docker": ' + docker);
   const vc = new VirtualConsole();
@@ -44,11 +44,11 @@ function open(docker, update) {
       win.matchMedia = () => ({ matches: false, addListener() {}, addEventListener() {} });
       win.HTMLElement.prototype.scrollIntoView = function () {};
       win.fetch = (url, opts) => {
-        calls.push({ url: url, headers: (opts && opts.headers) || {} });
+        calls.push({ url: url, method: (opts && opts.method) || "GET", body: opts && opts.body, headers: (opts && opts.headers) || {} });
         const ok = (b) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, blob: () => Promise.resolve(new win.Blob([""])), json: () => Promise.resolve(b), text: () => Promise.resolve("") });
         let b = {};
         if (url.startsWith("/api/ha/devices") && !url.includes("/debug")) b = data.devices;
-        else if (url.startsWith("/api/ha/summary")) b = Object.assign({}, data.summary, { update: update });
+        else if (url.startsWith("/api/ha/summary")) b = Object.assign({}, data.summary, { update: update, ha_link: haLink === undefined ? null : haLink });
         else if (url.startsWith("/api/ha/logbook")) b = data.logbook;
         else if (url.startsWith("/api/ha/history?")) b = data.history_all;
         return ok(b);
@@ -58,6 +58,17 @@ function open(docker, update) {
     },
   });
   return { dom, doc: dom.window.document, errors, calls, posted };
+}
+
+// Turns the carousel to the Home Assistant tile; its body, or null.
+async function haTile(doc) {
+  for (let i = 0; i < 12; i++) {
+    const name = doc.querySelector("#rot .t-name");
+    if (name && name.textContent.trim() === TEXT["js.ha.tile.ha"]) return doc.querySelector("#rot .t-body");
+    doc.querySelector("#rot").click();
+    await wait(350);
+  }
+  return null;
 }
 
 (async () => {
@@ -90,6 +101,42 @@ function open(docker, update) {
   check(p.errors.length === 0, "no error in the page" + (p.errors.length ? ": " + p.errors[0] : ""));
   p.dom.window.close();
 
+  // 3. Docker, Home Assistant not connected: after the login the window that explains how to connect it opens by itself, once; its
+  // «Do not show again» is saved on the server; hidden, or with Home Assistant connected, it does not open
+  p = open(true, null, { connected: false, problem: "no_token", devices: 0, at: null, help_hidden: false });
+  await wait(900);
+  doc = p.doc;
+  const help = doc.getElementById("hahelpdlg");
+  check(help.hasAttribute("open"), "Home Assistant not connected: the window opens by itself after the login");
+  check(help.querySelector(".mi-sub").textContent === TEXT["js.ha.hahelp.sub_no_token"] && help.querySelectorAll(".upd-steps li").length === 4,
+    "it says what is missing and the four steps");
+  const guide = help.querySelector('a[href*="DOCKER.md#home-assistant"]');
+  check(!!guide && guide.target === "_blank" && /noopener/.test(guide.rel), "with a link to the full guide in a new tab");
+  help.querySelector("[data-hahelp-hide]").checked = true;
+  help.querySelector('[data-hahelp="close"]').click();
+  await wait(50);
+  const saved = p.calls.filter((c) => c.url === "/api/settings" && c.method === "POST");
+  check(!help.hasAttribute("open") && saved.length === 1 && saved[0].body === '{"ha_help_hidden":true}', "«Do not show again» is saved on the server: " + JSON.stringify(saved.map((c) => c.body)));
+  p.dom.window.close();
+  p = open(true, null, { connected: false, problem: "no_token", devices: 0, at: null, help_hidden: true });
+  await wait(900);
+  check(!p.doc.getElementById("hahelpdlg").hasAttribute("open"), "hidden by the person: it does not open by itself");
+  let body = await haTile(p.doc);
+  check(!!body && body.textContent.includes(TEXT["js.ha.tile.ha_not_configured"]) && body.querySelector(".t-foot [data-open]"),
+    "the carousel has the Home Assistant tile: not connected, with «" + TEXT["js.ha.tile.ha_how"] + "»");
+  body.querySelector(".t-foot [data-open]").click();
+  await wait(50);
+  check(p.doc.getElementById("hahelpdlg").hasAttribute("open"), "which opens the window again");
+  p.dom.window.close();
+  p = open(true, null, { connected: true, problem: null, devices: 149, at: Date.now() / 1000, help_hidden: false });
+  await wait(900);
+  check(!p.doc.getElementById("hahelpdlg").hasAttribute("open"), "Home Assistant connected: it does not open");
+  body = await haTile(p.doc);
+  check(!!body && body.textContent.includes(TEXT["js.ha.tile.ha_connected"]) && body.textContent.includes("149") && !body.querySelector(".t-foot [data-open]"),
+    "the tile says connected, with its 149 devices");
+  check(p.errors.length === 0, "no error in the page" + (p.errors.length ? ": " + p.errors[0] : ""));
+  p.dom.window.close();
+
   // 2. Under the Supervisor: no «Sign out», and no arrow outside Home Assistant (as before)
   p = open(false, { available: true, installed: "1.1.0", latest: "1.1.1" });
   await wait(900);
@@ -98,6 +145,7 @@ function open(docker, update) {
   await wait(100);
   check(!doc.querySelector("#menu [data-logout]"), "under the Supervisor there is no «Sign out»");
   check(!doc.querySelector("#menu button[data-update]"), "and no arrow outside Home Assistant");
+  check(!doc.getElementById("hahelpdlg").hasAttribute("open"), "and never the window about connecting Home Assistant");
   p.dom.window.close();
 
   console.log(failed ? "FAILED: " + failed : "ALL OK");

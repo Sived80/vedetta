@@ -305,7 +305,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
 | `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |
-| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3); "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4). |
+| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3); "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4); "ha_help_hidden" = Docker: the person ticked «Do not show again» in the window that explains how to connect Home Assistant (1.1). |
 | `storage/starhint.py` | The one-time invitation to star the project on GitHub (config/star_hint.json). |
 | `storage/userlang.py` | The language each Home Assistant user chose in the menu (config/user_lang.json). |
 
@@ -336,6 +336,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/flows.js` | 142 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/group-fold.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/group-order.js` | 79 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/ha-help.js` | 52 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/ha-networks.js` | 197 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/health-card.js` | 279 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/health-model.js` | 70 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -343,7 +344,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/ignored.js` | 348 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/inventory.js` | 60 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/learning.js` | 30 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/live.js` | 271 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/live.js` | 274 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/log.js` | 167 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-attrs.js` | 233 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-edit.js` | 369 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -353,7 +354,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-month.js` | 71 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/net-gauge.js` | 137 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/net-icons.js` | 24 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/net-rotator.js` | 296 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/net-rotator.js` | 317 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/netpanel.js` | 494 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/network.js` | 60 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/new-devices.js` | 400 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -363,7 +364,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/update.js` | 44 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/10-base.css` | 175 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/11-components.css` | 187 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `css/12-motion.css` | 188 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `css/12-motion.css` | 193 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/20-export.css` | 95 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/21-export-vlan.css` | 81 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/30-deep.css` | 52 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

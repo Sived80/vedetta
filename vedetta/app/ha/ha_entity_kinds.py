@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The kind of a device as Home Assistant declares it: the domains and device classes of its entities (ha_registry "entity_classes")
 turned into a kind of data/device_kinds.json by data/ha_entity_kinds.json. Pure: no state, the table is read once."""
 from functools import lru_cache

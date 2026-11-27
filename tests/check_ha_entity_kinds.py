@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0.4: the type of a device as Home Assistant knows it. HA does not guess from names: each integration declares the entity DOMAINS
 (cover, switch, climate...) and the DEVICE CLASSES (cover gate/garage/shutter, switch outlet, sensor temperature...). The registry keeps per
 device the sorted "domain" / "domain.device_class" signatures of its primary entities (device_class chosen by the user first, then the

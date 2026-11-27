@@ -18,6 +18,7 @@ RUN python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
 COPY VERSION /app/VERSION
+COPY LICENSE NOTICE /app/
 COPY app /app/app
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh

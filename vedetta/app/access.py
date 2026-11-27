@@ -42,17 +42,27 @@ def allowed_host(value: str) -> bool:
     value = (value or "").strip().lower()
     if not value or any(c in value for c in "/\\@ "):
         return False
-    if value.startswith("["):                               # [IPv6]:port
-        host = value[1:value.find("]")] if "]" in value else ""
-    else:
-        host = value.rsplit(":", 1)[0] if value.count(":") == 1 else value
+    host = _host_part(value)
+    return _is_address(host) or host == "localhost" or host.endswith(LOCAL_SUFFIXES) or host in _extra_hosts()
+
+
+def _host_part(value: str) -> str:
+    """The name or address of a Host header without the port ("[IPv6]:port", "name:port", a bare IPv6)."""
+    if value.startswith("["):
+        return value[1:value.find("]")] if "]" in value else ""
+    return value.rsplit(":", 1)[0] if value.count(":") == 1 else value
+
+
+def _is_address(host: str) -> bool:
     try:
         ipaddress.ip_address(host)
         return True
     except ValueError:
-        pass
-    extra = {h.strip().lower() for h in os.environ.get("VEDETTA_ALLOWED_HOSTS", "").replace(",", " ").split() if h.strip()}
-    return host == "localhost" or host.endswith(LOCAL_SUFFIXES) or host in extra
+        return False
+
+
+def _extra_hosts() -> set[str]:
+    return {h.strip().lower() for h in os.environ.get("VEDETTA_ALLOWED_HOSTS", "").replace(",", " ").split() if h.strip()}
 
 
 def session_id(scope) -> str | None:
@@ -99,6 +109,53 @@ def _wants_page(scope) -> bool:
     return scope.get("method") in ("GET", "HEAD") and not scope.get("path", "").startswith(("/api/", "/static/"))
 
 
+# The answers of the check: _APP lets the request through to the app, the others answer instead of it.
+_APP = ("app",)
+_HOST_REFUSED = ("plain", 400, b"Host not allowed: add it to VEDETTA_ALLOWED_HOSTS (see DOCKER.md)", b"text/plain; charset=utf-8")
+_NOT_FOUND = ("plain", 404, b"Not Found", b"text/plain; charset=utf-8")
+_FORBIDDEN = ("plain", 403, b"Forbidden", b"text/plain; charset=utf-8")
+_LOGIN_REQUIRED = ("plain", 401, b'{"detail":"login required"}', b"application/json")
+_CLOSE = ("close",)                                       # the app has no websocket of its own: nothing to open from the network
+
+
+def decision(scope) -> tuple:
+    """What the check answers to a request in Docker (see the module text): first what does not need a session, then the session."""
+    return _without_session(scope) or _with_session(scope)
+
+
+def _without_session(scope) -> tuple | None:
+    """The Host, the healthcheck, the websockets, the origin of a change and the public forms, in this order; None = ask the session."""
+    path = scope.get("path", "")
+    if scope["type"] == "http" and not allowed_host(_header(scope, b"host")):
+        return _HOST_REFUSED
+    if path == "/healthz":
+        return _APP if (scope.get("client") or ("",))[0] in LOOPBACK else _NOT_FOUND
+    if scope["type"] == "websocket":
+        return _CLOSE
+    if scope.get("method", "GET") in UNSAFE and not same_origin(scope):
+        return _FORBIDDEN
+    return _APP if path in PUBLIC else None
+
+
+def _with_session(scope) -> tuple:
+    if store.valid(session_id(scope)):
+        return _FORBIDDEN if _api_write_without_header(scope) else _APP
+    return _to_login(scope) if _wants_page(scope) else _LOGIN_REQUIRED
+
+
+def _api_write_without_header(scope) -> bool:
+    """A change to the API without X-Vedetta-Request: a form of another site (it cannot send the header)."""
+    return scope.get("method") in UNSAFE and scope.get("path", "").startswith("/api/") and _header(scope, API_HEADER) != "1"
+
+
+def _to_login(scope) -> tuple:
+    """A page without a session: to the setup while there is no password, else to the login (back to the page afterwards)."""
+    if not store.has_password():
+        return ("redirect", "/setup")
+    path = scope.get("path", "")
+    return ("redirect", "/login" if path in ("/", "/ha") else "/login?next=" + quote(path, safe="/"))
+
+
 class AccessMiddleware:
     def __init__(self, app) -> None:
         self.app = app
@@ -108,39 +165,15 @@ class AccessMiddleware:
             await self.app(scope, receive, send)
             return
         scope["headers"] = [(k, v) for k, v in scope.get("headers", []) if k not in _SUPERVISOR_ONLY]
-        path, method = scope.get("path", ""), scope.get("method", "GET")
-        if scope["type"] == "http" and not allowed_host(_header(scope, b"host")):
-            await _plain(send, 400, b"Host not allowed: add it to VEDETTA_ALLOWED_HOSTS (see DOCKER.md)", path=path)
-            return
-        client = (scope.get("client") or ("",))[0]
-        if path == "/healthz":
-            if client in LOOPBACK:
-                await self.app(scope, receive, send)
-            else:
-                await _plain(send, 404, b"Not Found", path=path)
-            return
-        if scope["type"] == "websocket":                  # the app has no websocket of its own: nothing to open from the network
+        answer = decision(scope)
+        if answer is _APP:
+            await self.app(scope, receive, send)
+        elif answer[0] == "close":
             await send({"type": "websocket.close", "code": 1008})
-            return
-        if method in UNSAFE and not same_origin(scope):
-            await _plain(send, 403, b"Forbidden", path=path)
-            return
-        if path in PUBLIC:
-            await self.app(scope, receive, send)
-            return
-        if store.valid(session_id(scope)):
-            if method in UNSAFE and path.startswith("/api/") and _header(scope, API_HEADER) != "1":
-                await _plain(send, 403, b"Forbidden", path=path)
-                return
-            await self.app(scope, receive, send)
-            return
-        if _wants_page(scope):
-            target = "/setup" if not store.has_password() else "/login"
-            if target == "/login" and path not in ("/", "/ha"):
-                target += "?next=" + quote(path, safe="/")
-            await _redirect(send, target, path)
-            return
-        await _plain(send, 401, b'{"detail":"login required"}', b"application/json", path)
+        elif answer[0] == "redirect":
+            await _redirect(send, answer[1], scope.get("path", ""))
+        else:
+            await _plain(send, answer[1], answer[2], answer[3], scope.get("path", ""))
 
 
 def _headers(path: str) -> list:

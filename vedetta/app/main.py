@@ -93,18 +93,9 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="Vedetta", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)   # no automatic API pages: nobody needs them
-app.include_router(routes_brands.router)
-app.include_router(routes_ignored.router)
-app.include_router(routes_flows.router)
-app.include_router(routes_ha.router)
-app.include_router(routes_export.router)
-app.include_router(routes_mqtt.router)
-app.include_router(routes_passive.router)
-app.include_router(routes_scan_routes.router)
-app.include_router(routes_device_routes.router)
-app.include_router(routes_settings_routes.router)
-app.include_router(routes_network.router)
-app.include_router(routes_auth.router)
+for _routes in (routes_brands, routes_ignored, routes_flows, routes_ha, routes_export, routes_mqtt, routes_passive, routes_scan_routes,
+                routes_device_routes, routes_settings_routes, routes_network, routes_auth):      # in this order: the first route that matches answers
+    app.include_router(_routes.router)
 
 
 mount_frontend(app, BASE_DIR / "static")

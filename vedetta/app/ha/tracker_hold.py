@@ -74,15 +74,21 @@ async def _hold_by_other_macs(inputs: list[dict], results: list, rest: list[int]
     if not at_home:
         return
     owner = await _owners_of(at_home)
-    now_of = {}
-    for i, r in zip(inputs, results):
-        mac = _mac(i, r if isinstance(r, dict) else {})
-        if mac:
-            now_of.setdefault(mac.upper(), set()).add(i.get("id"))
+    now_of = _cards_of_macs(inputs, results)
     for k in rest:
         card = inputs[k].get("id")
         if any(owner.get(m) == card and now_of.get(m, {card}) == {card} for m in at_home):
             _hold(inputs[k], results[k])
+
+
+def _cards_of_macs(inputs: list[dict], results: list) -> dict[str, set]:
+    """The cards behind each MAC seen in this check (upper case)."""
+    now_of: dict[str, set] = {}
+    for i, r in zip(inputs, results):
+        mac = _mac(i, r if isinstance(r, dict) else {})
+        if mac:
+            now_of.setdefault(mac.upper(), set()).add(i.get("id"))
+    return now_of
 
 
 def _private(mac: str) -> bool:

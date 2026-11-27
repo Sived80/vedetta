@@ -36,11 +36,10 @@ def secret(name: str, warn=None) -> str | None:
     The content of a file is stripped of the spaces and line ends around it. None when there is none (or the file cannot be read).
     warn(text) is called once per secret taken from a plain variable."""
     var = "VEDETTA_" + name.upper()
-    for path in (os.environ.get(var + "_FILE", "").strip(), str(SECRETS_DIR / name)):
-        if path:
-            value = _read(Path(path), name, warn)
-            if value:
-                return value
+    paths = [p for p in (os.environ.get(var + "_FILE", "").strip(), str(SECRETS_DIR / name)) if p]
+    from_file = next((v for v in (_read(Path(p), name, warn) for p in paths) if v), None)    # lazy: the second file only if the first gives nothing
+    if from_file:
+        return from_file
     value = os.environ.get(var, "").strip()
     if value and warn and name not in _warned:
         _warned.add(name)

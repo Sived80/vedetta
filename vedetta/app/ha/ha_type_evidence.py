@@ -269,22 +269,12 @@ class _Clues:
         takes W_PURPOSE, unless the other clues lead to a group other than the smart home and its own (a camera named for the alarm stays a camera).
         Only the name and the declared model: the web title or the menus of a device ("Alarm settings") say nothing of what it is for."""
         text, tokens = _purpose_text(self.device)
-        if not text:
+        kd = next((kd for kd in _kinds() if _says_purpose(kd, text, tokens)), None) if text else None
+        if kd is None or _lead_group(self.ev, self.platform) not in (None, "iot", kd["group"]):
             return
-        for kd in _kinds():
-            subs, toks = kd["purpose"]
-            if not (subs or toks):
-                continue
-            paired = any(s in text for s in kd["place"][0]) or tokens & kd["place"][1]
-            paired = paired and (any(s in text for s in kd["with"][0]) or tokens & kd["with"][1])
-            if not (any(s in text for s in subs) or tokens & toks or paired):      # a purpose word, or a "place" word with a "with" one (zigbee + gateway)
-                continue
-            if _lead_group(self.ev, self.platform) not in (None, "iot", kd["group"]):
-                return
-            self.add(kd["group"], W_PURPOSE, "purpose", "scopo: " + kd["id"])
-            if self.kinds_out is not None:
-                self.kinds_out[kd["id"]] = self.kinds_out.get(kd["id"], 0) + W_PURPOSE
-            return
+        self.add(kd["group"], W_PURPOSE, "purpose", "scopo: " + kd["id"])
+        if self.kinds_out is not None:
+            self.kinds_out[kd["id"]] = self.kinds_out.get(kd["id"], 0) + W_PURPOSE
 
     def kinds(self, w: _Words) -> None:
         """The clues of the device types (data/device_kinds.json): words, declared services, brand."""
@@ -374,6 +364,22 @@ def _declared_group_elsewhere(ha_card: dict, group: str) -> bool:
     """A known integration of the card that is not a platform declares a group other than the kind's."""
     entries = [_ha_integrations().get(d) for d in ha_card.get("domains") or []]
     return any(e and not e.get("platform") and _MERGED_GROUPS.get(e["group"], e["group"]) != group for e in entries)
+
+
+def _says_purpose(kd: dict, text: str, tokens: set) -> bool:
+    """The text names the purpose of this kind: a purpose word, or a "place" word with a "with" one (zigbee + gateway). Only the kinds
+    that have purpose words."""
+    subs, toks = kd["purpose"]
+    if not (subs or toks):
+        return False
+    if any(s in text for s in subs) or tokens & toks:
+        return True
+    return _has_word(kd["place"], text, tokens) and _has_word(kd["with"], text, tokens)
+
+
+def _has_word(words: tuple, text: str, tokens: set) -> bool:
+    """One of (substrings, whole words) is in the text."""
+    return any(s in text for s in words[0]) or bool(tokens & words[1])
 
 
 def _purpose_text(device: dict) -> tuple[str, set]:

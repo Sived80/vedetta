@@ -281,11 +281,16 @@ async def refresh() -> bool:
         _state["error"] = f"{type(exc).__name__}: {exc}"[:200]
         logger.info("Registro di Home Assistant non letto (%s)", _state["error"])
         if token():
-            if _state["error"].startswith("RuntimeError: " + _REFUSED):
-                _tell("refused", "Home Assistant refused the token: create a new long-lived access token (DOCKER.md, Home Assistant)")
-            else:
-                _tell("unreachable", "Home Assistant cannot be reached at VEDETTA_HA_URL (%s): Vedetta tries again in 10 minutes" % type(exc).__name__)
+            _tell_failure(exc)
         return False
+
+
+def _tell_failure(exc: Exception) -> None:
+    """Docker, with a token: the refused token or HA out of reach, in the log (see _tell)."""
+    if _state["error"].startswith("RuntimeError: " + _REFUSED):
+        _tell("refused", "Home Assistant refused the token: create a new long-lived access token (DOCKER.md, Home Assistant)")
+    else:
+        _tell("unreachable", "Home Assistant cannot be reached at VEDETTA_HA_URL (%s): Vedetta tries again in 10 minutes" % type(exc).__name__)
 
 
 _COMMANDS = {"devices": "config/device_registry/list", "entities": "config/entity_registry/list",

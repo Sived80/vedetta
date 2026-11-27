@@ -3,7 +3,7 @@
 ## 1.1.0 · Approdo
 Vedetta lands outside the App store: **Home Assistant Container** users can run it with Docker. And groups that speak the language of Home Assistant.
 
-- **Vedetta in Docker.** One `docker-compose.yml` for Home Assistant Container (Linux with Docker Engine): the same app, the same signed image, now also as `ghcr.io/sived80/vedetta`. [Docker guide](https://github.com/Sived80/vedetta/blob/main/docs/DOCKER.md)
+- **Vedetta in Docker.** One `docker-compose.yml` for Home Assistant Container (Linux with Docker Engine): the same app, the same signed image, now also as `ghcr.io/sived80/vedetta`. A tile says whether Home Assistant is connected, and how to connect it. [Docker guide](https://github.com/Sived80/vedetta/blob/main/docs/DOCKER.md)
 - **A login of its own, built to be safe.** No default password: you choose it with a one-time code from `docker logs`. scrypt hashes, sessions closed on the server, a growing wait after wrong passwords, protection from other sites and DNS rebinding, only two network capabilities, secrets in files. Reset from the host with `vedetta-passwd`.
 - **Groups as Home Assistant sees them.** Ten groups at the top; inside *Smart home*, the families of the Home dashboard: lights and plugs, climate (blinds included), security, **gates and doors**, energy, appliances. Choose their order in the menu.
 - **The type from Home Assistant.** The domains and device classes of the entities tell what a device is: a gate is a gate, a plug with a power meter stays a plug. Your own choice still wins.

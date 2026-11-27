@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-// The Appropriate Legal Notices (GPL-3.0, sections 0 and 5d) in the menu: the copyright, no warranty, the license and the source code, the two
-// links opening in a new tab like the other links of the page to outside. Needs jsdom (see check_evidence_ui.js).
-// from the vedetta/ folder:  node ../tests/ui/check_legal_ui.js [it|en]
+// The Appropriate Legal Notices (GPL-3.0, sections 0 and 5d) behind ONE entry of the menu, as section 0 allows ("a prominent item in the list"):
+// at the foot "About Vedetta" opens a window with the version, the copyright, the license, no warranty, and the links to the license and to
+// GitHub (the source code). No line of small print in the menu any more. Needs jsdom (see check_evidence_ui.js).
+// from the vedetta/ folder:  node ../tests/ui/check_about_ui.js [it|en]
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -51,26 +52,41 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
 function check(cond, msg) { if (cond) console.log("ok:", msg); else { failed++; console.log("FAILED:", msg); } }
 
-const WORDS = { it: { warranty: "nessuna garanzia", source: "codice sorgente" }, en: { warranty: "no warranty", source: "source code" } }[lang];
+const WORDS = {
+  it: { entry: "Informazioni su Vedetta", warranty: "senza alcuna garanzia", license: "Leggi la licenza", github: "Apri su GitHub" },
+  en: { entry: "About Vedetta", warranty: "without any warranty", license: "Read the license", github: "Open on GitHub" },
+}[lang];
 const REPO = "https://github.com/Sived80/vedetta";
+const newTab = (a) => a && a.getAttribute("target") === "_blank" && /noopener/.test(a.getAttribute("rel") || "");
 
 (async () => {
   await wait(800);
   doc.getElementById("btn-menu").click();
   await wait(100);
   const menu = doc.getElementById("menu");
-  const legal = menu.querySelector(".menu-legal");
-  check(!menu.hidden && !!legal, "the open menu has the legal line");
-  const text = legal ? legal.textContent.replace(/\s+/g, " ").trim() : "";
-  check(text === "Vedetta © 2026 Sived80 · GPL-3.0 · " + WORDS.warranty + " · " + WORDS.source, "the line reads copyright, license, no warranty and source code (" + text + ")");
-  const links = legal ? Array.from(legal.querySelectorAll("a")) : [];
-  const lic = links.find((a) => a.textContent.trim() === "GPL-3.0");
-  const src = links.find((a) => a.textContent.trim() === WORDS.source);
-  check(!!lic && lic.getAttribute("href") === REPO + "/blob/main/LICENSE", "GPL-3.0 links to the LICENSE on GitHub (" + (lic && lic.getAttribute("href")) + ")");
-  check(!!src && src.getAttribute("href") === REPO, "the source code links to the repository (" + (src && src.getAttribute("href")) + ")");
-  check(links.length === 2 && links.every((a) => a.getAttribute("target") === "_blank" && /noopener/.test(a.getAttribute("rel") || "")),
-    "both links open in a new tab, without access to the page (noopener), like the repository link of the menu");
-  check(menu.lastElementChild === legal, "the line is the last thing in the menu, under the repository link");
+  check(!menu.querySelector(".menu-legal"), "no line of small print in the menu any more");
+  const foot = menu.querySelector(".menu-foot");
+  const entry = foot && foot.querySelector("button[data-about]");
+  check(menu.lastElementChild === foot && !!entry && foot.firstElementChild === entry, "at the foot of the menu, on the left, one entry");
+  check(entry && entry.textContent.trim() === WORDS.entry && entry.querySelector("svg"), "the entry reads \"" + WORDS.entry + "\" with an icon (" + (entry && entry.textContent.trim()) + ")");
+  check(!foot.querySelector("a"), "the foot has no link to GitHub of its own: it is in the window");
+  entry.click();
+  await wait(50);
+  const dlg = doc.getElementById("aboutdlg");
+  check(menu.hidden && dlg && dlg.hasAttribute("open"), "the entry closes the menu and opens the window");
+  const text = dlg.textContent.replace(/\s+/g, " ");
+  check(dlg.querySelector(".mi-title").textContent.trim() === "Vedetta" && /\d+\.\d+/.test(dlg.querySelector(".mi-sub").textContent), "title Vedetta and the version under it");
+  check(text.includes("© 2026 Sived80"), "the copyright notice");
+  check(text.includes("GPL-3.0") && text.includes("NOTICE"), "the license, with the additional terms of NOTICE");
+  check(text.includes(WORDS.warranty), "no warranty");
+  const links = Array.from(dlg.querySelectorAll("a"));
+  const lic = links.find((a) => a.textContent.trim() === WORDS.license);
+  const gh = links.find((a) => a.textContent.trim() === WORDS.github);
+  check(lic && lic.getAttribute("href") === REPO + "/blob/main/LICENSE" && newTab(lic), "the license link opens the LICENSE on GitHub in a new tab");
+  check(gh && gh.getAttribute("href") === REPO && newTab(gh) && gh.classList.contains("filled"), "the main button opens the repository (the source code) in a new tab");
+  dlg.querySelector('[data-about="close"]').click();
+  await wait(50);
+  check(!dlg.hasAttribute("open"), "the X closes the window");
   check(errors.length === 0, "no error in the page" + (errors.length ? ": " + errors[0] : ""));
   console.log(failed ? "FAILED: " + failed : "ALL OK");
   process.exit(failed ? 1 : 0);

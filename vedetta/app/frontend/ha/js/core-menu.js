@@ -9,6 +9,7 @@ import { openAlerts } from "./alerts.js";
 import { openInventory } from "./inventory.js";
 import { openOrder } from "./group-order.js";
 import { inHomeAssistant, openUpdate } from "./update.js";
+import { openAbout } from "./about.js";
 import { logMenuEl, toggleLogMenu } from "./log.js";
 import { netsCount, openNets } from "./ha-networks.js";
 import { openNetPanel } from "./netpanel.js";
@@ -67,7 +68,6 @@ function everyLabel(secs) { return secs < 60 ? secs + " s" : Math.round(secs / 6
 // The one-time invitation to star the project: a small star on the menu button, and, the first time the menu is opened, its first
 // entry (a link to GitHub). The server remembers that it was shown, so it never comes back (storage/starhint.py).
 var STAR_URL = "https://github.com/Sived80/vedetta/tree/main#readme";       // an address nobody else links to: the visits to it in the repository statistics are the clicks from here (the app sends nothing)
-var REPO_URL = "https://github.com/Sived80/vedetta";       // the plain address of the project: the link at the foot of the menu (the star entry above has its own, to count its clicks)
 var starBadge = document.createElement("span");
 starBadge.className = "star-badge";
 starBadge.hidden = true;
@@ -166,23 +166,15 @@ function langGroup() {
     esc((window.VEDETTA_LANG_AUTO ? t("js.ha.menu.lang_auto") + " · " : "") + langName(LANG)) + "</span>" + icon("chevron-down", "sel-chev") + "</button></div>";
 }
 
-// The foot of the menu: the repository on the left (the running version is in the title of the Network card) and, only while Home Assistant has a newer
-// version, the red arrow on the right, in line with the icons of the rows above. It needs the page to be inside Home Assistant (that is where the Updates page is).
+// The foot of the menu: "About Vedetta" on the left (the window of the GPL-3.0 notices and the link to GitHub, about.js; the running version is in the
+// title of the Network card) and, only while Home Assistant has a newer version, the red arrow on the right, in line with the icons of the rows above.
+// The arrow needs the page to be inside Home Assistant (that is where the Updates page is).
 function menuFoot() {
   const tip = esc(t("js.ha.menu.update_tip", { latest: S.update ? S.update.latest : "" }));
   const up = updateAvailable() && inHomeAssistant()
     ? '<button type="button" class="menu-upd rp" data-update="1" title="' + tip + '" aria-label="' + tip + '">' + icon("upload") + "</button>" : "";
-  return '<div class="menu-foot"><a class="menu-repo rp" href="' + REPO_URL + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(t("js.ha.menu.repo")) +
-    '"><span>github.com/Sived80/vedetta</span>' + icon("open-in-new") + "</a>" + up + "</div>" + legalLine();
-}
-// The Appropriate Legal Notices of the GPL-3.0 (sections 0 and 5d), under the foot: copyright, license, no warranty, source code. LEGAL_LINE is the
-// copyright of the original; a modified version keeps here, next to its own, the line NOTICE (b) asks for: "Based on Vedetta by Sived80 — " + REPO_URL.
-var LEGAL_LINE = "Vedetta © 2026 Sived80";
-var LICENSE_URL = REPO_URL + "/blob/main/LICENSE";
-function legalLine() {
-  const ext = '" target="_blank" rel="noopener noreferrer">';
-  const parts = [esc(LEGAL_LINE), '<a href="' + LICENSE_URL + ext + "GPL-3.0</a>", esc(t("js.ha.menu.no_warranty")), '<a href="' + REPO_URL + ext + esc(t("js.ha.menu.source_code")) + "</a>"];
-  return '<div class="menu-legal"><span>' + parts.join("</span> · <span>") + "</span></div>";      // each part on one line: a narrow menu wraps only at the dots
+  return '<div class="menu-foot"><button type="button" class="menu-repo rp" data-about="1">' + icon("information-outline") + "<span>" + esc(t("js.ha.menu.about")) +
+    "</span></button>" + up + "</div>";
 }
 // The number of clients Home Assistant sees that can be adopted, after the name of the entry, only when there are some.
 function netsCountHtml() {
@@ -278,6 +270,7 @@ menuEl.addEventListener("click", function (e) {
   if (e.target.closest("[data-inventory]")) { toggleMenu(false); openInventory(); return; }
   if (e.target.closest("[data-grouporder]")) { toggleMenu(false); openOrder(); return; }
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
+  if (e.target.closest("[data-about]")) { toggleMenu(false); openAbout(); return; }
   if (e.target.closest("[data-hold]")) {
     S.phoneHold = !S.phoneHold;
     api("/api/settings", { method: "POST", json: { phone_hold_ha: S.phoneHold } }).catch(function () {});

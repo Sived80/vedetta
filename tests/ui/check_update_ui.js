@@ -74,10 +74,10 @@ function open(update, inHA) {
   const menu = doc.getElementById("menu");
   check(!menu.hidden && dot().hidden, "aperto il menu il pallino sparisce");
   const foot = menu.querySelector(".menu-foot");
-  const repo = foot && foot.querySelector("a.menu-repo");
+  const repo = foot && foot.querySelector("button[data-about]");
   const up = foot && foot.querySelector("button[data-update]");
-  check(foot && menu.lastElementChild === foot.nextElementSibling && foot.nextElementSibling.classList.contains("menu-legal"), "in fondo al menu c'e' la riga del piede, sotto solo la riga legale (GPL-3.0)");
-  check(repo && repo.href === "https://github.com/Sived80/vedetta" && repo.target === "_blank" && /noopener/.test(repo.rel), "a sinistra il link della repository, in una nuova scheda e senza referente");
+  check(foot && menu.lastElementChild === foot, "in fondo al menu c'e' la riga del piede");
+  check(repo && foot.firstElementChild === repo, "a sinistra la voce Informazioni su Vedetta");
   check(up && foot.lastElementChild === up && repo.nextElementSibling === up, "a destra del link c'e' la freccia dell'aggiornamento");
   check(up && /0\.7\.2/.test(up.title) && up.title === up.getAttribute("aria-label"), "sopra la freccia il testo dice cosa fa e quale versione (" + (up && up.title) + ")");
   check(up && up.querySelector("svg"), "la freccia e' un'icona");
@@ -120,7 +120,7 @@ function open(update, inHA) {
   check(doc.querySelector(".upd-dot").hidden, "senza aggiornamento non c'e' il pallino");
   doc.getElementById("btn-menu").click();
   await wait(100);
-  check(!doc.querySelector("button[data-update]") && doc.querySelector(".menu-foot a.menu-repo"), "e in fondo al menu c'e' solo il link della repository");
+  check(!doc.querySelector("button[data-update]") && doc.querySelector(".menu-foot button[data-about]") && doc.querySelector(".menu-foot").children.length === 1, "e in fondo al menu c'e' solo la voce Informazioni su Vedetta");
   p.dom.window.close();
 
   // 3. a newer version but the page is not inside Home Assistant: the dot yes, the arrow no (there is no Updates page to open)

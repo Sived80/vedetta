@@ -36,7 +36,9 @@ def announce_setup() -> None:
     """At start in Docker with no password: the one-time code goes in the log, once (whoever reads the log controls the container)."""
     if runtime.is_docker() and not store.has_password():
         code = setup_code.make()
-        logger.warning("Prima configurazione: apri la pagina di Vedetta e scegli la password. Codice monouso (valido 60 minuti): %s", code)
+        # In English (the rest of the log is Italian): this line is read by whoever installs the container, anywhere.
+        logger.warning("FIRST SETUP: open the Vedetta page (port %d) and choose the password. One-time code, valid 60 minutes: %s",
+                       runtime.port(), code)
 
 
 def _secure(request: Request) -> bool:

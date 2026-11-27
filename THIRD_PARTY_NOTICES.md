@@ -1,6 +1,7 @@
 # Third-party notices
 
-Vedetta itself is released under the [MIT License](LICENSE). It uses the components below, each under
+Vedetta itself is released under the [GNU GPL version 3](LICENSE) with the additional terms in [NOTICE](NOTICE)
+(versions up to 1.0.3: MIT). It uses the components below, each under
 its own license. None of them is modified, and none of the programs in the last two sections is included
 in this repository.
 
@@ -28,7 +29,8 @@ versions pinned there and everything they pull in. Licenses were read from the i
 | certifi | 2026.x | MPL-2.0 |
 | typing_extensions | 4.x | PSF-2.0 |
 
-`zeroconf` (LGPL) and `certifi` (MPL) are used as installed, unmodified libraries.
+`zeroconf` (LGPL) and `certifi` (MPL) are used as installed, unmodified libraries. All the licenses above
+(for paho-mqtt, its BSD-3-Clause option) are compatible with the GNU GPL version 3.
 
 ## Bundled data and code
 

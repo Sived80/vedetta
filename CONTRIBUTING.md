@@ -26,6 +26,10 @@ Brands, product signatures and logos live in plain data files. [Development](doc
 - Code, comments, commits and documentation are in English. No personal names, addresses or credentials anywhere in the repository.
 - Recognition rules must follow the rule of the project: a clue is weighed by family, doubt is shown as doubt, and the reason can always be shown. See [Recognition](docs/RECOGNITION.md).
 
+## License
+
+Contributions are accepted under [GPL-3.0-only](LICENSE) with the additional terms in [NOTICE](NOTICE).
+
 ## Questions and ideas
 
 Use [Discussions](https://github.com/Sived80/vedetta/discussions) for questions, ideas and to show your network. Use issues for problems that can be fixed.

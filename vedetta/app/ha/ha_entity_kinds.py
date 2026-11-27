@@ -34,8 +34,5 @@ def declared_kind(signatures) -> EntityKind | None:
     """The kind of the first tier with a matching signature (inside a tier, the first key of the file); None when no signature decides."""
     sigs = set(signatures or [])
     domains = {s.split(".")[0] for s in sigs}
-    for pts, rows in _tiers():
-        for key, kind, finer in rows:
-            if _matches(key, sigs, domains):
-                return EntityKind(kind, pts, finer, key)
-    return None
+    rows = ((pts, key, kind, finer) for pts, tier in _tiers() for key, kind, finer in tier)
+    return next((EntityKind(kind, pts, finer, key) for pts, key, kind, finer in rows if _matches(key, sigs, domains)), None)

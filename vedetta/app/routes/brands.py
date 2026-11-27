@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Brand recognition API: rules created from the interface and
 update of the MAC prefix database from the web."""
 import asyncio

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of the three ways to find a hint in a list of texts in recognition/brands.py: match_model (the class of the announced model), battery_hint (the battery of a fixed device) and
 resolve (the brand, from the OS family, the names, the web text, the declared manufacturers and the MAC manufacturer; its name and software hints are the same search). 4000 generated cases each - texts made of
 the words of the real rules and of the brand names (several words, any case, with digits), plus None, empty and blank texts, lists of one or many texts, every order - with the real rules of the data

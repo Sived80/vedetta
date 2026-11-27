@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of roles.refresh (who does what on the network) with every source faked: the first run asks everything (UPnP, ARP, DHCP
 discover, the way out to the internet), later runs only the cheap sources, a change is announced once, several DHCP servers raise one alert, and
 each failing source is survived (the rest still gives the roles)."""

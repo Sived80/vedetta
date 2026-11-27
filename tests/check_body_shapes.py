@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The routes that take a list from the body check its shape: /api/devices/add (a list of objects), /api/devices/rescan (a list of ids),
 /api/scan/deep (a list of addresses and an object of name hints). A body of the wrong shape gets a translated 400, never a 500 with a traceback;
 an address that is not a text (an integer is a valid IPv4Address for the standard library) is never taken as an address.

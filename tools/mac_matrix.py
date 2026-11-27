@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Identifiability matrix of the MAC layer, generated (not hand-listed) and brute-forced.
 
 Situations are not listed by hand: a device is described by orthogonal DIMENSIONS (kind of MAC, path to the LAN, addressing, number of cards, IP

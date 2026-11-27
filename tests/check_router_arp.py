@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The router's ARP table in use (scan/router_arp.py, routedwatch): off until the person writes the router's address and a community
 (never tried on its own); the community never comes back from the API; a reading fills the MACs of the sweep behind the router, with
 Home Assistant's trackers first; a failure is kept for the page and said once; «Try» says how many addresses or why not.

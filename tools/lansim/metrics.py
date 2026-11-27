@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Does a simulated network behave like the real one? The measures are taken on what a host of the LAN sees (which MAC answers for each address, cycle after
 cycle) and compared with the thresholds written, before the simulator existed, in the specification sheet (taken from a real export: 7 days of presence)."""
 from collections import Counter, defaultdict

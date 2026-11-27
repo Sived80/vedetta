@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Registry of the functions (steps) and profiles (sub-flows) of the search.
 
 Searches are ONE SINGLE flow (see pipeline.py) made of independent functions;

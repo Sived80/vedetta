@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, when an IP conflict is over (1.0 step P3, G1): the judge looks at seven days, so a conflict that ended stays a conflict for days. What
 tells "going on" from "over" is the LAST EVIDENCE: the last time the two MACs really contested the address (the last change of the MAC that answers it
 between the two, or the last time both were seen at it together). macclassify.last_evidence finds it, outside classify (the verdict does not change).

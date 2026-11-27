@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_nmap._parse_hosts: 400 generated nmap XML documents (hosts up/down, with and without MAC, vendor, host name, open/closed ports,
 services probed or guessed, http-title, ssl-cert, ssh-hostkey, broken documents) must give exactly the output stored in tests/golden/nmap_parse.json,
 written from the code as it was before the function was split.   Regenerate only on purpose:  NMAP_GOLDEN_UPDATE=1 python tests/check_nmap_parse_golden.py"""

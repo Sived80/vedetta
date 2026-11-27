@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Ports and bodies that come from outside are validated in ONE place each. Found by the global review: the port of a card was taken as it came (a Shelly added with port 9100 received a GET every
 cycle: the generic adapter refused no-talk ports, the Shelly ones did not), the body of a modifying request was used as a dictionary without checking (an empty list gave a 500 with a traceback in the log),
 and the port of the MQTT broker could be a printing port. Rule: never risk commanding a device."""

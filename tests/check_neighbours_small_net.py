@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #35: a device that does not answer broadcast ARP (an LG TV on Wi-Fi) but that the system has just seen answer (`ip neigh`, REACHABLE) is on the network.
 On a normal network (up to a /24) the view of the ARP and the first search must count it too, as the large network already does; it costs no packet (the neighbour table is only read).
 Checked with fake primitives: arp-scan finds A, the neighbour table has A (other vendor) and B; B must be added once, A must keep what arp-scan said, a failing read changes nothing.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """New devices on the network: compares the MACs seen via ARP (and DHCP) with the
 already known ones, stored in the known_macs table of the SQLite history.
 

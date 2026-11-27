@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of blocklist.list_items (reads config/ignored.json with a cache keyed on the file modification time): 3000 generated situations - file missing, unreadable
 JSON, not a list, lists with good and bad entries (unknown kind, empty or non-string value, padded value, missing/non-string id, long or non-string label), a cache that is still
 valid (same stamp, even with a stamp of None) or stale - must give exactly the returned list (and whether it is the very cached object) AND the final content of the cache stored in

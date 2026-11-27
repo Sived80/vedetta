@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The networks Vedetta looks at now: the abstraction in front of the places that today ask the host for its network (netutil.get_local_network).
 
 The main network is derived from the host at every call (the interface chosen in iface, its address and mask): it is never written to disk and

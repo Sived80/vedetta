@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Nmap and arp-scan are not in the published image (decision C of 20/11): the Nmap licence (NPSL, section 3) counts a program made to run
 Nmap and read its output as a derivative work, and a derivative work distributed WITH Nmap must follow the NPSL. Since 0.12.0 the signed
 images on ghcr.io carried Nmap: now the image is built without the two programs and Home Assistant installs them from Alpine Linux when

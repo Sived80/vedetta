@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Hiding findings (storage/health_hidden.py, POST /api/ha/health/hidden): two choices made almost together are both kept (apply reads, changes
 and writes the file in a worker thread: without a lock the second write lost the first), and a list far longer than what is ever kept is
 refused at once with a 400 (the search in a list made 20,000 ids take seconds of a worker thread, 100,000 minutes).

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """pipeline_probes: moved out of pipeline.py (see tools/split_module.py)."""
 from .pipeline_plan import _log_skipped, compose_nmap_args, resolve_plan
 import asyncio

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterisation test of the Bonjour browsing inside scan/mdns_listener._listen: the handlers that zeroconf calls (a new service type, a service instance) are taken from the browsers the listener creates
 and called by hand with a fake zeroconf. What the listener does is stored in tests/golden/mdns_browse.json, written from the code as it was before the browsing was moved out of the nested functions:
 the first browser asks for the service types; a type is browsed once; a removed type or instance does nothing; an instance is read with a request of 3000 ms and recorded once for every IPv4 address, nothing if the

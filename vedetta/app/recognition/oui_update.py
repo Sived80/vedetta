@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Update of the MAC prefix database from the public IEEE registries
 (MA-L 24 bit, MA-M 28 bit, MA-S 36 bit and the old IABs, 36 bit). The downloaded
 copy lives in config/oui-ieee.txt (a deploy replaces app/, not config/)

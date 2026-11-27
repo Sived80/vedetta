@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the device routes (add, rename, override, delete, presence, deep rescan) through the real HTTP layer with the network faked:
 what the user changes by hand on a card must be saved, refused when wrong, and tell the rest of the service (refresh, journal, ignore list)."""
 import json

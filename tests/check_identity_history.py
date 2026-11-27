@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The history of what Vedetta called a card (identity_changes.py, storage/history_identity.py): a name or a brand that appears or
 changes is remembered with its source; a value that goes away is not a change; the first record after a start has nothing before
 it; the rows go with a merged card, the purge of a network and the 90 days of retention; the route answers newest first.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Keeps the tests and the gate from taking the computer of the person who runs them (it froze twice, once until it had to be switched off). The process limits itself to a few logical processors BEFORE it
 starts any child, and a child inherits that limit, so everything the gate starts (the tests, radon, the structure check) shares those few processors and the rest of the machine stays free.
 Windows only; elsewhere (a CI runner, a Linux box) it does nothing. VEDETTA_TEST_CPUS changes the number (0 = no limit)."""

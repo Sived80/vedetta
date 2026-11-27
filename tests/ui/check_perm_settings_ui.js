@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The Permissions tile (functions that reach the internet): inside Home Assistant, when the server knows the slug of the app, the foot of the tile is a
 // «Settings» button that asks Home Assistant to open the app's Configuration page (where those options are set). Outside Home Assistant, or with no
 // slug, the tile keeps its legend. Invented slug.

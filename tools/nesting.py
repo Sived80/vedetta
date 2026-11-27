@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How deeply the blocks of a function are nested (if / for / while / try / with / match), and how deep the lines of the JavaScript are indented. Used by the gate (tools/gate.py) as a ratchet.
 A function body is level 0; a block inside it is level 1, a block inside that one level 2... An `elif` is the same level as its `if` (it is a second branch, not a deeper block); a nested def, class or
 lambda is measured on its own. Pure functions and a small summary; no library (rule: no new dependency for what 40 lines can do)."""

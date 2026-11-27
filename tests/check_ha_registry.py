@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Home Assistant registry: MAC index, exclusion of devices created by Vedetta and of disabled ones."""
 import asyncio
 import os

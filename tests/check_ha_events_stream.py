@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The event stream of the page (routes/ha.api_ha_events, server-sent events), with a fake state and a fake request: it opens with the retry hint, then the events the client missed, then the picture of the
 moment (poll, activity, new devices, roles), then every event of the bus as a frame; when nothing comes for a while it sends a ping event, and it ends (releasing its queue) when the state dropped the queue or
 the client went away. Written on the code before it was flattened and kept passing after it (differential proof). The wait of 15 seconds is cut to a few hundredths of a second for the test."""

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Vedetta, the real code, running in the "vedetta" machine of the virtual LAN with its own empty data folder; read through its web API from the host."""
 import json
 import os

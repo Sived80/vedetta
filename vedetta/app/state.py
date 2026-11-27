@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The shared state of the service: DeviceState keeps the card of every device and drives the periodic check. The work itself is in state_cycle (the check and the online/offline decision)
 and state_support (activities, presence, MAC shadow, diagnostics); DeviceState delegates to them."""
 import asyncio

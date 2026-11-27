@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The state of every card for the page (ha/analysis_view.py): what is collected from the evidence card, how the rule of analysis/status.py is applied with its memory (a card under analysis must climb past 60 to leave it), the
 snapshot (only the cards that are not identified, with the badge of their corner), and the event: one when something changed, none when nothing did, and none of it sends anything to a device (the functions that read are
 handed in, here they are fakes)."""

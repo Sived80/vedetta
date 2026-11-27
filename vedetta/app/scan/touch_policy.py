@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The touch policy: how much a device is contacted. Rule: never risk commanding a device.
   none   - only watching (ARP, announcements, presence). The user chose «don't touch», or the device has a printing or industrial control port open and the user did not say otherwise;
   calm   - the device is slow, or a camera (many handle extra connections poorly, issue #21): no risky step (all ports, service detection),

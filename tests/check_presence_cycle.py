@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The presence by MAC inside one cycle of the check (state_cycle, 1.0 step P5):
   - what each probe is told: its usable link (or none) and the usable links of the other cards, built by one helper for the cycle and for the
     refresh of a single card (state.refresh_device);

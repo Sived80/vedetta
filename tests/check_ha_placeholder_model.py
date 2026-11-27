@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #36: an integration that only OBSERVES the network (a router integration such as FRITZ!Box Tools) makes one Home Assistant device per client with the same
 placeholder model ("FRITZ!Box Tracked device") and its own manufacturer. That model must not count as the client's own product: the client is then only observed, the
 observer's titles are not offered as names and the manufacturer of the observer is not the client's brand (the MAC vendor stays). The equipment itself (a model with a

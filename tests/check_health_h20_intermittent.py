@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The rule of the IP conflict as it ships (health/matrix.json) on a conflict where one of the two devices does not answer every ARP scan: a real network (01/11 export) had a camera always there and a
 Shelly UNI on the same address that went quiet for 3 or 4 judgments in a row, 13 times in four days; when the rule read the last ARP scan alone the finding closed and opened again each time (and
 clear_cycles 10 was put in to hold it). Since 1.0 step P3 the rule reads the single verdict: the whole chain runs here - observations of the ARP view in the store, the verdict of every cycle

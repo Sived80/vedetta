@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Two measures for reducing the code without making it cleverer:
   nested  - functions defined inside functions, and whether each one captures anything from the function around it (a nested function that captures nothing can be a plain function of the module;
             one that captures local state is a closure and stays where it is);

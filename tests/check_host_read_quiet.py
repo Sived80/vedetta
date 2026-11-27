@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The survey of the host's interfaces (networks/host_read.py) runs at every answer of the Networks panel, and since 1.0.1 the tiles ask for
 it once a minute: an interface without an IPv4 address (a container's veth, a bridge not in use) is normal and must not write a line in
 the log every time ("network survey: no IPv4 for vethc6cd6c3 ([Errno 99] Address not available)", seen on the debug copy, 20/11).

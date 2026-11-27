@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one guard of the networks (networks/scope.py), against the guard of today.
 1) differential: with the main network alone, Scope.allowed gives EXACTLY what netutil.filter_local_ips gives (the real function, with a fake `ip addr`), on 3000 addresses
    with a fixed seed, for several sizes of network (/16, /22, /24, /27); 2) only confirmed networks count, excluded ranges never; 3) a value that is not an IPv4 address

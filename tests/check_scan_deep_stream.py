@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterisation test of the deep search stream (POST /api/scan/deep, server-sent events) through the real HTTP layer. The searches are replaced by small coroutines that end in every way the
 stream has to tell apart: with a result, with an error, cancelled, with an empty result; in different orders and numbers. What the client receives (every event, in order) and what the
 route does around it (journal entries, the start and the end of the search activity) is stored in tests/golden/scan_deep_stream.json, written from the code as it was before the waiting for one search

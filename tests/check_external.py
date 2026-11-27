@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The functions that reach the internet can be switched off by the add-on options (app/external.py, scan/internet.py, recognition/oui_update.py):
 the variables are read as the add-on writes them (run.sh), a function that is off sends nothing (no DNS query, no traceroute), the target of the
 traceroute is checked before it becomes an argument of nmap, the MAC database follows the option when there is one and its own setting file when

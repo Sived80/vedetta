@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, the verdict read (1.0 step P2): the rules that judged on their own whether a MAC is lent by a repeater (the Bonjour memory, the
 clients behind a repeater) now read the one verdict that macclassify gives every cycle (mac_class, written by store_mac_verdict alone). Proved here:
 what the snapshot of the verdict says and when it is refreshed, what each rule does with it (a phone that changed address three times in a week is

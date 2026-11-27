@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha/device_debug.py device_debug (what debug mode shows for a device): 3000 generated devices and configurations, with every collaborator replaced by a deterministic
 in-memory fake that RECORDS ITS CALLS (shared state, ha_data, naming, identity, roles, dhcp, ha_registry, mdns_listener) - missing or blank names and MACs, scan data with falsy values, repeated
 and tied evidence, TLS subjects, DHCP entries with a "seen" key, an unknown device id - must give exactly the result (the ORDER of the keys included) and the ORDER and arguments of every call,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Phase 3 of the MAC layer: are two MACs the same device? The linker on scenarios taken from real cases: a phone that switches between its factory
 MAC and a private MAC (same DHCP name, vendor class and parameter list, one starts where the other stops), two identical phones active together,
 a generic name shared by many devices, a handover with no other proof (a replaced device), and missing data (omitted, never counted against)."""

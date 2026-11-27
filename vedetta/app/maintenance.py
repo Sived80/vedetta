@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Night-time maintenance of the service: at night (the hour follows the Home Assistant time zone) it runs the deep search again on the devices that were never analysed or not
 for a long time, and refreshes the table of manufacturer prefixes. nightly_loop is the background task, run_nightly is one pass."""
 import asyncio

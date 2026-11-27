@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The networks API, for the panel «Networks»: the main network (read from the host, never written) and the networks written by the person, with
 how many cards each holds; add, change (touch, state, excluded ranges) and remove. A network that does not fit gets a 400 with the translated
 reason (networks.model codes). Removing a network that still holds cards brings it back as "proposed" at the next cycle (K12): its cards are

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The router's own addresses read through SNMP (IP-MIB) are kept in the data folder: after a restart the twins by SNMP (the router's address on
 each VLAN) are there at once, not after the first sweep of the networks behind the router (up to 15 minutes later). Kept only for the router
 they were read from; a newer reading replaces them; without SNMP nothing is known. No network: the SNMP answers are fakes. Invented values."""

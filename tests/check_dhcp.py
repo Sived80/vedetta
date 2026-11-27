@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the DHCP parser and the mobile score (runnable locally, without network)."""
 import sys
 from pathlib import Path

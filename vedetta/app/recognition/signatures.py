@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Catalog of declarative product signatures (app/data/signatures.json).
 
 A signature is a set of conditions on what the device declares (mDNS model, services, UPnP type, DHCP

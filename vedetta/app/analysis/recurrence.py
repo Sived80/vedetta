@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How a device comes and goes over the last 30 days: seen once, occasional, recurring or stable. Pure: it is handed the online
 segments of the device (history.presence_segments, the holes of Vedetta off already cut out), the time zone and "now".
 

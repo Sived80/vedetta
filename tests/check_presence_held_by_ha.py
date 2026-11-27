@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Presence held by Home Assistant (1.0.3): a phone asleep (Doze) stays on the Wi-Fi but does not answer ARP or ping for long stretches, while the
 router integration of Home Assistant still has it. What this proves, on one real DeviceState whose network is faked (invented values only):
   - a MOBILE card that does not answer and whose MAC a router tracker of Home Assistant says "home" stays online, held by Home Assistant (the

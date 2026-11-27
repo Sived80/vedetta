@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of probe_device: 300 generated devices (always the same, seeded) go through it with the network faked, and the
 whole result of each must match the file tests/golden/probe_device.json, written from the code as it was before the function was split.
 

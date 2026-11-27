@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A network behind the router just added, with Ports on, before its devices are found again (no card yet): the panel «Networks» must not
 say that it does not answer and offer the firewall rule ("How to turn it on"), as it did on the debug copy of 1.0.0 right after a network
 was deleted and added again. Nothing is known against it: Ports is on. With cards that are all offline the firewall help stays.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The pause of the periodic check (app/pause.py): timed and endless pause, survival to a restart, expiry, and a corrupt file."""
 import os
 import sys

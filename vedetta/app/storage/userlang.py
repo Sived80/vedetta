@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The language each Home Assistant user chose in the menu (config/user_lang.json).
 
 Home Assistant's ingress proxy puts the id of the logged-in user in the X-Remote-User-ID header (it removes any such header the client

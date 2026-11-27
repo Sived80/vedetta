@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """mqtt_payloads: moved out of mqtt_ha.py (see tools/split_module.py)."""
 from pathlib import Path
 import json

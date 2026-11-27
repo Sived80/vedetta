@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """When Vedetta first started on this installation (first_start.json), for the notice of the first hours on the page.
 
 In the first hours the recognition is still gathering clues, and a brand or a type can change (a TV that speaks the protocol of another maker's

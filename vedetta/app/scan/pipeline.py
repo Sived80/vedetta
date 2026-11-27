@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single search flow: independent functions (steps) enabled by profiles.
 
 Registry and defaults in flows.py, user choices in settings.json (key

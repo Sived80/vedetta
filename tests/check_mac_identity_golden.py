@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of macidentity.score and macidentity.link (are two MACs the same device? log2-odds, reasons, evidence flags, zones): 4000 generated pairs for `score` and 1200
 generated populations of 0 to 6 MACs for `link` - fields in agreement and in disagreement (host name, fingerprint, client id), values that are rare, common or missing from the
 estimate, sessions and plain first/last spans, gaps right at the hand-over limit (599, 600, 601 s), MACs active together, a given or an unknown `rel`, divisions by zero - must give

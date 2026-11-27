@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of DeviceState._shadow (the data per MAC for later analysis and the judgement "two different devices behind this card?"): 2500 generated situations - the
 observation returning nothing, False, a job that works or fails, or raising; the judgement due or not or raising; the evaluation finding nothing, a new or an old other device or raising;
 alerts enabled, disabled or failing; results with a MAC in capitals, lower case, empty, missing or an empty card; a memory of last MACs with or without the device - with the

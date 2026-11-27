@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of newdevices.evaluate (compares the MACs seen on the network with the known ones, writes the changes into the known_macs table and returns
 (new to alert, full list of the new); the first search of a network only takes the baseline): 3000 generated runs with the collaborators replaced by deterministic in-memory ones - a fake history that stores the rows and records every
 write, fake vendor lookups, a recording wrapper around the block check - must give exactly the return value (or the exception), the final rows of the table AND the ORDER of every call

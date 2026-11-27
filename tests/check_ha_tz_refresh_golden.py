@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_tz.refresh (reads the time zone and the language from Home Assistant over a WebSocket, at most once an hour, five minutes after a failure): 4000 generated
 runs with the collaborators replaced by deterministic in-memory ones - a frozen clock that moves 0.25 s at every call, a fake `websockets` module whose connection plays a script (the
 greeting, the authentication, noise messages, the answer to get_config with a good, an unknown, an empty or a missing zone, a refused login, a bad JSON text, a connection that drops, a

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The tiles of the networks (1.0.1): one tile per network, every tile with the same places (icon, name, two boxes, legend and bar or a
 // button), only data the page already reads (GET /api/networks, the device list, the gateway's card), the list of the networks read at
 // most once a minute, and one tile that fails does not stop the others. Needs jsdom.   from the vedetta/ folder:  node ../tests/ui/check_net_tiles_ui.js [it|en]

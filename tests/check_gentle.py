@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The limit that keeps the tests from saturating the computer (tools/gentle.py): on Windows a process that limits itself to N processors passes the limit to the processes it starts; elsewhere nothing is
 done. The check runs in child processes, so the limit never touches the process that runs this test."""
 import os

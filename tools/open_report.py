@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Opens an encrypted Vedetta report (the .txt attached to an issue) with the maintainer's private key.
     python tools/open_report.py vedetta-report-ab12cd.txt [-k ~/.vedetta/report_private.key] [-o out.zip]
 Needs PyNaCl (pip install pynacl). The private key never goes in the repository."""

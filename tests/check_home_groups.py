@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0.4: the page has the ten groups Home Assistant sees (router, server, pc, phone, media, audio, iot, printer, camera, generic); inside
 the smart home group ("iot") each card has a family (lights, climate, security...), worked out from its finer kind (data/device_kinds.json)
 in one place (device_groups). Home Assistant keeps seeing "iot" (MQTT attribute and model "type", events "type"): the automations and the

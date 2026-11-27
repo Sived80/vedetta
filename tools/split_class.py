@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Move methods of a class into a mixin class in a new sibling module; the original class inherits from the mixin, so nothing else changes.
   python tools/split_class.py FILE CLASS NEWMODULE MixinName method1 method2 ... [--write]
 The mixin keeps the methods as they are (same `self` attributes). The module-level names the methods use (imports, helpers, constants) are

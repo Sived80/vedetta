@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Delete and start from scratch» of a written network (networks/purge.py and History.purge_network): everything Vedetta knows of that network
 goes, nothing of another network is touched.
 Two networks behind the router, A (192.168.60.0/24) and B (192.168.70.0/24), and the main one: cards in all three, an adopted device of Home

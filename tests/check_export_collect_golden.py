@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_zip._collect (everything that identifies the household, gathered before the export is masked): 200 generated situations
 (devices on the board, DHCP leases, mDNS cards, Home Assistant registry cards, areas, public addresses and hops, odd and missing values) must leave the
 Anonymizer in exactly the state stored in tests/golden/export_collect.json (its tables, and what it makes of a text that names everything), written from the

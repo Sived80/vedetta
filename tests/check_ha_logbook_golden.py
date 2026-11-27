@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of GET /api/ha/logbook through the real HTTP layer: 1500 generated requests - the three levels and unknown ones, limits out of range or not numbers, presence rows of known,
 unknown and mobile devices, journal entries important or not, service log entries with and without a time or a level - with the collaborators replaced by recorders must give exactly the answer
 (status, body) and every call made (with its arguments), stored in tests/golden/ha_logbook.json, written from the code as it was before api_ha_logbook was split into small functions.

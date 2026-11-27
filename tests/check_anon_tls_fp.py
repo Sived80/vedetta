@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The TLS certificate fingerprint in the export for analysis (1.0.1): `tls_fp` (64 hex digits, unique to one machine like an SSH key) is masked
 as tls-cert-N, the same value always the same placeholder (in any case), in text and in parsed JSON; the final check finds one left readable,
 and the repair replaces it. The owner's mapping gives the values back.

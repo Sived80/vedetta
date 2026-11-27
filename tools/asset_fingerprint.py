@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Fingerprint of the front-end the page receives (/static/ha/ha.js and ha.css): the same FNV-1a 32-bit over UTF-16 code units
 that a browser computes with charCodeAt, so the files served by an installed Vedetta can be compared with the working copy.
 

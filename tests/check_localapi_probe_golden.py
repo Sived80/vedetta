@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of localapi.probe (asks only the manufacturer interfaces of the open ports; the first answer with the expected shape wins): 3000 generated hosts. The network is
 replaced by httpx.MockTransport driven by a random script - for every URL of the plan a refusal, an error status, a good answer of that interface (falsy fields included), a wrong-shaped or
 non-JSON answer; for the ESPHome stream a wrong status or content type, a stream with a "ping" event with and without a title, junk, a broken data line, and an endless stream without a ping

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """scan_web: moved out of scanner.py (see tools/split_module.py)."""
 import asyncio
 import hashlib

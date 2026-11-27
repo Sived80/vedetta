@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The check says WHICH values are still readable, and the repair replaces them with the same placeholders the masking uses:
 what cannot be replaced is left to the person. leaks() (the kinds) is exactly what leak_items() finds."""
 import os

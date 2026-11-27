@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Self-declaration protocols not covered by nmap/zeroconf, in pure Python.
 
 WS-Discovery (UDP multicast 239.255.255.250:3702, OASIS WS-Discovery 1.1, used by

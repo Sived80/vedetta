@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """R8: the deep search of "Add all" can be silent for minutes (2 heavy scans at a time, a pilot test that runs alone, 150 s per slow device). A proxy may drop
 a silent stream and the page then waited for ever. The stream now sends a comment line (": keepalive") whenever no device has ended for KEEPALIVE_S, so the
 connection stays alive and the page can tell a lost stream (nothing at all for new-devices.js STALL_MS) from a slow search. The events themselves do not

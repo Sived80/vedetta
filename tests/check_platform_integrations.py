@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A Home Assistant integration that covers a whole PLATFORM (several brands on the same chip and protocol) says what the device does, as the Sonos or HEOS ones do. LinkPlay (WiiM, Arylic, Audio Pro and
 other makers of streamers and amplifiers on the LinkPlay platform) is an audio platform: a device that Home Assistant drives with it is audio, even if it also speaks Cast, which televisions speak too.
 Seen in an export: a WiiM amplifier declared Cast + AirPlay + RAOP + LinkPlay and was read as media."""

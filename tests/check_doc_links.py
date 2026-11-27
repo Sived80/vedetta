@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Every link between the public documents goes somewhere: README.md, docs/*.md and the app's DOCS.md/CHANGELOG.md. A relative link must name a
 file of the repository, and its #anchor a heading of that file (GitHub's rule: lower case, punctuation dropped, spaces to hyphens). Links to
 the web are not fetched here (no network in the tests); images are files too.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of adding a card with no MAC (a device behind a router), before the work on more networks:
 - run_associative with a scan that finds no MAC gives "mac": None and still a name and an adapter;
 - /api/devices/add never keeps a MAC from the request (the MAC is learned by the cycle), accepts a candidate without one, drops one without a valid IPv4 address and one

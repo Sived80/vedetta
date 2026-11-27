@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the pure parts of scan/scan_mdns.py: the TXT string (model / manufacturer keys and the 60 characters limit), the PTR query
 packet built by hand, DNS names with compression pointers, the answer parser (first PTR, garbage and loops are survived), the direct
 "who has this IP" query with a fake network, and the completion of the names with the active query only where the passive scan found none."""

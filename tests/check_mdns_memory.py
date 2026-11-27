@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Bonjour names memory: a name seen once is kept, per MAC, even when the phone goes back to sleep."""
 import asyncio
 import os

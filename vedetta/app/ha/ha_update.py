@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Whether Home Assistant has a newer version of this add-on: the red dot on the menu button and the arrow in the menu.
 
 Read-only. The add-on asks the Supervisor for its OWN card (/addons/self/info: the same call that run.sh already makes for the port), which says the

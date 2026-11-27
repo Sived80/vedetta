@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P10 (decision 1A): when the MAC a card is linked to rotates (maclayer.successions: {new: old}), the link passes to the new MAC,
 source "identity", through the one writer of card_mac (cardlink_cycle). cardlink.successors is pure: refused when the card is gone or has
 another seq, or when the new MAC is already another card's link on that network. An exception to decision 4A ("a link is never moved"): the

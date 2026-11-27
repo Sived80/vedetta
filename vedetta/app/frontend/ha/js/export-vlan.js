@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { api, esc, icon, t } from "./core.js";
 
 // ------------------------------------------------- an optional extra of the export for the developer

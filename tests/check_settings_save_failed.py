@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A settings file that cannot be written (disk full, read-only folder) gives the same clean 500 «Salvataggio non riuscito» on every route that
 saves settings: /api/settings, /api/sentinel, /api/snmp (the last two used to let the OSError through, a bare 500 with a traceback).
 Found by the review of 1.0.1. Temporary data folder, nothing contacted.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P10: maclayer.successions(history, now, only, dhcp_seen) reads the last VERDICT_WINDOW_DAYS of the MAC layer (rows and sessions)
 and the DHCP names, and asks macidentity.successions. A MAC the layer has not recorded yet (heard only by DHCP, or just now) counts as
 started now. In-memory history, no network.

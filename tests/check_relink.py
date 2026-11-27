@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The gesture "this is a new device" (1.0 step P5, decision 2A of 12/11): a linked card whose device was replaced (a new printer at the same
 address) stays offline for ever, because its link never moves to another MAC by itself. The gesture is offered only when it applies:
   the card is linked and offline, and for two judgements (10 minutes) exactly one other MAC - not lent, not virtual, of one device, not another

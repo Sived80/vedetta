@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """RULE: never risk commanding a device. Besides printing ports (see check_no_print_ports.py), industrial control ports (S7 102, Modbus 502, DNP3 20000, IEC 104 2404, EtherNet/IP
 44818, BACnet 47808, Niagara Fox 1911) and LPD (515) can act on what they receive. Nothing is written to them, nmap does not run service detection (-sV) on them, and they are still
 SEEN open (a plain connect, no data) because an open port is evidence and the user can see it.

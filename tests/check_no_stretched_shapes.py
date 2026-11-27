@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An SVG stretched to a width of its own (preserveAspectRatio="none") draws a circle as an ellipse. The only stretched drawing allowed is a chart made of lines and areas whose stroke does not scale (vector-effect: non-scaling-stroke);
 anything that has round shapes must keep its proportions (a square viewBox, or plain elements)."""
 from pathlib import Path

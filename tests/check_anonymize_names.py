@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The promise of PRIVACY.md: names and domains are masked in the export for the developer. Found by the global review: a short first name (Leo, Eva, Ugo: three letters; Jo: two) was taken for a
 «technical word» and stayed readable, and a domain with an ending that is not in the short list (my.dyn.nu) stayed readable too. The words that really are technical (pve, nas, cam, tv...) are a short
 white list, the rest is masked; the domain endings cover the dynamic-DNS and country ones, while the names of files (dashboard.log, run.sh, app.js, lib.rs, setup.py) stay what they are."""

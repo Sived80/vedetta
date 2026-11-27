@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Ping adapter (K1): asks a device only whether it answers an ICMP echo. For the cards of a confirmed network behind the router with touch
 "presence": no TCP connection, no port, no name request; the MAC is never known there (ARP does not cross the router: K10)."""
 from .. import latency

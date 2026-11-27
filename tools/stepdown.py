@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reading order, top-down (the stepdown rule): in every module a private helper is written RIGHT BELOW the function that uses it, so a person reads the story first and the detail after.
 Only a pure move: a helper is moved only if it is private (leading underscore), used by exactly one other function of the module, and not named anywhere else at module level
 (decorators, default values, annotations, constants, classes), so nothing that runs when the module is loaded can see a different order. The text of every function is kept as it is

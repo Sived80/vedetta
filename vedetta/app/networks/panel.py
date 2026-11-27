@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the panel «Networks» shows of each network beyond its row of before: its name, its VLAN, how many cards are on, whether it went
 mute, and what Vedetta sees of it function by function (the judge, caps.py).
 

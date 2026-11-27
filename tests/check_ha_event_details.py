@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The events on the bus of Home Assistant (app/ha/ha_notify.py event_data) carry, next to the keys of 1.0.2 (card, label, ip, and
 minutes on a return), always the same four keys: brand, type (the group, as the MQTT "type"), kind (the finer type, as the MQTT
 "kind") and reason (why a device is new: one of ha_notify.NEW_REASONS; null on a down or a back). A value Vedetta does not know is

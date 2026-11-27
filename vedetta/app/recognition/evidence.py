@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Evidence card: for a device, what decided its name, brand and group, how sure the app is (0-100) and which other
 hypotheses it rejected. Everything is derived from what debug mode already shows (ha/device_debug.py), without a second
 scoring: the numbers here are the same ones that decided.

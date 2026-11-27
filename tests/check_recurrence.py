@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How a device comes and goes over 30 days (analysis/recurrence.py): the class is worked out on the history of THIS device (a device
 that appeared 3 days ago is "observing", one that appeared 10 days ago and was there every day is "stable", not "occasional" against
 a month it was not there for); a day is active when the device was online for some of it, in the local time of Home Assistant; the

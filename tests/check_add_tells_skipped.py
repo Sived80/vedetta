@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """R8 (two public reports): "Add all" must say what it did not add and why. POST /api/devices/add answers, next to the cards it made, every candidate it
 left out with a reason the page can show: "exists" (a card already has that address, or the same address came twice), "invalid" (not an IPv4 address),
 "off_limits" (an address no card may have: a paused network, a public or container address, K9a). Before, the route answered only the cards made and the

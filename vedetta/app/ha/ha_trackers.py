@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The clients that a router integration of Home Assistant tracks on the network (UniFi, FRITZ!, MikroTik, nmap...), read from the states of Home Assistant.
 
 Read-ONLY and narrow by construction: of every state, only the device trackers whose source is "router" are kept, and of those only the address, the MAC, the host name,

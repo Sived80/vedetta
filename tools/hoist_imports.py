@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Move imports done inside functions up to the top of their module, where that cannot change anything.
   python tools/hoist_imports.py [--write] [--only app/path/file.py]
 Moved: `from . import module` / `from ..pkg import module` / `import app.x` that import a MODULE (so what is used is read from it at call time: a module attribute

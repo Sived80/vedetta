@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the pure logic of the Home Assistant-style dashboard (/ha):
 inferred device type, compact format, summary, event log,
 history segments, translations (keys used by ha.js present in en and it).

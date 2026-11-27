@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Pause of the periodic check: expiry, resume, manual refresh."""
 import asyncio
 import os

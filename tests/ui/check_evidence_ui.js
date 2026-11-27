@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Evidence on the rows Name, Brand and Type of the device sheet: bar + certainty + (i) that opens a small pop-up,
 // closed by pressing outside it. Needs jsdom (npm install in this folder); without it the check is skipped.
 //   from the vedetta/ folder:  node ../tests/ui/check_evidence_ui.js

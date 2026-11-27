@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The life of a network, for the panel «Networks»: how many cards it holds, how many are on now, and whether it went mute.
 
 Pure: it is handed the cards (id and address) and the last presence the history recorded of each card (history.last_presence: {id: (online, ts)},

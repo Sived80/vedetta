@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The service types of the DNS-SD browsing (scan/mdns_browsing.py):
 1) a type announced on the network is data from outside: a malformed one ("local.", ".", "x.local.") is left out instead of making zeroconf raise
    BadTypeInNameException in the event loop (seen on a real network);

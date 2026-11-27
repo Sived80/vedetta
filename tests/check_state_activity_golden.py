@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of the activities in progress of DeviceState (the scans and searches shown by the blinking LED and the search button): 2500 generated sequences of
 operations - rescan_started with lists of ids (empty, repeated), rescan_finished (also of an id that is not there), search_started, search_finished (also more often than started),
 activity_info, a changed revision, the clock moving (also exactly to the end of the 2.5 s hold) and the delayed notices being fired - with the clock frozen and the event bus replaced

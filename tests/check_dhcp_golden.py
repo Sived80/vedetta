@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of dhcp.mobile_score (DHCP part of the "mobile" score) and dhcp._Listener.datagram_received (what a received DHCP packet adds to the memory): 4000 generated cases each.
 mobile_score runs on a synthetic `seen` memory (every OS fingerprint, vendor classes, host names, private and universal MACs, missing and empty entries, mixed-case and invalid MACs).
 datagram_received runs on a listener without a socket: `parse`, the clock (`time`), `_save` and the logger are replaced by in-memory fakes that record every call, so the order and the

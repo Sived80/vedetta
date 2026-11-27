@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Inventory of the loops of the application, to check that each one ends and to see which ones can cost time:
   - `while` loops: unconditional (`while True`) or conditioned, whether the body can leave (break / return / raise), whether it waits (`await`) so that a cancel can stop it;
   - `for` loops nested two or more deep (the cost grows with the product of the sizes) and loops that touch the disk, the database or the network on every turn;

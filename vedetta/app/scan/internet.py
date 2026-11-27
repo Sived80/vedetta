@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Outbound internet connectivity: public IP, double NAT, provider CGNAT.
 
   public IP    standard DNS query to the OpenDNS resolver for myip.opendns.com: the

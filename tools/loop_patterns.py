@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Which loops could be written more simply? A static count of the loop shapes that have a plainer form (Fowler, "Replace Loop with Pipeline"; PEP 20, flat is better than nested):
   collect   - `out = []` then a loop that only appends (optionally under an `if`)                       -> a comprehension
   find      - a loop whose body is `if cond: return X` followed by a plain return                       -> any() / next()

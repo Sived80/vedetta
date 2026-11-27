@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of probe_device as a whole with the sources of evidence (identity, battery, mobile score, Home Assistant, Bonjour, DHCP, network roles) replaced by recorders: 4000 generated
 devices - adapters that answer or not, ARP that rescues or not, saved scan info rich or empty, names user-chosen / automatic / placeholders / from Home Assistant, brands declared and chosen by hand,
 phones, media receivers, many open ports - must give exactly the same record AND make exactly the same calls to the recorders (arguments included, in order) as the code before the steps of probe_device

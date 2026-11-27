@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of name choice and cleanup (runnable locally)."""
 import sys
 from pathlib import Path

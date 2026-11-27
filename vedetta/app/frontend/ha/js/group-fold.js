@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { S } from "./core-ui.js";
 
 // Folding of the device groups (routers, servers...): the heading is the button, all groups start open and the closed ones are

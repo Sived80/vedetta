@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The Appropriate Legal Notices (GPL-3.0, sections 0 and 5d) in the menu: the copyright, no warranty, the license and the source code, the two
 // links opening in a new tab like the other links of the page to outside. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_legal_ui.js [it|en]

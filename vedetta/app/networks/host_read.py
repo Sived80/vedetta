@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one reader of what the host says about its network: the default route and its gateway (/proc/net/route), the interfaces with their VLANs and addresses (/sys/class/net, /proc/net/vlan/config). Files of the kernel only, no external command (it also works with BusyBox).
 Functions over a file or its text, with no state of their own: the callers keep their caches (iface keeps the interface for the whole run)."""
 import errno

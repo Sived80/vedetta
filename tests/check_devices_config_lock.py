@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """devices.yaml is changed by read - modify - write sequences that run from threads (asyncio.to_thread) and from the loop at the same time. The file is replaced atomically (a reader never sees half a file) but
 the SEQUENCE was not: two changes that read the same old file, then write one after the other, lose the first one (found by the global review: a scan result, or the name chosen by the user, could be
 rolled back). Every modifying function now holds one lock for the whole sequence. This test makes the window wide (the read waits a little) and runs two threads on two cards: with the lock no change is lost."""

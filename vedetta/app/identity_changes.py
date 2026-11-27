@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Which changes of a card's identity are worth remembering (storage/history_identity.py). Pure: it compares the record of the card before
 and after a check.
 

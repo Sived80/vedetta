@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, api, esc, t } from "./core.js";
 import { S, fmtLeft, pauseLeft, snack } from "./core-ui.js";
 import { closePopups, menuGroup, pill } from "./core-menu.js";

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The rotated logs (dashboard.log.1 .. .3, written by the RotatingFileHandler of applog) follow the chosen period like dashboard.log: the
 lines outside it are left out. Without a period they are cut to their tail like the main log. Invented lines only, no network."""
 import os

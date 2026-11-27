@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { fmtClock, fmtStamp, nowSec, t } from "./core.js";
 
 // ------------------------------------------------------------ network health: what the page says about a finding

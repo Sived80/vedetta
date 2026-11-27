@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Digest of a Vedetta export: opens the encrypted report (.txt) or the plain zip and prints where to look first.
 
     python tools/riepilogo_report.py vedetta-report-ab12cd.txt            # decrypts with ~/.vedetta/report_private.key

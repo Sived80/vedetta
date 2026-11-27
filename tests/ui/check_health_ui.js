@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The network health screen of the Network card (js/health-card.js, health-model.js): there for everyone since 0.11.0 with the findings of the rules that are shown, the ones in shadow too while the
 // debug mode is on (?shadow=1); four tiles; a tile opens the big one with its findings; a row opens
 // the detail (who: name and IP; what; when; what to do); the X on the left goes back one step; the eye hides a finding (and the choice is kept); a device opens its card; no MAC is shown unless a device has no card.

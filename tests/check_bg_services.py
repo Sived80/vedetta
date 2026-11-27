@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Full background scan: after the ports, service and operating system are read
 only on the open ports (real data from a Fire TV Stick: port 40027 "Amazon FireTV Stick")."""
 import asyncio

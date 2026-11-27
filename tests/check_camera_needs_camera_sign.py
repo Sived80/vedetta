@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """GitHub issue #61: the maker of the MAC prefix alone does not make a camera. An alarm interface whose MAC prefix belongs to a maker of cameras (the public OUI 00:40:8C) was shown as a camera and named
 "<brand> camera" with no camera sign at all. The brand of a camera maker (data/device_kinds.json, "brands" of the type camera, with "brand_alone": false) now only confirms a camera that shows a sign of
 its own (RTSP, ONVIF / WS-Discovery, the camera port, a camera word, Home Assistant); the brand itself still shows in the name."""

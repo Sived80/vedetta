@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Upkeep of the identity of the cards: what to do when the same device shows up with another address or another card.
 
 Three things, each done at the end of a check cycle: IP duplicates are reported once, a linked card whose MAC answered at another address follows

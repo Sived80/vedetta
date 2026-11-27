@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The state of analysis on the page: a lens on the top right corner of the icon of a card under analysis, a clock on the bottom right of a card that is settling, a question mark on one that is unresolved, nothing on an
 // identified one; the corner follows the event "analysis" of the live stream. The WORDS (analisi in corso, in assestamento, da identificare) are only inside the open card, beside the word online/offline of its head, and
 // they do not move when the card goes from online to offline; the tile has the sign and nothing else. The open card tells the state and the reasons too. Every sign has a shape and a text, never colour alone.

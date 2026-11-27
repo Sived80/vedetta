@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, FAMILIES, FAMILY_GROUP, REDUCED, api, esc, familyIcon, familyLabel, familyOf, icon, t } from "./core.js";
 import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";

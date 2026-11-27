@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The forms of JavaScript that have a plainer or safer way (text only, comments and strings removed): `var` (let/const have block scope), `==` and `!=` (strict comparison), `else` right after a `return`
 (a guard clause removes a level), index loops over an array that only read it (for...of), loops that only push into a list (map/filter), long functions, functions with many parameters and the deepest block
 nesting of each function. Points at places to look at; the decision is made function by function.

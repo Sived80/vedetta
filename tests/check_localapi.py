@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Contract test of scan/localapi.py: the requests made for each set of open ports (pure plan), the reading of each manufacturer's answer (pure
 interpretation), and the whole probe against a fake HTTP server in memory (httpx.MockTransport) that answers like the documented interfaces do.
 The samples are written from the manufacturers' public documentation, not recorded from a device: replace them with real captures when available."""

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P11: the table routed_seen (storage/history_routed.py), the inventory by address of the networks behind the router.
 - one row per (network, address): a second write of the same address updates it (last sight, MAC, name, status), never a second row;
 - a MAC and a name may be missing (NULL): a row is never given a MAC it did not have;

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What debug mode shows for a device: the clues that decided its group, the candidates for its name, brand, mobile score, DHCP,
 roles, scan data and the registry/mDNS memory. Built from the shared state; used by the debug and evidence API and by the exports."""
 from ..recognition import identity, naming, roles

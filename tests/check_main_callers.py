@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The places that ask for the main network (network and own address) ask networks.registry.main(), and get what the host says: with a fake
 `ip addr`, each one sees 192.168.50.0/24 and 192.168.50.7 exactly as before the move from netutil.get_local_network, and the registry is asked
 (a spy counts the calls). One block per place, added with the commit that moves it. Invented private addresses only.

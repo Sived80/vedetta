@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Memory and continuous listening of Bonjour (mDNS) names, like the DHCP memory.
 
 Many devices (iPhones, tablets) announce their name only when they are awake: a scan of a few

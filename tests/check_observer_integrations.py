@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An integration of Home Assistant that OBSERVES the network (UniFi, MikroTik, FRITZ!...) creates entities for the clients it sees (tracker, bandwidth sensors, block switches): that says the device is on the network,
 not that it is a router. It declares a device only when the registry holds a product of its own - a model or a firmware version - and no other integration owns the device. Seen in the exports of two makers: the 7 UniFi
 devices that are network equipment have a model and a firmware (UAL6, USMINI, 6.7.57...), the 12 clients do not (model None; Proxmox, Raspberry Pi, a printer, a TV box... all read as routers with 8 points before); the

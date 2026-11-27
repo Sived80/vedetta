@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_web._confirm_http_port (a direct GET that proves a port speaks HTTP: plain, then TLS if the plain answer is not good enough) and scan_web._confirm_http_ports
 (marks a host's stable ports in place): 4000 generated connections and 2000 generated port lists. The network is replaced by in-memory fakes driven by a random script: `asyncio.open_connection`
 (refusals, timeouts), the reader and the writer (first answer, extra chunks, timeouts and resets in the middle of the reading, a failing `wait_closed`), `asyncio.wait_for` (which only records the

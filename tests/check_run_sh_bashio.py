@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """run.sh calls no deprecated bashio function. bashio 0.18 renamed the bashio::addon.* / bashio::addons.* functions to
 bashio::app.* / bashio::apps.* and keeps the old names only as aliases that log a deprecation warning at every start.
 The base image named in the Dockerfile (ghcr.io/home-assistant/base 3.24-2026.11.0) ships bashio 0.19.0, which defines the new names."""

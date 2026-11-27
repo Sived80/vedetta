@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The reader of the /events stream of a device (localapi._esphome): the stream stays open for ever on a real device, so it must stop by itself: as soon as the answer is there, or after 4 KiB with nothing in
 it, or when the stream ends, or when the page is not an event stream or the request fails. A stream that never stopped would keep a connection and a task open for ever."""
 import asyncio

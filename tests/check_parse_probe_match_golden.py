@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of discovery.parse_probe_match (WS-Discovery ProbeMatch -> fields): 4000 generated packets - valid and malformed XML, documents with and without a ProbeMatch
 element, repeated and empty Types / Scopes / XAddrs elements, ONVIF scopes in every spelling (case, "mfr", percent escapes, underscores, repeated keys, empty values), non-ONVIF scopes,
 types with and without a prefix - must give exactly the results stored in tests/golden/parse_probe_match.json, written from the code as it was before the function was split

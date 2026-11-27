@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Section "device under examination" of the export: a flagged device goes in state/focus.json with its card, evidence,
 history (presence, MAC changes, MACs) and the person's note, all anonymised like the rest; nothing flagged = no file."""
 import io

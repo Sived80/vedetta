@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The Bonjour memory is bounded: a flood of announcements from invented addresses keeps at most CARDS_MAX cards by MAC and by IP (the
 oldest go first), a card by MAC not heard for MAC_TTL_S is forgotten like the ones by IP, and the per-IP meta of the scan has a cap too.
 No socket is opened: the ARP table and the verdict are fakes."""

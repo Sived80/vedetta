@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The address follows the MAC (1.0 step P5, IdentityUpkeep.follow_links): the linked cards found at another address in this cycle move there at
 the end of the cycle, all in ONE write of devices.yaml (devices_config.set_ips): a move to a free address, an exchange of two cards, a chain of
 three, a card without a link that held the address takes the one left free; two cards towards one address, or an address off the line, on

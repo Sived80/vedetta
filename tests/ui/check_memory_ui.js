@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The memory on the page: in a card, «Last 30 days» (the strip of 30 days, the class, one line on the link, the changes of name and brand
 // closed and opened with a tap); in the menu, «Download the list» (CSV or JSON, «Hide MAC and IP» on by default, the file asked with
 // those choices); the card «Last 12 hours» only when there is something to say, hidden by its X until something else happens.

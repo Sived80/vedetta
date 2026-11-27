@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The local network when Home Assistant's own address is a host address (/32 or /31): seen on a static address set with a /32 mask and a
 gateway reached "on link". The network is not the address alone (only HA, nothing else found, and a /24 added by hand "overlaps" it): it is
 the link route of the interface that holds the address or, without one, the /24 around the address. A normal prefix is kept as it is.

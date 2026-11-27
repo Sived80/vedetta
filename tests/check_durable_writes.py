@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Files the app writes survive a power cut and a concurrent change. Found by the global review: write_atomic replaced the file without forcing the data to disk (a power cut could leave the new name with
 an empty file: rename alone is atomic against a torn read, not durable; the sequence that is documented as crash-safe is temp file, fsync, rename, fsync of the folder: PostgreSQL's durable_rename
 discussion and the crash-safe write primitives of several libraries; no systematic study exists and POSIX promises nothing); the compaction of the event journal wrote the file in place; and the mDNS memory

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The WebSocket handshake that reads Home Assistant's time zone does not wait forever: a server that accepts the connection and then says
 nothing (or keeps sending other messages) ends the reading with a timeout, as the registry does, instead of hanging the task. No socket:
 the WebSocket is a fake."""

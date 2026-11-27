@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The texts of the panel «Networks» (locales/<lang>/netpanel.json): every key the judge may need (networks/caps.text_keys) and every key the page
 asks by name (frontend/ha/js/netpanel.js) is there in English, Italian, German and Czech, with the same placeholders, and is short (one sentence
 per line: no text over MAX characters). No text names the routers' other menus ("Su altri router") or says how many ways there are ("Basta una"):

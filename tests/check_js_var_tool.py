@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The tool that turns `var` into `const`/`let` in the JavaScript of the page (tools/js_var_to_let.py) is tested like the code it changes: on small pieces of JavaScript, what must be converted is converted with the
 right keyword, and every case in which `let`/`const` could change what the code does is left with `var` (a block, a parameter, a name declared twice, a use before the declaration, a function declared below and
 called above, a `for` header, a declarator that is not a plain name); the parts of the page are read as one function, so a `var` of a later part knows the function that opens in an earlier one."""

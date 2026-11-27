@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The files Home Assistant reads to show the app (config.yaml, repository.yaml) must be valid YAML
 and have the required fields: an error here makes the app invisible in the store with no message at all."""
 import re

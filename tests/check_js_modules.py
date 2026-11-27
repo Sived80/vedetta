@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Names used and never defined in the ES modules of the page: a module that uses a name of another module without importing it fails only when that line runs (a ReferenceError in the browser, not when the page
 loads, so the boot check does not see it). tools/js_undefined_refs.js reads every module with the parser that Node carries (acorn, through --expose-internals: nothing to install) and reports each name that is
 neither imported, nor declared in an enclosing scope, nor a global of the page. The check is skipped where Node, or that parser, is not there."""

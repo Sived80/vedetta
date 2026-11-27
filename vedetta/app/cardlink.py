@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC link (1.0 step P4): which MAC identifies a card, and on which network that MAC is seen. Pure: everything comes in as arguments
 (the cards, the facts of the MAC layer, the links stored so far); nothing is read or written here. The only imports are two pure modules of the
 app: macclassify (its constants) and recognition/same_device (the one judgement of "are these two MACs the same device?").

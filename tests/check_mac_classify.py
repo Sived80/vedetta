@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Phase 2 of the MAC layer: the classification of MACs and conflicts on a library of fake networks (no brand, no device: only behaviours).
 Each scenario builds the rows of ip_mac the way the layer stores them. Thresholds are in macclassify.py and get tuned with real data."""
 import os

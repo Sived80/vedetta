@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Run INSIDE a device's namespace: answers ARP for the device's own address, by the rule of tools/lansim/arp.py (a direct request is answered, a broadcast one is not unless asked to).
 Linux and root only:  python3 arp_responder.py <mac> <address> [answer-broadcast]   (stops on SIGTERM)"""
 import os

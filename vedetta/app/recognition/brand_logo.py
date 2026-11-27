@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Logo of a brand, for the cards, the list and the device sheet.
 
 The table data/brand_logos.json says which brands have a logo file (static/ha/logos/<id>.svg) and under which

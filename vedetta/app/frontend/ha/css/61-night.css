@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* "Last 12 hours" (#card-night): the summary card, only when there is something to say; under the network card, above the log. */
 
 @layer overrides {

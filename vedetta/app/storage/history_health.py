@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """HealthMixin: the findings of the network health (health/) kept on disk, so a restart does not lose the record of what was seen.
 
 health_finding  one row per episode of a problem: (rule, subject, first_seen) is the key, the row is updated while the episode goes on and keeps its end when it closes.

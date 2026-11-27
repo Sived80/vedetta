@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The machine Vedetta runs on, and the hosts that announce accessories of a bridge (HomeKit `_hap._tcp`).
 
   - Home Assistant exports accessories through a bridge: every accessory is a `_hap._tcp` instance announced from Home Assistant's own address.

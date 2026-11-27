@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #57: a card whose brand comes from the MAC prefix must show that MAC. The probe asks the brand with the MAC it remembers (the link, else
 the last MAC seen), but the card kept only the MAC of this check's answer: a phone that is asleep (no answer, no ARP entry), or a device that
 answers its port while the neighbour table has no entry for it, showed "Brand · MAC prefix" with no MAC row. Invented values only."""

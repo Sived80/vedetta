@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The check of the network survey: the button of the export window asks "is there anything to include?" and gets a state and a number, nothing else.
 ok = router trackers found, none = Home Assistant answered and there are none, noha = Home Assistant cannot be read (no token, an error, too slow).
 It never raises, it never takes long, it names no device, and the route is off when the survey is off."""

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A damaged settings.json is never lost in silence (storage/settings.py): the readers used to fall back to the defaults, and the next
 save wrote the defaults over the file, MQTT included. Now the damaged file is copied aside once as settings.json.broken-<time>, the
 log says so, damaged() tells the start-up journal, and a save goes on from the defaults. When the copy itself fails, nothing is

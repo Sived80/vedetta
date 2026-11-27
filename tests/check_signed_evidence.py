@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The clues that decide the group of a device have a sign: a clue in favour adds, a clue against takes away (weight of evidence: Good; Fellegi-Sunter agreement and disagreement weights; MYCIN belief and disbelief).
 One function (family_best) says which clue of a family counts - the strongest, in favour or against - and it is used by BOTH the sum of the points (_aggregate) and the mark "counted" of the evidence shown (device_debug), which
 used to repeat the same calculation. As long as no clue is against, everything is as it always was: the reference below is the calculation as it was written before, and the two must give the same on any list of clues."""

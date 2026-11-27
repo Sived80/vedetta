@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P10 (decisions 1A, 2A of 13/11): a private MAC that rotates. macidentity.successions(features, only) finds the pairs (old -> new) where
 a new private MAC is the same device as a private MAC that stopped before it began: zone "same" of the linker (strong evidence: a shared
 client identifier, or name AND fingerprint), never active together, the old one finished before the new one started. An ambiguous case (two

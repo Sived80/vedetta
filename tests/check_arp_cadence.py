@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P8: on a normal network (up to a /24) the first check asks the whole network (the starting picture, as before); the checks that
 follow ask one slice of the network a cycle, in turn (arpplan, cycle_s), plus the configured devices; every slice is asked within
 arpplan.ROUND_S. Every ARP request is paced (arp-scan --interval). What a slice told is kept until the slice is asked again. A refresh asked

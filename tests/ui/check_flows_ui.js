@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The "Search methods" window: three searches as tabs, the functions of the chosen one in panels by risk (closed at the start),
 // counters that follow the switches, and every change saved for the three searches. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_flows_ui.js [it|en]

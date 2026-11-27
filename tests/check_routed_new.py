@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P11 (decision 2A): the new devices behind the router in the list of new devices, the same list as the home network's.
 - GET /api/new-devices (newdevices.list_new) gives the rows of routed_seen whose status is "new" next to the new MACs of the home network,
   by first sight: "mac" null when Home Assistant did not say it, "network" the id of the network, "last_seen";

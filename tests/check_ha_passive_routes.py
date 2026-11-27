@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The routes of the devices Home Assistant sees, through the real HTTP layer with Home Assistant faked: the switch, the reading (refused while the function is off), the list, the adoption,
 the card in /api/ha/devices next to the scanned ones, the history of a card, and the changes (rename, brand, type, remove) that arrive on the routes of the other devices.
 A passive device never reaches devices.yaml, and the flag and the sharing do not exist for it."""

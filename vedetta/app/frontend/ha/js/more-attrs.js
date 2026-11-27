@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, FAMILY_GROUP, ago, api, canOpen, esc, familyLabel, familyOf, icon, t, typeLabel } from "./core.js";
 import { S } from "./core-ui.js";
 import { DEBUG } from "./debug.js";

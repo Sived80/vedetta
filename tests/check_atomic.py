@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The atomic write (app/atomic.py): the content arrives whole; a write that fails (an error, or an interruption such as Ctrl-C) leaves the previous file untouched and no temporary file behind; the temporary
 file is made in the folder asked for (default: the folder of the file), with the prefix asked for; the folder is created when it is missing; the newline is the one asked for."""
 import os

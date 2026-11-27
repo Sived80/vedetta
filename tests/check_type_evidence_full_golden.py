@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_type_evidence.type_evidence from end to end: 4000 generated devices - names, brands and vendors made of the words of the rules and of the types of the data files, the declared
 model, mDNS services and UPnP types, the answering API, ONVIF and RTSP, scanned ports (confirmed or not, typical, shared, PC ports, IoT-only), network roles, Home Assistant integrations and entities, the
 adapter, `kinds_out` given or not - must give exactly the clues (group, family, points, source, in order), the `kinds_out` dictionary and the points per category stored in tests/golden/type_evidence_full.json

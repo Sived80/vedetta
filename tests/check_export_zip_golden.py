@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_zip.build_zip (the whole export file): four situations on a fake network - everything present; the history database too big to
 include; a corrupt one; nothing flagged and an empty data folder - with data files of every kind (json, broken json, long log, plain text, binary, names that look
 like credentials, the mapping file, a sub-folder) must give, entry by entry, exactly the content stored in tests/golden/export_zip.json, written from the code as

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The registry of the networks (networks/registry.py) against what the app asks today.
 1) differential: for every answer of `ip addr` (a /24, /27, /22, /16, /8, a /32, two addresses on the interface, a mask written oddly),
    registry.main() gives EXACTLY netutil.get_local_network(), and current().allowed gives EXACTLY netutil.filter_local_ips on 2000 addresses

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC link, the pure rule (1.0 step P4): when a card is tied to the MAC that answers at its address, and what happens to a link that
 exists. One case per condition of the rule (L1-L9) and per line of what a link does later; then a random test over 2000 made-up histories that
 checks the three promises: never one MAC on two cards, never a link when two MACs that are not lent answered the address, never a link to a MAC

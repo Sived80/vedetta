@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Map of a module for splitting it by topic: every top-level function/constant, who calls it, and the groups that call each other.
   python tools/module_map.py FILE            groups (connected through calls between functions, module constants count as links only if used by 2+ groups)
 Prints the group sizes and, for each group, its functions, the external names it needs from the other groups, and who outside calls it."""

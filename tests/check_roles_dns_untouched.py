@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #21: the DNS role check (one DNS query to every address the ARP sees) must leave alone the ignored devices and the cards that must not be touched
 (touch_policy "none"), as the SSDP search already does. The gateway is always asked (it is the router), the computer the app runs on never.
 Checked with fake primitives: the addresses passed to dns_servers() are recorded.

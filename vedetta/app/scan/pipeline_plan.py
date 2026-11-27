@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """pipeline_plan: moved out of pipeline.py (see tools/split_module.py)."""
 import asyncio
 from dataclasses import dataclass, field

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, the second answer to the same ARP question (1.0 step P3, G2). arp-scan prints every answer to "who has this address?" (the DUP lines
 of RFC 5227 conflicts); the view used to keep only the first, so a conflict where the same device always answers first was never seen by the judge.
 Now parse_arp_scan keeps the other MACs that answered (`also`), maclayer.from_arp turns them into observations of source "arp_dup" (not "arp": the

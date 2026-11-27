@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Wake-ups of the check cycle. Only the loop of the state starts a cycle, so two cycles can never overlap by construction; what can go wrong is how the wake-ups that arrive WHILE a cycle runs
 (a changed address, merged cards, MQTT, the user pressing refresh) are handled. Proved here with a real DeviceState and a slow fake cycle:
   - cycles never overlap, however many wake-ups come;

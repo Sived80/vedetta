@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The inventory for the person: one row per card, as CSV or JSON, to keep, print or put in a spreadsheet. Not the export for analysis
 (that one is the zip, masked and encrypted, for the developer): here the person's own list, with the choice «hide MAC and IP».
 

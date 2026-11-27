@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Removes the imports that ruff reports as unused (F401) ONLY when nothing else in the repository reaches the module through that name: a name that other code imports from the module
 (`from app.x import name`), reads as an attribute (`x.name`, also through an alias such as `state_mod.name`) or that a test replaces on the module is a re-export on purpose and stays.
 Only the import statements at the top level of a module are rewritten, as a whole (the names that stay are written back; a statement left empty is deleted).

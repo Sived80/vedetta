@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of blocklist.matches (is a device in the ignore list, by MAC, IP, name or by the hostname announced via DHCP for its MAC): 4000 generated cases - empty list,
 MAC in any case or with dashes, IP, names with spaces and capitals, empty entries, device name missing/empty, DHCP hostname known/unknown/empty/None, entries of every kind - must give
 exactly the answers stored in tests/golden/blocklist_matches.json, written from the code as it was before the function was split.

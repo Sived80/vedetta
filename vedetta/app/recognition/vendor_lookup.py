@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Who made a network card, from its MAC address: the IEEE registry (a copy downloaded into the data folder wins over the one shipped with the app), private
 (random) addresses, and the brand and vendor resolution that the device cards use."""
 from functools import lru_cache

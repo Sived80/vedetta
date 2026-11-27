@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The language of each Home Assistant user: kept on the server for the user the ingress names (X-Remote-User-ID), so it follows them to
 every browser; without a choice the language of Home Assistant is used, then the browser's (Accept-Language), then the default of the app.
 A wrong or hostile request cannot break it: an unknown language is refused, a strange id is ignored, the file cannot grow without limit."""

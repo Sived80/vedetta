@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A DNS-SD service name is an opaque identifier (RFC 6763, section 7: "some unique opaque Service Name"): it is compared whole with the tables of declared services, never cut into words like free text.
 Before, the declared services were also read as prose, so the same fact counted twice and a piece of a compound name of a maker became a word of function ("monitor" in _solaredge-sense-monitor._udp
 made a computer of an inverter). The test is made from the data:

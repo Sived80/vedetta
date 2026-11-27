@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 # Installs (or updates) a SEPARATE copy of Vedetta on Home Assistant OS, for debugging: "Vedetta (debug)", slug local_vedetta_debug.
 # The copy on the host is replaced as a whole (a file removed in the repository must not stay there: the front-end parts are joined
 # by name, a stale part would be served too). It does not touch the real app: own data (/data), own port (chosen by the Supervisor, like the real app), no MQTT (nothing is published to Home Assistant),

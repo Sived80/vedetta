@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The network (VLAN) option of the export is there for anyone (no debug mode needed) while the server offers it, and only for the developer export. With the server not offering it
 // the window is the one everybody knows: nothing of the option exists in it, and Home Assistant is never asked about it.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_export_vlan_off_ui.js [it|en]

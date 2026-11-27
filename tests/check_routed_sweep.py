@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P11 (decisions 1A, 2A): routedwatch, the ping sweep of the networks behind the router, with a spy on what leaves.
 - only the confirmed networks seen through the router are swept: a paused one, one reached through the host's own interface and the main
   one never; the excluded range never; one ping per address and nothing else leaves (no connection, no socket, no process: no port, no ARP,

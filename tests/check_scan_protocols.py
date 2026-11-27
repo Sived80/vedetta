@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of scan/scan_protocols.py: UPnP blocks grouped by the IP in their Location line, IGMP groups, DHCP offers (only real offers),
 NetBIOS / SNMP results of the per-host scripts, and the command lines of the four scans with a fake nmap (bad XML gives an empty answer)."""
 import asyncio

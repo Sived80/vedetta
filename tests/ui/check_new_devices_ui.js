@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The card of the devices found: add one, cancel one, "Add all", cancel the batch, the tick when a device is saved, "Close".
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_new_devices_ui.js [it|en]
 const fs = require("fs");

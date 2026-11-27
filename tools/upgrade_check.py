@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Update test on a COPY of real data: the folder of data of an installation (what /data holds) is copied, opened by the old code, by the new code and again by the old code (the way back), and what must survive is compared.
 
     python tools/upgrade_check.py <data folder> [--old origin/main] [--new .] [--network 10.0.0.0/24]

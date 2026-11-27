@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The presence of a linked card by its MAC (1.0 step P5, macpresence, pure). One case per line of the plan's table:
   at the card's address: its MAC -> online; a lent or virtual MAC (a repeater) -> the rule of before; another MAC -> not this card; nobody -> the
   adapter decides, as before;

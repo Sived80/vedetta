@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P8: one way to walk the network. With the length of the periodic check (`cycle_s`) a network up to a /24 is asked one slice a cycle,
 in turn (the slice that waited longest), plus the known devices; the slice is as small as 32 addresses (decision 1A) and grows so that the
 whole network is covered within ROUND_S, whatever the cycle (decision 2A). Without `cycle_s` (the quick search, until step P9) nothing

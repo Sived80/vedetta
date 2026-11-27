@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one guard of the networks: to which confirmed network an address belongs, and which addresses of a list may be touched.
 
 Pure: it is handed the networks (the main one among them). Only confirmed networks count: a proposed or paused one, or an address in an excluded range, belongs to none.

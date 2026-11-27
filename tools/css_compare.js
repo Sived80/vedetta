@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 #!/usr/bin/env node
 // Compares the rendering of the /ha page with two style sheets, A and B: the proof that reorganising the CSS changes nothing.
 //

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Tolerant, lazy reading of the text tables the kernel exposes (/proc/net/route, /proc/net/arp, /proc/self/status). The file may not be there (not Linux, a restricted container): the table is then empty,
 never an error, and the first time a path cannot be read it is told at debug level (an empty answer without a trace hides a fault). The lines are read one at a time, as the callers always did: a caller that
 stops at the first line it wants never reads (or decodes) the rest. With the default errors="strict" a decoding error (a ValueError) goes up to the caller; with errors="ignore" the bad bytes are dropped."""

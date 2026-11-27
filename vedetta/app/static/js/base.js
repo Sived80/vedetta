@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Base path (Home Assistant ingress). Ingress serves the app under a
 // prefix (/api/hassio_ingress/<token>) but strips it before forwarding: the
 // routes stay /api/..., only the URLs the browser builds must be

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, REDUCED, debounce, esc, icon, params, t } from "./core.js";
 import { layout } from "./tile.js";
 import { connect, schedule } from "./live.js";

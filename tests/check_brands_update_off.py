@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """POST /api/brands/update downloads the IEEE list of MAC prefixes: with the app option internet_mac_database off it sends nothing and says
 why (19/11 review: the option promises that nothing goes out; no page calls this route, but it must keep the promise too)."""
 import os

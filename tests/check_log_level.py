@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The add-on option `log_level` (debug, info, warning, error) reaches the service as VEDETTA_LOG_LEVEL. It used to go only to uvicorn: the service's own log stayed at INFO whatever the user chose.
 Now the level of the service's log follows the option; an unknown or missing value keeps INFO."""
 import logging

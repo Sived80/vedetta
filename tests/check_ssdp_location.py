@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An address that a device writes in its own answer is not a place to send data to. The SSDP answer carries a LOCATION header; the search used to fetch whatever it said (a GET). A device, or a forged
 packet, could name a printer's raw printing port or a controller: the app would send the request there. Rule: never risk commanding a device. The same class of flaw as CallStranger
 (CVE-2020-12695: a URL chosen by the peer makes the device open connections to arbitrary targets); no source found on the LOCATION field itself, so the rule is the plain one: the URL must

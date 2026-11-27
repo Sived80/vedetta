@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The single inventory (1.0 step P7): who is on the network, remembered, instead of the snapshot of the last ARP read.
 
 Built from what the MAC layer already keeps (ip_mac: address, MAC, source, first and last sight), for every (network, MAC) seen in the last

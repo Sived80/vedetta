@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The front-end of the /ha page, kept in several files.
 
 The script is a set of ES modules (app/frontend/ha/js): one file for each part of the page (the base, the export, the deep search, the network card, the tiles, the devices found, the log, the "More info"

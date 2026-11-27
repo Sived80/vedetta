@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Forget an ignored device: it leaves the list and what the app remembers about it goes too (the known MAC, the DHCP name, the Bonjour card);
 a normal known device is never touched, and a wrong request is refused."""
 import os

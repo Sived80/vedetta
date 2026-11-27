@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_mdns.mdns_scan with the network parts replaced by in-memory fakes (the zeroconf browse fills `found` and then ends normally, times out, raises ImportError or
 another error; a fake logger and a fake mDNS memory record their calls): 1500 generated lists of (type, instance, address, TXT) - user-named and other service types, invalid addresses,
 TXT with friendly_name/fn/location_name (empty, slug-like, repeated), model and manufacturer keys, repeated addresses - and a pre-filled `mdns_meta` must give exactly the same names (or

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The quality of a link (analysis/quality.py): median and MAD (robust: Wi-Fi spikes do not move them), the robust z of the last value,
 the trend of the last 6 hours against the 18 before, the changes in 24 hours (a hole of Vedetta off is no change) and the longest
 outage; the route answers for a card and 404 for an unknown one.

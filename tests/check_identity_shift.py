@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Two different devices behind one card (ha/identity_shift.py): the judgement is rocky (two independent families of evidence, vetoes for private MACs,
 shared MACs and network roles, "same" evidence wins) and it only reads: a name chosen by hand is never touched."""
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of Anonymizer.leak_items (what is still readable in masked text): 500 generated texts mixing every kind of leak and of harmless
 look-alike (addresses, MACs in several forms, e-mails, IPv6, domains, secrets, known names and areas, placeholders) must give exactly the list (value and
 ORDER) stored in tests/golden/leak_items.json, written from the code as it was before the function was split.

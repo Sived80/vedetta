@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The Sentinel on the page: the bell on a card ("tell me if it disappears") next to the flag, plain icon, pressed when on, saved with
 // {"watch": true|false}; in the menu, «Alerts» opens a window like the other ones (the X first on the left, the buttons at the foot)
 // with the switch of the events in Home Assistant, the notify services (None first, then the ones Home Assistant has), «Send a test»

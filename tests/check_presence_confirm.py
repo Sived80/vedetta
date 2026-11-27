@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Confirm before saying offline: a card on Home Assistant's own network that was online and is about to go offline (this miss reaches the
 tolerance) gets ONE targeted ARP check (arp-scan of its address) and a fresh read of the neighbour table; if it answers there, as itself, it
 stays online. Bounded: only the cards about to drop, at most MAX_PER_CYCLE per cycle in one arp-scan run with a short timeout; never behind the

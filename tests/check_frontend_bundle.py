@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The front-end of /ha is kept in parts (app/frontend/ha/js: ES modules, app/frontend/ha/css: the style) and served by app/assets.py + main.py.
 Checks: the style is joined and balanced and no stale copy of ha.css is left in the static folder (it would never be served); the modules are what a browser needs (a package.json that says "module", the entry
 app.js, every import points to a file that exists and exports that name, every module is reached from the entry, each one is valid JavaScript); the page asks for the entry with a version that changes with the

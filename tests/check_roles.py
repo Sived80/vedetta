@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Network roles and clients behind a repeater (real data from the 2026-10-04 test)."""
 import os
 import sys

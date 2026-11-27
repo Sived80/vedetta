@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC links as the cycle reads them (1.0 step P5, linkview): a stored link is used only when it may be trusted now. One case per
 condition (U1-U6 of the plan): the row is "linked" (U1), its seq is the card's (U2), its network is the card's network now (U3), it has been
 stable for two judgements (U4, decision A of 12/11: the case S10, a repeater linked to its own MAC just before it starts lending it), a judgement

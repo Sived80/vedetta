@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of four helpers of recognition/roles.py: _find_clients_behind_repeaters (same MAC on several addresses -> the clients behind a repeater, plus the
 repeater role added through the add_ callback), _build_roles_result (roles in the fixed order, UPnP types, what the DHCP servers hand out), _record_dhcp_offers (remembers the
 offers, journal lines, log line, alert for several servers) and _store_roles_and_notify (stores the result, log and journal only when something changed, change callback).

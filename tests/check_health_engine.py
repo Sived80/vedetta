@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The judge of the network-health rules (health/engine.py) for the first row, the IP conflict: a conflict is only a «tentative» until it is seen for min_cycles judgments in a row, it becomes «active», it is closed after clear_cycles judgments without it,
 and one flicker does not open anything. The evidence never holds an address or a name. A rule in draft is not judged. Pure: the signals are handed in."""
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """RoutedMixin: the inventory by address of the networks behind the router (1.0 step P11, routedinv.py), kept on disk.
 
 routed_seen  one row per (network, address) that answered a ping sweep: when it was first and last seen, the MAC and the name when Home

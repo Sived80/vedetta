@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Renders the /ha page with invented devices into a folder (page.html + data.json) for the jsdom UI checks.
 Usage (from the vedetta/ folder): python ../tests/ui/build_page.py <out_dir> [it|en]"""
 import json

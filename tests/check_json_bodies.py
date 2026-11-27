@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Every route that modifies something reads its JSON body through ONE helper (routes/bodies.py json_dict): a body that is not valid JSON, or is a list, a string or a number, gives a translated 400, never a
 500 with a traceback in the log. Found by the global review (two routes of the export read the body unchecked and several kept their own copy of the same check). The routes that deliberately accept an empty
 or wrong body as «nothing» (cancel the searches, ignore all, brand preview) are listed apart and must keep answering 200."""

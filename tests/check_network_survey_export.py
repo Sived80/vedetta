@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The network survey inside the export for the developer: with the tick off the export is what it always was; with it on the survey is a file of the zip, masked
 (the names and addresses of the clients are told to the masking first); for the person's own export it never applies; the switch turns the whole thing off;
 Home Assistant failing does not fail the export; the request is checked."""

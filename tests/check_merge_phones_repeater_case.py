@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """One phone with a private MAC that changed address twice while a repeater answered ARP for it must end up on ONE card.
 The timelines are those of a real export (23 Oct 2026, 7 days of presence), with fake names, addresses and MACs and the times as hours before now:
 a phone card (old) that moved away from its address and a second card (new) that took it, same model name, never online together,

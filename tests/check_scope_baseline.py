@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the network guard of today (one network only), before the work on more networks: it is the reference of the differential test of the
 guard that will replace it. Asserts what the code does now: get_local_network asks `ip -o -4 addr show <lan_iface()>` and reads the first address; filter_local_ips keeps
 the addresses inside that network, in the order given, drops the others, and the network and broadcast addresses count as inside; an empty list stays empty; a value that is not

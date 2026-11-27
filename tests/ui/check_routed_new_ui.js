@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // 1.0 step P11: a new device behind the router in the card of the new devices. It has an address and no MAC (Home Assistant did not say
 // it): the row shows the address and no MAC, «Ignore» ignores it by address (/api/ignored/hosts, never the list by MAC), and the notice of a
 // second one names the new one (the page tells the devices apart by address when there is no MAC).

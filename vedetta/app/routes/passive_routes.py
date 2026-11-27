@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Routes of the devices that Home Assistant sees ("Networks seen by Home Assistant"): the switch, the reading, the list to choose from, the adoption, and the changes to an adopted device.
 
 The changes of an adopted device (name, type, brand, removal) arrive on the routes of the other devices (/api/devices/{id}/rename, /override, DELETE): those routes hand the ids that start with "ha-" to

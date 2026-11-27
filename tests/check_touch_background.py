@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Don't touch» is checked where the work actually starts, not only where it is planned. Found by the global review: the background scan of all ports waits for its turn (up to 900 s) and was not
 asked again whether the device may be touched; and the batch of the deep search (mDNS reverse names: a unicast query to every address) was prepared for ALL the addresses, the ones that must not be
 touched included. Rule: never risk commanding a device."""

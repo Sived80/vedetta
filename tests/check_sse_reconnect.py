@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The page reopens its live stream only when it is dead (#55): a resync keeps a healthy stream, and the ping of the server is an event the page sees.
 
 Every reopen drops a stream while data flows, and the Home Assistant Supervisor logs each such drop as an error."""

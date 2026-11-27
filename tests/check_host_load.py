@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The load of the system under the app (scan/host_load.py): the pressure stall information of the kernel (/proc/pressure/{cpu,io,memory}, the "some" line, average of the last 60 s) read without any permission, a
 traffic light for the heavy background work (busy: which resource is over its limit, or None) and a sampler that keeps the last samples and writes one line to the log each hour, so the limits can be tuned on real
 days. Seen on the Proxmox history of 22 Oct: the disk of the host is saturated for about 22 minutes every three hours (backup); the CPU never. No address, no name: numbers only. Nothing readable, nothing blocked."""

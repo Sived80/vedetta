@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Which MACs are a device: the one rule every entry point of a MAC follows (arp-scan, the neighbour table, DHCP, the router's table by SNMP,
 Home Assistant's registry, the MAC a probe reads). Standards only, no maker: IEEE 802-2014 section 8.2 (the I/G bit, the least significant bit
 of the first octet, marks a group address: 01:00:5E:.. of IPv4 multicast, RFC 1112; 33:33:.. of IPv6 multicast, RFC 2464; the broadcast

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Move top-level functions / classes / constants of a module into a new sibling module, keeping the old one working.
   python tools/split_module.py FILE NEWNAME name1 name2 ...  [--write]
 The moved code (with the comment lines right above it) goes to NEWNAME.py next to FILE. The old module gets `from .NEWNAME import ...` for

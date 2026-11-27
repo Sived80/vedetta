@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A nmap that hangs must not hold one of the two slots for ever. Found by the global review: _run_nmap relied only on nmap's own --host-timeout; a nmap that did not return (a stuck child, a
 filtered network) kept its slot and the pipeline stopped; after an error that was not a cancellation the process was not killed. Now: an absolute limit (the host timeout plus a grace; a fixed maximum
 for the commands without a host timeout), the process killed and waited for on every way out."""

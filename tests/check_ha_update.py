@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The update state of this add-on (ha_update): the card that the Supervisor gives for the add-on itself is read as {available, installed, latest}; a card without a
 version says nothing; no token (outside Home Assistant), a Supervisor that is down or too slow keep the last answer and ask again soon; a good answer waits ten minutes;
 the one thing asked is the add-on's own card, with the token as a bearer (read-only, no other address)."""

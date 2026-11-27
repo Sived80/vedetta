@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Home Assistant-style dashboard (/ha) and its JSON APIs (/api/ha/*).
 
 Designed to live in an iframe of an HA dashboard. It changes nothing in the

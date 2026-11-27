@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """mdns_parse: moved out of scan_mdns.py (see tools/split_module.py)."""
 import re
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Every icon the page asks for by name exists in icons.js (a missing one silently falls back to a generic icon:
 the (i) of the certainty rows showed a device icon for that reason)."""
 import re

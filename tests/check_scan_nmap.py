@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of scan/scan_nmap.py with a fake nmap: the XML is read as it is written by nmap (hosts up/down, confirmed services, web title,
 TLS certificate, SSH key), the command lines are the ones the pipeline relies on, the pilot decides "slow", a scan that ends at its host-timeout is
 remembered as incomplete, a cancelled scan kills the process, and the readable labels of the log."""

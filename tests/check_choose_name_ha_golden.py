@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_registry.choose_name (name and source from a Home Assistant record: the name chosen by the user in HA first, else the device name or the first usable
 integration title): 5000 generated records - no record, name chosen by the user or not, placeholder and technical names, a name that cleans to nothing (a bare IP), names with
 spaces and an embedded address, generic integration titles in any case and with spaces, empty and None titles, a missing name, a missing or None title list - must give exactly

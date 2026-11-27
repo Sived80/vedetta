@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """One judgement for "are these two MACs the same device?" (recognition/same_device.py). The notice of a second device behind a card (ha/identity_shift.py) and the name that a card keeps
 (scan/probe_names.py) ask the very same question, so they use the very same function: the same vetoes, the same evidence that it is one device, the same families of evidence that it is two.
 What differs is only how much evidence each consumer wants before it acts, and that is a named policy, not a second copy of the rules. The fingerprints below are made up."""

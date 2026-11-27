@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Names used and never defined in the ES modules of the page: node --expose-internals tools/js_undefined_refs.js [JS_DIR]
 // A module that uses a name of another module without importing it fails only when that line runs (a ReferenceError in the browser, not at load): this reads every module with the parser that Node itself carries
 // (acorn, through --expose-internals: no library to install, development only) and reports each identifier that is neither imported, nor declared in an enclosing scope, nor a global of the page.

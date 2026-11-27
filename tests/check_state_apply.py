@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference (characterisation) test of how the service decides whether a device is online or offline: DeviceState._apply.
 
 It pins down the behaviour of 0.6.1 without judging it, so that the cycle code can be moved and split with the proof that the result stays

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An export that takes longer than MAX_AGE must not be forgotten while it is still running: the window polled a job that was gone (404,
 "export failed" after 15 minutes) and a second export could start next to the first. The age counts from the job's last step, so a job
 that has just stopped to ask the person (or has just finished) gets its full time too. No export runs here: the jobs are made by hand."""

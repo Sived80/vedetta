@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Delete this network» (a written network): its cards in devices.yaml, the devices of Home Assistant adopted
 in it, every row of the history about it, the ignored devices of it (by MAC seen there or by an address of it: those ignored by name hold for
 every network and stay) and its row in networks.json. Nothing of another network is touched (tests/check_network_purge.py). preview() gives

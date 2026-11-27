@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P10, through the one writer on a database: a card linked to a private MAC (a phone); the phone rotates its MAC and takes another
 address; DHCP says the same client identifier. At the next judgement the link passes to the new MAC (source "identity") and the export counts
 it. Without the client identifier (another device), the link stays where it was.

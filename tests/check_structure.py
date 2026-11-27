@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The structure of vedetta/app: every module imports, no import cycle at module level, and each package only reaches where it should.
 
 Packages (see docs/DEVELOPMENT.md): scan, recognition, ha, export, storage, topology, analysis, routes; the root keeps the core (state, i18n, paths...).

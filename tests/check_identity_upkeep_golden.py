@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of IdentityUpkeep (identity_upkeep.py): _duplicate_key (the name that identifies a phone), merge_duplicate_phones (two cards of the same phone, grouped by name, merged when at least one is online and they were not online together for long)
 and _merge_cards (the older card takes the address that answers, the other disappears). Generated worlds (cards, configuration, MACs, ARP view, history answers, failures of each
 collaborator, equal timestamps and values right on the thresholds), with the collaborators replaced by deterministic in-memory ones (devices_config, history, a frozen clock, fake

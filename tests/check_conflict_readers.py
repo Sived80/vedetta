@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The IP conflict in one place (1.0 step P3): the alert "duplicate IP" and the network doctor (H20 and its page) read the conflicts of the single verdict
 (macverdict.conflicts: judged in time by macclassify, going on while the last evidence is recent), not the last ARP scan any more.
 Proved here: the alert is sent once for each address and set of MACs while the app runs (as before: a conflict that ends and comes back is not sent again,

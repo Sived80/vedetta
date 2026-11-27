@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The list of HTTP routes of the service (method + path) must not change when code is moved between modules: it is fixed in
 tests/golden/routes.txt. A route added or removed on purpose: regenerate the file (see tests/check_probe_golden.py for the idea) and review the diff."""
 import os

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* The panel «Networks» (#netview, js/netpanel.js): a view over the page with one row per network and, on the right, the management panel
    (full screen on a phone). Same look as the final preview v10: rows on one grid shared by all of them (subgrid), each column as wide as its
    widest content and the same space between all columns; the colours of the sources (Vedetta, Home Assistant, router) and of what is missing. */

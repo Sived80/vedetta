@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The Sentinel at work (the rules are in sentinel.py): it is told what changed by the cycle (a card online/offline, a new device),
 and at the end of each cycle it sends what is ready. Its state is saved in sentinel.json, so a "down" sent before a restart still
 gives its "back" after.

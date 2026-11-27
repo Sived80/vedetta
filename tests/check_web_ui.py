@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The "open web interface" button only appears where a real page answers (not a 404, not an API port)."""
 import asyncio
 import os

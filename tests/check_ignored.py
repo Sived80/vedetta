@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the ignored-devices list (no network, temporary file)."""
 import sys, tempfile, types
 from pathlib import Path

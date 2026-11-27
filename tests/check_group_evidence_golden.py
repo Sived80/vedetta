@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of evidence.group_evidence (how sure the app is of the group of a device and which groups it rejected): 3000 generated inputs - chosen by hand,
 mobile phones with and without a score, generic and tied groups, groups with no points, a chosen group missing from the scores, clues counted or not, an
 unusual minimum score - must give exactly the output stored in tests/golden/group_evidence.json, written from the code as it was before the function was

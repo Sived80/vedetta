@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An optional extra section of the export for the developer.
 It holds what the host of Vedetta and Home Assistant say about the networks (VLANs) of the house, in a form that does not depend on a make. It is added to the export only when the person ticks it (and while ENABLED is on) and it goes through the masking and the seal like every
 other file. Everything here is a READ: files of the host, the registries Vedetta already reads and ONE template that Home Assistant renders itself, so that a

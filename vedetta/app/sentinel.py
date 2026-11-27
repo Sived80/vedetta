@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Sentinel: which changes of the network become a message for the person, and when. Pure: it is handed what happened (a new device,
 a card going offline or coming back) and the time, and it says what to send now; sending and saving are the caller's.
 

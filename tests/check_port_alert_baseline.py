@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The ports kept from the analysis (when a device is added) are a starting point for the alerts of the first deep search: a port that the deep search finds and the analysis did not is «new»,
 but a port that the analysis saw and the deep search does not is NOT told as closed (the analysis is no deep reading: a slow device, a busy moment). After a deep search both are told, as always."""
 import asyncio

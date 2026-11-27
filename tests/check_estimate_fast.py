@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The size estimate of an export (export_estimate.estimate) on a big history: the same numbers as counting row by row, counted by
 the database (a debug copy with days of ping samples took more than the 25 s the page waits, so the encrypted export stayed off);
 several requests at the same time compute it once, the others take that result.

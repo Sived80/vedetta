@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """probe_record: the records that the stages of probe_device pass to each other (what is known about the device, how it is reached, the brand stage, the name, the product)
 and the builder of the final card record. Kept apart from probe.py so that the stages stay a short list."""
 from dataclasses import dataclass

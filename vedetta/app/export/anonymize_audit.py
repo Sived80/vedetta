@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """AuditMixin: methods of Anonymizer that belong together (moved out of anonymize.py by tools/split_class.py)."""
 from .anonymize_patterns import _SSH_FP, _TLS_FP, _DOMAIN, _EMAIL, _HOME_DOT, _IPV4, _IPV4_SEP, _IPV6, _KEEP, _SECRET_PAIR, _VERSION_WORD, _WELL_KNOWN, _ip_ok, _public_domain, _v6_ok
 from itertools import chain

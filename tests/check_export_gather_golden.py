@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_engine._gather_data_files (the data folder -> text files of the export, with the manifest notes) and export_engine._gather_device_debug_and_focus (per-device debug
 and evidence, plus the "device under examination" section): generated runs with the collaborators replaced by deterministic in-memory ones that RECORD THEIR CALLS - a real temporary data
 folder (valid, invalid, binary, credential-like, empty and oversized files, a subfolder, the database and mapping files, a missing folder), a fake shared state (service diagnostics that may

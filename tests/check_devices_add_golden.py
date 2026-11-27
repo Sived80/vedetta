@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of devices_config.add_devices (adds the devices found by a scan to devices.yaml, skipping addresses already present and making identifiers unique):
 1500 generated runs on a temporary folder - file missing, empty, with a list of devices (some without id), a devices key that is null, a file that is a list; new devices with and
 without id, repeated addresses and identifiers, port 0/None, adapter, name, scan_info and name_source present, empty or falsy, a device without address (KeyError) - must give exactly

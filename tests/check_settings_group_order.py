@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The order of the groups on the page (1.0.4, setting "group_order"): [] = the default order; POST /api/settings saves a list of known
 groups, each once, made whole (the missing ones follow in the default order); an unknown group, a repeat or a value that is not a list is
 refused (400, nothing saved). A file written by hand with an unknown group is read without it. Temporary data folder, nothing contacted.

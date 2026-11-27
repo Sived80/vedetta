@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #48: the /ha page must not need an inline script to start. Behind a reverse proxy that adds its own Content-Security-Policy (or rewrites
 the scripts of a page), the inline scripts with the nonce of Vedetta's policy do not run: the texts (VEDETTA_I18N) and the ingress prefix
 (VEDETTA_BASE) were missing, every request went to the wrong address and the page showed js.ha.error.title. Now:

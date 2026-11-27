@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """When Vedetta first started on this installation (storage/firststart.py): written once in the data folder and then only read; an installation that already
 has history (an update from an older version) takes the date of its first event, so the notice of the first hours does not appear to people who have used
 it for weeks; a file that cannot be read is written again. The summary says until when the notice of the first 48 hours may appear (None after)."""

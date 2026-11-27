@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The body of a modifying request: a JSON dictionary or a 400, in one place (a body that was a list, a string or not JSON used to give a 500 with a traceback in the log)."""
 from fastapi import HTTPException, Request
 

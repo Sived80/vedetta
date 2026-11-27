@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Who does what on the network: gateway, DHCP server, DNS server, router, access point,
 Wi-Fi repeater, and which clients go through a repeater.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Two devices that announce the same name (the service name of an app on every phone) must keep two placeholders; one device
 with several names still has one; nothing readable is left."""
 import os

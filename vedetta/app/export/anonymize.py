@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Anonymisation of the export for analysis: only the copy inside the zip changes, never the live data.
 
 Every sensitive value becomes the same placeholder everywhere in the file (JSON, log, database), so the

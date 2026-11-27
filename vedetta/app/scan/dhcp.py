@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Passive DHCP listening: clients (phones included) broadcast their own name
 (option 12), the list of requested parameters (option 55, which has a
 characteristic order for each operating system - the principle behind Fingerbank

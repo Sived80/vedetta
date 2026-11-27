@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The image of the add-on is built the same way every time: the base image is named by a version tag AND by its digest (a tag can be moved by whoever publishes it, a digest cannot), never "latest", and every Python
 package is pinned with "==". Without it two builds of the same version of the app could differ, and a fix for one user could not be rebuilt for another. How to move to a newer base on purpose is written in the Dockerfile."""
 import re

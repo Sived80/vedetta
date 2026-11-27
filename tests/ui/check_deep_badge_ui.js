@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The badge of the deep search: how many devices were never analysed in depth, on the corner of the arrow of the scan button;
 // it flies into the "to analyse" tile when the menu opens and comes back when it closes. Needs jsdom (see check_evidence_ui.js).
 //   from the vedetta/ folder:  node ../tests/ui/check_deep_badge_ui.js [it|en]

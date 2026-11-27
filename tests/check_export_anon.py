@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Export for analysis: IPs, MACs and names are anonymised only inside the zip, the same value always gets the
 same placeholder, the live data does not change and no original value is left in the file."""
 import io

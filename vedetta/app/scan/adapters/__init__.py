@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 from . import shelly_gen1, generic, ping
 
 ADAPTERS = {

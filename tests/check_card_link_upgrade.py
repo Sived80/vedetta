@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC link across an update from an older devices.yaml and back (1.0 step P4): a file without seq, with fields this version does not
 know and with a `mac` written by hand (a wrong one: it is never read), and a database with the history of the cases of the rule. The start goes as
 in main.py (ensure_seq_safely, the database opened, one judgement of the links): exactly the right links, devices.yaml untouched but for seq. Then

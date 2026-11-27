@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of presence for a card the ARP table does not know (a device behind a router never is in it), before the work on more networks:
 complete_with_arp leaves the result of the adapter as it is when the address is not in the ARP view (online or offline, with or without MAC, and the dictionary itself is not
 touched). A card without a usable link (a new card) is not kept online by the MAC at its address when that MAC is another card's usable link (the one

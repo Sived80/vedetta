@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """ha_type_evidence: moved out of ha_data.py (see tools/split_module.py)."""
 import re
 from functools import lru_cache

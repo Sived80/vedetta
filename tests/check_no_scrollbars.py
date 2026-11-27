@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """No scroll bar is drawn in the page (a vertical bar at the side of a card looks dated): the reset hides it for every element, and no later rule may bring one back (scrollbar-width other than none, a styled ::-webkit-scrollbar that is shown)."""
 import re
 from pathlib import Path

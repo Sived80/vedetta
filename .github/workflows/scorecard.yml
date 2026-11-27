@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 name: Scorecard
 
 # OpenSSF Scorecard: an outside, automatic check of how the project is kept (protected branches, signed releases, tests,

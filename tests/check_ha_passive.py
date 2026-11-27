@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The devices Home Assistant sees on other networks ("passive" devices), from the reading to the card.
 
 What this proves, on invented data (documentation addresses 192.0.2.x / 198.51.100.x, made-up MACs):

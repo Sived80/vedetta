@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """export_analysis: build the enriched analysis state (state/analysis.json) for diagnosis and privacy.
 
 Strict schema with allowlist validation:

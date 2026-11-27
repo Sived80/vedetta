@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replay of the presence history of real exports through the two rules for a MAC "shared by several cards": the old one (the MAC appears under more than
 one card in the window) against the new one (two cards used it at the same time, storage/overlap.py). Prints, per export, the MACs the two rules judge
 differently and the cards whose count of private MACs changes. Read-only; the exports stay in ~/.vedetta/exports.

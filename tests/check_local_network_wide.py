@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The local network as the page gets it (Discussion #15: a /22 was shown as a /24): netutil keeps the network of its last reading, the roles that reach the page (event and summary) carry it, and
 the list of the clients Home Assistant sees groups them by it. The export, which keeps the snapshot of the roles, does not get it. Before the first reading there is none, and the page keeps its /24. Fake `ip addr` output; documentation and private placeholder addresses."""
 import asyncio

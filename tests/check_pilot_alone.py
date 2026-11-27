@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The pilot test (1000 ports, judged against PILOT_MAX_S) must be measured with nothing else heavy running: under load a healthy device took 6-16 s
 instead of 0.5-3 s and was wrongly judged slow (so it lost its high ports). Rules checked here with a fake nmap: only one pilot at a time, no heavy
 nmap while a pilot runs, a heavy nmap already running is waited for, and the permits are always given back (also when the pilot is cancelled)."""

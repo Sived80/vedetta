@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the quick search ("Search devices") before the work on more networks, where a row may come without a MAC (a device behind a router):
 - run_initial sees the network through ARP only: arp-scan, the neighbours the system has just seen answer (REACHABLE) INSIDE the local network, the own host; a neighbour
   of another network (on a VLAN interface, or a stale entry) is never a host; every host has a MAC;

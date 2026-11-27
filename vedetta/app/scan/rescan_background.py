@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The full port scan of a slow device, in the BACKGROUND (schedule_full_ports): the deep search (rescan.py) covers only the targeted ports of such a device;
 this one runs afterwards, at a cautious pace and one at a time, adds the extra ports and reads their services. Moved out of rescan.py: it changes for other reasons than the deep search."""
 import asyncio

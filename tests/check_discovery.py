@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """WS-Discovery (ONVIF), RTSP and brand evidence (confirmed/plausible/declared generic)."""
 import os
 import sys

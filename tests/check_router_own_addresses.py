@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The router's own addresses through SNMP (1.0.1): with the router's address and a community written, the reading of its ARP table also reads
 its own address list (IP-MIB ipAdEntAddr, else ipAddressTable), read-only, with the same community. Every card at one of those addresses on
 another network is a twin of the router's card on the main network (the address written as SNMP router). Nothing changes without SNMP.

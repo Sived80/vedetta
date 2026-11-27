@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The badges of a card's icon. One class (Kind) per kind of badge, one function that chooses: at most one badge per corner and two in all, the strongest of each corner; the others are
 told by `hidden` for the detail of the card. Corners: top_right = the state of the device, bottom_right = what is new or still settling. Pure; no colours here (the UI adds them for both
 themes, and always a text or a shape beside the colour)."""

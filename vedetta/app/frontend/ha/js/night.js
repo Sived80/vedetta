@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, COMPACT, api, esc, icon, t } from "./core.js";
 
 // ------------------------------------------------- "Last 12 hours": the summary card

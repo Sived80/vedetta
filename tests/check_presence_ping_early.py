@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The ping behind the router starts with the adapter when the card's port was closed at its last check (decision A of 16/11): a check waits for
 the slower of the two, not their sum. An offline card behind the router used to cost the adapter's timeout and then the ping's (the median
 check went from 6.9 s to 8.8 s on the debug copy). Remembered only for cards behind the router that may be touched and whose adapter is not the

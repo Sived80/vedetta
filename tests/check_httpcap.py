@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """HTTP answers of the devices are read with a ceiling (scan/httpcap.py): a device decides how much it sends, and a descriptor or a
 status page of megabytes (a broken firmware, a hostile host) must not be read whole into memory. The ceiling counts the bytes after
 the decompression: a small gzip that unpacks to megabytes is refused too. Within the ceiling the answer reads as before (text with

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """No word of the keyword rules (data/type_words.json) is already said by a type of the same group (data/device_kinds.json). Both feed the family «words» of a group, which counts the highest value once, so a rule
 word that a type says in the same way (substring or whole word) with at least the weight of a rule word adds nothing to the scores: it only tells the same fact twice in the list of clues, and it is a second
 place to edit. This is the redundancy anomaly of the verification of rule bases, found by a check instead of by an eye. Not flagged, because they are not copies: a type that only tells the platform (its points go to

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The three places that keep a scan inside the network (the deep search of chosen addresses, the rescan of chosen cards, the nightly rescan of
 old cards), with the REAL guard and a fake `ip addr`: an address of the network is kept, one of another network or a public one is left out and
 named in the log, a list with nothing outside logs nothing. Written before moving them from netutil.filter_local_ips to networks.registry, so

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of mdns_listener.record (remembers an mDNS announcement per MAC, or per IP while the MAC is unknown): 4000 generated cases of one to three announcements each - valid and
 invalid addresses, user-named and generic services, names from the TXT keys (friendly_name, fn, location_name, also empty and "slug" values), model / manufacturer keys, long names,
 cards already stored under the MAC or the IP with every kind of score, services list and fields, `now` given or taken from the clock. `_mac_for_ip` and the clock are replaced by in-memory

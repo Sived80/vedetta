@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """scan_protocols: moved out of scanner.py (see tools/split_module.py)."""
 import xml.etree.ElementTree as ET
 from .scan_nmap import _LIGHT_NMAP_SEMAPHORE, _run_nmap

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Which addresses the periodic check asks over ARP.
 
 On a normal home network (a /24 or smaller: 254 addresses) the whole network is asked every time, as it always was. On a wider network

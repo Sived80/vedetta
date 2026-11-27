@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, TYPE_ORDER, esc, t, typePlural } from "./core.js";
 import { S, animateNumber, pauseLeft } from "./core-ui.js";
 import { newWaitingCount } from "./new-devices.js";

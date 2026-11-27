@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Text that comes from the network is shown, never run: a device that announces itself as "<img src=x onerror=...>" (in its name,
 // brand, model, the log, the clues of its sheet, the list of new devices, the ignored ones, the networks seen by Home Assistant) must appear as those characters on the page, and no element or script of its own is
 // created. Needs jsdom (npm install in this folder); without it the check is skipped.

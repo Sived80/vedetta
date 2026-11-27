@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Regenerates app/data/oui-ieee.txt from the public IEEE registries (MA-L 24 bit,
 MA-M 28 bit, MA-S 36 bit and IAB). The logic lives in app/recognition/oui_update.py (also used by
 the update from the web, which however writes to config/).

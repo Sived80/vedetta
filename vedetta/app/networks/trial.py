@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Try and add»: a network the person is about to write, tried before it is saved (POST /api/networks/test). Every address of it (the excluded
 ranges never) gets one ping, a few at a time; the answer says how many answered, the first few, and what Vedetta would see of it function by
 function (the judge of the list, panel.describe, with «it answers» from this sweep). Nothing is written. The ping is given by the caller (the

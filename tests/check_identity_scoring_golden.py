@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of three public functions of recognition/identity.py, written from the code as it was before their helpers were written back into them: default_gateway (the file reader is replaced
 by an in-memory one: system path or not, missing file, header only, malformed or short rows, undecodable data, gateway flag, the cache of the first answer; the calls to `open` and the lines consumed are
 compared too), mobile_assess (the score and the reason from every clue: the DHCP score, the name, the model class, the presence, the rotating MAC, the mobile service, the vetoes) and identify_brand

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The judge: it runs the detector of every rule that is not a draft and keeps the findings. A finding is «tentative» until it is seen for min_cycles judgments, then «active»; it is closed after clear_cycles judgments without it. A tentative that is not
 seen again goes away without a trace (one flicker opens nothing). The findings of a rule in shadow are marked so, and the page does not show them."""
 from dataclasses import dataclass, field

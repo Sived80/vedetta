@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Watch for MACs never seen on the network: compares what the inventory shows (the ARP view of the cycle and the devices it confirms, 1.0 step
 P7: inventory_view) and DHCP with the known ones and warns once for each new one.
 

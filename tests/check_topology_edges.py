@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Topology, phase T0: the links «client is behind this repeater» that the data already prove. A MAC lent to several cards at the same time (storage/overlap.py)
 marks a repeater, and every other card that used it is behind it. Real shapes (masked): one repeater lending its MAC to three phones for days, a phone that
 moved to another address (not behind anything), a lent MAC nobody owns."""

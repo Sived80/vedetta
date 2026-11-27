@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, phase 2: what kind of MAC is this? Pure functions over the rows of ip_mac (no network, no database, no brand).
 
 Input: rows {ip, mac, source, first_seen, last_seen, seen_count} as History.observe stores them, and optionally (phase 2b) the activity SESSIONS

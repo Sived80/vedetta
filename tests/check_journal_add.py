@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """journal.add on its four ways: an entry is appended to the file; a file over the size limit is rewritten whole (atomically) with the entries in memory; a file whose size cannot be read is appended to; a
 write that fails never raises (the log is auxiliary). Written on the code before it was flattened and kept passing after it (differential proof)."""
 import itertools

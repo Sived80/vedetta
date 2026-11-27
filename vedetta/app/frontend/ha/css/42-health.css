@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* Network health: the second screen of the Network card (four tiles), the big tile that a tile opens (the list of findings) and the detail of one finding. Only drawn in the debug mode (js/health-card.js).
    The same tokens, borders and sizes as the other tiles of the card; the colour of a state is in the icon and the number, never in the border alone. */
 

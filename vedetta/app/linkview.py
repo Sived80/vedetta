@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC links as the cycle reads them (1.0 step P5): which stored link may be trusted now. cardlink_cycle fills it after every judgement
 of the links (and once at start, from the last run) with the rows of History.card_links, its one reader; this module keeps that answer in memory,
 so the probes of a cycle ask it at no cost. A link of card C to MAC M is used now when

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export of the window as a job over HTTP: start, follow the steps, decide what could not be fixed, take the file once; one at
 a time; the period is checked; the file for the developer is sealed, the one for the person is a plain zip."""
 import io

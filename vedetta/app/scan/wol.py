@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Wake-on-LAN: standard magic packet (6 bytes of 0xFF + 16 repetitions of the MAC
 = 102 bytes) sent as a UDP broadcast. Open protocol, no special privileges
 needed: SO_BROADCAST is enough."""

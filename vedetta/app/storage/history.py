@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The database of the service (vedetta.db, SQLite): presence history, scans, known devices, the memory of MAC addresses and the MAC layer.
 History is one class assembled from mixins, one per theme (history_presence, history_known, history_macs, history_maclayer, history_scans,
 history_health, history_routed, history_purge)."""

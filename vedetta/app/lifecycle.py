@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Why did the service restart? A small record of the run (tests/check_lifecycle.py): when it started, a heartbeat (time, memory, the longest delay of the event loop) and a mark when it stops cleanly.
 At the next start the two runs are compared: a clean stop is a request from outside (Supervisor, update); a missing mark is a kill or a crash, and the last heartbeat says how long the process lived, how much
 memory it held and whether the loop was blocked (the watchdog asks /healthz and gets no answer). Plain JSON, written without fsync: a beat a minute must not wear a memory card out."""

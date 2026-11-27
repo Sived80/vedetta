@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Serving of the front-end of the /ha page: ha.css and the script from their parts, the modules one by one, and the static folder."""
 from fastapi import FastAPI
 from fastapi.responses import Response

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The presence of a linked card by its MAC (1.0 step P5). Pure: no imports from the app; the answers of the network and the tests come in as
 arguments. A card whose link may be used (linkview) is online when ITS MAC answers, at whatever address:
   at its address: its MAC -> online; a lent or virtual MAC (a repeater answering for the clients behind it) -> the rule of before (online by

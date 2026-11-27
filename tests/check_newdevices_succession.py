@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P10 (decision 1A): a private MAC never seen before that is the successor of a known one (maclayer.successions) inherits the state
 of the old MAC and is never alerted: the phone of every day that rotated its MAC is not a new device. The successions are asked once per
 round and only when there are MACs never seen before (`predecessor` callback); a callback that fails changes nothing.

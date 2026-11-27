@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The notification of a new device says its brand and its type, in the language of Home Assistant (app/ha/ha_notify.py lines):
 the finer type when it has a translated name ("presa"), else the group when it has one, else nothing; a brand or a type that Vedetta
 does not know is left out, never written as "None". Down and back keep their short line. Names already exist in the five languages.

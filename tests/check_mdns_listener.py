@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the memory of the continuous Bonjour listener (scan/mdns_listener.py): name scoring, an announcement kept by IP until the MAC
 is known and then moved under it, better names winning, the memory file (round trip, broken file, unwritable folder), the housekeeping that
 ties old cards to a MAC or drops the expired ones, the lookup, the scan_info form, and the start-up with and without zeroconf."""

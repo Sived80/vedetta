@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Phones with randomized (private) MACs: a card that rotates its address counts as a phone, a MAC lent by a repeater
 does not count, and two cards of the same phone are merged only when it is clear."""
 import asyncio

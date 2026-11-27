@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """`var` -> `const` / `let` in the JavaScript of the page, only where the change cannot alter what the code does. No parser and no library: the text is read with the comments, strings and regular expressions
 blanked (tools/loops_js.strip) and the braces are matched.
 

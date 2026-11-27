@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """`name_mac` (the MAC that announced the name of a card) lives in the file of the devices. It is a MAC address, so it must not travel in an export in the clear: it is not part of the compact card
 that the export carries, and anything that does carry a MAC goes through the anonymiser, which replaces it. The MAC below is made up."""
 import json

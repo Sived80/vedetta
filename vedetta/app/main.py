@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Entry point of the service: creates the FastAPI app, starts and stops the background work in the lifespan, and mounts the routes that live in routes/.
 A route is the outermost layer: nothing imports this module except the tests (that is why the names of the routes are also reachable here)."""
 import asyncio

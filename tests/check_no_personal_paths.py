@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """No file tracked by Git may carry the trace of a local machine (a stray local file, a measurement database, a path in a log): the repository is public.
 The check looks for the SHAPE of such a trace, never for a name, so no name has to be written in the repository: the home folder of a user (C:\\Users\\<who>,
 /home/<who>, /Users/<who>) and the cloud folder that a company account creates on a PC (the cloud service, a dash, the company). Every tracked file is read as bytes, so binary files count too."""

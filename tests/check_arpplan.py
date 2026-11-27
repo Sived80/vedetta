@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The periodic check on a large network, and the guards of its loop.
 - a network up to a /24 is asked whole, as always; a wider one by blocks (the network around this machine, the known devices, one more
   block that has waited longest), never more than MAX_TARGETS addresses; a network wider than a /16 is read as the /16 around this machine;

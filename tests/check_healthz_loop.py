@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """/healthz says whether the service does its work, not only whether the web server answers: a probe that never ends used to stop
 every check while /healthz kept answering ok, so the watch loop of run.sh never restarted the service. Now /healthz is 503 when
 the loop of the checks has not turned for max(5 minutes, 5 intervals); a pause keeps the loop turning (it waits at most one interval);

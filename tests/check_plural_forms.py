@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Plural forms (19/11 review): Czech counts 1 / 2-4 / 5+ ("1 nové zařízení", "3 nová zařízení", "5 nových zařízení"); the server picks
 «_few» for 2-4 in Czech, the other languages stay with one and other. The page does the same with Intl.PluralRules (check_plural_ui.js)."""
 import os

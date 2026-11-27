@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Compare two exports of Vedetta taken on the same network (for example the real app and the debug copy): what each one knows about the same devices.
   python tools/compare_exports.py A.zip B.zip [--label-a produzione] [--label-b debug] [--all]
 Devices are matched by MAC (else by address) - so take both exports "for me" (not masked), otherwise the numbered placeholders differ between the two files.

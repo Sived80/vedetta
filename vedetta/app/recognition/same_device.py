@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one judgement of "are these two MACs the same device?". Pure: only the two profiles and what is passed in.
 
 Two parts of the app ask this question about the MACs behind one card: the notice of a second device behind it (ha/identity_shift.py) and the automatic name that the card keeps

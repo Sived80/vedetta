@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Unit and privacy audit tests for state/analysis.json and MQTT manifest status.
 
 Covers T1-T8 from Claude Sonnet's audit specification:

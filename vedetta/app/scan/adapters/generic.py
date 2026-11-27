@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Generic adapter: asks a device whether it answers on a TCP port, with no knowledge of any make. There is no ping fallback on purpose: an unreachable device
 would cost seconds on every check."""
 import asyncio

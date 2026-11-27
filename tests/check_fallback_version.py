@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The version that the page shows when the server does not tell it (FALLBACK_VERSION in the front end) is the version of the release: a release that forgets to update it shows the old number
 (the 0.9.0 went out with "0.8.0" there). It is compared with vedetta/VERSION and with the version of the add-on in vedetta/config.yaml."""
 import re

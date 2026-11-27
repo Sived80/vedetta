@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The summary of a window (the night, the last hours): what is NEW, what CAME BACK after a long absence, what went SILENT. Pure: it
 is handed the cards (when each was first and last seen, online now or not, phone or tablet, whether Vedetta could watch it), the
 returns after a long absence (history.returns_after) and the window.

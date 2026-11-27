@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The speed buttons of the menu: the time is written inside them, a choice stays lit at once and the menu stays open (so the line under it can be
 // read), a tap between the buttons changes nothing. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_menu_ui.js [it|en]

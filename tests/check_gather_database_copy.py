@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The copy of the database for the export (export_gather._gather_database_copy): no database = nothing; a small one is copied with the sqlite backup (a consistent copy of a database that is in use) and
 registered; a period cuts the copy; a database over the size limit is left out with a note unless a period is given; a database that cannot be copied or cut leaves a note and no file. Written on the
 code before it was flattened and kept passing after it (differential proof)."""

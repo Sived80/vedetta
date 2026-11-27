@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The ARP round trip of the latency (nmap -sn -PR) only for an address of the network of the interface, learned on that interface
 (K14, G0-19 of the study of the networks).
 

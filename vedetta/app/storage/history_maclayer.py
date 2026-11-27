@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """MacLayerMixin: the tables of the single MAC layer (moved out of history.py's class by design, see maclayer.py).
 
 ip_mac       one row per (ip, mac, source): when first and last observed and how many times. Written in one transaction per cycle.

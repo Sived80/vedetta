@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The functions that reach the internet, and the add-on options that switch them off (config.yaml: internet_*; run.sh turns them into VEDETTA_INTERNET_*).
 
   public IP       a DNS query to OpenDNS (scan/internet.py)             every 6 hours (no address: one debug query, see internet.py)

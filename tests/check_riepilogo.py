@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """tools/riepilogo_report.py: reads a report (a zip in memory), finds the weak devices, the history and the log, and never needs the key for a plain zip."""
 import io
 import json

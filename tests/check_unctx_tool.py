@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """tools/unctx.py (takes the `ctx` container out of a function cut into steps): on small modules written like the splitter writes them, the transformed
 module must give exactly the same results as the original for many inputs (sync and async, values passed on and changed, a dict changed in place, an
 augmented assignment, a value set only on some paths, a closure that reads), keep the comments of the steps, drop the unused import, and REFUSE what it cannot

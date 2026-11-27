@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """DHCP packets for the simulator: what a client broadcasts (read by Vedetta's passive listener) and the answer of the small router. Standard library only."""
 import socket
 

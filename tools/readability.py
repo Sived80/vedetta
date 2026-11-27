@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How easy is the code to read for a person? Measures, on the Python code of the application:
   - cognitive complexity per function (our implementation of the published SonarSource rules: +1 for each break in the linear flow - if/elif/else, loops, except, conditional
     expression, a sequence of `and`/`or` - and one more for every level of nesting; not the official tool, so the numbers are indicative, the ranking is what counts);

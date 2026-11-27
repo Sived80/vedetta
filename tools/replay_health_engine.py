@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replays the history of real exports through the judge of the network health as it runs in the app (health/engine.py, one judgment every REFRESH_S seconds, with its opening and closing
 cycles), for the rules that read the history: H05 (restarts that repeat), H06 (devices that drop together) and H07 (a step of the gateway latency). It says how often each rule would have raised
 a finding, for how long and for which devices: on real networks every raise is either a real problem or a false alarm, and it is looked at one by one.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterisation test of the Bonjour browsing of the SEARCH (scan/scan_mdns._mdns_browse, which fills the list `found`), with a fake zeroconf whose handlers are called by hand. Stored in
 tests/golden/mdns_scan_browse.json, written from the code as it was before the browsing shared by the search and by the continuous listener was moved into one module: the first browser asks for the
 service types; a type is browsed once, never after the window of the types has closed, never when removed; an instance is read with the request timeout of the search and added to `found` as

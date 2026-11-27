@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 # Updates the Vedetta app on Home Assistant OS by copying the vedetta/ folder into /local_apps and rebuilding it.
 # Usage: VEDETTA_HA_HOST=<HA address> VEDETTA_HA_KEY=<ssh key> tools/deploy_addon.sh
 # Requires HA's "Terminal & SSH" component with the public key authorized (root user).

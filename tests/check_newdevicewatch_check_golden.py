@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of NewDeviceWatch.check (compares the MACs that ARP and DHCP show with the known ones and warns once for each new one): 3000 generated runs with every collaborator
 replaced by a deterministic in-memory one - the configured devices and the cards in memory (with good, empty and invalid MACs), the lookup of the own address (known, unknown, found,
 failing, returning a wrong shape), the DHCP table, the list of ignored devices, the observation and evaluation functions (the evaluation also fails or returns new devices with and

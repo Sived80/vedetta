@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """API of the ignored devices. GET /api/ignored gives each entry by MAC its last known address ("ip"): the panel «Networks» shows it under its
 network (tests/check_ignored_last_ip.py)."""
 import asyncio

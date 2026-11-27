@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The links «this card is behind that repeater» which the data already prove (topology, phase T0). A MAC lent to several cards at the same time marks a
 repeater (storage/overlap.py): the card that owns the MAC is the repeater, every other card that used it is attached to it. Pure functions: no database,
 no clock, no network. Other sources of links (access point tables, SNMP, LLDP) will add edges of their own with their own `source`."""

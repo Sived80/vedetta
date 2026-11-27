@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A deep search that finds nothing must not leave the device "never analysed" forever."""
 import asyncio
 import os

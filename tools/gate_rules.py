@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The rules that keep the gate from saying «green» without proof (used by tools/gate.py and tools/run_tests.py; tested in tests/check_gate_rules.py). Pure functions."""
 import re
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The user's time zone comes from Home Assistant: the nightly maintenance runs at 03:00 there, the log writes that time."""
 import asyncio
 import json

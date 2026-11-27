@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Data paths and environment parameters: a single source of truth.
 
 In the LXC container the data lives in config/ (default, as always); as an add-on

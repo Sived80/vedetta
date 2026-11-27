@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A cycle that fails never makes the Sentinel forget a "down" already sent: after a restart the cards are still empty until the first
 cycle that succeeds, and an end of cycle run with them would close every open "down" (forget_gone), so its "back" would never go out.
 After a cycle that succeeds, a card really gone still closes its "down". Found by the review of 1.0.1.

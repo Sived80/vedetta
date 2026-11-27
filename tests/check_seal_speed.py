@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Sealing a large export (export/report_crypto.seal) takes a moment, not minutes: the base64 text is cut into lines of 76 characters by
 slicing. textwrap.wrap was used before: on one long word without spaces it copies the rest of the text at every line, so the time grew with
 the square of the size (2 MB about 11 s on a PC, a 16 MB export many minutes on a small Home Assistant host). The lines stay exactly the

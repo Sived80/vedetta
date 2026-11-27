@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The summary of a window (analysis/digest.py): new, back after a long absence, gone silent, and only the changes of the window: a
 device off for weeks is not said again every night; phones and cards Vedetta does not watch are never silent; the first window of an
 installation claims nothing. History.returns_after finds the returns; the route answers.

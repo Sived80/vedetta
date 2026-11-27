@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Executable scenarios of the behaviour matrix (tests/data/behavior_matrix.json): each is a small function that raises AssertionError when the app
 does the wrong thing. A matrix entry names a scenario in its "check"; to cover a new case write a function here and register it in SCENARIOS."""
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, phase 3: are two MACs the same physical device? Probabilistic record linkage (Fellegi-Sunter), pure functions, no brand.
 
 Every piece of evidence has a weight log2(m / u) when two MACs agree on it and log2((1 - m) / (1 - u)) when they disagree, where

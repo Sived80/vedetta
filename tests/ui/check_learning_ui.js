@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The notice of the first hours (people saw brands they do not own in the first hours: the recognition was still gathering clues). While the summary says
 // `learning_until` in the future the page shows a small notice that can be closed; closed, it does not come back in this browser; gone by itself at that time.
 // Needs jsdom (see check_evidence_ui.js).   node tests/ui/check_learning_ui.js [it|en]

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The gesture "this is a new device" (1.0 step P5) in the open card: asked of the service only for an offline card, shown only when the service
 // offers it, with its text in the page's language; a tap sends it once and tells the result. An online card never asks. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_relink_ui.js [it|en]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P9 (decisions 1A, 2A): inventory_view.listable, what the "Search devices" button shows. Pure; private placeholder addresses.
 - the hosts of the pass first (seen now), then the devices the inventory lists (confirmed or asleep), once per MAC whatever its spelling;
 - never a card: a MAC linked to a card, or an address of a card without a link (decision 2A of P7); a linked card's old address is free.

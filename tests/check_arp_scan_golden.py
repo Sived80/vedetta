@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_arp.parse_arp_scan (arp-scan output -> hosts, with the other MACs that answered an address in `also` since 1.0 step P3; the module's
 `arp_conflicts` dictionary is gone with P3, the conflicts are judged in time by the single MAC layer): 4000 generated outputs - repeated addresses (DUP lines), mixed-case MACs,
 vendors "(Unknown...)" or missing, header and junk lines, invalid addresses - must give exactly the hosts (in order) stored in tests/golden/arp_scan.json, written from the code as

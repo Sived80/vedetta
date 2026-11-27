@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Time zone (and language) of Home Assistant. The nightly maintenance (03:00) and the time written in the log are the user's own, read from
 Home Assistant (WebSocket command get_config, with the read-only access the app already has). Without Home Assistant (or with
 the access turned off) the container's own time zone is used."""

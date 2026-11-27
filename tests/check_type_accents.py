@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Accented letters do not change a word: "umidità" in a Home Assistant name is the word "umidita" of data/device_kinds.json, and an accented word
 in the tables ("qualità") matches the name written with or without the accent. The tokenizer kept only a-z, so "umidità" became "umidit" and matched nothing."""
 import os

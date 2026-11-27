@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // ------------------------------------------------------------ network health: made-up findings, debug mode only
 // To see the screens without a real problem. Nothing is asked of the server or of any device: the answer of /api/ha/health is replaced, in this page, by one of these scenarios.
 // The addresses are the ones kept for documentation (192.0.2.x), the names say they are made up. The choice is kept in this browser only.

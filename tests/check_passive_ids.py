@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the ids of the devices Home Assistant sees ("passive" devices), before the work on more networks (they may later sit in the same archive as the cards
 Vedetta scans): the id is "ha-" + the 12 hexadecimal digits of the MAC, it goes back to the MAC, and it can never be the id of a scanned card ("scan-<ip>" or an explicit
 one with -2, -3); a value that is not a passive id gives no MAC. presence_changes is pure: it lists only the devices whose presence differs from the one last written,

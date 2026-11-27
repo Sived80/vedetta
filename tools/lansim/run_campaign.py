@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A campaign on the virtual LAN: every scenario run again and again, with other seeds where the scenario takes one, each run judged by what the scenario promises (pass, fail, a known
 limit that is on the list, or a study that has no right answer). One line of JSON per run goes to the results file as soon as the run ends, so a campaign stopped half way keeps
 what it did. Linux and root only, a few hours:

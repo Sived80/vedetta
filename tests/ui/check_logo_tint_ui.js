@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The colour of a brand logo on a tile: a logo whose colour would vanish on a theme (white on light, black on dark) is drawn in the
 // text colour of the theme; the others keep their own colour. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_logo_tint_ui.js [it|en]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of three functions of the scan pipeline (prepare_batch, _run_parallel_probes, _probe_shelly_adapter): 3000 generated calls with every scanner, discovery and adapter call replaced by a
 recorder (that answers, answers nothing or fails) must give exactly the same answer, leave the same state behind (the batch, the info, the set of timed-out hosts) and make exactly the same calls and
 log lines (arguments included, in order) as the code before they were split into smaller ones; digests and a readable sample are stored in tests/golden/pipeline_heavy.json.

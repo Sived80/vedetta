@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of evidence.name_evidence (what decided the name of a device, how sure the app is, which candidates were rejected), written from the code as it was before the
 function was split into small guarded helpers: 5000 generated debug blocks and devices - every source (user, weak, a real source, an unknown one, none), the shown name equal to the IP or
 to the brand (spaces and capitals included), placeholders, candidates with missing/equal/cleaned-equal values, malformed candidates, non-string values, weights around the clamp limits

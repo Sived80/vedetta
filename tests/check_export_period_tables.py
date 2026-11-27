@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export of a period keeps only that period in the copy of the database, the tables of 1.0 too: the name changes of the cards
 (identity_change, by their time) and the addresses seen behind the router (routed_seen, those seen at some point of the period).
 The real schema (History), a copy of the file, then the cut of export_estimate._period_db."""

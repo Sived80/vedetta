@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The detectors of the second group (health/detectors.py): cyclic drops of one device (a restart that repeats) and many devices that drop together (a common cause: the switch, the access point, the power). The thresholds are the ones chosen from the real exports
 (tools/replay_health.py). The evidence holds counts and device ids, never an address or a name. And the drops are derived from the presence events in one place (health/signals.py)."""
 import os

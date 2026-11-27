@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Runs scenarios on the virtual LAN with the Vedetta found in a folder (the working tree, or another version checked out beside it to compare). Linux and root only:
 
     python3 tools/lansim/run_scenarios.py --code-dir vedetta [--scenario S5] [--label new]

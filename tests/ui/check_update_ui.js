@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The update dot, the red arrow at the foot of the menu and the window that explains: with a newer version the dot is on the menu button and goes away when the menu
 // is opened (it does not come back); the arrow sits at the right of the repository link, in a box like the rows above, with a tip that says what it does; it opens a
 // window in the style of the others (the X first on the left, the explanation, Cancel and the main button); the main button asks Home Assistant to open its Updates page

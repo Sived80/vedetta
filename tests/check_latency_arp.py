@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Response time of a host that drops ping: the ARP round trip is used, and a silent host stays empty."""
 import asyncio
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the id of a new card, before the work on more networks (the id stays `scan-<ip>` because the networks may not overlap, so an address never repeats):
 the id is made from the address, `-2`, `-3`... are added while it is taken, an explicit id is kept (and gets the same suffixes), the set of taken ids is not changed.
     python tests/check_unique_device_id.py"""

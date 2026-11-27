@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 # Multi-architecture image: the Supervisor picks the architecture (the "arch" key).
 # The base image is pinned by its version (the tag: Alpine 3.24 and the release of the base) AND by its digest, so every build of this version of the app starts from the same image (a tag can be moved by whoever
 # publishes it, a digest cannot). The digest is of the multi-architecture index (amd64, arm64). To move to a newer base on purpose: look for the tag in the list of ghcr.io/home-assistant/base,

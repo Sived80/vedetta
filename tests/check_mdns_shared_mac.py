@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A MAC lent by a repeater to the clients behind it identifies none of them: what is announced at one address must not end up on the card of
 another. Found in a real export: a repeater was typed "phone" because a card of a neighbour address (a mobile service) was filed under the lent MAC."""
 import os

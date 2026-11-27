@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A router's own address on a network behind it (the gateway of a VLAN) is found as the twin of the router's card by its TLS certificate or by
 SNMP, with no MAC (the VLAN is reached through the router). It must be a "router" like its main card, not the "server" its open ports suggest:
 the role of the house's router was told by the default route or its MAC only. A twin of any other card keeps its own type. Invented values."""

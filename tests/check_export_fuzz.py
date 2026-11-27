@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export for the developer, with a house full of random values: private and public IP addresses, MAC addresses, host names, DNS names
 (with their domains), names of people, e-mail addresses and IPv6 addresses, put where the app keeps them (devices, log, journal, settings,
 DHCP and Bonjour memory, the database). After the masking none of them may be left in any file of the export, whatever the seed.

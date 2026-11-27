@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The state of every card (identified, settling, analysing) for the page.
 
 It is computed now and then from the evidence card that the app already builds for each device (ha/device_debug.py, recognition/evidence.py) with the rule of analysis/status.py, and it is sent to the page as a snapshot (/api/ha/devices) and as

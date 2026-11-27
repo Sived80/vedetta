@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The masking (step 2 of the export for the developer) can take minutes on a small box: the window must see it move. The engine says how
 many files are masked out of how many, the job keeps the latest count while the step runs and the snapshot the window polls carries it;
 the next step clears it. Invented names and addresses, no network."""

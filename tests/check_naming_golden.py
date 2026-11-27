@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of naming.clean_name and naming.title_name: 6000 generated strings (IPs, MACs, "id@name", domain suffixes, DNS-SD escapes, generated codes, page titles with
 suffixes, versions, paths, generic words) must give exactly the results stored in tests/golden/naming.json, written from the code as it was before the two functions were split.
 Regenerate only on purpose:  NAMING_GOLDEN_UPDATE=1 python tests/check_naming_golden.py"""

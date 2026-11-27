@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of maclayer.features_for_linking: 4500 generated inputs - observation rows of arp/dhcp/mdns sources, sessions (with or without mdns), DHCP entries with
 mixed-case keys and partial fields, None or empty DHCP memory - must give exactly what is stored in tests/golden/features.json, written from the code as it was before the
 function was split (key order included).

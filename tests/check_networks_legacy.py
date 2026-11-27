@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The cards outside the main network (networks/legacy.py, K12) and the addresses that may not be touched (registry.mark_off_limits, may_add: K8, K9).
 1) admissible: private IPv4 outside the containers' networks only; 2) proposals: one network "proposed" per /24, behind the router, in the
 order of the cards, never for an address already in a network (paused included); 3) registry.propose stores them once, and a proposal that

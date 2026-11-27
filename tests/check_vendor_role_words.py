@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the manufacturer of the MAC prefix says about a device, by its role (data/brands.json, vendor_roles): brand = a real brand; component = makes chips and modules (the product is somebody else's);
 virtual = the card of a hypervisor (the product is the virtual machine); dual = makes network cards AND finished products, so its name counts as a brand only when another source confirms.
 From cards seen in real exports (reduced to what the classifier reads). The words of a function (the types of data/device_kinds.json) are not looked for in the name of a "dual" maker, in its vendor field

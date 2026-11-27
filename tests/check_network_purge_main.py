@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Delete all the devices» of the main network (networks/purge.py, GET and POST /api/networks/main/purge): the main network is never deleted,
 but everything about its devices goes, as for a written network: its cards, the devices of Home Assistant adopted in it, every history row
 about it, the ignored entries of it (a MAC seen there, an address of it; those by name stay). The network stays: its name, the written

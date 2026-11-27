@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The debug mode: three taps within two seconds on the logo or the name in the title of the Network card switch it on (the DEBUG badge appears and the root gets data-debug),
 // three more switch it off; two taps only say how many are left; taps on anything else, or too slow, change nothing. The trick was lost when the header got the logo (it listened on
 // an element that no longer exists). Needs jsdom (see check_evidence_ui.js).

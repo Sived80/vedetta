@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The check of a network written by the person (networks/model.py): every value that comes from outside gives a Network or is refused with a known code, never another
 exception and never a silent fix.
 1) the known cases and refusals; 2) the limit on the number of networks; 3) 4000 hostile values with a fixed seed; 4) 3000 "nearly valid" networks, one field broken at a

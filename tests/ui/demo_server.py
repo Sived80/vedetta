@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The REAL app (its routes, its templates, the modules of the page) on this machine, with four invented devices in its state and no scan, to look at the page in a browser or to let a test do it:
     python tests/ui/demo_server.py [port]        (then open http://127.0.0.1:<port>/ha)
 Nothing is written outside a temporary folder and nothing is sent on the network."""

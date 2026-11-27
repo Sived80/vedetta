@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Cycle statistics (app/cyclestats.py): chained cycles are warned once per 10 minutes with their causes, a slow cycle is warned, the hourly
 summary is written and kept for the export, and a forced cycle is not counted as a chain."""
 import os

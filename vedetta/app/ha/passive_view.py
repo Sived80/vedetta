@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the page shows of the devices that Home Assistant sees ("passive" devices): the cards in the same compact format as the devices Vedetta scans, and the list of the ones that can be adopted.
 
 Pure (they take what passive_store keeps): no network, no disk. A passive device has no ports, no response time and no analysis: those fields are empty, and `passive` tells the page which parts of the

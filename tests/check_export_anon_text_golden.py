@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_zip._anonymize_text (a file of the export: JSON and JSON lines are walked, anything else is plain text; the result is checked and, if something
 readable is left, the lines are replaced by a note, or the file is given up with MaskingFailed; the report of removed lines):
 2500 generated files (names ending in .json, .jsonl, .log, .txt and a capital .JSON; valid, broken and empty JSON, JSON lines with blank and broken lines, plain texts with addresses,

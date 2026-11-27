@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the brand routes: rules written by hand (kinds, limits, replacement of the same kind+text, deletion), the preview of the brand a
 name or MAC would get, the database update (success, refused while another runs, each failure code), and the automatic-update switch."""
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The person's inventory (export/inventory.py): the columns, sorted by IP as numbers, the hidden addresses (same placeholders in the whole
 file, names kept), and a CSV that a spreadsheet never runs as a formula (a cell starting with = + - @ tab or CR gets an apostrophe);
 the route gives CSV or JSON as a download and refuses another format.

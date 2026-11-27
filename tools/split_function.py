@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Split one long function into steps, mechanically.
   python tools/split_function.py FILE FUNC START:name START:name ...  [--write]
 Each START is the first line of a step (a top-level statement of FUNC); a step runs up to the next START (the last one to the end). The names

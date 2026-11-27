@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Runs ONE test by hand with its own temporary data folder (VEDETTA_DATA_DIR), the way tools/run_tests.py runs all of them: a test started with plain `python tests/check_x.py` and no folder writes into
 vedetta/config, the folder of the developer. Usage:  python tools/run_test.py check_lifecycle.py"""
 import shutil

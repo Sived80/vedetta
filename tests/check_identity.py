@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Identity check (two-level brand, battery, mobile) on real LAN cases.
 Runnable locally; without app.applog (zoneinfo) it is simulated."""
 import sys

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The export window: who it is for -> which days (the columns, the presets, panning back) -> the steps -> what to decide -> the file.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_export_ui.js [it|en]
 const fs = require("fs");

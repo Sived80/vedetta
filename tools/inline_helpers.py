@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Puts back into its caller a private helper that has no life of its own: a module-level function with a leading underscore, no docstring (a docstring means the name carries an idea), no decorator,
 only positional parameters and a body of one `return <expression>`, used exactly once, in the same file, and named by no test and no other module. The call is replaced by the expression with the
 arguments in place of the parameters; only plain arguments (names, constants, attribute chains) are accepted, so nothing is evaluated twice or skipped; a name that the expression takes from the module

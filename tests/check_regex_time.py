@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """No regular expression of the app can be made slow by what a device sends (ReDoS: a pattern with nested repetition that backtracks
 for ever on a crafted text). Every compiled pattern found in the modules of the app is run on texts as long as the longest that is
 kept from the network (scan_common.clean_text: 2048 characters for a TXT record), built to make backtracking explode; each run must

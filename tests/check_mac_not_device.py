@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """MACs that are not a device never enter Vedetta (standards only, IEEE 802-2014 section 8.2: the I/G bit, the least significant bit of the
 first octet, marks a group address): the all-zero MAC, the broadcast FF:FF:FF:FF:FF:FF and every multicast MAC (01:00:5E:.. of IPv4 multicast,
 RFC 1112; 33:33:.. of IPv6 multicast, RFC 2464). They could inflate the count of devices or make cards. Kept: VRRP's virtual router MAC

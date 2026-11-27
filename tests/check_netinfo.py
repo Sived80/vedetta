@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Internet (public IP, double NAT, CGNAT), local interfaces, TLS/SSH, ARP conflicts, IGMP."""
 import ipaddress
 import os

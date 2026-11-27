@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The host's own container bridges are never a network behind the router (networks/legacy.py container_networks): known by the NAME
 of the interface (docker*, br-<id>, veth*, hassio, podman*, cni-podman*), not by an address range, because a runtime takes its
 ranges from the same private blocks a real LAN uses. A user network of Docker in 192.168.200.0/24 or 172.20.0.0/16 used to pass

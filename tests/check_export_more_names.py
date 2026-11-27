@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Names a device or a person wrote that the export for the developer must mask too (review of 19/11, all values invented):
 - the names a deep search read from the device itself: UPnP friendly name, NetBIOS name, ONVIF name, the name its local interface gives
   (ESPHome, Shelly, Sonos...), the name in its web page title and in its certificate (only when they look like a name), the nmap host name;

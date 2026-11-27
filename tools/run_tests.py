@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Run all tests (tests/check_*.py, the JS translations check and the UI checks in tests/ui) from the vedetta/ folder.
 Usage: python tools/run_tests.py [--serial] [--times] [--coverage]   (exits with 1 if anything fails)
 The tests run in parallel (one process each: Python checks on most cores, UI checks 4 at a time): each one gets a data folder of its own

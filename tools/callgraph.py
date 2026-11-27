@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How tangled is the chain of calls? A static map of who calls whom inside the app (names resolved through the imports; calls on objects whose class is unknown are not followed, so the numbers are a
 lower bound). It reports: functions that only pass the call on (middle men), the longest chains of calls, the functions that call many others, and the coupling between modules.
     python tools/callgraph.py [APP_DIR] [--list]"""

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Add all» (1.0.4): the analysis of the devices before they are added (pipeline.start_associative) ran one device after the other, because every
 device's pilot test (1000 ports) waited to be alone and its port scan then held a heavy slot, so the next pilot waited for it: about 23 s a device.
 Now a few devices are analysed at once (pipeline.ASSOCIATIVE_PARALLEL), with the rules of the slow devices kept:

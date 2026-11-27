@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The one-time invitation to star the project: a star on the menu button, its entry first in the menu, gone at once when the link is
 // clicked, and it does not come back. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_star_ui.js [it|en]

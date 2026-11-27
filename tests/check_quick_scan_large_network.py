@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The quick search ("Search devices") on a network wider than a /24 asks what the periodic check asks (scan/arpplan.py), never the whole network:
 with a mask of 255.0.0.0 `arp-scan --localnet` would ask 16 million addresses, be killed after ARP_TIMEOUT_S and the search would end in an error
 (with a /16 too: 65,534 addresses do not fit in that time). A /24 or smaller is asked whole, as always.

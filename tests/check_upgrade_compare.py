@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The comparison of the update test (tools/upgrade_check.py): going forward tables and files may appear; nothing that was there may disappear, shrink or change, the database must be ok. Pure function, no folders.
 Step P4: a table born with the new code must survive the way back (the old code ignores it, never empties it), and after the third step (forward again) every card -> MAC link belongs to a card
 that is there with the same seq (none inherited by a card added again with the same id) and none moved to another MAC."""

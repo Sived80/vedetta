@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """KnownMixin: methods of History that belong together (moved out of history.py by tools/split_class.py)."""
 import time
 

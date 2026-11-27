@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Take the `ctx` container out of a function that tools/split_function.py cut into steps (the inverse of that tool), mechanically.
   python tools/unctx.py FILE PARENT [--write]
 PARENT must look like what the splitter writes:   ctx = SimpleNamespace(a=a, b=b)  followed only by calls  step(ctx) / await step(ctx), the last one returned.

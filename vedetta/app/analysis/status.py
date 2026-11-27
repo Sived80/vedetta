@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Is a device identified, settling or under analysis? Phase 1: read-only, from the evidence card the app already builds (recognition/evidence.py); it sends nothing.
 The shape of the rule comes from other fields (PRATICA_CORRETTA, part 2): two thresholds with a middle zone where the state is kept (Fellegi and Sunter's record linkage;
 the hysteresis of flap detection), a grace period for a card that has just appeared (cold start of a new item), and a conflict between pieces of evidence that counts whatever the

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """docs/ARCHITECTURE.md is written by tools/make_architecture.py (the index of the modules and the layers come from the code): it must be exactly what the script writes now.
 If this fails, run  python tools/make_architecture.py --write  and commit the file."""
 import subprocess

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of identity_shift._different_reasons (the independent families of evidence that two profiles are different devices, in a fixed order): 5000 generated pairs
 of profiles - equal and different DHCP families, recognised groups (None, "generic", real ones), DHCP and Bonjour names, Home Assistant models of length 3, 2, 1 and 0 with parts
 missing, empty and identical profiles, a profile with a missing key - must give exactly the list (and the exception, when there is one) stored in tests/golden/different_reasons.json,

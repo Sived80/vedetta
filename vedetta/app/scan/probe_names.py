@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """probe_names: moved out of probe.py (see tools/split_module.py)."""
 from dataclasses import dataclass
 

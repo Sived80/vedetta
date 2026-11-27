@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replay of the mDNS memory of real exports with and without the rule «a MAC lent to several cards names none of them» (scan/mdns_listener.py).
 For every card of an export the memory is looked up as before and as now; where the answer changes it prints what the card lost and what the stored
 "mobile" score would become (the mobile service of a neighbour is worth +3, probe.py). The lent MACs come from the presence history of the export

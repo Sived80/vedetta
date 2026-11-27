@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """scan_routes: moved out of main.py (see tools/split_module.py)."""
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse

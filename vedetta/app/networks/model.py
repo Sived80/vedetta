@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A network Vedetta may look at, and the check of one written by the person: validate() gives a Network or refuses it with a code (Rejected), and never fixes a value silently.
 
 Pure: no disk, no clock, no network. Not used by the app yet (the work on more networks adds its callers one at a time).

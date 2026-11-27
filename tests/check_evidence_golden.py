@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_data.type_evidence (the clues that decide the category of a device): 400 generated devices (seeded, always
 the same) with the role lookups faked; the evidence list and the per-kind points of each must match tests/golden/type_evidence.json, written
 from the code as it was before the function was split. Regenerate only on purpose: TYPE_GOLDEN_UPDATE=1 python tests/check_evidence_golden.py"""

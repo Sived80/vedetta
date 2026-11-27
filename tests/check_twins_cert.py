@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Twin cards by the same TLS certificate (1.0.1): a router with an address on the main network and one on each VLAN reached only through it
 (no MAC there) presents the same certificate on every address. The card on the main network is the main one, every card of the group on
 another network is its twin (more than two addresses too). A certificate shared by two cards of ONE network says nothing (two devices of

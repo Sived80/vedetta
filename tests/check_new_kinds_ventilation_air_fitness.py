@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Three device types asked by users (data/device_kinds.json, words of the function, no brand): mechanical ventilation with heat recovery, air quality / CO2 sensors and gym
 equipment. Their icons exist in icons.js (a missing one would silently fall back to the category icon)."""
 import json

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The findings as the page draws them (ha/health_page.py): who (name and IP of each device, the MAC only for a device that has no card), what, when and how many times, and nothing that is not needed.
 Only the active findings; one entry for each conflicting address; a device that is no longer known is left out; the order is the worst first, then the newest. The sources are handed in, nothing is read from the network."""
 import os

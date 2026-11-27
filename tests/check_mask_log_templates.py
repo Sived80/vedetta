@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Every message the app writes in its log and journal goes through the masking and must come out clean: the export refuses
 a file the safety check does not like, so a message nobody thought of could stop it for a stranger. The messages are found
 in the source (logger.* and emit_alert calls), filled with awkward values (multicast groups, addresses, names, errors) and

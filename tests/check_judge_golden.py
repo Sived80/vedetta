@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of identity_shift.judge (are two MACs behind a card the same device, different devices, or is it not known?): 5000 generated pairs of profiles - private and
 shared MACs, a network role on either side, equal and different DHCP and Bonjour names, Home Assistant models with parts missing, DHCP families, recognised groups, identical profiles -
 must give exactly the verdict, reasons and vetoes (and their ORDER) stored in tests/golden/judge.json, written from the code as it was before the chain of steps was rewritten as guard clauses.

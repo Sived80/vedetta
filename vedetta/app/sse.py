@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """sse: moved out of main.py (see tools/split_module.py)."""
 import asyncio
 import json

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #36 (export of 13/11): six Shelly plugs read through the FRITZ!Box integration of Home Assistant kept, as their saved name, the old name
 HA gave them (the title of the FRITZ!Box, name_source "ha"). That name is stale (HA no longer offers it: the card shows another one), but the
 brand was still worked out from it first: "fritz" -> AVM, and the brand AVM put the plugs in the router group. A stale name from HA is not a clue

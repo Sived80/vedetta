@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Pause of the periodic check: when it ends, how long it was, and its survival to a service restart (pause.json).
 
 Pure state and persistence: telling the browsers and waking the cycle stays with DeviceState."""

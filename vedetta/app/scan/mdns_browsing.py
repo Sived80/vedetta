@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The DNS-SD browsing shared by the search (scan_mdns) and by the continuous listener (mdns_listener): a browser that asks for the service types, one for every type seen, and the reading
 (SRV, TXT, A) of every instance that is announced. What differs is given by the caller: where a reading goes, how long the request of one instance may take, until when new types are accepted."""
 import asyncio

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The detectors: one small pure function for each family of problem. A detector reads the signals and the parameters of its row and returns the evidence it finds (nothing if the signal is quiet or unreadable). Evidence holds counts and device ids, never addresses or names."""
 import statistics
 from dataclasses import dataclass, field

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, phase 1: observations from ARP and mDNS, the batch write (one transaction, repeats only move last_seen), the lookups, the
 retention, and the cycle step that records them without ever disturbing the cycle."""
 import asyncio

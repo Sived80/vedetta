@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Topology, phase T1 (read-only): the links of every source put together, one best link per (client, parent), the clients with two different parents flagged as a conflict (a link
 under analysis), and the cards with no known place told as unknown (never drawn as certain). Sources: the MAC lent by a repeater (observed for a time) and the device a Home Assistant
 device declares to be connected through (declared by the integration: high confidence by itself). Pure."""

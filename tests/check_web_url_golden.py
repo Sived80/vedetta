@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of probe._web_url (the address of the "open web interface" button): 3000 generated lists of scanned ports - pages verified or not, with and
 without a scheme, the port the device was added with open or closed, web services that are only guessed or confirmed, labels without a number, no ports at all -
 must give exactly the address stored in tests/golden/web_url.json, written from the code as it was before the function was split.

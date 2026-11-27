@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The loop of the MQTT service that follows the event bus (MqttService._run), with a fake state: a watched event is followed by one publication (after a moment, to group a burst), an event that is not
 watched gives none, a burst keeps the last count of new devices, the periodic round (no event) publishes, a queue that the state dropped is replaced by a fresh one, and a cancel ends the loop quietly after the
 last queue was released. Written on the code before it was flattened and kept passing after it (differential proof)."""

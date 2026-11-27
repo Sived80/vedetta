@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Signals derived from the history, in one place so that the app and the replay of the exports see the same thing."""
 
 

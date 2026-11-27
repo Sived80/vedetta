@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Runs the MAC identity linker (app/macidentity.py) and the classifier on a real export that has the ip_mac table (0.6.2-debug and later).
   python tools/mac_link_export.py [ZIP]     default: the newest vedetta-analisi-*.zip in ~/.vedetta/exports
 Private data (the output is for the developer's eyes only; MACs are shortened)."""

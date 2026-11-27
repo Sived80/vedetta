@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Signature catalogue and hint families: file validation, real cases, ambiguous cases (Google Home / Chromecast),
 double counts (Cast), port cap, margin between tied categories, hint explanation."""
 import json

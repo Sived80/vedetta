@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The GitHub issue form for wrongly recognised devices: valid, asks for the encrypted export only, nothing personal."""
 import re
 from pathlib import Path

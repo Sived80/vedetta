@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Front door of the network scans: it only re-exports what scan_common, scan_arp, scan_mdns, scan_cert, scan_nmap, scan_protocols, scan_web and scan_format define,
 so callers and tests keep writing scanner.name. New code should import the specific module."""
 from .scan_common import is_valid_ipv4, timed_out  # noqa: F401

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """User settings (config/settings.json):
 "alerts" = show the alerts (new open port, new device...);
 "poll_interval" = seconds between one check and the next (fixed values);

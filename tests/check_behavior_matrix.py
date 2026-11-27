@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The behaviour matrix is well formed, every check it names exists and every scenario passes. What is not covered is only reported, never hidden,
 but it cannot grow unnoticed: a new row without a check raises the ceiling below on purpose."""
 import os

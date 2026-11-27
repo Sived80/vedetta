@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of four pieces of ha/mqtt_ha.py: resolve_config (settings + environment -> effective MQTT configuration, with the ORDER of the lookups), build_desired (devices ->
 ordered "topic -> payload" map and the final `latency_seen` set), MqttService._on_message (broker message -> scheduled calls, for sequences of messages, with the service state and an event
 log of the fake loop) and MqttService._run (the asyncio listener, driven with asyncio.run, a scripted fake state/queue and fake `wait_for`/`sleep`): generated inputs must give exactly the

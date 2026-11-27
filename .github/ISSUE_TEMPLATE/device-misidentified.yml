@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 name: Device recognised wrongly
 description: Vedetta shows the wrong name, brand or type for a device on your network
 title: "[Device] "

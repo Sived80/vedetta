@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The data files shipped with the app (app/data/*.json: kinds, integrations, logos, signatures) are read in one place. A file that cannot be read (missing, not JSON, not an object, no such key) used to empty
 the recognition without a trace in three of the four readers (finding R4b of the global review, rule: no empty answer without a trace). Now it is told ONCE per file in the log at warning level, and the answer
 is None (the caller uses its own empty value and the service goes on). A good file says nothing. Also: every file the app ships is readable, so a file lost in a build is seen by the gate."""

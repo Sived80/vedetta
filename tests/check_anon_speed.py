@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Issue #57: the export for the developer stayed on step 2 ("Masking IPs, MACs, names and emails"). The masking time must grow with the
 size of the text, not with size x number of names, and no single token may cost quadratic time:
   - the names are one alternation; with the word-edge guard written inside every branch the engine tried every name at every character

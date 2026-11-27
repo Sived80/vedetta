@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The inventory by address of a network behind the router (1.0 step P11, decisions 1A and 2A): what one ping sweep of the network found,
 merged with what is already known of it. ARP does not cross the router (K10), so here the key is the address, not the MAC.
 

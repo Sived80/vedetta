@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Twin cards (twins.py, decision B of 18/11): the router of the house with its leg on VLAN 20 (same MAC), Home Assistant with an address on VLAN 20
 (an address of the host itself, no MAC). The twin takes the main card's name and the network, never over a name chosen by hand, and gives it
 back when it is no longer a twin; the page gets the main card's address to put the twin next to it."""

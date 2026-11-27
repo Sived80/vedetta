@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """work_time: how long a deep search of one device really worked. The devices of a search start together and wait for the slots of nmap, so the elapsed time of a device says how long the search has
 been going. Each nmap run is noted here while it runs, in a list that the tasks of the device share (a context variable), and the log gives the elapsed time next to the time of the work."""
 import contextlib

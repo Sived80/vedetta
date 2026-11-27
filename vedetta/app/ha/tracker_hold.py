@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Presence held by Home Assistant (1.0.3). A phone asleep (Doze) stays on the Wi-Fi but does not answer ARP or ping for long stretches, while the
 router still has it. When a MOBILE card does not answer in a check, the router trackers of Home Assistant (ha_trackers: source "router" only,
 Vedetta's own MQTT trackers left out by their unique id) are asked about its MAC: "home" keeps it online, marked as held (state_cycle.settle);

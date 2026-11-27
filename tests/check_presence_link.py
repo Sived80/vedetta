@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An answer to ARP at an address counts as the presence of a card only when the MAC that answers may be the card's (scan/presence.py, 1.0 step P5).
 Case of the field: a PC took the address of a phone that had left; the phone's card stayed online because someone answered at its address.
   - a linked card (its link may be used: linkview) is online by its own MAC; a repeater's lent MAC keeps the rule of before; another MAC never;

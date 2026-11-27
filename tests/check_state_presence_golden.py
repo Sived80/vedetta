@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of the presence of DeviceState (who is online: the consecutive misses, when each device was last seen, what the history last recorded): 2500 generated sequences
 of operations - _record_presence with online/offline transitions (a repeated state is not written again; ip or mac missing or empty), load_history reading the saved state (also failing,
 and with a MAC lookup that gives nothing, an empty text or a MAC), remove of a device that is there or not, the history failing to write - with the history and the log replaced

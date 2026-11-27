@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A network printer prints whatever arrives on its raw printing port (HP JetDirect, 9100-9107; LPD, 515): a user found two sheets with "GET / HTTP/1.0 Host: 192.168.1.115" printed by the search of Vedetta, which
 sent a plain HTTP GET (and, when the answer was not HTTP, a TLS hello) to every open port to see which ones are web interfaces. nmap itself never probes 9100-9107 for the same reason. What this test fixes:
   - no connection is made to a printing port, and nothing is written to it: not by number (9100-9107, 515) and not by the service name that nmap read (jetdirect, printer, pdl-datastream, lpd...) on any port;

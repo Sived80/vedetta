@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A deep search must not erase what a device announced before (an iPhone asleep must not fall to "Other devices")."""
 import asyncio
 import os

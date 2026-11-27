@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, ROOT, api, dlg, esc, fmtClock, icon, t } from "./core.js";
 import { healthAction, healthDeviceName, healthName, healthReport, healthRowFacts, healthStrip, healthTiles, healthWhat, healthWhen, healthWorst } from "./health-model.js";
 import { gatewayLatencyText, paintTile, setExtraTile } from "./net-rotator.js";

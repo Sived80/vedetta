@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Split a frontend JS part into several files without changing the bundle (the parts are joined in file-name order into one script).
   python tools/split_js.py FILE NEWNAME:LINE [NEWNAME:LINE ...] [--write]
 FILE keeps the lines before the first LINE; every NEWNAME gets the lines from its LINE up to the next one. The names must sort between FILE and the

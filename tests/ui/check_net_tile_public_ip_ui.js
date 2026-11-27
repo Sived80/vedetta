@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The Internet tile when the public IP could not be read (scan/internet.py: public_ip_status). "redirected": the network answers the DNS queries in
 // place of OpenDNS, the box says so in two words and the tooltip and the gateway's card say it whole; "no_reply": not read yet, it is tried again.
 // Neither is "offline": the path still reaches the outside. Needs jsdom.   from the vedetta/ folder:  node ../tests/ui/check_net_tile_public_ip_ui.js [it|en]

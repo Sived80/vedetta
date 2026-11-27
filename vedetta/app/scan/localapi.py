@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Documented local interfaces of the manufacturers, read-only and without credentials.
 
 A device is queried only if it has the typical port open (seen by the port

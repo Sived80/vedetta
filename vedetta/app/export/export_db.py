@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """export_db: how the export walks the text stored in a copy of the history database - every table, every column, every distinct text value - and masks it in place."""
 
 

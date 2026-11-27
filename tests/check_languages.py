@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Every language folder is complete enough to be offered: it names itself, it is in the options of the app and in the documentation, it
 has no key English does not have, and its placeholders match the English text. Missing keys are only reported (English fills the gap)."""
 import json

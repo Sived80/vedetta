@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // R8 (two public reports: "Add all" left a spinner turning, devices "could not be added"): "Add all" always ends, and says how many were added and,
 // row by row, which were not and why. The server tells what it left out (POST /api/devices/add -> skipped); a lost deep-search stream or an add that
 // fails ends the card too, with "Close", never a ring that turns for ever. Invented addresses (192.0.2.x) and MACs (02:00:00:...).

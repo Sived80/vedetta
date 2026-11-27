@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """anonymize_registry: the part of the Anonymizer that knows the real values (addresses, MACs, names, areas) and gives each one its placeholder.
 
 Moved out of anonymize.py: how a placeholder is chosen (one per device, the brand and the product word stay readable, a name two devices share gets its own) changes for other reasons than how the

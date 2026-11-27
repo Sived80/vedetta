@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A rule that positions the direct <span> children of a button must leave the ripple alone. The click ripple is a <span class="wave"> appended inside every .rp element with
 position: absolute and a size of twice the button; a rule like `#btn-scan > span { position: relative }` makes it part of the flow and the button grows to about 290 px for the 0.6 s
 of the wave (it happened on the scan button: the circle moved aside and the tile shrank at every click). Such a rule must say :not(.wave)."""

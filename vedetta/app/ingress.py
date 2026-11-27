@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Home Assistant ingress support (add-on).
 
 Ingress serves the app under a prefix (/api/hassio_ingress/<token>) but

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Vedetta in Home Assistant style (/ha). Vanilla JavaScript, no libraries.
 // Data: /api/ha/devices, /api/ha/summary, /api/ha/logbook, /api/ha/history
 // and the SSE stream /api/ha/events (JSON, with revision and automatic resume).

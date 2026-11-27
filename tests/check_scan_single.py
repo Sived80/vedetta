@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Two simultaneous quick-search requests share a single scan."""
 import asyncio
 import os

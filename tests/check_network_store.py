@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The networks written by the person (storage/network_store.py, networks.json) and what the registry does with them.
 1) no file: no network, and the registry is the main network alone; 2) add: checked (overlap with the main one, duplicate id, public range,
 a whole search behind a router) and stored as written; 3) change and remove; 4) a row that no longer fits next to the main network is left out

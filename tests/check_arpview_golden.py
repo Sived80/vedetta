@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ArpView.by_ip (the cached view of the ARP: a normal network or the plan of a large one, with its logs, timeouts and failures) and ArpView._remember (large network:
 what the blocks asked now replace what was remembered, the rest is kept up to ARP_MEMORY_S, the neighbours are added, the blocks are marked, the callback is told): generated sequences
 of calls on one view, with the collaborators replaced by deterministic in-memory ones (a frozen clock for time() and monotonic(), a fake scanner, a fake history, a fake logger, the

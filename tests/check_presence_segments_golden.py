@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of PresenceMixin.presence_segments (online/offline segments of a device in a window, from the presence_events table of an in-memory History): 3000 generated
 situations - no events, events before, inside and exactly on the edges of the window (ties on the same instant are ordered by id), repeated states, a window that is empty or reversed,
 integer and float window edges, another device with events in the same table - must give exactly the returned dictionary (key order included) stored in tests/golden/presence_segments.json,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_data._blob (text, words and ports of a device): 4500 generated devices - generated and given names, brand/vendor of several types,
 extra fields (ha_* ones, ha_model, non-text values), scanned ports with and without number - must give exactly what is stored in tests/golden/blob.json, written
 from the code as it was before the function was split.

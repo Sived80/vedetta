@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of signatures.context (the fields the product signatures are evaluated on, taken from a device in probe format), written from the code as it was before the function
 was split into small helpers: 5000 generated devices and UPnP type lists - missing or None "extra", empty and non-string values, scanned ports with labels such as "80/tcp http", " 443 ssl",
 "8080", "abc", "", None or missing, malformed port entries, mDNS service strings with spaces, empty items and repeats, HA registry shapes, tuples/lists/None/strings as UPnP types - must give

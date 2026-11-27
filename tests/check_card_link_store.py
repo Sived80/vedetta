@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The card -> MAC link, stored in the shadow (1.0 step P4): the table card_mac, its one writer and its one reader, and the step of the cycle that
 fills it (cardlink_cycle.update, run by maclayer.record after the verdict, at most every FULL_SWEEP_S). Proved here: the schema on an old
 database, the rows written and deleted as the rule says (seed at the first judgement, rule after), the retention never touching the table, a

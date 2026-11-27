@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """One spy over the lowest level of the network (asyncio.open_connection, sockets, httpx) for every probe that talks to a device: whatever the ports of the device are, nothing is connected, written or
 requested on a printing, industrial or control port (rule: never risk commanding a device). The probes are driven with all of those ports open, by number and by the service name, and with the hostile
 shapes that came up in the global review. A plain connect (no data) is allowed on the extra control ports and in the two documented exceptions (the latency measure and the «seen open» check); never on a printing or industrial port, and nothing is

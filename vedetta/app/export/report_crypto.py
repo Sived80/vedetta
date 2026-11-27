@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Encrypted report: the zip is sealed with the maintainer's public key (data/report_key.pub). Only the matching
 private key, which never leaves the maintainer's computer, can open it, so the file can be attached to a public
 GitHub issue. The result is plain text (base64 between two marker lines) so GitHub accepts it as a .txt file."""

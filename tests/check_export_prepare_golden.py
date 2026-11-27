@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_engine.prepare (phase 1 of the export: gather, mask, check, fix): five situations on a fake network - the file for the developer;
 the same with a text file the masking left readable (it is repaired); with a database row it left readable (repaired in the copy); with a value that cannot be
 repaired (the person decides); the file for the person themselves (not masked) - must give exactly the files, the fixed count, the pending list, the manifest

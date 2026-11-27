@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The parts of the LAN simulator (tools/lansim) that need no network: the DHCP packets the simulated clients send (they must be read by Vedetta's own
 listener exactly as a real phone's), the schedule of the periods in which the extender answers for a client, and the measures that say whether a simulated
 network behaves like the real one. The names, MACs and addresses are made up."""

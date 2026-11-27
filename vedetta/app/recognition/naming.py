@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Device names. Principles shared with the other projects (NetAlertX, Home
 Assistant, Pi-hole): each source proposes a name, useless names are discarded, among
 the remaining ones the most reliable source wins, a hand-chosen name is never

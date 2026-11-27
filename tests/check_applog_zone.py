@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The log writes its times in the zone that ha_tz registers (applog does not import ha_tz): no provider -> Europe/Rome; ha_tz imported -> its zone;
 a provider that fails -> Europe/Rome again."""
 import os

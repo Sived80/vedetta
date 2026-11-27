@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of dhcp.parse (a client packet -> MAC and options) and dhcp._os_family (the family of the system from the options it asks for and its vendor
 class): 2500 generated packets (valid ones with every option, repeated and out of order, padding, a missing end, lengths that run past the packet, truncated,
 wrong op or cookie, a server reply) and 1500 generated fingerprints (every family rule, near misses, odd values) must give exactly the output stored in

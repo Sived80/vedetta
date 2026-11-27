@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The words of a function (data/device_kinds.json) are not looked for in the name of a maker of the role "dual" (data/brands.json, vendor_roles: it makes network cards AND finished products).
 The test is made from the data, not from one maker: for EVERY dual maker, whatever its words are,
   - the maker alone (vendor field) gives no points for the words of a device type;

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Try and add» (POST /api/networks/test, networks/trial.py): a network behind the router is tried before it is added, and nothing is saved.
 The candidate is checked as an add is (same codes, same 400s); every address of it is pinged once (the excluded ranges never), and the answer
 says how many answered, a few of them, and what Vedetta would see of it function by function (the judge, as in the list). networks.json is not

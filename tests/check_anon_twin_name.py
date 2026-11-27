@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A twin card's name is its main card's name and the network in brackets ("Router (VLAN 30)", twins.py). The export for the developer
 masked it as "Router-2)": the name pattern stops at the last word, so the closing bracket of the name stayed behind. The placeholder must
 cover the whole name; a bracket that is not the name's own stays. Invented names only."""

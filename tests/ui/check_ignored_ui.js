@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The ignored devices, inside the panel «Networks»: those of a network in its panel (an address of it; a MAC by its last known address), the
 // others in «In every network» under the list. Rows with only the three dots (Restore, Forget), each with its own 5 s countdown (the pressed
 // item becomes Undo), the lock of the group buttons, a notice at the end without Undo, guided typing (colons of a MAC, right arrow = dot in an

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The plan of the full port scan of a slow device, in the background: blocks of ports (each with its own limit, so a slow device never loses a whole run to one timeout), how many blocks a run may do, how long to wait after a block
 that timed out (a day, then two, four, seven: capped, as the retry of any background job), and when a card is due for the scan. Pure functions and numbers: what is sent, and when, is in rescan_background.py."""
 

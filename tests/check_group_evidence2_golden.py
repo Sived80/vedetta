@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of evidence.group_evidence, second reference (key order of the output kept, clue ordering and cut, defaults for missing keys): 5000 generated inputs -
 chosen by hand, phones with and without a score, generic and tied groups, groups with zero points, many clues with equal points (stable order), more than four clues,
 clues of other groups or not counted, missing keys, None containers, an unusual minimum score - must give exactly the output stored in tests/golden/group_evidence2.json,

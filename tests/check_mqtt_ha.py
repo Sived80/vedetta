@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the pure MQTT publishing logic (app/ha/mqtt_ha.py), without a broker:
 configuration (environment > settings), slug, per-device discovery payload,
 deduplication, removal, republishing after reset, password never in the APIs.

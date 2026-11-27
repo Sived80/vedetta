@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The router of the house is a router (18/11): the address of the default route, and another address with the same MAC (the router on a VLAN
 behind it, its MAC read from its own table). Before, a gateway running a controller (UniFi: Tomcat, nginx, SSH) scored 13 against 7 for server,
 certainty 46, and its address on the VLAN tied router 3 / server 3: both stayed under analysis for days."""

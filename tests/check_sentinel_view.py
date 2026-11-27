@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The Sentinel wired to the cycle (app/sentinel_view.py): a watched card that goes offline is announced once, after 5 minutes, and its
 return after; a card not watched says nothing; the first state of a card is not a change; a new device goes to the senders; the
 state is saved and read back after a restart; a sender that fails does not stop the others nor the cycle.

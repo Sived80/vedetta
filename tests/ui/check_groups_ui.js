@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The groups of devices (routers, servers...) fold and unfold from their heading: all open at the start, the last state is remembered (localStorage).
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_groups_ui.js [it|en]
 const fs = require("fs");

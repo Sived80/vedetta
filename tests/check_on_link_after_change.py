@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Right after a change of network (simulator, S29 run again on 08/11 with K10 and K14): the network kept in memory is up to NET_TTL_S old,
 so for minutes the old addresses still looked "on the link" and nmap -PR sent its default probes to them (ICMP timestamp, SYN 443).
 What is on the link is read from the kernel's routes (/proc/net/route: a route with no gateway on the main interface), which change the

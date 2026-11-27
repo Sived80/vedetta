@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The shared, lazy reader of the kernel tables (app/procfs.py): the lines of a file or nothing, never an error, one line at a time, and the first time a path cannot be read it is told at debug level, once
 per path (rule of the global review: no `except` that gives an empty answer without a trace)."""
 import logging

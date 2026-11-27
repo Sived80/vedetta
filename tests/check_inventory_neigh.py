@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P7, step 2: the neighbour table of the system as a source of the MAC layer ("neigh"). Every entry in a state that holds a MAC,
 stamped with when the system last CONFIRMED it (the "used a/b/c" of `ip neigh`: b seconds ago), never with the time it is read: a STALE
 entry of a device gone for hours stays on a home network for ever, and must not look seen now. Without that number (iproute2 without -s)

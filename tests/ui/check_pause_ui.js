@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The pause menu (the round LED of the Network card): it opens under the button with the title and, in one row, 15 min / 1 h / 8 h and under them the full-width button that stops
 // until the user resumes ("Ferma" / "Stop"); a choice asks the server and closes the menu; Escape and a click outside close it; its width is the one the placement function
 // gives (inside the card, between the minimum and the maximum). While paused the menu has the title, one button to resume and the line that says when. Needs jsdom (see check_evidence_ui.js).

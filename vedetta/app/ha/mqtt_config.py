@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """mqtt_config: moved out of mqtt_ha.py (see tools/split_module.py)."""
 
 

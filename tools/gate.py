@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """One-command gate for every refactoring step. Prints a compact verdict; details only on failure.
   python tools/gate.py            run the whole suite + structure + size/complexity snapshot, compare with tools/gate_base.json
   python tools/gate.py --save     store the current snapshot as the new base (after an accepted step)

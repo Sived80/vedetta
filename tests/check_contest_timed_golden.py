@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of macclassify._contest_timed (do two MACs overlap at an address and does it change hands between them in a continuous rhythm?): 5000 generated situations -
 flips of the address between the two MACs in either direction and between other MACs or at other addresses, 0 to 9 flips, even and odd numbers of gaps (the median is told apart),
 steps right at the median limit (899, 900, 901 s), flip gaps right at the limit (600, 601 s, missing), overlapping sessions right at the minimum (59, 60, 61 s, also summed from

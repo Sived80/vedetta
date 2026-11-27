@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The points of a device type (kinds_out, they choose the icon) are ADDED up from every source. Found by the global review: the stage of the words and declared services assigned its points with «=»
 where the Home Assistant integration and the signatures add with «+=», so an integration that declares the type (hue: light, 8 points) lost them when the name also said «light»."""
 import os

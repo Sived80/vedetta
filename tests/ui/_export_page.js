@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Shared by the UI checks of the export window (not a check itself: the runner only starts check_*.js). Builds the page the way check_export_ui.js does and gives a small kit to drive the window;
 // the server of the test is in `server`: what the estimate says (info) and what the network check answers (check).
 const fs = require("fs");

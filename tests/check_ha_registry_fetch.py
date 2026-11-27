@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The reading of the Home Assistant registries over the websocket (ha_registry._fetch), with a fake websocket: the token is needed; the server must greet with auth_required and accept the token; the four
 registries are asked one after the other with ids 1 to 4 (then the device classes of the entities of a device) and the answer with the same id is the one that counts (events with other ids that arrive in between are skipped); a refused command is an error
 that names it; a result that is empty becomes an empty list. Written on the code before it was flattened and kept passing after it (differential proof). Nothing here talks to a real server."""

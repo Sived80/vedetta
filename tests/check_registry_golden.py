@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_registry.build_index (the join of the Home Assistant registries by MAC and by address): 300 generated registries (seeded, always
 the same) with the awkward cases (disabled devices and entities, devices made by Vedetta itself, MACs written in several ways or invalid, configuration
 addresses that are IPs, host names or shared by several devices, names chosen by the user, integrations that are only 'mqtt') must give exactly the output

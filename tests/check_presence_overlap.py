@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """«Shared» must mean at the same time. A MAC lent by a repeater answers for several cards at once; a phone that moved to a new address (two cards, one
 private MAC) was never online on both for long. Real shapes (masked): a repeater lending its MAC to 3 phones for days, and two cards of one phone one after the other."""
 import os

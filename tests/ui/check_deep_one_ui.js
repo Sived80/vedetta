@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The deep search of single devices from their sheet: pressing it on a SECOND device while the first is still being searched must start the second too (the server queues the nmap runs),
 // not be dropped in silence. Found on a real debug app: of 4 devices only the first was searched, and the log showed the other three requests never reached the server.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_deep_one_ui.js [it|en]

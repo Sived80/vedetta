@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Behaviour of the three readers of the tables the kernel exposes: the default gateway (/proc/net/route), the ARP table (/proc/net/arp) and the memory and threads of the process (/proc/self/status).
 Written on the code BEFORE the shared reader was made and kept passing after it: the differential proof that the refactoring did not change what they answer (a missing file, a short line, a bad number,
 a byte that is not ASCII)."""

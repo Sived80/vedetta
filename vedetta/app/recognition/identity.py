@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Identity of a device in a single place: product brand, "mobile" and
 battery. Used by probe.py. Common principle (the same as Fing, Fingerbank and the
 Home Assistant integrations): no verdict from a single clue, but multiple

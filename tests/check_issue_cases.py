@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Cases reported on GitHub: a Chromebook is not an iPhone, and a Fairphone is a phone."""
 import os
 import sys

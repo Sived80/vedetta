@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The judge of the functions of a network, for the panel «Networks»: what Vedetta sees of the devices of one network, function by function,
 and where each piece comes from.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Export for analysis: a zip file with the data needed to understand why a name, a brand or a
 category is wrong. No passwords (the MQTT one is replaced), IPs, MACs and names anonymised only inside the
 file (anonymize.py), and no upload: the user downloads the file and hands it over themselves."""

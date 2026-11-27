@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of arpplan.plan (which addresses the periodic ARP check asks): 3000 generated cases - networks from a /8 to a /32 and unreadable or IPv6 ones, own address missing, in
 the network, outside it or invalid, known devices (repeated, invalid, IPv6, inside and outside the network, more than the limit), per-block "last asked" times with ties and unknown blocks,
 and the `force` flag - must give exactly the plans stored in tests/golden/arpplan_plan.json, written from the code as it was before the function was split (the key order of the

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Static map of a class: which self.<attr> each method reads or writes, and which methods it calls.
 Groups the methods that share state, to decide where a class can be cut. Usage: python tools/cluster_class.py app/state.py DeviceState"""
 import ast

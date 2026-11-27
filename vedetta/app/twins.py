@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Twin cards: one machine with an address on two networks (the router of the house and its leg on a VLAN, Home Assistant with an address
 on a VLAN) has two cards, one per address. The card on the main network is the main one; the other is its twin: it takes the main card's
 name with the network after it ("Home Assistant (VLAN 20)"), and the page puts it next to the main one (decision B of 18/11; one card with

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export of the data for analysis (/api/export*): the file in one go, the estimate of the window, and the export as a job that is followed step by step and whose file is taken once. Moved out of
 routes/ha.py (the global review asked for it): these routes have one task and share nothing with the pages and the JSON of the dashboard."""
 import asyncio

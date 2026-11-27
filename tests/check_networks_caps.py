@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The judge of the functions of a network (networks/caps.py), for the panel «Networks»: for each of the 7 functions, from the facts it is handed,
 on (with its source and how), off (a switch the person turned off), how to switch it on (the ways, as data with text keys), or coming soon.
 1) the main network: everything from Vedetta, ports and model always on with no switch (decision «A» of 13/11), the strays coming soon; 2) a network reached through a second

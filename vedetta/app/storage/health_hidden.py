@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The health findings a person chose to hide (config/health_hidden.json).
 
 The choice is about the network, not about a screen: it lives on the server, so the phone and the computer show the same. Only

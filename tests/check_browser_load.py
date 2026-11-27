@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The page in a real browser. The checks that run in Node (the boot with a fake page, the names used and not defined) and in jsdom (the interface, with the modules joined into one script) cannot see what only a browser
 does with the real modules: it loads each file by its address, and two addresses are two modules (the entry loaded as app.js?v=... and imported as ./app.js was a second copy that started the page too early:
 `searchEl` was still undefined). This starts the real app with invented devices (tests/ui/demo_server.py), loads /ha in a headless Chrome or Edge (a throwaway profile, the machine of the person is not touched) and checks that

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Energy devices (inverters, meters, wall boxes, batteries) and controllers speak Modbus TCP on port 502 (the port assigned to it; the Modbus Organization's TCP/IP guide).
 Seeing the port OPEN is a weak clue for the smart home group, nothing more: it is shared with PLCs and other equipment, so it never decides alone, and nothing is ever sent
 to it (rule: never risk commanding a device; see check_no_talk_ports.py). Real case: an inverter with no name and no announcement, found only by its open ports."""

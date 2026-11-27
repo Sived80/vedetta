@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The findings of the network health on disk (storage/history_health.py): a finding is written once and then updated (same rule, subject and first sight = same row), a closed one keeps its end, the list is newest first, an old one is pruned with
 the rest of the history, and the evidence holds counts only. And the view (ha/health_view.py) writes what the judge has found after each judgment, shadow included, so a restart does not lose the record."""
 import json

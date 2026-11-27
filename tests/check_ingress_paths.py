@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Base path (HA ingress), data folder and network interface.
  - with an empty prefix the rendered HTML is IDENTICAL to that of the git HEAD templates
    (if git is not available that comparison is skipped);

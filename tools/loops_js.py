@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Inventory of the loops and timers of the web front end (JavaScript), to check that each one ends and to see which ones can cost time in the browser. It reads the text only (comments and strings are
 removed first, braces are matched by hand: there is no JavaScript parser in the project and none is added), so it points at places to look at; it proves nothing by itself.
   - `while` / `do` / `for` loops, nested two or more deep, and `while` loops with nothing in the body that can leave them;

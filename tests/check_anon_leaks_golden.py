@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of Anonymizer._leaks_addresses, leaks_data and text_note (what is still readable in masked text: home and public IPv4 addresses in dotted and dashed forms,
 the known public address, well known DNS, version numbers, our placeholders; the same over parsed JSON, keys joined included; and the note written by the person, where a word of a
 known device or area name is masked):

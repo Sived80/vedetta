@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the Bonjour (mDNS) memory with an announcement from an address of another network (reflected by a router between VLANs), before the work on more
 networks: today it is already kept by address - the MAC of a device behind a router is never in the ARP table - and a card with that address finds the name even with a MAC
 the memory never saw; once the MAC is known for an address the announcement goes under the MAC. The work on more networks relies on this (passive listening only, no

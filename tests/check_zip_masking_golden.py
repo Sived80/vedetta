@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of export_zip._add_board_devices, _mask_structured and _put_data_files, with the collaborators replaced by in-memory ones that record every call
 (anonymizer, registries, DHCP and mDNS tables, ha_data, the zip writer): generated inputs must give exactly the same result (or exception) AND the same ordered calls as the code
 before the functions were split. tests/golden/zip_masking.json keeps one sha1 per case plus a readable sample.

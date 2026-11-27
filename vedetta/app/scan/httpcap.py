@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """HTTP answers of the devices on the network, read with a ceiling. A device decides how much it sends: a descriptor, a status page
 or a SOAP answer of a few KiB can just as well be megabytes (a broken firmware, a hostile host). Every request Vedetta sends to a
 device of the LAN reads at most `limit` bytes of the body, counted after the decompression (the bytes httpx yields are already

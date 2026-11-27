@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check the generic web page title rule (no extra dependencies).
 Run from the DASHBOARD folder:  python tests/check_titles.py"""
 import os

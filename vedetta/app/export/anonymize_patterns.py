@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """anonymize_patterns: moved out of anonymize.py (see tools/split_module.py)."""
 from functools import lru_cache
 

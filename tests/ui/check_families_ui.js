@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The smart home group and its families (1.0.4): the page has the ten groups Home Assistant sees; inside «Smart home» the devices are shown
 // under the subtitles of their families (lights, climate, security, energy as in the Home dashboard of Home Assistant, appliances, other), only the families that have devices, in a fixed order. When the smart home
 // group is chosen in the ring, chips of its families narrow the list further. The ring shows only the groups present: beyond seven, the

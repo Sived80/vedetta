@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The real application mounts every router once: no route (method and path) appears twice, and the groups of routes that live in their own modules are all there (the export was moved out of routes/ha.py:
 a router that is written but not included in main.py would only show up in the page, as a 404)."""
 import collections

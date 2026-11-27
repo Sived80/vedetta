@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The step of the cycle that keeps the card -> MAC links (1.0 step P4); the cycle reads them through linkview (step P5).
 
 maclayer.record runs it after the verdict of the cycle (registered at start by main), at most every FULL_SWEEP_S. It gathers the facts the rule

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Put several small modules of the same package into one coherent module (the opposite of split_module.py), keeping everything working.
   python tools/merge_modules.py TARGET SOURCE [SOURCE ...] [--write]        (module names without .py, all in vedetta/app)
 What it does: the top-level items of every SOURCE are appended to TARGET (each after a one-line section comment taken from the source's docstring), the imports they need are added to

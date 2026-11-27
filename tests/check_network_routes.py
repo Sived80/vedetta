@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The networks API (routes/network_routes.py), for the panel «Networks»: list, add, change, remove.
 The main network comes first and is never written; a network that does not fit gets a 400 with its code and the translated reason; a change
 of the network itself (its cidr) is ignored; an unknown network is a 404; each network says how many cards it holds.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Delivery of events to the open browsers (and the MQTT bridge): who is listening, and a bounded queue for each.
 
 It knows nothing about devices or revisions: DeviceState stamps the revision and keeps the history needed to catch up."""

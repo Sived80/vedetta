@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Shadow data per MAC: collected for analysis, never read to decide what a card shows. A card whose MAC changes leaves a
 takeover row with what it carried over; an unchanged MAC is not written on every cycle; it ends in the anonymised export."""
 import os

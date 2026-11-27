@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The nesting measure of the gate (tools/nesting.py) on known cases, because a metric is tried before it is believed: the first reading of this project counted every `elif` as one more level and gave
 74 / 18 / 2 functions instead of 62 / 16 / 1. Also the ratchet rule of the gate: counts can only go down."""
 import os

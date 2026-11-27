@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The matrix of the words that are both the name of a maker and a word of function (tools/word_collisions.py): found in the data files, decided one by one in tests/data/word_collisions.json.
   - every collision has a decision (a new brand or word that collides makes someone decide), and no decision outlives its collision;
   - every "different" collision (a homonym: the word of function is not what the maker makes) is fenced: the fence "dual" must be a maker of the role dual in data/brands.json, the role that keeps its name out of

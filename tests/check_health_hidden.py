@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The findings a person chose to hide (storage/health_hidden.py): kept on the server so every browser agrees, validated, capped, survive a restart, a broken file counts as empty."""
 import os
 import sys

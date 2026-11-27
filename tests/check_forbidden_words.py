@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Words that must never appear in what the user sees or in what the product writes (rule of the owner): «riscansione» (and its forms) is said «ricerca approfondita». Found by the global
 review: a log message of the nightly maintenance said «da riscansionare». The search covers the code, the page, the language files, the documents and the golden files (a golden that holds the
 word would keep it alive). Only the product and its documents are searched: the notes and the tests that name the word to forbid it are outside (this file is skipped by name)."""

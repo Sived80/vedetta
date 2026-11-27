@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The SNMP v2c reader of the router's ARP table (scan/snmp.py): BER both ways, a GETBULK walk that stops at the end of the subtree, at
 an end marker or at a ceiling, an answer that belongs to another request refused, an error-status refused, the old table first and
 the newer one when the old is empty, MACs of 6 bytes only (all zeros and broadcast dropped). A fake router answers; one test goes

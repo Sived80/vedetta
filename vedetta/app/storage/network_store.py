@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The networks written by the person, beyond the main one (networks.json): read, checked, changed under one lock and written atomically.
 
 The main network is never stored: it is what the host says. A missing or unreadable file means no network written (the world is the main

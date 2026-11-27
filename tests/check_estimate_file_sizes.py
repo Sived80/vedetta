@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The part of the size estimate of an export that comes from files (export_estimate._add_log_and_data_file_sizes): every line of the log that starts with a time is counted at its day (its length plus the line
 end), the settings files of the data folder (.json and .yaml, not the database) are added to the fixed part, a missing log or folder adds nothing, a log that cannot be read adds nothing. Written on the code
 before it was flattened and kept passing after it (differential proof)."""

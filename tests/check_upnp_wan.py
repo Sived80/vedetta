@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The router asked over UPnP for its WAN address (scan/upnp_wan.py): the WAN service is found in the description, its control URL must
 point back at the gateway, the SOAP answer is read; a router without UPnP, a broken description or a URL towards another host give None."""
 import asyncio

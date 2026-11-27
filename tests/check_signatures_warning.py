@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A catalog of signatures that cannot be read (missing, not JSON, no «signatures» key) used to empty the recognition without a trace: every device was then «generic» and nobody knew why (finding R4b of the
 global review, rule: no empty answer without a trace). Now it is told once in the log, at warning level, and the answer is still an empty catalog (the service goes on). A good catalog says nothing."""
 import logging

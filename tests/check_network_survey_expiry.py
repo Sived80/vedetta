@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The switch of the network survey has a review date. Past it, this test fails until someone decides: turn the survey off (ENABLED = False) or move the date,
 with the reason written in DECISIONI.md. A switch that is never looked at again is a cost (feature toggles are inventory: remove them when they have done their job)."""
 import datetime

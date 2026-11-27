@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_web._guess_port (the most likely web port of a device, for the button and the pop-up): 3500 generated lists of ports - a port that answered over
 HTTP with a title or a body of some size, 80 and 443 among them or not, several confirmed ports with equal and different sizes, services recognised as web, ephemeral ports,
 no evidence at all - must give exactly the port stored in tests/golden/guess_port.json, written from the code as it was before the function was split.

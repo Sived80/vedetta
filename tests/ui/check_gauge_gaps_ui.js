@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The ring of the device types on the home: every segment is apart from the next by the same gap. A type with a single device in a long list
 // has an arc shorter than the round caps of the line: its segment came out longer than its arc and touched the next one (18/11, three types
 // of 1 among 36 devices). Here the arcs of real counts: each one is long enough for its dot, the visible gaps are all TYPE_GAP, and the ring

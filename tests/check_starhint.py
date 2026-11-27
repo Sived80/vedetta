@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one-time invitation to star the project: it needs a few days of history, comes only once (the memory is on the server and survives a
 restart), an old installation sees it once after the update, and the app option switches it off."""
 import os

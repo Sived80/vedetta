@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_protocols.parse_dhcp_offers (text of broadcast-dhcp-discover) and scan_protocols._parse_protocol_scripts (nmap XML with the per-host NetBIOS and SNMP scripts):
 3000 generated texts for each - several responses, DHCPNAK and servers missing, lists of routers and DNS, lines before the first response, junk lines; XML that is not valid, without host, with
 repeated or empty scripts, SNMP output with and without a "System description" line - must give exactly the results stored in tests/golden/protocols.json, written from the code as it was

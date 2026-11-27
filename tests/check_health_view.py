@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The health findings for the page (ha/health_view.py): on unless VEDETTA_HEALTH=off; a rule in shadow is judged and counted but never reaches the snapshot or the event; a rule that is shown reaches both once it is active; the summary counts by rule and state
 and holds no address. The signals are handed in, nothing is sent to any device."""
 import asyncio

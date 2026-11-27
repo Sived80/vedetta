@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export of the window, as a job the window follows step by step: it is started, polled (which steps are done, what the
 check found), the person decides what could not be fixed, and the file is taken once. One job at a time, kept in memory and
 forgotten after a while (the masked files of an export must not stay around)."""

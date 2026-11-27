@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Ignored devices: they do not appear in searches nor in new-device
 alerts. List in config/ignored.json (a deploy does not delete it).
 

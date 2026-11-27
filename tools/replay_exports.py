@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replay of real exports through the group classifier: a git revision (default origin/main) against the working copy.
 
     python tools/replay_exports.py                      # every export in ~/.vedetta/exports

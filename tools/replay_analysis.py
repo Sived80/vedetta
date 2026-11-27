@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replay of the analysis status (app/analysis/status.py) over real exports: how many cards would be identified, settling or under analysis, and why. Read-only; exports stay in
 ~/.vedetta/exports. The age of a card is the time between its first presence event and the last event of the export.
     python tools/replay_analysis.py [export.zip ...]"""

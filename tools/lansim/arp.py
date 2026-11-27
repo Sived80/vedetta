@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """ARP frames for the simulator, and the rule of a device that answers a direct ARP request but not a broadcast one (a camera that sleeps between the broadcasts it hears,
 as in a report from a user). Standard library only; the frames are built and read here, so the rule is tested without a network."""
 import socket

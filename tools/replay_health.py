@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Measures on real exports what the network-health rules would see (app/health/): for each export, how many devices drop off the network, how regular the drops of a device are (cyclic restarts) and how many devices drop in the same minutes (a common cause).
 It reads the presence history of each export and prints numbers, not names; the thresholds of the rules are chosen from these numbers. Read-only; exports stay in ~/.vedetta/exports.
     python tools/replay_health.py [export.zip ...]"""

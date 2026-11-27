@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What a simulated phone says in its DHCP requests: the host name (option 12), the vendor class (option 60) and the parameter request list (option 55).
 The lists are the public fingerprints of the operating systems (as Fingerbank collects them); the host names are made up."""
 

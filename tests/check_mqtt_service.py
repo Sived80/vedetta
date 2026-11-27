@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the MQTT service (ha/mqtt_ha.py MqttService) with a fake paho client: it connects with the right options, announces itself
 online, subscribes to the topics it needs, reacts to Home Assistant restarting / the scan button / retained leftovers, publishes only the
 differences (configs first, retained, QoS 1), stays silent while disconnected, follows the device events, and closes cleanly."""

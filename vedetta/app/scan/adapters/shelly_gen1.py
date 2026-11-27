@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Adapter for first-generation Shelly devices: reads /status and /settings over HTTP and returns what the device reports about itself.
 The caller accepts the answer only if it has the shape of the Shelly API (MAC and uptime), otherwise any web server would be taken for a Shelly."""
 import httpx

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A small SNMP v2c reader, read-only, for the router the person names, with the community the person writes: its ARP table and its own
 addresses. Vedetta never tries a community on its own (no "public"), never writes (no SET), never asks a device other than that router.
 

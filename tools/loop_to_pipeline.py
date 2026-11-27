@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Rewrites the loops that have an exact plainer form (Fowler, "Replace Loop with Pipeline"), and only those:
   find     for T in IT:  if C: return V      +  return D      ->  return next((V for T in IT if C), D)      (any(C for T in IT) when V is True and D is False)
   collect  out = []  +  for T in IT: [if C:] out.append(E)    ->  out = [E for T in IT [if C]]

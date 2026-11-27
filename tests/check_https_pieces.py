@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A page over TLS sent in pieces (headers in one record, the page in the next ones: many small servers do it) is read whole, like the
 plain one (scan_web._read_rest), and still within 64 KiB. No socket: the TLS connection is a fake."""
 import asyncio

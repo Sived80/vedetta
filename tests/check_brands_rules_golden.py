@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of brands._rules (merge of the shipped brand rules and the user's file into the lookup tables, with a cache keyed by the files' stamp), with the stamp function, the file
 reader and the logger replaced by in-memory fakes that record their calls and the module cache reset in every case: 3000 generated pairs of rule files (rules from the interface valid and
 invalid, aliases, name/software/battery hints with some invalid regular expressions, vendor roles, model hints, bridge/phone-only lists, strip words and places, odd value types) and cache

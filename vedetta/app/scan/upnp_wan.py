@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The address of the router on its internet side, asked to the router itself over UPnP (IGD): the only sure way to tell a double NAT.
 
 Two private hops on the way out are not enough: a router inside the network (between VLANs, a layer 3 switch) gives two private

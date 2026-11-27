@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The language list of the menu: a field with the globe, a themed list (not the native one) with a check on the current language, keyboard and
 // pointer, a pick posts the language, Escape closes only the list. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_langselect_ui.js [it|en]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The safety check and the masking must agree: whatever the masking leaves on purpose (multicast groups, public DNS, version
 numbers...) the check must not call a leak, or the export refuses to run for nothing (it did, for people whose log mentioned
 239.255.255.250). And what the masking cannot leave must never be accepted."""

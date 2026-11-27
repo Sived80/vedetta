@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The start of the /ha page (issue #48): the data the server wrote in <script type="application/json" id="vedetta-boot"> (a block of data, never
 // run, so no Content-Security-Policy of a reverse proxy can stop it) becomes the window.VEDETTA_* names the page reads; then the theme and the
 // view chosen before are applied before the first paint (no flash). A file of the app: allowed by any "script-src 'self'".

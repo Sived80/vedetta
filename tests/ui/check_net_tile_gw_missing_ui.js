@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The gateway box of the main network's tile when the gateway has no card yet (Discussion #63): a fresh install, devices found but none
 // added, so the gateway is known from the roles but is not in the device list. Not knowing is not "down": the box says "–", not the
 // red "down" it said before. Needs jsdom.   from the vedetta/ folder:  node ../tests/ui/check_net_tile_gw_missing_ui.js [it|en]

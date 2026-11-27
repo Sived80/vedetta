@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How the gateway and the network interface are read. The gateway is kept for GATEWAY_TTL_S and then read again (K13: before, it was read ONCE for the
 whole run, so after a change of network - the field case of 05/11 - the page kept the old gateway until a restart):
 - default_gateway(): a good reading of /proc/net/route is kept for GATEWAY_TTL_S, then the file is read again and a new gateway is seen; a reading with no

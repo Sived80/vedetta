@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The network-health findings for the page and the log (health/). It reads the signals the app already has (the IP conflicts of the single MAC verdict), hands them to the judge now and then, and keeps the findings. Read-only: it sends nothing to any device.
 On unless VEDETTA_HEALTH=off is set. A rule in shadow is only counted in the log and kept for the export; nothing of it reaches the event of the page, because a rule is shown to everyone only after it has been judged on real networks (see the promotion criteria of the project).
 The page shows the findings of the rules that are shown to everyone; in its debug mode it asks for the ones in shadow too (page(shadow=True))."""

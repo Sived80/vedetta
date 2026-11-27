@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A network behind the router in which Home Assistant already has an interface (a VLAN the person shared with HA, 20/11): the panel
 «Networks» must not tell the person to do what is done ("put Home Assistant inside the network"). Vedetta does not use that interface yet
 (it listens to ARP on the main one only), so what it would give is "coming": Hidden and Strays say so; MAC keeps its other ways (router

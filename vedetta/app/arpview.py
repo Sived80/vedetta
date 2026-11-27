@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The view of the network that ARP gives: who answers at which address and with which MAC.
 
 Since 1.0 step P8 every network is walked the same way (see scan/arpplan.py): a plan of slices (a /24 or smaller: slices of at least 32

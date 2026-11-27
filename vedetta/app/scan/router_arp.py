@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The MACs of the networks behind the router, from the router itself: its ARP table through SNMP (scan/snmp.py), when the person
 wrote the router's address and a read-only community (settings.snmp_*). Off while either is empty: Vedetta never tries one.
 

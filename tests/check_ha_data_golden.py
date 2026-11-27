@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_data._assemble_summary (counts, brand list, unknown chips, types in order, poll, activity): 3000 generated inputs must give exactly the values stored in
 tests/golden/ha_data.json, with the ORDER of the keys (the result is compared as text), written from the code as it was before the function was split.
 (The clues of the device type, which this test also covered, are tested from end to end by tests/check_type_evidence_full_golden.py.)

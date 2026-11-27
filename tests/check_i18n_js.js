@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // i18n check of the JS files: node tests/check_i18n_js.js
 const fs = require("fs");
 const path = require("path");

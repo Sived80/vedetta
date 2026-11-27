@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Download, clean and catalogue the brand logos shown in the app.
 
 What it does

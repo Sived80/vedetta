@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Topology, phase T0: the links the presence history of real exports already prove (a MAC lent to several cards = a repeater with its clients), with
 the confidence of each and how many cards get a known place. Read-only; exports stay in ~/.vedetta/exports. Prints the type and the last part of the
 address of each card, never a name.

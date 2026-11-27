@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The network survey of the developer export (export/network_survey.py): what it reads about the host and about the network trackers of Home Assistant,
 that nothing is left in it that was not meant to be (entity ids, titles, the trackers of Vedetta itself), that what the person's names and addresses
 become under the masking, and that the only thing it ever asks Home Assistant is a template (a read)."""

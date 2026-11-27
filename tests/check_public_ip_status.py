@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The public IP when it cannot be read (scan/internet.py, recognition/roles.py). On a network whose router or DNS filter answers the queries to port 53
 in place of OpenDNS, myip.opendns.com gives no address: one more query to the same address, debug.opendns.com TXT, tells the two cases apart. The
 real OpenDNS answers it with a "server <name>" line: an answer without that line means the DNS is redirected (it does not fix itself: next check in

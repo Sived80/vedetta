@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A deep search that finds no stable port at all on a device that had some (scan/rescan.py _hold_unanswered_ports). Seen on the exports of 22 Oct: a camera and an ESPHome device, scanned while the host disk was saturated by a backup (the
 scans timed out or answered in half a second), were reported with every port "no longer open" and, at the next search, with the same ports "newly open": no port had changed, the device had not answered. The first time it happens
 the old ports are kept and nothing is said (the card remembers it); the second time in a row it is taken as true. A partial answer is a real change. A device whose only ports are dynamic ones has nothing to hold."""

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Score-based category, with the real data of the home devices (2026-10-04)."""
 import os
 import sys

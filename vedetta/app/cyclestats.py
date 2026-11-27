@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """How the check cycles go: a line in the log only when something is wrong (cycles chained by events, a slow cycle) and one summary an hour.
 
 Counts and times only, never an address or a name: the numbers also go to the export (DeviceState.diagnostics)."""

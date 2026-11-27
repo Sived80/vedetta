@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Names the person or the house wrote that live only in the stores added with 1.0 must be masked in the export for the developer too:
 the names of the networks (and of the main one), the former names of a card (identity_change), the names that devices behind the router
 gave (routed_seen.host) and the names Home Assistant gives the devices it sees and Vedetta does not scan (passive_devices.json)."""

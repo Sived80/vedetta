@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Publishes Vedetta's state over MQTT using Home Assistant's "device"
 discovery (homeassistant/device/<id>/config). Off by default.
 

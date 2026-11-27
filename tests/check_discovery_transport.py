@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Contract test of the transports of scan/discovery.py: the multicast listener is replaced by a function that feeds recorded packets to the
 real protocol objects, the UPnP descriptors come from an in-memory HTTP server, and the RTSP probe talks to a real server on localhost.
 Covers what the pure parsers tests do not: who is kept when several packets arrive, unreachable network, broken answers, silent ports.

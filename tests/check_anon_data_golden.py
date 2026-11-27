@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of Anonymizer.data and Anonymizer.repair_data (the replacement and the repair over parsed JSON: keys are masked too, the fields that describe the device
 are kept, secret and private fields become "***", lists and dictionaries nest, non-string keys and values stay as they are):
 1800 generated JSON-like objects (nested dictionaries and lists, addresses, MACs, e-mails, domains, IPv6, secrets and names in values and in keys, every kind of key) on an

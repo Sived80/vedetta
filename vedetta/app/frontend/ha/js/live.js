@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, COMPACT, LANG, STREAM_STALE_MS, ago, api, dlg, reloadHost, setTypeOrder, t } from "./core.js";
 import { S, setConn, snack } from "./core-ui.js";
 import { setStarBadge, setUpdateDot } from "./core-menu.js";

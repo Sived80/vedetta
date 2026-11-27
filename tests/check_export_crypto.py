@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Encrypted report: sealed with the public key, opened only with the private one, plain text, never a plain file by mistake."""
 import asyncio
 import base64

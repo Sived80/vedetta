@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """While Vedetta is off nothing is known (storage/history_presence.py): a card online before a stop used to stay online across the whole
 pause, a night of power cut included, and the bars and the percentage said so. Now every run of the service is recorded (start and
 last sign of life, every minute) and the holes between two runs are cut out of the segments: unknown time, neither online nor offline,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Deep search of one device (rescan_device): runs the deep profile, saves the result and its history, compares the open ports with the previous scan and warns about the ones
 that changed, applies a better name, and for a slow device schedules the full port scan in the background (rescan_background.py)."""
 import asyncio

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The endless loops of the service must END when they are cancelled, within a short time and after cleaning up (the shutdown of the service and a restart of a part of it depend on it).
 For each of the five loops - the check cycle of the state, the network roles, the Home Assistant registry reader, the continuous Bonjour listener and the MQTT publisher - the loop is started with the
 outside world replaced by fakes and cancelled in the situations where it can be: while it waits for its next turn and, where the loop calls out, while it is inside that call (a call that never returns).

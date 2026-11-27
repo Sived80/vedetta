@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The button that shares a device with Home Assistant (MQTT) in the open card: when the link with MQTT is not active (no broker, publishing off) it stays where it is but is disabled - no message, no other change of
 // look (the same classes, the same icon, the same word) - and it works when the link is active. The page learns it from the summary (S.mqtt.active). Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_share_ui.js [it|en]

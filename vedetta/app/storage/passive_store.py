@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted.
 
 Kept in a file of its own (passive_devices.json), NEVER in devices.yaml: devices.yaml is what Vedetta probes every cycle, and a passive device must never be touched

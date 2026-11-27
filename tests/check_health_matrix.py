@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The matrix of the network-health rules (health/matrix.py): the file that ships is valid, and every way a row can be wrong is refused with the id of the row and the name of the field."""
 import copy
 import os

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The Sentinel's way out of the browser (step 3): what sentinel_view sends at the end of a cycle reaches Home Assistant.
 
 Two channels, through the Supervisor's WebSocket proxy (the same one the registry reads, ha_registry):

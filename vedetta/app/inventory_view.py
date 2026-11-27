@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the guard of new devices sees (1.0 step P7): the inventory of the MAC layer instead of the snapshot of the last ARP read.
 
 seen_now(arp): the ARP view of the cycle plus the devices the inventory confirms that did not answer in this cycle (inventory.build over the

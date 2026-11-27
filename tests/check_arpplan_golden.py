@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of arpplan.plan (which addresses the ARP scan is given): 600 generated inputs (seeded, always the same) - networks from a /8 to a /30,
 unreadable ones, own address inside or outside, known addresses of every kind, blocks asked before, `force` - must give exactly the output stored in
 tests/golden/arpplan.json, written from the code as it was before the function was split.

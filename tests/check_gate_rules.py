@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The rules that keep the gate from saying «green» without proof (tools/gate_rules.py, used by tools/gate.py and tools/run_tests.py). Found by the global review of 2026-10-11:
 a golden that is missing is created again and the test passes; the UI tests print SKIP and exit 0 when jsdom is missing; the complexity check looked at grade D only, where nothing is.
 Pure functions, tested here with the shapes of the real output."""

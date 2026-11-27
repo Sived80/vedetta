@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the panel «Networks» says of the life of a network (networks/activity.py) and the VLAN of a network the host reaches itself (networks/host_read.vlan_for).
 1) the cards a network holds and how many are on now, from the last presence the history recorded of each card; 2) «mute»: a confirmed network
 where no card is on and the newest answer of its cards is older than 24 hours (a card never recorded says nothing; a network with no card, a

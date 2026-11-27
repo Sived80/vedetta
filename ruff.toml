@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 # The security check of the code of the app (the CI runs it on vedetta/app and stops on any finding, see .github/workflows/tests.yml).
 # S = the rules of Bandit (subprocess, SQL, XML, YAML, hashes, random, bind), B = common bugs, ASYNC = blocking calls in async code,
 # F = Pyflakes (unused imports and variables, undefined names), PLE / PLW = the errors and warnings of Pylint.

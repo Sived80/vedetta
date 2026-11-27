@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of naming.clean_name: 1500 generated raw names (seeded, always the same) built from the awkward pieces - addresses inside the name,
 "<id>@<name>", domain suffixes, DNS-SD escapes and service types, generated hex codes, fully qualified names, generic words, IPs and MACs written as names,
 empty and odd values - must give exactly the output stored in tests/golden/clean_name.json, written from the code as it was before the function was split.

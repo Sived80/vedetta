@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The web check sends a text request (GET /, and a TLS hello when the answer is not HTTP) to the open ports. Found by the global review: it did so for EVERY open port that was not in the closed list of
 printing and control ports, services that nmap had already named included (ssh, mqtt, telnet, ajp...) and control ports not in the list (OPC UA 4840, OMRON FINS 9600, PCWorx 1962, PROFINET 34962...). A controller on a
 port we do not know may read text as a command. Rule: never risk commanding a device. Now the request goes only to a port that can be a web server: nmap named it http-like (http, https, ipp, upnp...) or did not name it

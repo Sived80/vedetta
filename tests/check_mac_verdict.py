@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Single MAC layer, the verdict in the shadow (1.0 step P1): every cycle the classifier reads the recent window of ip_mac and its verdict is stored in
 mac_class and ip_conflict. Proved here: what is stored and how it moves from one cycle to the next, that a failure never reaches the cycle, that the
 masked export keeps no address and no MAC of it, and - with a spy on the database and on the source - that one single function writes the two tables

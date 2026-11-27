@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P7, step 3: the guard of new devices reads the inventory (decisions 1A, 2A, 3A of 13/11).
   - what the guard sees (inventory_view.seen_now): the ARP view of the cycle plus the devices the inventory confirms that did not answer now
     (a device that answers one cycle in three no longer blinks); never a candidate, never a MAC the verdict calls lent or virtual;

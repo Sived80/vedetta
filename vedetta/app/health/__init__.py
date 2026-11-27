@@ -1,1 +1,2 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Network health: rules kept as data (matrix.json), small generic detectors, and a judge that keeps the findings. Pure: it reads the signals it is handed and imports nothing from the state of the app."""

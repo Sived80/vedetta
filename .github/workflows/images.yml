@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 name: Images
 
 # Every release tag (vX.Y.Z) builds the app once per architecture, on GitHub, from the tagged commit, and publishes it to

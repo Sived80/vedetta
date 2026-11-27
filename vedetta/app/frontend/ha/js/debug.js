@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { ROOT, dlg, t } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { mountHealth } from "./health-card.js";

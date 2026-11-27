@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Where the pause menu goes (pausePlacement, a pure function): centred on the button, as wide as the room inside the card allows (never past the right edge of the card
 // when the button is at its usual place), not wider than the window, never narrower than the minimum, and always inside the window. Needs only Node (no jsdom).
 // from the vedetta/ folder:  node ../tests/ui/check_pause_place.js

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The catalogue of behaviours that make a device in a network differ from a generic client (tests/data/behavior_matrix.json), and what is still not tested.
 It is data: to add a case add a row (a behaviour, an overlap) and, if it can be run, a scenario in tests/behavior_scenarios.py.
     python tools/behavior_matrix.py            summary and what is not covered

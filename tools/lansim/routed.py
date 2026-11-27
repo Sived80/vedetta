@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The parts of the network behind the router (1.0 step P11, S41) that need no network: the networks.json Vedetta starts with, which rows of the list of new
 devices are behind the router, the new-device alerts of each address in the journal, and how long Vedetta waits between two sweeps of a routed network."""
 import ipaddress

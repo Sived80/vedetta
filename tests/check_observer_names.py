@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A device must not be named after an integration that only OBSERVES it. The title of the config entry of UniFi, MikroTik, FRITZ!... is the name of the router or of the controller, not of the client it sees: in a real export
 a vacuum, a laptop, a Shelly relay and an access point of other makers were all called "Mikrotik Router". The old fix covered the clients known only as a device_tracker (tests/check_ha_tracker_name.py); the clients that the
 observer also gives sensors and switches (bandwidth, block) kept the title. The same criterion as for the type (tests/check_observer_integrations.py): an observer declares a device - and offers its title as a name - only when the

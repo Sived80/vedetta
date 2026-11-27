@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of routes/ignored.py: api_ignored_forget and _forget_mac, driven with fake requests and in-memory fake collaborators
 (blocklist, history, newdevices lists, journal, dhcp, mDNS listener, logger, i18n) that RECORD every call. Per generated case the digest (sha1) of
 response + status + recorded calls + final state is compared with tests/golden/ignored_forget_routes.json, written from the code as it was before the split.

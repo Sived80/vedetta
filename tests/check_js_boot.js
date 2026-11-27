@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // Boot check of the /ha page as ES modules: node tests/check_js_boot.js [--write]
 // The entry module (frontend/ha/js/app.js) is imported by Node itself, so the whole graph of imports is linked for real (a name that is imported and not exported, a missing file, a cycle that reads a name before it
 // exists: all of them stop the load with an error). The page is a fake (every property and call answers with another fake object). What is recorded must not change when the code is only rewritten:

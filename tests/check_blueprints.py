@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The ready-made Home Assistant blueprints (blueprints/automation/vedetta/*.yaml) stay in step with the events Vedetta fires
 (app/ha/ha_notify.py): every file parses (with !input), has the keys Home Assistant needs and the current syntax (triggers/actions),
 says first that the events must be turned on (with the label the page shows), listens only to event types of ha_notify.EVENT_TYPES,

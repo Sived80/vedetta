@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Port alerts and the churn of the high ports (scan/rescan.py diff_ports): a device that keeps its listening ports in the default dynamic range of Linux (32768 and up: a TV, a phone, a repeater)
 opens some and closes others at every deep search, so "new port 33297" and "port closed 34729" are noise. When the high band changes in BOTH directions in one comparison it is churn and raises nothing;
 a change in one direction only (a service that appears or goes), and every change below the band, still raises. The numbers below are the real sequences seen on a home network (no name, no address)."""

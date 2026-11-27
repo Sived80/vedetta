@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The groups of devices on the page and, inside the smart home group, the families.
 
 The page shows the ten groups Home Assistant knows (MQTT attribute and model "type", events "type"): the automations and the blueprints

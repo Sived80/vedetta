@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """When the deep search of a slow device schedules the full port scan in the background (rescan._apply_name_and_refresh): only for a slow device, and only when the last full scan is older than
 a week or the services were never read. The mutation «services never read no longer counts» used to survive every test of the project."""
 import asyncio

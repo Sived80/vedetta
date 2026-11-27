@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* The page Alerts (#alertsdlg, the Sentinel's way out: a page like Networks with the table of the recipients) and the window of the list of
    devices (#invdlg: the frame, the header with the X on the left and the buttons at the foot of the other windows, .more-info, .mi-header,
    .mi-actions). Both use the switch of Home Assistant (.rv-switch, as in the networks card) and the parts .al-*; the app menu uses them too, for

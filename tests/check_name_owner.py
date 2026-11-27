@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A card keeps the automatic name that one MAC announced (`name_mac`). When ANOTHER device takes the address (the router hands it out again), the name must not stay: the MAC that announced it
 and the MAC that answers now say different things about the device itself in their DHCP requests (the parameter request list, option 55, and the vendor class, option 60: RFC 2132). The rule does
 not look at brands, systems or kinds of device: any two different fingerprints on two different MACs. A MAC that answers for several addresses (a repeater lending its MAC) identifies nobody and never

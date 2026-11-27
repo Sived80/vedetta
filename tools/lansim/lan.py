@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The virtual LAN: one Linux network namespace per machine, all on one bridge. Needs Linux and root; everything it creates starts with "ls" and is removed on exit.
 
     router  .1      the gateway

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of ha_data.compact_device and ha_data._kinds. compact_device runs with its collaborators (brand logo, effective_type, icon_for, effective_family, _signal, i18n, identity_shift) replaced
 by in-memory fakes that record every call; _kinds runs with a fake file reader (the content of device_kinds.json: valid, broken, missing key, odd entries) and the module cache reset in every
 case, and is called twice to check the cache. 3000 generated cases must give exactly the same result (key ORDER included, or the exception) AND the same ordered calls as the code before the

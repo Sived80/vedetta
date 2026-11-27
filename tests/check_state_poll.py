@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference (characterisation) test of DeviceState.poll_once, the whole check cycle, with the network faked.
 
 It pins down the order and the data flow of 0.6.2 without judging it: the configuration is read, every device is probed together with the

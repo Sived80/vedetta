@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 # Starts Vedetta as a Home Assistant app: reads the options, works out the MQTT broker
 # (manual options first, then the Home Assistant mqtt service) and runs a single uvicorn worker.
 set -e

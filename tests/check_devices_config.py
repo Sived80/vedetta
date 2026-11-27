@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference test of the device list file (storage/devices_config.py): ids and duplicates when adding, the IP move used when a device changes
 address (refused if the new address is taken, the name follows when it was the address), automatic names that never override a user's choice,
 the last deep scan, manual overrides, removal, and a failed write that leaves the previous file untouched."""

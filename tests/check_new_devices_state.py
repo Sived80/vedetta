@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reference (characterisation) test of DeviceState.check_new_devices, the part of the cycle that warns about never-seen MACs.
 
 It pins down the behaviour of 0.6.2 without judging it, so that the cycle code can be moved with the proof that the result stays identical:

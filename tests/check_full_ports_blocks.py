@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The full port scan of a slow device, in the background, by blocks (scan/full_ports_plan.py and scan/rescan_background.py). Seen on the exports of 21-22 Oct: one `-p-` run of 900 s never finished on the slow devices
 (10 timeouts in 14 hours, one after the other, each a quarter of an hour of probes for nothing) and was launched again at every deep search. Now: blocks of 4096 ports, each with its own limit; what a block finds is
 saved at once and the next block is remembered on the card (the scan resumes there at the next deep search); a run stops after a few blocks; a block that times out is not repeated for a day, then two, four, seven

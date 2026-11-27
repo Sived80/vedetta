@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A device that a router integration only tracks (device_tracker) is not a router; the router itself is.
 Real case: Shelly Pro 4PM relays tracked by the MikroTik integration were read as routers (tie with IoT, group "Other")."""
 import os

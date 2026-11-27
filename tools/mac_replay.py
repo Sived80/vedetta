@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Replays the real exports through the MAC layer classifier (app/macclassify.py) and tells what it would say.
   python tools/mac_replay.py [ZIP ...]      (default: every vedetta-analisi-*.zip in ~/.vedetta/exports)
 Rows are rebuilt from what an export holds: presence_events (ip, mac at each online event) as ARP-like observations, mdns_seen.json (mac -> last ip),

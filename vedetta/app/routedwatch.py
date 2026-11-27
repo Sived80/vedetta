@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The ping sweep of the networks behind the router (1.0 step P11, decision 1A): every ROUTED_SWEEP_S, and when the person presses «Scan
 network», each confirmed network seen through the router (not paused, at most a /22 as model.validate allows) gets one ping per address
 (networks.trial.sweep: the excluded ranges never). The only question that leaves is the one of the ping adapter (K1: ICMP, no port, no name,

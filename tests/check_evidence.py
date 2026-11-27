@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Evidence card: certainty and rejected hypotheses come from the same numbers that decided, and the sheet shows them."""
 import asyncio
 import json

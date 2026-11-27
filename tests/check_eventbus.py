@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The event bus (app/eventbus.py): delivery to every listener, a slow listener is dropped (not blocked), unsubscribe is idempotent."""
 import asyncio
 import os

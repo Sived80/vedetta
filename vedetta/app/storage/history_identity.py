@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """IdentityMixin: the history of what Vedetta called each card (name and brand), so the card can say «the name went from android-7f3a
 to Pixel of Anna on 12/11, from the Bonjour name». One row per real change (identity_changes.py decides which), kept 90 days like the
 presence; the purge of a network and the merge of two cards treat it like the other tables of a card."""

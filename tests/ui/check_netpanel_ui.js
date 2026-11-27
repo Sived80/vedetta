@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The panel «Networks» v10 (js/netpanel.js) in a simulated browser: it opens from the menu, the list has the 8 columns and one row per network
 // (name, network, VLAN, state, devices, the 7 bars, the quick action, the gear), the management panel shows what Vedetta sees with switches
 // only where the server gives one (never in the main network), the switch sends the touch it names and keeps the focus, «How to turn it on»

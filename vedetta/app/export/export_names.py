@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Names the export for the developer must learn before masking, beyond the board and the registries (review of 19/11):
 - what a deep search read from the device itself (scan_info / scans.result_json): its UPnP, NetBIOS, ONVIF names, the name its local interface
   gives (ESPHome, Shelly, Sonos...), the nmap host name, and the name in its web page title or certificate when they look like a name;

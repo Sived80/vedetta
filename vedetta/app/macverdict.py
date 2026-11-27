@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The single MAC verdict as the rest of the app reads it (1.0 step P2): what kind of MAC each one is (macclassify, over the last days of ip_mac),
 and (step P3) which addresses are contested by two MACs right now.
 

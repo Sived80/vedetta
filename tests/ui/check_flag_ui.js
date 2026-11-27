@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The flag of the report: on the icon of the tile, as it always was (a small flag, hidden until the device is flagged), and in the open card the button with the flag is blue/azzurro (primary theme color), plain icon only without words, steady (no flashing), and it goes back to plain when the flag is removed. Needs jsdom (see check_evidence_ui.js).
 // from the vedetta/ folder:  node ../tests/ui/check_flag_ui.js [it|en]
 const fs = require("fs");

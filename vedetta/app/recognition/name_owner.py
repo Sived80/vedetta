@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Who announced the automatic name of a card, and does that name still describe the device behind the card?
 
 A card is tied to an address. When the router hands the address of one device to another, the card carries on with the name found for the first one. The card remembers WHICH MAC

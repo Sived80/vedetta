@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Draws the pictures of docs/TESTING.md as SVG, a light and a dark one each (the page picks the one of the reader's theme): the way a change goes, the findings of the network
 doctor on real exports before and after 0.11.0, and how soon a fault added to real history is raised. The numbers are written here; where they come from is said next to each.
     python tools/make_testing_charts.py          Output: docs/images/testing-*.svg"""

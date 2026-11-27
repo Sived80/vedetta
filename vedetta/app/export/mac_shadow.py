@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Shadow data per MAC: collected for analysis only, nothing here decides what a card shows.
 
 A card is tied to an address, so when another device (or another private MAC of the same phone) starts answering at that

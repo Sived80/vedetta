@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of four device routes (add, wake, delete, deep rescan) through the real HTTP layer: 2500 generated requests - candidates with valid, invalid or missing addresses, long or
 empty names, unknown adapters and name sources, wrong ports, scan info with extra or empty keys; devices with the MAC in the configuration, in the live card, in the history or only in the
 history of known devices; the local network known, wrong or failing; the packet sent or not; delete with or without the ignore list, the device known or not, the removal failing; a rescan of

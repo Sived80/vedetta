@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The page's plural forms (core.js, between «plural:start» and «plural:end»; 19/11 review): Czech says «3 zprávy» but «5 zpráv»; every language of the app picks
 // «key_one», «key_few», «key_other» or «key» as Intl.PluralRules says. The language argument is ignored: the four tables are checked.
 //   node tests/ui/check_plural_ui.js

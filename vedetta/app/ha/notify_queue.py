@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The queue of the notifications (the Sentinel's way out, ha_notify): every message goes to the recipients in their order (the first,
 the second, the third...), each one after its wait ("delay_s") from the one before, whether the one before took it or not. The
 messages wait in line: one is handed out to everybody before the next one starts, so the order is kept. The queue lives in memory:

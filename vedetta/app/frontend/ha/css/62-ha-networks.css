@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* Networks seen by Home Assistant (#card-nets, inside the network card, under the devices found panel). Same look as #card-new: a divided block, not a card;
    its rows are the .nd-* rows of the panel of the devices found, with a tick box in front. */
 @layer overrides {

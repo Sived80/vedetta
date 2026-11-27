@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The nightly forgetting of private MACs (storage/history_known.py known_prune): a guest with a made-up MAC, gone for more than 30 days and
 without a card, leaves known_macs; a MAC of a manufacturer, a MAC with a card, one ignored by the person, one seen lately or first seen
 lately all stay. Seen again after being forgotten, it is a new device again (newdevices)."""

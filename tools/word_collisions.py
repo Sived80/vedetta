@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The words that are at the same time the name of a maker and a word of function, found in the data files (not written by hand), and what has been decided about each (tests/data/word_collisions.json).
 
     python tools/word_collisions.py            the collisions, with the decision of each and the ones still undecided

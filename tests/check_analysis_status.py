@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Analysis, phase 1 (read-only): from what the evidence card already says, is a device identified, settling (too young to judge) or under analysis? Pure, no network.
 Shape of the rule (see PROGETTO_ANALISI and PRATICA_CORRETTA part 2): two thresholds with a middle zone (Fellegi-Sunter): below the low one it enters analysis, above the high one it
 leaves, between them it keeps the state it had (hysteresis, as Nagios does for flapping); a grace period for a card that has just appeared (cold start); a device typed by the user is identified.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The switch of the presence held by Home Assistant (1.0.3, setting "phone_hold_ha"): on by default, in GET /api/settings, saved by
 POST /api/settings when it is a boolean, refused (400, nothing saved) when it is not. Temporary data folder, nothing contacted.
     python tests/check_settings_phone_hold.py"""

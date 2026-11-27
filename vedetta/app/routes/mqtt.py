@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Status and configuration API for MQTT publishing (GET/POST /api/mqtt).
 The password is accepted on write but is never returned."""
 from fastapi import APIRouter, HTTPException, Request

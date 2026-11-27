@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The time a deep search of one device really worked (scan/work_time.py). All the devices of a search start together and wait for the two slots of nmap, so "scanned in 352 s" said how long the search had
 been going, not how long the device took (about 10 s). Every nmap run of a device is noted while it runs (a context variable that the tasks of the device share), and the log says the elapsed time and,
 next to it, the time in which at least one nmap of the device was running (overlapping runs counted once)."""

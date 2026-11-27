@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A declared mDNS service that any general responder publishes is a weak clue, not a declaration of what the device is. "_workstation._tcp" is published by avahi-daemon when its option publish-workstation is on
 (default "no" in some versions of avahi-daemon.conf, "yes" in others) and by recent macOS: an embedded Linux box (a video door entry unit) has it as a PC has. Alone it is below the minimum of points for
 a type (the card stays "generic" and is looked at again by the state of analysis); with another clue of a computer it still counts. A service that does say it (Remote Desktop) keeps its weight."""

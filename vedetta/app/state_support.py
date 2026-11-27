@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What DeviceState keeps and reports besides the cards, in four small parts: the activities in progress (scans and searches, kept here and not only in the browser that started them, so that after changing page
 the blinking LED and the search button are found as they were), who is online (presence), the MAC shadow jobs, and the numbers of the diagnostics for the export."""
 import asyncio

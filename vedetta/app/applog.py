@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The service's own log: a rotating file in the data folder (dashboard.log) and a short in-memory list of the latest entries, which the log page and the export read.
 The time zone is given by Home Assistant through set_zone_provider: this module sits at the bottom of the layers and imports nothing from the app except paths."""
 import logging

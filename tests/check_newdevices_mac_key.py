@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the "new devices" alerts as keyed by MAC, before the work on more networks (for a network behind a router there is no MAC, so these alerts are not
 used there): observed_macs keeps one entry per MAC (normalized), skips a host without a valid MAC and the skipped addresses, takes the name from DHCP only for a MAC seen now;
 list_new shows only the "new" rows whose MAC is present. Fake history; private placeholder addresses.

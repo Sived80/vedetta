@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared).
 Pure functions: no database, no clock. A MAC is shared when two cards were online with it AT THE SAME TIME for longer than SAME_MOMENT_S (the failed
 checks of tolerance and a lease handed over add a few minutes of overlap to a real move)."""

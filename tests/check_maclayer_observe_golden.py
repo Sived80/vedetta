@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of MacLayerMixin.observe (writes a batch of (ip, mac, source, ts) observations into ip_mac, ip_mac_session and ip_flip in one transaction): 2500 generated
 sequences of 1-4 batches on an in-memory History - repeated and unordered timestamps inside a batch, several sources (only "arp" makes flips), the same pair seen again after a gap
 shorter, equal to or longer than the session gap (600 s), a MAC taking over an address, empty batches, generators instead of lists - must give exactly the returned counts AND the

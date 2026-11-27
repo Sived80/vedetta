@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An open SSH port served by Dropbear is not a clue for "server". Dropbear is the SSH server made for small embedded systems (access
 points, routers, switches, firmware of appliances); servers and PCs use OpenSSH. Real case (08/11/2026): an access point with SSH by
 Dropbear and the word "access point" went to the Servers group, 4 points (SSH) against 3 (the word). The port number alone and OpenSSH

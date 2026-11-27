@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The order of the groups (1.0.4): the person orders the ten groups from the menu («Order of groups»). The window lists only the groups that
 // have devices, one row each with «to top», up and down (to top and up off on the first row, down off on the last); the empty groups keep their
 // place in the saved order; «Reset» goes back to the default order. The order is the setting group_order of the server (the same on every

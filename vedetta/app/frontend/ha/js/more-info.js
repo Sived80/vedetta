@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, ago, analysisText, canWake, devIcon, dlg, esc, fmtStamp, fmtUptime, icon, logoVar, t } from "./core.js";
 import { S, raiseSnacks, snacksEl } from "./core-ui.js";
 import { miActions, miAttrs, miDebug, relinkFresh } from "./more-attrs.js";

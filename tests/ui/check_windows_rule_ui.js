@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The rule of the windows (17/10, written again 17/11): every page and pop-up of the app has the same head, the X first on the left
 // (an icon button with its name for screen readers), then the title. Opens every window from the menu and from a card and looks at
 // its head: the card of a device, Alerts, Export (and its network guide when it is there), the inventory, the order of the groups, the Node-RED flows,

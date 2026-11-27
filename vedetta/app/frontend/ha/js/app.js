@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { POLL_WATCHDOG_MS, STREAM_STALE_MS, redirecting } from "./core.js";
 import { S, buildToolbar } from "./core-ui.js";
 import { showDebugBadge } from "./debug.js";

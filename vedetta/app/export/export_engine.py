@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The export for analysis, in two phases and for two readers.
 
   dest "dev": for the author of Vedetta (a report attached to a public issue). IPs, MACs, names and emails are masked, the

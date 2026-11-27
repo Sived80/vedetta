@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Home Assistant registry as a source of name, brand, model and area of the network devices.
 
 Read-ONLY, only documented WebSocket commands not reserved to administrators

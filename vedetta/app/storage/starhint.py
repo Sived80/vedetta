@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The one-time invitation to star the project on GitHub (config/star_hint.json).
 
 It is shown once in the life of an installation, and the memory is on the server, not in the browser: another browser, another device

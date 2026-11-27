@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The fine device type ("kind", an id of data/device_kinds.json) next to the category ("type") in the MQTT attributes sent to Home Assistant:
 - ha_data.effective_kind: the best type inside the category that counts (the one chosen by hand wins), None when no type of it scored;
 - build_desired with the fine types: the attributes gain "kind" (null when there is none) and NOTHING else changes, byte for byte

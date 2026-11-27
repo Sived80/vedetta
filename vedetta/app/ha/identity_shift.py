@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Who is behind a card: two different devices answering at the same address.
 
 A card is tied to an address. When the router hands the same address to two devices that are switched on in turn (a laptop and a game

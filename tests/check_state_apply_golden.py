@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of DeviceState._apply (the decision of a checked device: stale result, automatic name, MAC memory, shadow work, online/offline with the tolerance to missed checks,
 last seen, response time, event only when something changed or when forced): 2500 generated sequences of results - online or offline (also from a device already online, within and beyond the
 limit of misses), observed fields present or not, extra data, MAC in capitals/empty/missing, automatic names (with force, falsy, empty), configurations that are the same, changed or missing,

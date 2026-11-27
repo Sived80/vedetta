@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, BASE, COMPACT, COMPACT_LIMIT, FAMILIES, FAMILY_GROUP, I, REDUCED, TYPE_ORDER, analysisText, canOpen, canWake, devIcon, esc, familyIcon, familyLabel, familyOf, icon, ipKey, logoTint, logoVar, nowSec, reloadHost, stateText, t, typeIcon, typeLabel, typePlural } from "./core.js";
 import { S, searchClear, searchEl } from "./core-ui.js";
 import { span } from "./core-menu.js";

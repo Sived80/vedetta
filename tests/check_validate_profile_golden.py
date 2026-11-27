@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan.flows.validate_flows / validate_profile (the real caller of validate_profile): 4000 generated settings - unknown or non-string profiles,
 non-list ids, unknown / non-string / unhashable step ids, steps not applicable to the profile, missing mandatory steps, empty lists, duplicates, shuffled order, partial
 dicts - must give exactly the result (or the FlowError key and params, first error wins) stored in tests/golden/validate_profile.json, written from the code as it was

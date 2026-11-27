@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """scan_format: moved out of scanner.py (see tools/split_module.py)."""
 from ..formatters import is_useless_title
 

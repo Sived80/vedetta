@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, api, esc, icon, t } from "./core.js";
 import { S, raiseSnacks, snack, snacksEl } from "./core-ui.js";
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Presence of a card behind the router (decision A of 15/11): the adapter asks the card's port, and on the home network ARP saves a device with
 that port closed; through the router ARP never answers, so a UniFi without port 80, Home Assistant on 8123 or a LED strip with no open port stayed
 offline for ever while they answered the ping of P11. complete_with_ping asks one ICMP echo when the card is behind the router and the adapter

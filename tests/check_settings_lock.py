@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """settings.json is changed by read - modify - write sequences (update, mqtt_update, flows_update, sentinel_update, snmp_update) that run
 from route threads at the same time. Each one re-reads the other keys and writes the whole file: without a lock two changes that read the
 same old file lose the first one (an MQTT host, a poll interval, a router address rolled back). This test makes the window wide (the read

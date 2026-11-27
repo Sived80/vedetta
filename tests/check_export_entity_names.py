@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The names of the entities of a device in Home Assistant's registry are written by people ("Ottavia Bluetooth", "Pixel 8 Ottavia
 (Wi-Fi)") and nothing in recognition reads them: the export for the developer keeps only how many there are, in every file that carries
 the registry (the snapshot in state/, the data file, the debug of the cards). Invented names and documentation addresses."""

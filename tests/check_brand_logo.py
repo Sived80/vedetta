@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Brand logos: the table is consistent, a brand finds its logo, and the logo follows the brand shown now."""
 import json
 import os

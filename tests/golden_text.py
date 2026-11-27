@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Shared by the golden-master export tests: the files the app rewrites itself (for example devices.yaml) use the line ending of the platform
 (CRLF on Windows, LF on Linux), so the compared values are made line-ending neutral on both sides."""
 

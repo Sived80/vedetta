@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The switch of the presence held by Home Assistant in the menu (1.0.3, setting "phone_hold_ha"): it sits right under the speed of the check,
 // shows the value the server has (off here, so the default of the page is not what is seen), a tap posts the new value and the menu stays open.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_menu_hold_ui.js [it|en]

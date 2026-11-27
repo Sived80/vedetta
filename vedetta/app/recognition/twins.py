@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Twin cards: cards that look the same (same name, brand and type), like five Shelly called by their model. Only they need a number to be told apart; the number is the card's own
 progressive number (storage/devices_config.py), which works for phones too. Pure function."""
 from collections import defaultdict

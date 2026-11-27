@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The side column of the wide layout (the Network card, the last 12 hours, the log) is wide enough for the tiles of 1.0.1: one tile per
 network, two boxes with a label and a value each. At 380 px the tile had about 210 px and its texts were cut (the user, 20/11); at 440 px
 it has about 270. The narrow layout (one column) does not change.

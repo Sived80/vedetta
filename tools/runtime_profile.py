@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Where does the time go? A measured workload on REAL data with the network replaced by instant answers (so what is measured is our code, not the network):
   cycle  - DeviceState.poll_once repeated N times on the devices and the history database of an export "for me" (probe of every device, results applied, presence and MAC layer written);
   export - the build of the export file for analysis on the same data.

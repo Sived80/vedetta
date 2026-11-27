@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A device that receives video is not a phone, even if it is called "Android"
 (real data of the Fire TV Stick, 2026-10-04). Generic rule, no special case."""
 import os

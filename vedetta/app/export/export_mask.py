@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """export_mask: moved out of export_engine.py (see tools/split_module.py)."""
 from pathlib import Path
 from .export_gather import Prepared

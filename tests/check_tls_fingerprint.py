@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The SHA-256 fingerprint of the TLS certificate (1.0.1): the deep search already fetches the certificate of a web port over TLS
 (scan_web._https_get); its fingerprint is kept as `tls_fp` (lower-case hex) next to the subject, carried by the port, by the web identity
 (the default web port, else any confirmed TLS port) and by the pipeline into scan_info, and kept where scan_info keys are kept.

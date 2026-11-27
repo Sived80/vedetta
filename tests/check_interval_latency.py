@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the configurable check interval and response time.
 Pure logic, no network: python tests/check_interval_latency.py (from the root
 of the project). Uses a temporary database and settings file."""

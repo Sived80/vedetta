@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Two identifiers the masked export kept (read in a real export, 19/11):
 - the SSH key fingerprint of a server ("256 3f:0a:...:6a (ECDSA)"): unique to that machine, so it is masked like a MAC, one placeholder per key
   (the same key twice gives the same placeholder; the size and the kind of key stay, they say nothing about the machine);

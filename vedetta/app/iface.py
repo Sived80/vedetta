@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """LAN network interface: from VEDETTA_IFACE, otherwise from the default
 routing (/proc/net/route, no external command: it also works with BusyBox).
 Fallback "eth0" (the current LXC container).

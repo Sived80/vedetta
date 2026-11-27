@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of DeviceState._loop (the periodic cycle: wait the minimum gap when a cycle was woken by an event, note the start, run poll_once - a failure is logged and the service
 marked ready, a cancellation goes out -, note the end, then wait for the interval or for a wake-up, while paused only until the pause ends): 2500 generated runs - the loop paused or not
 (also with no end, 0 or a few seconds left), forced or not, woken by the timer or by an event with or without a reason, a cycle that works, fails or is cancelled, the interval from the

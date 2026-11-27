@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of DeviceState.poll_once (one cycle of checks: read the devices, ask the network (ARP) and measure the response times at the same time as the probes, apply every
 result, forget the devices that are gone, save the latency, then follow the changed addresses, merge the duplicate phones, report the address conflicts, look for new devices and record
 the MACs): 2500 generated cycles - no devices, a few, with ports; probes that work or fail; the response times failing; the ARP failing; the list of devices changed while the probes ran

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* More info dialog (#more): hero, history, attributes, ports, rename and flag forms, type menu, debug rows.
    Most corrections live in the overrides layer; they stay there because the base (10-base) also has overrides-layer rules on
    the same elements (.icon-btn, .menu, tokens). */

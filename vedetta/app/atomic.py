@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The atomic write of a file: a temporary file in the same folder, then os.replace. A crash or an interruption in the middle of the write leaves the previous file intact (never a truncated one)."""
 import os
 import tempfile

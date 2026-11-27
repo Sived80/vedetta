@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Name and category of real devices (data read from the network on 2026-10-04): PC with firewall
 (no ports), unnamed camera, Proxmox with certificate and page over TLS, TV via UPnP,
 Tasmota thermostat. No rule for a specific device: what counts are brand, certificate, title,

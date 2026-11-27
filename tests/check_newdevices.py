@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of new devices, settings and the Wake-on-LAN magic packet.
 In the container: python tests/check_newdevices.py
 Locally (Windows) it also works without zoneinfo: if app.applog cannot be

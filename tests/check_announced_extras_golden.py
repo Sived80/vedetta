@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of probe._add_announced_name_extras (the names and models a device announces - Bonjour, NetBIOS, UPnP - copied into `extra` unless already there, the names
 also only when they differ from the device name): 3000 generated cases - every key present, empty or equal to the device name, `extra` already holding some of the keys - must give
 exactly the content AND the key order of `extra` stored in tests/golden/announced_extras.json, written from the code as it was before the function was rewritten as a table.

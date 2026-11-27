@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reading of the JSON files shipped with the app (app/data/*.json: kinds of device, Home Assistant integrations, brand logos, product signatures).
 
 A file that cannot be read (missing, not JSON, without the key asked) must not empty the recognition without a trace: it is told once per file in the log, at warning level,

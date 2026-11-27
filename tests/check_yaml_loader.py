@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """devices.yaml is read several times in every cycle of the service, so it is parsed with the C parser of libyaml when this PyYAML has it (about ten times faster than the pure-Python one:
 measured on real data, 187 ms against about 20 ms per reading). It must give EXACTLY the same result as the safe pure-Python loader. Checked here on 3000 generated documents - unicode names, ports,
 booleans and nulls, strings that look like numbers, booleans or dates, nested lists and mappings, flow style, comments, anchors, multi-line text - and on the file as devices_config reads it;

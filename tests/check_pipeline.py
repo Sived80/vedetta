@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of the single search flow: nmap composition, settings validation,
 defaults, skipped dependencies, translations, pipeline with fake primitives.
 In the container: python tests/check_pipeline.py

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Why did the service restart? A real export (a user's, 288 starts in 5 days, about one every 19 minutes, no stop line before any of them) cannot say: the log is silent before each start, so the process
 was ended from outside (a watchdog, a memory kill, the host) or it hung, and the log does not tell which. The service now keeps a small record of its run: when it started, a heartbeat (time, memory, the longest
 delay of the event loop), and a mark when it stops cleanly. At the next start it compares: a clean stop is a request from outside (Supervisor, update), a missing mark is a kill or a crash, and the heartbeat says how

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A devices.yaml written by an older version, or edited by hand, must come through the numbering of the cards (ensure_seq_safely, at every start) with nothing lost: every field of every card is kept (user
 choices, notes, scan results, fields this version does not know), the old file is kept as .bak, a second start changes nothing, and a file that is empty, has no list of cards or cannot be read never stops the
 start and is never overwritten."""

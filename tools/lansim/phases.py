@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """When does the extender answer for a client? In the real network the answers alternate in stretches: the extender holds an address for a few cycles, then the
 phone answers again for a longer while, with a few very long stretches (the durations are heavy tailed). The schedule is a list with one entry per scan cycle:
 True = the extender answers for the client (the client stays silent), False = the client answers itself."""

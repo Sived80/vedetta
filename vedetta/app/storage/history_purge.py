@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """PurgeMixin: every row of the history that belongs to one written network, counted or deleted («delete this network», networks/purge.py).
 
 A row belongs to the network when it is about one of its cards (device_id in the ids given), when its address is in the network (inside(ip), the

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of localapi.parse_esphome_events: 6000 generated texts of server-sent events (pings and other events, data lines with valid JSON with or without a title, a list, a number,
 broken JSON, a data line one, two or three lines after the event, blank lines, spaces around, several pings) must give exactly the same answer as the code before the function was split;
 digests and a readable sample are stored in tests/golden/esphome_events.json.

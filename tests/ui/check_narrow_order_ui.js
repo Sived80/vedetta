@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The narrow layout (the network card on top, one column): the side column is opened (display: contents) and every card of it takes its place
 // with `order`. A card without a place has order 0 and goes on top of everything (the last 12 hours did, 17/11). Here: every card of the side
 // column of the page has an order in both narrow rules (the host's class and the media query), in the same sequence as the wide layout, and

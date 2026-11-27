@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """ARP only on the network of the interface (K10, G0-13 and G0-15 of the study of the networks).
 
 A card whose address is not in the network the host is on (a device of a routed VLAN added by hand, a card left from the network of before)

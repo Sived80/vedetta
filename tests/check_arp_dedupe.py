@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check: an address that answers ARP several times appears only once."""
 import logging
 import sys

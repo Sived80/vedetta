@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of identity_shift.profile (what the app remembers about one MAC: DHCP card, Bonjour card, Home Assistant registry, vendor, memory per MAC) with the DHCP tables and
 helpers, the Bonjour table, the Home Assistant lookup, the vendor lookup and the placeholder test replaced by in-memory fakes that record every call: 3000 generated MACs and memories
 (None/empty/partial, live DHCP data that overrides the memory, placeholder and non-text names, empty or partial registry cards, falsy values) must give exactly the same profile (key ORDER

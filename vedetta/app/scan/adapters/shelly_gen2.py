@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Second-generation Shelly devices (RPC API): tells whether the device runs on a battery, from the "devicepower:0" component of Shelly.GetStatus."""
 import httpx
 

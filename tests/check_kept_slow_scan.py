@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """What the search learned about a device is kept when the device is added; this includes «the device is slow»: a deep search started a minute later must not
 run the 1000-port pilot again (14-16 s on a small device, close to the host timeout). Found in a real export: every Shelly was piloted twice in two minutes."""
 import os

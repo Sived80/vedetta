@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The passive DHCP memory is bounded: a flood of invented MACs (a hostile or broken client on the segment) keeps at most SEEN_MAX cards and
 SERVERS_MAX servers, the oldest go first, and the file is not rewritten at every packet: one save, later, off the packet path. No socket is opened."""
 import asyncio

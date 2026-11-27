@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The judgement of the card links runs in a thread (cardlink_cycle.update, 18/11): what it took is forgotten when it is done, but a request
 made while it ran (the person pressed «This is a new device» meanwhile) stays for the next judgement (18/11 review: it was lost)."""
 import asyncio

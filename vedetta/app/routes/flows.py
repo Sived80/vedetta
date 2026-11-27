@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """API of the search flows: which functions (steps) each profile enables."""
 from fastapi import APIRouter, HTTPException, Request
 

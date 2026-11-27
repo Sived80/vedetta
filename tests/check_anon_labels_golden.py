@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of Anonymizer.add_device, add_devices and _new_label (the placeholder of a device: brand written in the name, product word, kind of device from the icon,
 type hint, counters per label; names that are noise, short, numeric, a bare brand or an address are skipped; a name shared by several devices gets a label of its own):
 2500 generated sequences of calls (add_device with and without optional arguments, add_devices, add_names, add_area, add_ip/add_mac) on a fresh Anonymizer. For each one the

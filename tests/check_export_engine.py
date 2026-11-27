@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The new export: for the person ("me": nothing masked, credentials still replaced) and for the developer ("dev": masked, checked,
 fixed, and what cannot be fixed is decided by the person), limited to a period, with an estimate of how big it will be."""
 import io

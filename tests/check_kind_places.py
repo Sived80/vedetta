@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0.4: a word that is also a place (garage, garden, pool) does not decide the kind of a device on its own: «Presa garage» is a plug in
 the garage, not a garage door; the place counts for its kind only together with a word that says the device (data/device_kinds.json
 "place" and "with"). The common Italian diminutives of a kind word are words of the kind («Cancelletto» is a gate). Home Assistant keeps

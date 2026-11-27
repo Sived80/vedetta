@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The cards that are already outside the main network (added by hand, or left from the network of before), and the addresses no card may have (K12).
 
 Pure: it is handed the addresses and the networks. Two answers:

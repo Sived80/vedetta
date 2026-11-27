@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P11: the counts of the ping sweep behind the router in both exports (export_zip.step_counts, which the export window takes too):
 "routed" = the networks of the last sweep, the sweeps of a network, the addresses asked, those that answered, those whose MAC Home Assistant
 said, the new devices and the seconds. Numbers only: never an address, a MAC or a name.

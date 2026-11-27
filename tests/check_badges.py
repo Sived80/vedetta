@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The badges of a card's icon: one class per kind, ONE module that decides which are shown and where, never two in the same corner, at most two in all (the user's choice; alarm
 management studies say few and actionable: alarms that are frequent or do not call for action desensitise). The kinds not shown stay in the detail of the card. Pure: it gets
 flags, it knows nothing of the rest of the app (the UI chooses colours for both themes and always adds a text or a shape, never colour alone).

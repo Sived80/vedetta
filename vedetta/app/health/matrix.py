@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The matrix of the rules: loaded from matrix.json and checked in plain Python (no extra library). A bad row is refused with its id and the name of the field, so a mistake in the data is found at start and by the tests, not in the field."""
 import json
 from pathlib import Path

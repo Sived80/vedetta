@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The address a DHCP client says it uses (ciaddr on a renewal, option 50 on a REQUEST, never from a DISCOVER hint) and the observations made from it."""
 import os
 import sys

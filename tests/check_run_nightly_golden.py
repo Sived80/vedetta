@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of maintenance.run_nightly (the night job: deep search again on the devices whose data is older than STALE_DAYS, pruning of the history, update of the MAC prefix
 database): 3000 generated runs with the collaborators replaced by deterministic in-memory ones - a frozen clock, a fake list of configured devices (fresh, stale, never searched, with
 scanned_at or deep_empty_at, with falsy values), a fake local-address filter, a fake batch preparation, a fake per-device search that fails for some, a fake history prune, fake

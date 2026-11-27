@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The configuration of the add-on is described once and completely (config.yaml, translations/, run.sh, DOCS.md): every option of the schema has a name and a
 description in each language, no translation for an option that does not exist, no two options with the same name or the same description, every required
 option has its default, the options that switch the functions off reach the app (run.sh) and are explained in DOCS.md."""

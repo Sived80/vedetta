@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The quality of a device's link, from what Vedetta already keeps: the response times (one average a minute, 7 days) and the presence
 segments (the holes of Vedetta off already cut out). Pure.
 

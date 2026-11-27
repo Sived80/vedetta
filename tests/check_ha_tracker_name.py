@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A client that a network integration only tracks (a device_tracker made by a router integration) must not be named after that integration.
 Real shape (a shared export, masked): 11 of 51 cards were called by the title of the router integration, among them a vacuum, a laptop and an access point;
 the registry knew each of them only as a tracker, with the MAC as the device name."""

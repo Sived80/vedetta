@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A network behind the router set to "presence only" is never searched in depth (registry.allowed refuses its addresses): the page must
 know it, or the deep search badge counts devices that can never be analysed and its number never goes down (first report on 1.0.0).
 1) every card of /api/ha/devices and of a live "device" event says deep_ok: True on the main network and on a "ports" network, False on a

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { $, esc, icon, t } from "./core.js";
 
 // ------------------------------------------------- the notice of the first hours

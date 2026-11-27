@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Topology, phase T1 (read-only): the links of every source put together. One best link per (client, parent) with all the sources that told it; a client with two different parents of
 similar strength is a conflict (a link to put under analysis); the cards with no known place are unknown and are never drawn as certain. Pure."""
 from typing import Iterable, NamedTuple

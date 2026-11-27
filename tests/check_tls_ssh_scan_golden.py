@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of scan_nmap.tls_ssh_scan with nmap and the XML parser replaced by in-memory fakes that record their calls: 2500 generated port lists (TLS ports, port 22,
 services containing https/ssl/ssh, None/empty services, duplicates, more than 12 ports) and parsed hosts (missing, empty, falsy values) must give exactly the same result (or exception)
 AND the same nmap arguments as the code before the function was split. tests/golden/tls_ssh_scan.json keeps one sha1 per case plus a readable sample.

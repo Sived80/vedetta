@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The rotating tile of the Network card: the latency of the gateway from the history of the last hour (tenths of a millisecond, not the whole-millisecond value of the card) and the Internet tile.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_tiles_ui.js [it|en]
 const fs = require("fs");

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """A card number: a progressive number given by Vedetta to every card, never reused, kept in devices.yaml. It tells identical cards apart (five Shelly with the same model name) and works for
 phones too (a private MAC is no identity). Shown only when a card has a twin. Study: a surrogate key is meaningless on purpose and insulates the relations from changes of the data (the MAC is an
 attribute, not the key). The twins: same name and brand and type."""

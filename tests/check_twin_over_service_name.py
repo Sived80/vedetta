@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """An old twin card whose name came from a service, not from a person, takes the twin name (26/11, an installation upgraded from older
 versions): Home Assistant's address on a VLAN announces only the mDNS service of an app that runs on it, and an old version saved that
 instance name ("esphome-builder-<random>") as the card name with no origin. Such a name is the automatic name the deep search recorded

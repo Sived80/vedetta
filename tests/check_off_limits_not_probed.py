@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Spy test (K9b): in the check cycle a card whose address may not be touched gets nothing: no adapter call, no response-time measure.
 A card with a public address, one in a paused network and one in a proposed network (the grace period: touched as before) next to a card of
 the main network, and a card of a confirmed network behind the router (touch "presence"), asked only by ping (K1). The cycle reads the cards, proposes the networks, marks the cards, and the adapter and the response-time measure see only

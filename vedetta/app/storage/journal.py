@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Event log beyond online/offline, for the level-based Log of /ha.
 
   min      state changes of fixed devices (history) + IMPORTANT alerts

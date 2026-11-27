@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P11 (decisions 1A, 2A): routedinv.merge, the inventory by address of a network behind the router. Pure; invented private addresses.
 - the first sweep of a network is the starting point: every address that answered is listed as new, nothing is alerted; a sweep where
   nothing answered is not a starting point (it waits, like an empty ARP on the home network);

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of DeviceState.diagnostics (how the service is doing, for the export: sizes, times and counts): 2500 generated situations - network known, not known or not
 valid (host bits, IPv6, text), searched in blocks or as a whole (with the plan missing a key), paused or not (0.0 and infinity included), the MAC layer summary working, failing or empty,
 the process status file missing, normal, partial or broken - with the clock frozen and the collaborators in memory must give exactly the dictionary (with the ORDER of its keys, or the

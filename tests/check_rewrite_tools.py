@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The tools that rewrite the code (tools/loop_to_pipeline.py, tools/inline_helpers.py, the import pruner of tools/prune_unused_imports.py) are tested like the code they change: each one is run on a small
 module written for the purpose; what it must rewrite is rewritten, what it must leave alone is byte for byte the same, and the rewritten module gives the same answers as the original on the same inputs."""
 import subprocess

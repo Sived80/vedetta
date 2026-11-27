@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The Sentinel's way out to Home Assistant (app/ha/ha_notify.py, app/ha/notify_queue.py): an event on the bus for every message, and
 one notification per cycle to the recipients in their order, each after its wait, whether the one before took it or not, in the
 language of Home Assistant; the settings of the Sentinel are keys apart (never in /api/settings), a wrong order is refused and the

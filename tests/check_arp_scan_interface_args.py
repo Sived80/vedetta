@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Characterization of the commands that name the network interface, before the work on more networks (decision D2: the only change allowed to arp_scan is an optional
 interface parameter whose default keeps everything as it is). Asserts the commands of today, word by word, with the interface of lan_iface():
 arp-scan on the whole network (--localnet, no standard input) and on a list (--file=-, the targets on the standard input, one per line), with and without --interval;

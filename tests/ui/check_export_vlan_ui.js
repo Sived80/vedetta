@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The network (VLAN) option of the export for the developer, in the debug mode: its own advanced section, a check button (default -> checking -> green with the number, or back to default with the
 // guide open and a first line that says the normal export works without it), the small panel, the guide, Escape, and the request of the export. The words are read from the translation files.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_export_vlan_ui.js [it|en]

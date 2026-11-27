@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The light UDP search asks NetBIOS only: Vedetta never tries a credential on a device, and the SNMP scripts of nmap
 (snmp-sysdescr, snmp-info) try the community "public" on their own. The command must not open UDP 161 nor load any snmp script.
     python tests/check_protocol_scan_no_community.py"""

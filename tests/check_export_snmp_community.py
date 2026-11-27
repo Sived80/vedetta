@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The SNMP community is a password (it travels in clear on the network): never in an export. Both ways out hide it: the copy
 for the person (export_zip._redact) and the masked one for the developer (Anonymizer.data, and the text of a log line)."""
 import os

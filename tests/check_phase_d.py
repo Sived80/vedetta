@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Check of hysteresis, history and port comparison with simulated data.
 Run in the app environment: python tests/check_phase_d.py
 Uses a temporary database, does not touch config/vedetta.db."""

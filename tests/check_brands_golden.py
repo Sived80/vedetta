@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of brands.add_rule (validation, replace-or-append of a rule, ids for the rules that lack one) and brands.resolve (product brand with source, confidence and role):
 4000 generated cases for each. add_rule runs on an in-memory copy of the user file (`_read`, `_write_user` and `uuid` are replaced: the ids are a counter, so the number and the ORDER of the
 id requests count too); resolve runs on a small synthetic rules table (`_rules` is replaced) with every source (dhcp, name, web, declared, oui) and every vendor role, falsy brands and

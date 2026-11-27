@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Device brands. Two levels, like Fing/Fingerbank: the manufacturer of the MAC
 PREFIX (vendor: who made the board/chip) and the brand of the PRODUCT
 (brand). A Bouffalo Lab or an Espressif is a chip inside someone else's product,

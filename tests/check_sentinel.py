@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The rules of the Sentinel (app/sentinel.py), scenario by scenario: which changes become a message, and when.
     python tests/check_sentinel.py"""
 import json

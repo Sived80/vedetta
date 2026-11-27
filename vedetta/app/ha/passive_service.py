@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Reads the devices that Home Assistant sees (ha_trackers) while the function is on, keeps them (passive_store) and writes their presence into the history.
 
 Nothing here talks to a device: the only source is Home Assistant. When the function is off the loop does nothing (it does not even ask Home Assistant). A failed reading changes nothing but the error, and is not an

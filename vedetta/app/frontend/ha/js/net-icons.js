@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 import { I } from "./core.js";
 
 // Icons of the Network card that have a part of their own to animate (the CSS turns the marked group around the centre of the 24 px box).

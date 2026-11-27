@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Run INSIDE a client's namespace: broadcasts one DHCP request as the phone would (`ip netns exec ls-<client> python3 send_dhcp.py <mac> <android|ios|windows|console> <address> [host name]`)."""
 import os
 import socket

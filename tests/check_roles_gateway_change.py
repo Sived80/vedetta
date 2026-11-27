@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """After a change of network the gateway tile follows within a minute or so, not after the next roles refresh (every REFRESH_S = 10 min):
 the wait between two refreshes looks every GATEWAY_CHECK_S whether the gateway the host routes through is not the one the roles show, and
 ends early when it changed (seen in the simulator, S29 run again on 08/11: the tile kept the old gateway for the whole 7 minutes).

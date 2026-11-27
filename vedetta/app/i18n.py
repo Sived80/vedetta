@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Internationalization: one folder per language in app/locales/<code>/ with
 one or more flat JSON files key -> text (server.json for the templates and
 Python, js.json for the browser). Adding a language = adding the folder

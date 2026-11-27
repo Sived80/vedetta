@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Writes docs/ARCHITECTURE.md: the guide for a person who opens the code for the first time (what to read first, the rule of the layers, how one check of the network flows, where
 to change what) and the index of every module with the first sentence of its docstring. The index and the layers are GENERATED from the code, so they cannot drift;
 tests/check_architecture_doc.py fails when the file is not what this script writes.

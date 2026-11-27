@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """GET /api/ignored gives each entry ignored by MAC its last known address ("ip"), so the panel «Networks» can show it under its network:
 the most recent address the MAC layer saw it at (ip_mac), otherwise the one of the new devices (known_macs), otherwise None (the entry then
 belongs to «In every network»). Entries by address or by name are as before. Invented private addresses only.

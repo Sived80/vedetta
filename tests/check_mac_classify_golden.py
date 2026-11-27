@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Golden-master test of macclassify.classify (what kind of MAC is each one, and which addresses are contested): 1500 generated situations - virtual and
 locally administered MACs, a MAC lending several addresses with DHCP clients behind it, MACs seen only by DHCP or mDNS, an invalid MAC, with and without ARP
 sessions, with and without flips, and contests built right at every threshold (3 sightings, 60 s of overlap, 6 flips, a median gap of 900 s, a flip gap of 600 s) -

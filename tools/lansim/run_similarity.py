@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Builds the virtual LAN, lets the extender (or two of them, with the router's own Wi-Fi in the middle) hold and release three phones following a schedule, looks at the network cycle
 after cycle with arp-scan and says whether what is seen resembles the real network (tools/lansim/metrics.py). Linux and root only:
 

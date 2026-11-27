@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """The log of a deep search that finds nothing to keep (scan/rescan.py _run_deep_scan). A phone whose only open ports are dynamic ones (an iPhone: 62078 and the like, never kept) has no result worth saving
 at every search: that is normal and says INFO; it says WARNING only when the card had real ports before and now there is none (a device that went quiet or is filtered). The time in the line is the
 elapsed time and, when the device waited for nmap, how much of it was work (a search starts all its devices together: "scanned in 352 s" was 9 s of work)."""

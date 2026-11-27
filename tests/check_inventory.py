@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """1.0 step P7: the single inventory (inventory.build, pure). For every (network, MAC) seen in the last 7 days: the last address, the sources,
 first and last sight, and the state (decision 1A of 13/11): candidate (one source, never an ARP answer), confirmed (an ARP answer, or two
 different sources within 10 minutes), asleep (confirmed, not seen for more than 15 minutes), out after 7 days.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Whose answer is an ARP answer. Presence on a LAN is "somebody answers ARP at the address of the card" (scan/probe.py), but an address can pass to another
 device (DHCP): then the answer is another device's, and the card of the one that left must not be kept online by it.
 

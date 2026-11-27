@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE */
 /* Vedetta styled like Home Assistant (/ha). Variables use the same NAMES as the HA frontend, so the page in an
    iframe looks like part of the dashboard. Everything is in @layer: the layer order declared below decides precedence,
    not specificity. The feature files (20-80) follow in name order; within one layer, a later file wins on equal specificity.

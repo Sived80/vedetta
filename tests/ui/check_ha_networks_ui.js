@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 // The panel "Networks seen by Home Assistant": opens from the menu, the switch, the first reading, the list by network, the ticks, "Adopt", the closing, and the card of an adopted device.
 // Needs jsdom (see check_evidence_ui.js).   from the vedetta/ folder:  node ../tests/ui/check_ha_networks_ui.js [it|en]
 const fs = require("fs");

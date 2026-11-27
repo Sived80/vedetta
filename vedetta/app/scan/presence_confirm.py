@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
 """Confirm before saying offline (1.0.2). A card on Home Assistant's own network that was online and whose miss in this cycle reaches the
 tolerance gets one more chance before it is called offline: ONE targeted ARP request (arp-scan of its address, the tool every cycle already
 uses) and a fresh read of the neighbour table (no packet). If it answers there as itself (presence.complete_with_arp: not another card's MAC)

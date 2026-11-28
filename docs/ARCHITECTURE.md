@@ -352,7 +352,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/more-graph.js` | 136 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-info.js` | 100 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-month.js` | 71 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/net-gauge.js` | 137 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/net-gauge.js` | 147 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/net-icons.js` | 24 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/net-rotator.js` | 317 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/netpanel.js` | 494 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

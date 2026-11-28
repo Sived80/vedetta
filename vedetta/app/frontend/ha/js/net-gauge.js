@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, TYPE_ORDER, esc, t, typePlural } from "./core.js";
+import { $, TYPE_ORDER, t, typePlural } from "./core.js";
 import { S, animateNumber, pauseLeft } from "./core-ui.js";
 import { newWaitingCount } from "./new-devices.js";
 
@@ -58,14 +58,24 @@ function paintTypes(c) {
   g._sig = sig;
   g._other = segs.length && segs[segs.length - 1].k === OTHER ? segs[segs.length - 1].n : 0;
   const arcs = segmentArcs(segs.map(function (s) { return s.n; }));
-  let off = 0, html = "";
-  segs.forEach(function (s, i) {
+  let off = 0;
+  g.replaceChildren.apply(g, segs.map(function (s, i) {
     const arc = arcs[i], len = Math.max(0.1, arc - SW_TYPES - TYPE_GAP);
-    html += '<circle class="g-seg gc-' + (s.k === OTHER ? "other" : s.k) + '" data-k="' + s.k + '" cx="60" cy="60" r="' + R_TYPES + '" stroke-linecap="round" stroke-dasharray="' + len.toFixed(2) + " " + TYPES_C.toFixed(2) +
-      '" stroke-dashoffset="' + (-(off + SW_TYPES / 2 + TYPE_GAP / 2)).toFixed(2) + '" transform="rotate(-90 60 60)"><title>' + esc(segName(s.k) + ": " + s.n) + "</title></circle>";
+    const seg = segArc(s, len, -(off + SW_TYPES / 2 + TYPE_GAP / 2));
     off += arc;
-  });
-  g.innerHTML = html;
+    return seg;
+  }));
+}
+// One arc of the ring, built element by element (no HTML string: a key or a name can never become markup).
+var SVG_NS = "http://www.w3.org/2000/svg";
+function segArc(s, len, offset) {
+  const c = document.createElementNS(SVG_NS, "circle"), title = document.createElementNS(SVG_NS, "title");
+  const attrs = { class: "g-seg gc-" + (s.k === OTHER ? "other" : s.k), "data-k": s.k, cx: "60", cy: "60", r: String(R_TYPES), "stroke-linecap": "round",
+    "stroke-dasharray": len.toFixed(2) + " " + TYPES_C.toFixed(2), "stroke-dashoffset": offset.toFixed(2), transform: "rotate(-90 60 60)" };
+  Object.keys(attrs).forEach(function (name) { c.setAttribute(name, attrs[name]); });
+  title.textContent = segName(s.k) + ": " + s.n;
+  c.appendChild(title);
+  return c;
 }
 
 // The total in the centre; on a type (hover or chosen filter) its count, and the other segments fade.

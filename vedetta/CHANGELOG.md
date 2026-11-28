@@ -10,6 +10,7 @@ Vedetta lands outside the App store: **Home Assistant Container** users can run 
 - **The name tells the purpose.** *LED of the alarm* goes to security, *Zigbee gateway* or *BLE proxy* to the network, where gateways now live. A place alone (*Garage plug*) names no type.
 - **Phones stay home** when Home Assistant's router sees any private MAC of their history.
 - **New devices:** one cancel per row and a tick when done; *Add all* analyses three at a time. A notice in the first 48 hours, when names and types still settle.
+- **Ignoring a device says where to restore it:** *Networks → Ignored devices* (#69).
 - **GPL-3.0** from this version, with attribution terms in NOTICE (up to 1.0.3: MIT). *About Vedetta* in the menu.
 
 **Thank you** to everyone on Reddit, Discord and GitHub who reported a problem or shared an export, and to loll31 and hruba202 for the French and Czech pages.

@@ -11,7 +11,7 @@ from pathlib import Path  # noqa: F401  the tests replace ha_data.Path with a fa
 from ..recognition import brand_logo
 from ..storage import devices_config
 from .. import i18n
-from ..device_groups import OTHER_FAMILY, chosen_family, ha_group
+from ..device_groups import DEFAULT_FAMILY, GROUP_FAMILIES, chosen_family, ha_group
 from . import identity_shift, tracker_hold
 from ..storage.history import History, history
 from .ha_type_evidence import MARGIN_BELOW, MIN_TYPE_SCORE, TYPE_ORDER, W_BRAND, W_DECLARED, W_PLATFORM_MAX, W_PORTS_MAX, W_PORT_GUESS, W_ROLE, W_SERVICE, W_WORD, _FAMILY_PORT, _FAMILY_SERVICE, _FAMILY_UPNP, _MDNS_TYPE, _MERGED_GROUPS, _MODEL_WORDS, _PC_PORTS, _PLATFORM_KINDS, _PORT_RE, _PORT_SHARED, _PORT_TYPE, _TOKEN_RE, _UPNP_TYPE, _aggregate, _blob, _blob_extra_texts, _blob_name_parts, _blob_port_labels, _build_kind, _declared_services, _declares_onvif, _ha_integrations, _ha_table_cache, _has_network_role, _kinds, _kinds_cache, _model_text, _read_kind_rows, _split_words, _word_pts, type_evidence, type_scores  # noqa: F401
@@ -83,21 +83,22 @@ def effective_type(device: dict, cfg: dict | None = None) -> str:
 
 
 def effective_family(device: dict, cfg: dict | None = None, group: str | None = None) -> str | None:
-    """The family of a smart home card on the page (device_groups.FAMILIES); None outside the smart home group. group = the category
-    when the caller already has it."""
+    """The family of a smart home or printer card on the page (device_groups.GROUP_FAMILIES); None in the other groups. group = the
+    category when the caller already has it."""
     cfg = cfg or {}
     group = group or effective_type(device, cfg)
-    return _family(group, _best_kind_row(device, cfg.get("adapter"), group) if group == "iot" else None, cfg)
+    return _family(group, _best_kind_row(device, cfg.get("adapter"), group) if group in GROUP_FAMILIES else None, cfg)
 
 
 def _family(group: str, row: dict | None, cfg: dict) -> str | None:
     """The family chosen by hand (family_user), else the one of a smart home group chosen by the debug build with 16 groups (type_user
-    "climate"...), else the one of the finer kind that won (no kind: other devices). A family saved before 1.0.4 finds its place."""
-    if group != "iot":
+    "climate"...), else the one of the finer kind that won (no kind: the default family of the group). A family saved before 1.0.4 finds
+    its place; a family of another group is not used."""
+    if group not in GROUP_FAMILIES:
         return None
-    auto = row["family"] if row else OTHER_FAMILY
+    auto = row["family"] if row else DEFAULT_FAMILY[group]
     for chosen in (cfg.get("family_user"), cfg.get("type_user")):
-        family = chosen_family(chosen, auto)
+        family = chosen_family(chosen, auto, group)
         if family:
             return family
     return auto
@@ -170,7 +171,7 @@ def compact_device(device: dict, cfg: dict | None = None) -> dict:
         **({"watch": True} if cfg.get("watch") else {}),
         **({"twin_of": device["twin_of"]} if device.get("twin_of") else {}),   # the address of the main card of the same machine (twins.py): the page puts the twin next to it     # "tell me if it disappears" (sentinel_view): only when on, off is the absence
         "type_user": ha_group(cfg.get("type_user")),
-        "family_user": chosen_family(cfg.get("family_user"), _fam),     # a family saved before 1.0.4 as the one it became
+        "family_user": chosen_family(cfg.get("family_user"), _fam, _t),     # a family saved before 1.0.4 as the one it became
         "brand_user": cfg.get("brand_user"),
         "focus": bool(cfg.get("focus")),
         "focus_note": cfg.get("focus_note"),

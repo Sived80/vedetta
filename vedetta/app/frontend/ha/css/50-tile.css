@@ -29,7 +29,7 @@
   .group.is-closed .hd-chev { transform: rotate(-90deg); }
   .group.is-closed .heading { margin-bottom: 0; }
   .group.is-closed { margin-bottom: 8px; }
-  .tiles[hidden], .fams[hidden] { display: none; }
+  .tiles[hidden], .fams[hidden], .fam-head[hidden] { display: none; }
   /* The families inside the smart home group: a small subtitle above each grid (each its own list in the list view). */
   .fams { display: flex; flex-direction: column; gap: 16px; }
   .fam-head { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 0 8px 4px; color: var(--secondary-text-color); }

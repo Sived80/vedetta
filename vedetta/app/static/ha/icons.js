@@ -172,7 +172,7 @@
     camera: "cctv",
     generic: "devices"
   };
-  // Family inside the smart home group (device_groups.FAMILIES on the server) -> icon.
+  // Family inside the smart home and printer groups (device_groups.GROUP_FAMILIES on the server) -> icon.
   var FAMILY_ICON = {
     lights: "lightbulb",
     climate: "thermostat",
@@ -180,7 +180,9 @@
     access: "gate",
     energy: "solar-power",
     appliance: "washing-machine",
-    other: "hub"
+    other: "hub",
+    printers: "printer",
+    printer3d: "printer-3d"
   };
 
   function svg(name, cls) {

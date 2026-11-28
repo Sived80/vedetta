@@ -92,8 +92,8 @@ const shownTiles = () => [...doc.querySelectorAll("#groups .tile")].filter((el) 
   const climate = home && home.querySelector('.fam[data-family="climate"]');
   check(!!climate && [...climate.querySelectorAll(".tile")].map((t) => t.dataset.id).sort().join() === "d21,d22", "the climate cards are under their subtitle");
   check(!!climate && climate.querySelector(".fam-count") && climate.querySelector(".fam-count").textContent === "2", "a family says how many devices it has");
-  const otherGroups = [...doc.querySelectorAll('#groups section.group:not([data-type="iot"]) .fam')];
-  check(otherGroups.length === 0, "the other groups have no subtitles");
+  const otherGroups = [...doc.querySelectorAll('#groups section.group:not([data-type="iot"]) .fam-head')].filter((h) => !h.hidden);
+  check(otherGroups.length === 0, "the other groups show no subtitles (a lone printer family has none: check_printer_families_ui.js)");
   // the list view keeps the subtitles (a card per family)
   doc.documentElement.setAttribute("data-view", "list");
   check(home && [...home.querySelectorAll(".fam > .tiles")].length === 2, "in the list view each family is its own list");
@@ -175,11 +175,11 @@ const shownTiles = () => [...doc.querySelectorAll("#groups .tile")].filter((el) 
   check(!dlg.querySelector('[data-act="family-menu"]'), "a card outside the smart home group has no family picker");
 
   // every family has its name in the five languages, and a family the page does not know (saved before 1.0.4) is shown as «other»
-  const FAMS = ["lights", "climate", "security", "access", "energy", "appliance", "other"];
+  const FAMS = ["lights", "climate", "security", "access", "energy", "appliance", "other", "printers", "printer3d"];     // + the two of the printer group (1.1.1)
   ["en", "it", "de", "cs", "fr"].forEach((l) => {
     const loc = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "locales", l, "ha.json"), "utf8"));
     const fams = Object.keys(loc).filter((k) => k.indexOf("js.ha.family.") === 0).map((k) => k.slice(13));
-    check(fams.join() === FAMS.join() && fams.every((f) => loc["js.ha.family." + f]), l + ": the seven families have a name, none more: " + fams.join());
+    check(fams.join() === FAMS.join() && fams.every((f) => loc["js.ha.family." + f]), l + ": the seven families and the two of the printers have a name, none more: " + fams.join());
   });
   const core = fs.readFileSync(path.join(__dirname, "..", "..", "vedetta", "app", "frontend", "ha", "js", "core.js"), "utf8");
   check(core.indexOf('export const FAMILIES = ["lights", "climate", "security", "access", "energy", "appliance", "other"];') >= 0 && core.indexOf('d.family : "other"') >= 0, "the page knows the seven families; an unknown one is «other»");

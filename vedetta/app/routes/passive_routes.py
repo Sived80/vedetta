@@ -130,7 +130,7 @@ def _set_choice(mac: str, key: str, raw) -> None:
     value = str(raw).strip() if raw else None
     if key == "type" and value and value not in ha_data.TYPE_ORDER + ("generic",):
         raise HTTPException(400, "Tipo non valido")
-    if key == "family" and value and value not in device_groups.FAMILIES:
+    if key == "family" and value and value not in device_groups.ALL_FAMILIES:
         raise HTTPException(400, "Famiglia non valida")
     passive_store.set_edit(mac, key, value[:BRAND_MAX] if value else None)
 

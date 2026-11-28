@@ -266,7 +266,7 @@ def _set_focus(device_id: str, body: dict):
 
 
 def _set_brand_type(device_id: str, body: dict):
-    """Brand, type and/or family (inside the smart home group) chosen by hand; empty = back to automatic. Returns True when the device was
+    """Brand, type and/or family (inside the smart home or printer group) chosen by hand; empty = back to automatic. Returns True when the device was
     found by any of the changes."""
     updated = None
     for key, field in (("brand", "brand_user"), ("type", "type_user"), ("family", "family_user")):
@@ -276,7 +276,7 @@ def _set_brand_type(device_id: str, body: dict):
         value = str(value).strip()[:40] if value else None
         if key == "type" and value and value not in ha_data.TYPE_ORDER + ("generic",):
             raise HTTPException(400, "Tipo non valido")
-        if key == "family" and value and value not in device_groups.FAMILIES:
+        if key == "family" and value and value not in device_groups.ALL_FAMILIES:
             raise HTTPException(400, "Famiglia non valida")
         updated = devices_config.set_override(device_id, field, value) or updated
     return updated

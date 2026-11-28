@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, BASE, COMPACT, COMPACT_LIMIT, FAMILIES, FAMILY_GROUP, I, REDUCED, TYPE_ORDER, analysisText, canOpen, canWake, devIcon, esc, familyIcon, familyLabel, familyOf, icon, ipKey, logoTint, logoVar, nowSec, reloadHost, stateText, t, typeIcon, typeLabel, typePlural } from "./core.js";
+import { $, BASE, COMPACT, COMPACT_LIMIT, FAMILY_MIN, I, REDUCED, TYPE_ORDER, analysisText, canOpen, canWake, devIcon, esc, familiesOf, familyIcon, familyLabel, familyOf, icon, ipKey, logoTint, logoVar, nowSec, reloadHost, stateText, t, typeIcon, typeLabel, typePlural } from "./core.js";
 import { S, searchClear, searchEl } from "./core-ui.js";
 import { span } from "./core-menu.js";
 import { DEBUG } from "./debug.js";
@@ -14,7 +14,7 @@ export var groupsEl = $("groups");
 
 export function prepare(d) {
   d.type = I.typeIcon[d.type] ? d.type : "generic";
-  d._hay = [d.name, d.ip, d.mac, d.brand, d.vendor, d.title, typeLabel(d.type), typePlural(d.type), d.type === FAMILY_GROUP ? familyLabel(familyOf(d)) : ""]
+  d._hay = [d.name, d.ip, d.mac, d.brand, d.vendor, d.title, typeLabel(d.type), typePlural(d.type), familiesOf(d.type) ? familyLabel(familyOf(d)) : ""]
     .filter(Boolean).join(" ").toLowerCase();
   return d;
 }
@@ -205,10 +205,10 @@ function makeGroup(type) {
   const sec = document.createElement("section");
   sec.className = "group";
   sec.dataset.type = type;
-  // the smart home group holds its families (one subtitle and one grid each); the fold hides the whole holder
+  // the smart home and printer groups hold their families (one subtitle and one grid each); the fold hides the whole holder
   sec.innerHTML = '<div class="heading" role="button" tabindex="0" aria-expanded="true"><span class="hd-ic">' + icon(typeIcon(type)) + '</span><h2 class="hd-title"></h2>' +
     '<span class="hd-count"></span><span class="hd-sub"></span><span class="hd-chev">' + icon("chevron-down") + "</span></div>" +
-    (type === FAMILY_GROUP ? '<div class="fams"></div>' : '<div class="tiles"></div>');
+    (familiesOf(type) ? '<div class="fams"></div>' : '<div class="tiles"></div>');
   const g = S.groups[type] = { el: sec, grid: sec.querySelector(".fams, .tiles"), title: sec.querySelector(".hd-title"),
     count: sec.querySelector(".hd-count"), sub: sec.querySelector(".hd-sub"), fams: {} };
   g.title.textContent = typePlural(type);
@@ -218,10 +218,11 @@ function makeGroup(type) {
 function tilesOf(items) {
   return items.map(function (d, i) { return S.tiles.get(d.id) || createTile(d, i); });
 }
-// Inside the smart home group: a subtitle and a grid for each family that has devices, in the fixed order of FAMILIES.
-function familyBlocks(g, items) {
+// Inside the smart home and printer groups: a subtitle and a grid for each family that has devices, in the fixed order of the group's
+// families; the subtitles are hidden while fewer families than FAMILY_MIN have devices (the grid stays, the cards look as in any group).
+function familyBlocks(g, type, items) {
   const blocks = [];
-  FAMILIES.forEach(function (family) {
+  familiesOf(type).forEach(function (family) {
     const mine = items.filter(function (d) { return familyOf(d) === family; });
     if (!mine.length) return;
     let b = g.fams[family];
@@ -237,6 +238,8 @@ function familyBlocks(g, items) {
     reconcile(b.grid, tilesOf(mine));
     blocks.push(b.el);
   });
+  const heads = blocks.length >= (FAMILY_MIN[type] || 1);
+  blocks.forEach(function (el) { el.querySelector(".fam-head").hidden = !heads; });
   return blocks;
 }
 
@@ -252,7 +255,7 @@ export function layout() {
     const online = items.filter(function (d) { return d.online; }).length;
     g.count.textContent = String(items.length);
     g.sub.textContent = online === items.length ? "" : t("js.ha.group.online", { n: online });
-    reconcile(g.grid, type === FAMILY_GROUP ? familyBlocks(g, items) : tilesOf(items));
+    reconcile(g.grid, familiesOf(type) ? familyBlocks(g, type, items) : tilesOf(items));
     items.forEach(function (d) { updateTile(d.id); });
     nodes.push(g.el);
   });

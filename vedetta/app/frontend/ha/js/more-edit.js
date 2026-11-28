@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, FAMILIES, I, TYPE_DEFAULT, api, dlg, esc, familyIcon, familyLabel, icon, t, typeLabel } from "./core.js";
+import { $, I, TYPE_DEFAULT, api, dlg, esc, familiesOf, familyIcon, familyLabel, icon, t, typeLabel } from "./core.js";
 import { S, snack } from "./core-ui.js";
 import { closePopups } from "./core-menu.js";
 import { SKIP_DEEP_KEY, deepOneBusy, runDeep, skipDeepConfirm } from "./deep.js";
@@ -83,15 +83,15 @@ function saveOverride(d, body, atOnce) {
   overrideChain = done;
   return done;
 }
-// Type dropdown menu (Auto + the ten groups) and, for a smart home card, the family one (Auto + the families): inside the dialog (it is
+// Type dropdown menu (Auto + the ten groups) and, for a smart home or printer card, the family one (Auto + the families of its group): inside the dialog (it is
 // modal), with the same rules as the other menus (closes with Esc, click outside and scroll; opening one closes the others).
 var typeMenu = null;
 function closeTypeMenu() {
   if (typeMenu) { typeMenu.remove(); typeMenu = null; }
 }
 var PICKERS = {
-  type: { keys: TYPE_DEFAULT, user: "type_user", label: typeLabel, icon: function (k) { return I.typeIcon[k]; } },
-  family: { keys: FAMILIES, user: "family_user", label: familyLabel, icon: familyIcon },
+  type: { keys: function () { return TYPE_DEFAULT; }, user: "type_user", label: typeLabel, icon: function (k) { return I.typeIcon[k]; } },
+  family: { keys: function (d) { return familiesOf(d.type) || []; }, user: "family_user", label: familyLabel, icon: familyIcon },
 };
 function openTypeMenu(btn, d, what) {
   if (typeMenu) { closeTypeMenu(); return; }
@@ -100,7 +100,7 @@ function openTypeMenu(btn, d, what) {
   const m = document.createElement("div");
   m.className = "menu type-menu"; m.setAttribute("role", "menu");
   const cur = d[p.user] || "";
-  const items = [["", t("js.ha.type.auto")]].concat(p.keys.map(function (k) { return [k, p.label(k)]; }));
+  const items = [["", t("js.ha.type.auto")]].concat(p.keys(d).map(function (k) { return [k, p.label(k)]; }));
   m.innerHTML = items.map(function (it) {
     return '<button type="button" class="menu-item rp" role="menuitemradio" data-' + what + '="' + esc(it[0]) + '" aria-checked="' + (it[0] === cur) + '">' +
       (it[0] ? icon(p.icon(it[0])) : icon("auto-fix")) + "<span>" + esc(it[1]) + "</span></button>";

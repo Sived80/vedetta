@@ -438,6 +438,8 @@
   "js.ha.family.energy": "Energie",
   "js.ha.family.appliance": "Spotřebiče",
   "js.ha.family.other": "Ostatní zařízení",
+  "js.ha.family.printers": "Tiskárny",
+  "js.ha.family.printer3d": "3D tiskárny",
   "js.ha.attr.family": "Skupina",
   "js.ha.act.edit_family": "Vybrat skupinu",
   "js.ha.gauge.others": "Ostatní",

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE
-import { $, FAMILIES, FAMILY_GROUP, REDUCED, api, esc, familyIcon, familyLabel, familyOf, icon, t } from "./core.js";
+import { $, FAMILY_MIN, REDUCED, api, esc, familiesOf, familyIcon, familyLabel, familyOf, icon, t } from "./core.js";
 import { S, animateNumber, renderLive, snack } from "./core-ui.js";
 import { syncDeepBusy, updateDeepBadge } from "./deep.js";
 import { mountHealth } from "./health-card.js";
@@ -144,13 +144,14 @@ function paintFamilyChips() {
   const el = $("fam-chips");
   if (!el) return;
   const n = {};
-  if (S.filter.type === FAMILY_GROUP) S.list.forEach(function (d) { if (d.type === FAMILY_GROUP) n[familyOf(d)] = (n[familyOf(d)] || 0) + 1; });
-  const present = FAMILIES.filter(function (f) { return n[f]; });
-  el.hidden = !present.length;
+  const group = S.filter.type, own = familiesOf(group);
+  if (own) S.list.forEach(function (d) { if (d.type === group) n[familyOf(d)] = (n[familyOf(d)] || 0) + 1; });
+  const present = own ? own.filter(function (f) { return n[f]; }) : [];
+  el.hidden = !present.length || present.length < (FAMILY_MIN[group] || 1);
   const sig = present.map(function (f) { return f + n[f] + (S.filter.family === f ? "*" : ""); }).join();
   if (el._sig === sig) return;
   el._sig = sig;
-  el.setAttribute("aria-label", t("js.ha.type." + FAMILY_GROUP));
+  el.setAttribute("aria-label", t("js.ha.type." + group));
   el.innerHTML = present.map(function (f) {
     const on = S.filter.family === f;
     return '<button type="button" class="chip rp' + (on ? " on" : "") + '" data-family="' + f + '" aria-pressed="' + on + '">' + icon(familyIcon(f)) +

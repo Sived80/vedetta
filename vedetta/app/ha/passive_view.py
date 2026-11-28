@@ -51,7 +51,7 @@ def compact(mac: str, item: dict) -> dict:
         **ha_data._logo_fields(logo),
         "battery": None, "battery_source": None,
         "type": kind, "icon": ha_data.icon_for(device, None, kind),
-        "family": family, "family_user": chosen_family(edit.get("family"), family), "is_mobile": False, "mobile_mode": "auto",
+        "family": family, "family_user": chosen_family(edit.get("family"), family, kind), "is_mobile": False, "mobile_mode": "auto",
         "name_source": "user" if edit.get("name") else SOURCE, "wol_ok": False, "ha_share": False,
         "type_user": edit.get("type"), "brand_user": edit.get("brand"), "focus": False, "focus_note": None,
         "online": online, "last_seen": None if online else item.get("online_at"), "uptime": None, "signal": None,

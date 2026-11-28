@@ -327,12 +327,12 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/app.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/core-menu.js` | 360 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/core-ui.js` | 202 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/core.js` | 280 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/core.js` | 291 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/debug.js` | 50 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/deep.js` | 164 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/export-vlan.js` | 109 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/export.js` | 272 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/filters.js` | 277 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/filters.js` | 278 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/flows.js` | 142 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/group-fold.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/group-order.js` | 79 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -360,7 +360,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/new-devices.js` | 400 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/night.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/pause-place.js` | 15 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/tile.js` | 349 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/tile.js` | 352 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/update.js` | 44 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/10-base.css` | 175 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/11-components.css` | 187 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

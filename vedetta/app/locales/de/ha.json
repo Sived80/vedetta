@@ -429,6 +429,8 @@
   "js.ha.family.energy": "Energie",
   "js.ha.family.appliance": "Haushaltsgeräte",
   "js.ha.family.other": "Andere Geräte",
+  "js.ha.family.printers": "Drucker",
+  "js.ha.family.printer3d": "3D-Drucker",
   "js.ha.attr.family": "Familie",
   "js.ha.act.edit_family": "Familie wählen",
   "js.ha.gauge.others": "Andere",

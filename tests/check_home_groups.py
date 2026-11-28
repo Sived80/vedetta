@@ -48,7 +48,9 @@ assert device_groups.family_of("pump", "water") == "other" and device_groups.fam
 assert device_groups.family_of("hub", "iot") == "other" and device_groups.family_of("microcontroller", "iot") == "other"
 assert device_groups.family_of(None, None) == "other" and device_groups.family_of("brandnew", "iot") == "other"
 assert device_groups.family_of("brandnew", "cover") == "climate"          # a cover with no class is in the climate view of Home Assistant
-assert all(device_groups.family_of(k["id"], k["group"]) in device_groups.FAMILIES for k in ha_data._read_kind_rows())
+# every kind has a family of its own group: the printer kinds one of the printer families (1.1.1), every other kind a smart home one
+assert all(device_groups.family_of(k["id"], k["group"]) in (device_groups.PRINTER_FAMILIES if k["group"] == "printer" else device_groups.FAMILIES)
+           for k in ha_data._read_kind_rows())
 print("ok: the families come from the kinds")
 
 # Home Assistant: the same group as before

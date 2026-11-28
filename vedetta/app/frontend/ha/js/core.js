@@ -44,8 +44,14 @@ export let REDUCED = false;
 export const TYPE_DEFAULT = ["router", "server", "pc", "phone", "media", "audio", "iot", "printer", "camera", "generic"];
 // Inside the smart home group, the families in the order the page shows them (device_groups.FAMILIES on the server: the summaries of the
 // Home dashboard of Home Assistant, gates and doors apart, then appliances); "other" takes the rest.
-export const FAMILY_GROUP = "iot";
 export const FAMILIES = ["lights", "climate", "security", "access", "energy", "appliance", "other"];
+// Inside the printer group (1.1.1): the printers of paper, with the scanners, and the 3D printers (device_groups.PRINTER_FAMILIES).
+export const PRINTER_FAMILIES = ["printers", "printer3d"];
+// The groups whose cards are shown under the subtitles of their families (device_groups.GROUP_FAMILIES on the server), and how many of
+// their families must have devices before the subtitles show: the smart home group always, the printers only when both are there (a lone
+// «Printers» under «Printers» says nothing).
+export const GROUP_FAMILIES = { iot: FAMILIES, printer: PRINTER_FAMILIES };
+export const FAMILY_MIN = { iot: 1, printer: 2 };
 // The order the page shows the groups in: the person's (setting group_order, the same on every device) or the default one. Changed in place
 // (setTypeOrder), so every module that imported it sees the new order.
 export const TYPE_ORDER = TYPE_DEFAULT.slice();
@@ -165,8 +171,13 @@ export function canWake(d) {
 }
 export function typeLabel(type) { return t("js.ha.type1." + (I.typeIcon[type] ? type : "generic")); }
 export function typePlural(type) { return t("js.ha.type." + (I.typeIcon[type] ? type : "generic")); }
-export function familyOf(d) { return FAMILIES.indexOf(d && d.family) >= 0 ? d.family : "other"; }
-export function familyLabel(family) { return t("js.ha.family." + (FAMILIES.indexOf(family) >= 0 ? family : "other")); }
+export function familiesOf(type) { return GROUP_FAMILIES[type] || null; }
+export function familyOf(d) {
+  const own = familiesOf(d && d.type);
+  if (own && own !== FAMILIES) return own.indexOf(d.family) >= 0 ? d.family : own[0];      // a printer with no family: the printers
+  return FAMILIES.indexOf(d && d.family) >= 0 ? d.family : "other";
+}
+export function familyLabel(family) { return t("js.ha.family." + (FAMILIES.indexOf(family) >= 0 || PRINTER_FAMILIES.indexOf(family) >= 0 ? family : "other")); }
 export function familyIcon(family) { return I.familyIcon[family] || I.familyIcon.other; }
 export function nowSec() { return Date.now() / 1000; }
 

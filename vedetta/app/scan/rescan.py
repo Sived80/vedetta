@@ -97,8 +97,11 @@ def _keep_ports_of_slow_device(fields, info, device):
     fields["scanned_at"] = now
     if info.get("slow_scan"):
         # Slow device: the foreground scan only covers the targeted ports. The ports
-        # outside that list (found by the full background scan) are kept.
-        keep = [p for p in previous.get("ports") or [] if port_number(p) not in (None, *FAST_SET)]
+        # outside that list (found by the full background scan) are kept, and so is what the background service probe read on a port
+        # the targeted scan sees open again (a calm scan has no service detection: its bare entry would wipe the product and nmap's class).
+        fresh = {port_number(p) for p in fields.get("ports") or []}
+        keep = [p for p in previous.get("ports") or [] if port_number(p) not in (None, *FAST_SET)
+                or (p.get("confirmed") and port_number(p) in fresh)]
         if keep:
             fields["ports"] = merge_ports(keep, fields.get("ports"))
         for key in ("full_ports_at", "services_at", "full_ports_next", "full_ports_base", "full_ports_failures", "full_ports_retry_at"):

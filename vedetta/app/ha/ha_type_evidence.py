@@ -54,6 +54,12 @@ def _api_types() -> dict:
 
 
 @lru_cache(maxsize=1)
+def _nmap_types() -> dict:
+    """nmap's device types -> {"group", "kind"?} (data/nmap_device_types.json: nmap's vocabulary, no brand)."""
+    return datafile.read(datafile.DATA_DIR / "nmap_device_types.json", "types", what="Table of nmap device types", default={})
+
+
+@lru_cache(maxsize=1)
 def _platform_adapters() -> tuple:
     """The beginnings of the names of the adapters whose answer comes from the direct API of an IoT platform."""
     return tuple(datafile.read(datafile.DATA_DIR / "local_api.json", "platform_adapters", what="Table of local interfaces", default=[]))
@@ -155,6 +161,7 @@ class _Clues:
         services = _declared_services(self.extra)
         self.signals(upnp_types, services)
         self.ports()
+        self.nmap_class()
         text, tokens, port_numbers = _blob(self.device)
         words = _Words(text, tokens, _model_text(self.device), _brand_tokens(self.device), set(services), set(upnp_types))
         self.words(words)
@@ -207,6 +214,17 @@ class _Clues:
                 self.add(kind, W_SERVICE if p.get("confirmed") else W_PORT_GUESS, fam or "port:%s" % port, "porta %s" % port)
             for shared in _PORT_SHARED.get(port, ()):
                 self.add(shared, W_PORT_GUESS, "port:%s:%s" % (port, shared), "porta %s" % port)
+
+    def nmap_class(self) -> None:
+        """The device type nmap names when its service probe matched (data/nmap_device_types.json): what the device answered, declared like a
+        UPnP type. Once per device, from the first probed port that has one; a guess from the port number (not probed) says nothing."""
+        row = next((_nmap_types()[t] for t in (str(p.get("devicetype") or "").lower() for p in self.device.get("scanned_ports") or []
+                                                if p.get("confirmed")) if t in _nmap_types()), None)
+        if row is None:
+            return
+        self.add(row["group"], W_DECLARED, "nmap_class", "nmap: " + row["group"])
+        if row.get("kind") and self.kinds_out is not None:
+            self.kinds_out[row["kind"]] = self.kinds_out.get(row["kind"], 0) + W_DECLARED
 
     def words(self, w: _Words) -> None:
         for group, model_words in _MODEL_WORDS.items():

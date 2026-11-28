@@ -160,6 +160,7 @@ def _probe_device_brand(f: Facts, names: NameState) -> Brand:
         web_text=_web_text(info, f.scanned_ports),
         os_family=dhcp.os_family(f.identity_mac),
         is_gateway=f.ip == default_gateway(),
+        hardware=[p["cpe"] for p in f.scanned_ports if p.get("cpe") and p.get("confirmed")],
     )
     ident = _chosen_brand(ident, card, f.device)
     model_class = match_model([*models, f.dhcp_name, names.display_name])

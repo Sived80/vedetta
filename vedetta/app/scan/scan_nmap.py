@@ -320,7 +320,22 @@ def _port_entry(port_el, has_title: bool) -> dict:
         # really runs on this port: http-title obtained a real HTML
         # page with a title. Used by _guess_port().
         "has_http_title": has_title,
+        **_classification(service),
     }
+
+
+def _classification(service) -> dict:
+    """What nmap's matched signature says of the device itself: its device type ("switch", "webcam": nmap's fixed vocabulary) and the
+    hardware CPE (cpe:/h:<maker>:<model>; a software one, cpe:/a, names a program, not the device). Only the keys nmap gave."""
+    if service is None:
+        return {}
+    found = {}
+    if service.get("devicetype"):
+        found["devicetype"] = clean_text(service.get("devicetype"), 40)
+    hardware = next((el.text.strip() for el in service.findall("cpe") if (el.text or "").strip().startswith("cpe:/h:")), None)
+    if hardware:
+        found["cpe"] = clean_text(hardware, 120)
+    return found
 
 
 _TLS_PORTS = {443, 8443, 4443, 9443, 10443, 5001, 5986, 8006, 8883, 993, 995, 636, 465, 7443, 9090}

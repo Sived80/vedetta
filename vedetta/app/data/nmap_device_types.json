@@ -1,0 +1,21 @@
+{
+ "_comment": "nmap's own device types (the d/ field of its service signatures, the devicetype attribute of <service> in its XML): a fixed vocabulary of nmap, no brand. Each one -> the group of the page and, when it is clear, the finer kind of data/device_kinds.json. Counted only when nmap really probed the service (method=probed), once per device. Types that say too little are left out on purpose (general purpose, specialized, remote management, security-misc, power-device, terminal server, telecom-misc, PBX, VoIP adapter, proxy server, load balancer). storage-misc is in: nmap uses it for network storage.",
+ "types": {
+  "switch": {"group": "router", "kind": "netswitch"},
+  "router": {"group": "router", "kind": "router"},
+  "broadband router": {"group": "router", "kind": "router"},
+  "firewall": {"group": "router", "kind": "router"},
+  "wap": {"group": "router", "kind": "accesspoint"},
+  "bridge": {"group": "router"},
+  "hub": {"group": "router"},
+  "webcam": {"group": "camera", "kind": "camera"},
+  "printer": {"group": "printer", "kind": "printer"},
+  "print server": {"group": "printer", "kind": "printer"},
+  "media device": {"group": "media"},
+  "game console": {"group": "media", "kind": "console"},
+  "voip phone": {"group": "phone", "kind": "voipphone"},
+  "phone": {"group": "phone"},
+  "pda": {"group": "phone"},
+  "storage-misc": {"group": "server", "kind": "nas"}
+ }
+}

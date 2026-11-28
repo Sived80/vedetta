@@ -84,12 +84,12 @@ def default_gateway(route_path: str = "/proc/net/route") -> str | None:
 
 def identify_brand(mac: str | None, *, names=(), upnp_manufacturer: str | None = None, declared=(),
                    web_text: str | None = None, os_family: str | None = None, is_gateway: bool = False,
-                   raw_vendor: str | None = None) -> dict:
+                   raw_vendor: str | None = None, hardware=()) -> dict:
     """Two-level brand (see the module docstring). raw_vendor is the raw
-    name from nmap/arp-scan, used only if the prefix database does not know the MAC."""
+    name from nmap/arp-scan, used only if the prefix database does not know the MAC. hardware: the hardware CPEs nmap read on the device."""
     vendor = _vendor_of_mac(mac, raw_vendor)
     found = brands.resolve(vendor, names=list(names), upnp_manufacturer=upnp_manufacturer, declared=declared,
-                           web_text=web_text, os_family=os_family, is_gateway=is_gateway)
+                           web_text=web_text, os_family=os_family, is_gateway=is_gateway, hardware=hardware)
     role = found["role"] or ("private" if is_private_mac(mac) else None)
     declared_brands = {brands.known_brand(v) for v in (upnp_manufacturer, *declared) if v}
     evidence = _brand_evidence(found, role, vendor, mac, declared_brands)

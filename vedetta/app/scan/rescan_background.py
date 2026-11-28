@@ -31,10 +31,20 @@ FAST_SET = {int(p) for p in scanner.FAST_PORTS.split(",")}
 
 
 def merge_ports(old: list[dict] | None, new: list[dict] | None) -> list[dict]:
-    """Union by port number (the new entry wins)."""
+    """Union by port number: the new entry wins, unless it is a bare one (a block of the full scan, no service detection) over an entry a
+    service probe confirmed: then what the probe read (product, nmap's device type, hardware CPE) stays."""
     merged = {port_number(p): p for p in old or [] if port_number(p) is not None}
-    merged.update({port_number(p): p for p in new or [] if port_number(p) is not None})
+    for p in new or []:
+        number = port_number(p)
+        if number is not None and (p.get("confirmed") or not (merged.get(number) or {}).get("confirmed")):
+            merged[number] = p
     return [merged[k] for k in sorted(merged)]
+
+
+def services_due(info: dict) -> bool:
+    """The services of a slow device are read on the open ports it already has (the targeted scan found them) once, without waiting for the
+    full scan of all the ports to end (it takes nights): the same light probe the end of the full scan runs. Never on a no-talk port."""
+    return not info.get("services_at") and any(not is_no_talk_port(p) for p in info.get("ports") or [] if port_number(p) is not None)
 
 
 def schedule_full_ports(device: dict) -> None:
@@ -69,7 +79,8 @@ def _card(device_id: str) -> dict | None:
 
 async def _scan_all_ports(device_id: str, ip: str) -> None:
     """The full scan by blocks of ports: each block has its own limit, what it finds is saved at once and the card remembers the next block, so a slow device never loses a whole run to one timeout. A run stops after
-    a few blocks (the next deep search goes on) and at the first block that times out (it is not repeated for a day, then two, four, seven)."""
+    a few blocks (the next deep search goes on) and at the first block that times out (it is not repeated for a day, then two, four, seven).
+    Before the first block, once, the services of the ports the card already has (services_due), when the system is free."""
     for done in range(full_ports_plan.BLOCKS_PER_RUN):
         if not _may_be_scanned(device_id):
             return
@@ -77,6 +88,8 @@ async def _scan_all_ports(device_id: str, ip: str) -> None:
             host_load.note_deferred(pressure)
             logger.info("%s: scansione completa rimandata, il sistema e' sotto pressione (%s)", ip, pressure)
             return
+        if done == 0:
+            await _read_known_services(device_id, ip)
         first, last = full_ports_plan.block(int((_card(device_id).get("scan_info") or {}).get("full_ports_next") or 1))
         hosts = await _background_nmap(ip, ["-T3", "-p", f"{first}-{last}", "--host-timeout", f"{full_ports_plan.BLOCK_TIMEOUT_S}s", ip])
         if ip in scanner.timed_out:
@@ -128,6 +141,23 @@ async def _save_block(device_id: str, ip: str, last: int, found: list[dict]) -> 
     logger.info("%s: scansione completa in background terminata, %d porte (%+d)", ip, len(info["ports"]), added)
     journal.add("detail", "journal.fullports", icon="magnify", ip=ip, ports=len(info["ports"]), added=max(added, 0))
     return True
+
+
+async def _read_known_services(device_id: str, ip: str) -> None:
+    """The services of the ports the card already has, once (services_due), saved on the card as it is after the probe."""
+    card = _card(device_id)
+    if not card or not services_due(card.get("scan_info") or {}):
+        return
+    probed = dict(card.get("scan_info") or {})
+    await _read_services(probed, ip)
+    current = _card(device_id)
+    if not current:
+        return
+    info = dict(current.get("scan_info") or {})
+    info["ports"] = merge_ports(info.get("ports"), probed.get("ports"))
+    info["services_at"] = probed["services_at"]
+    devices_config.update_scan_info(device_id, info)
+    await state.refresh_device(device_id, force=True)
 
 
 async def _read_services(info: dict, ip: str) -> None:

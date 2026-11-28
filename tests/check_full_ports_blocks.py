@@ -123,7 +123,7 @@ assert PAUSES == [7] * (plan.BLOCKS_PER_RUN - 1), PAUSES
 assert len(nmaps()) == plan.BLOCKS_PER_RUN and nmaps()[0][2] == BLOCK_ARGS(1, 4096) and nmaps()[1][2] == BLOCK_ARGS(4097, 8192), nmaps()[:2]
 assert CARD["scan_info"]["full_ports_next"] == 1 + plan.BLOCKS_PER_RUN * 4096 and "full_ports_at" not in CARD["scan_info"], CARD["scan_info"]
 assert [p["label"] for p in CARD["scan_info"]["ports"]] == ["80 · http", "5555", "6053 · api"], "ports of the blocks joined to the card, by number"
-assert not SERVICES and "-p-" not in repr(nmaps()), "no services before the end, and never the whole range in one run"
+assert SERVICES == ["10.0.0.5"] and "-p-" not in repr(nmaps()), "the services of the ports the card already has, once, before the blocks (1.1.1: a slow device waited nights for them); never the whole range in one run"
 
 # --- the next run goes on from there until the end: then the scan is finished (time, services, refresh, one line for the log)
 SCRIPT.clear(); CALLS.clear()
@@ -134,7 +134,7 @@ while "full_ports_next" in CARD["scan_info"]:
     CALLS.clear()
     assert CARD["scan_info"].get("full_ports_next", 99999) > before
 info = CARD["scan_info"]
-assert info["full_ports_at"] == NOW and info["services_at"] == NOW and SERVICES == ["10.0.0.5"], info
+assert info["full_ports_at"] == NOW and info["services_at"] == NOW and SERVICES == ["10.0.0.5", "10.0.0.5"], ("once at the start, once at the end", info, SERVICES)
 assert not any(k in info for k in ("full_ports_next", "full_ports_failures", "full_ports_retry_at", "full_ports_base")), info
 
 # --- a block that times out: the earlier ones stay saved, the same block is next, a day of pause, a journal entry, no services
@@ -143,7 +143,7 @@ SCRIPT += [[{"label": "5555"}], "timeout"]
 run(bg._scan_all_ports("d1", "10.0.0.5"))
 info = CARD["scan_info"]
 assert len(nmaps()) == 2 and info["full_ports_next"] == 4097 and info["full_ports_failures"] == 1 and info["full_ports_retry_at"] == NOW + DAY, info
-assert [p["label"] for p in info["ports"]] == ["80 · http", "5555"] and not SERVICES and "10.0.0.5" not in scanner.timed_out
+assert [p["label"] for p in info["ports"]] == ["80 · http", "5555"] and SERVICES == ["10.0.0.5"] and "10.0.0.5" not in scanner.timed_out, "the known ports read at the start, nothing more at the timeout"
 assert any(c[0] == "journal" and c[1] == "journal.fullports_failed" for c in CALLS), CALLS
 # the second failure of the same block: two days; a success clears the failures
 fresh(dict(info))

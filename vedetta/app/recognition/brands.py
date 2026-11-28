@@ -294,16 +294,18 @@ def battery_hint(texts) -> str | None:
 
 def resolve(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str | None = None,
             declared: list[str] | tuple = (), web_text: str | None = None, os_family: str | None = None,
-            is_gateway: bool = False) -> dict:
+            is_gateway: bool = False, hardware: list[str] | tuple = ()) -> dict:
     """PRODUCT brand with source and confidence. The MAC prefix says who
     made the network board, not the product brand (Fing and Fingerbank keep
     them separate: "vendor" of the board, "brand/device" of the product), so it is
     the last resort and counts only if the manufacturer is truly a brand.
     Sources, from the most direct: dhcp (iOS/macOS fingerprint) > name (name, mDNS
     model, hostname) > web (title/Server/services) > declared (manufacturer declared
-    via UPnP/mDNS, only if it is a brand in the names table) > oui.
+    via UPnP/mDNS, only if it is a brand in the names table) > hardware (the maker in the
+    hardware CPE of nmap's matched signature, cpe:/h:<maker>:<model>: the device's own answer,
+    declared; high when it names the maker of the MAC prefix too) > oui.
     For oui: brand if role=brand; dual only if it is the gateway (a router has the
-    board of its own brand); component and virtual never (brand=None).
+    board of its own brand) or its hardware CPE names it; component and virtual never (brand=None).
     Returns {brand, source, confidence (high|medium|low|None), role}."""
     rules = _rules()
     role = vendor_role(oui_brand)
@@ -321,6 +323,9 @@ def resolve(oui_brand: str | None, *, names: list[str], upnp_manufacturer: str |
     brand = _declared_brand((upnp_manufacturer, *declared))
     if brand:
         return _verdict(role, brand, "declared", "medium")
+    found = _hardware_brand(oui_brand, hardware, web_text)
+    if found:
+        return _verdict(role, found[0], "declared", found[1])
     if _oui_counts(oui_brand, role, is_gateway):
         return _verdict(role, oui_brand, "oui", "medium" if role == "brand" else "low")
     return _verdict(role, None, None, None)
@@ -352,6 +357,43 @@ def _declared_brand(values) -> str | None:
         if brand:
             return brand
     return None
+
+
+def _maker_key(name: str) -> str:
+    """A maker's name to compare: lowercase letters and digits only ("EXAMPLE-CORP", "example_corp" and "Example Corp" are the same maker)."""
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def _cpe_maker(cpe: str) -> str | None:
+    """The maker of a hardware CPE ("cpe:/h:<maker>:<model>..."); None for another kind of CPE."""
+    parts = (cpe or "").split(":")
+    return parts[2] if len(parts) > 2 and parts[1] == "/h" and parts[2] else None
+
+
+def _same_maker(vendor: str, maker: str) -> bool:
+    """The MAC prefix maker and a CPE maker are the same company: equal keys, or one the start of the other ("ExampleTek" and "example")."""
+    a, b = _maker_key(vendor), _maker_key(maker)
+    return len(b) >= 3 and len(a) >= 3 and (a == b or a.startswith(b) or b.startswith(a))
+
+
+def _hardware_brand(oui_brand: str | None, hardware, web_text: str | None) -> tuple[str, str] | None:
+    """(brand, confidence) from the first hardware CPE: the MAC prefix maker when the CPE names it too (high: two sources of the device
+    agree), else the CPE maker as the device writes it in its service text (medium). None without a hardware CPE."""
+    maker = next((m for m in map(_cpe_maker, hardware or ()) if m), None)
+    if maker is None:
+        return None
+    if oui_brand and _same_maker(oui_brand, maker):
+        return oui_brand, "high"
+    return known_brand(maker.replace("_", " ")) or _written_as(maker, web_text), "medium"
+
+
+def _written_as(maker: str, text: str | None) -> str:
+    """The maker of a CPE as the device writes it ("examplecorp" in "EXAMPLECORP XS-100 httpd"), cleaned like any declared name; the CPE
+    form with spaces when the text does not have it."""
+    words, key = (text or "").split(), _maker_key(maker)
+    spans = (" ".join(words[i:i + size]) for size in (1, 2, 3) for i in range(len(words) - size + 1))
+    found = next((span for span in spans if _maker_key(span) == key), None)
+    return (normalize_brand(found) or maker) if found else maker.replace("_", " ")
 
 
 def _oui_counts(oui_brand: str | None, role: str | None, is_gateway: bool) -> bool:

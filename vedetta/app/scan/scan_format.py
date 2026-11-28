@@ -75,6 +75,7 @@ def _build_port_entries(info, fields):
         if "web_ui" in p:   # the page was really requested: does it answer with something a person can open?
             item["web_ui"] = bool(p["web_ui"])
             item["web_scheme"] = p.get("web_scheme") or "http"
+        item.update({k: p[k] for k in ("devicetype", "cpe") if p.get(k)})   # nmap's own classification of the device (scan_nmap._classification)
         ports.append(item)
     return ports
 

@@ -47,7 +47,7 @@ for bad in (0, 5, 45, 301, "30", 30.0, True, None):
         pass
 check(settings.poll_interval() == 300, "valori non validi non cambiano nulla")
 settings.update({"alerts": False})
-check(settings.load() == {"alerts": False, "poll_interval": 300, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False}, "alerts e intervallo coesistono")
+check(settings.load() == {"alerts": False, "poll_interval": 300, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False, "tile_mac": False}, "alerts e intervallo coesistono")
 settings.SETTINGS_PATH.write_text('{"poll_interval": 7, "alerts": true}', encoding="utf-8")
 check(settings.poll_interval() == 30, "valore non valido nel file -> default")
 

@@ -269,6 +269,8 @@
   "js.ha.menu.speed_hint": "Ein Gerät wird nach etwa {t} als offline markiert.",
   "js.ha.menu.phone_hold": "Schlafende Handys",
   "js.ha.menu.phone_hold_hint": "Bleiben online, solange der Router in Home Assistant sie zu Hause sieht",
+  "js.ha.menu.tile_mac": "MAC auf den Karten",
+  "js.ha.menu.tile_mac_hint": "Zeigt die MAC jedes Geräts unter seiner Adresse",
   "js.ha.log.flap": "{n}-mal den Zustand gewechselt · jetzt {state}",
   "js.ha.menu.flows": "Suchmethoden",
   "js.ha.menu.update_tip": "Update verfügbar: Vedetta {latest}. Öffnet die Update-Seite von Home Assistant (zuerst wird erklärt, was passiert).",

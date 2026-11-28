@@ -106,9 +106,9 @@ print("ok: MAC non validi e IP proprio ignorati")
 
 # 8) settings: defaults, update, unknown keys, wrong type
 settings.SETTINGS_PATH = tmp / "settings.json"
-assert settings.load() == {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False}
-assert settings.update({"alerts": False, "altro": 1}) == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False}
-assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False} and "altro" not in settings.SETTINGS_PATH.read_text()
+assert settings.load() == {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False, "tile_mac": False}
+assert settings.update({"alerts": False, "altro": 1}) == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False, "tile_mac": False}
+assert settings.load() == {"alerts": False, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False, "tile_mac": False} and "altro" not in settings.SETTINGS_PATH.read_text()
 try:
     settings.update({"alerts": "si"})
     raise SystemExit("doveva rifiutare un valore non booleano")

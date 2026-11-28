@@ -14,6 +14,7 @@ import { logMenuEl, toggleLogMenu } from "./log.js";
 import { netsCount, openNets } from "./ha-networks.js";
 import { openNetPanel } from "./netpanel.js";
 import { onOpenNetworks } from "./net-rotator.js";
+import { redrawTiles } from "./live.js";
 onOpenNetworks(openNetPanel);                          // the tile of a proposed or paused network opens this panel (net-rotator.js)
 
 // ----------------------------------------------------------------- guided typing
@@ -197,6 +198,13 @@ function holdRow() {
     esc(t("js.ha.menu.phone_hold_hint")) + '</div></div><button type="button" class="rv-switch' + (on ? " on" : "") + '" data-hold="1" role="switch" aria-checked="' + on +
     '" aria-label="' + esc(t("js.ha.menu.phone_hold")) + '"></button></div>';
 }
+// The MAC on the cards (setting tile_mac): the same switch, under the view because it changes what the cards show.
+function macRow() {
+  const on = !!S.tileMac;
+  return '<div class="al-row menu-switch"><div class="al-txt"><div class="al-lbl">' + esc(t("js.ha.menu.tile_mac")) + '</div><div class="al-hint">' +
+    esc(t("js.ha.menu.tile_mac_hint")) + '</div></div><button type="button" class="rv-switch' + (on ? " on" : "") + '" data-tilemac="1" role="switch" aria-checked="' + on +
+    '" aria-label="' + esc(t("js.ha.menu.tile_mac")) + '"></button></div>';
+}
 function buildMenu() {
   let html = starEntry() + langGroup();
   const theme = ROOT.getAttribute("data-theme") || "auto";
@@ -206,7 +214,7 @@ function buildMenu() {
   const view = ROOT.getAttribute("data-view") === "list" ? "list" : "tiles";
   html += menuGroup(t("js.ha.menu.view"), ["tiles", "list"].map(function (v) {
     return pill("md", "view", v, v === view, t("js.ha.menu.view_" + v));
-  }).join(""));
+  }).join("")) + macRow();
   const pollNow = Math.round((S.poll.interval || 30000) / 1000);
   // The chosen speed is the one that matches what the server runs; right after a choice the server has not told the new
   // interval yet, so the choice made here stands in until it does (otherwise no button would look chosen).
@@ -281,6 +289,14 @@ menuEl.addEventListener("click", function (e) {
   if (e.target.closest("[data-update]")) { toggleMenu(false); openUpdate(); return; }
   if (e.target.closest("[data-about]")) { toggleMenu(false); openAbout(); return; }
   if (e.target.closest("[data-logout]")) { logout(); return; }
+  if (e.target.closest("[data-tilemac]")) {
+    S.tileMac = !S.tileMac;
+    api("/api/settings", { method: "POST", json: { tile_mac: S.tileMac } }).catch(function () {});
+    redrawTiles();
+    buildMenu();      // the menu stays open, like the switch of the phones
+    menuEl.querySelector("[data-tilemac]").focus();
+    return;
+  }
   if (e.target.closest("[data-hold]")) {
     S.phoneHold = !S.phoneHold;
     api("/api/settings", { method: "POST", json: { phone_hold_ha: S.phoneHold } }).catch(function () {});

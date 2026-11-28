@@ -4,7 +4,8 @@
 "poll_interval" = seconds between one check and the next (fixed values);
 "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3);
 "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4);
-"ha_help_hidden" = Docker: the person ticked «Do not show again» in the window that explains how to connect Home Assistant (1.1).
+"ha_help_hidden" = Docker: the person ticked «Do not show again» in the window that explains how to connect Home Assistant (1.1);
+"tile_mac" = every card shows the MAC of its device under the address (the switch in the menu, off by default; 1.1.1).
 Unknown keys are ignored: the file contains only the known ones."""
 from ..atomic import write_atomic
 from .. import device_groups
@@ -46,7 +47,7 @@ _NOTIFY_SERVICE = re.compile(r"notify\.[a-z0-9_]{1,80}")   # a service of the no
 # higher = fewer false "offline" (sleeping phones), but slower detection.
 MISS_LIMITS = (1, 2, 3, 5, 10)
 
-DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False}
+DEFAULTS: dict = {"alerts": True, "poll_interval": 30, "miss_limit": 3, "phone_hold_ha": True, "group_order": [], "ha_help_hidden": False, "tile_mac": False}
 
 # The Sentinel's way out (ha/ha_notify.py), keys of the file apart from DEFAULTS like the mqtt_* ones (not in load()/update()):
 # "ha_events" = vedetta_* events on the bus of Home Assistant; "notify_order" = the recipients in their order, each with the wait after

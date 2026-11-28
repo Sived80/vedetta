@@ -269,6 +269,8 @@
   "js.ha.menu.speed_hint": "Un dispositivo risulta offline dopo circa {t}.",
   "js.ha.menu.phone_hold": "Telefoni a riposo",
   "js.ha.menu.phone_hold_hint": "Restano online finché il router in Home Assistant li vede a casa",
+  "js.ha.menu.tile_mac": "MAC sulle card",
+  "js.ha.menu.tile_mac_hint": "Mostra il MAC di ogni dispositivo sotto l'indirizzo",
   "js.ha.log.flap": "ha cambiato stato {n} volte · ora {state}",
   "js.ha.menu.flows": "Metodi di ricerca",
   "js.ha.menu.update_tip": "Aggiornamento disponibile: Vedetta {latest}. Apre la pagina Aggiornamenti di Home Assistant (prima ti spiega cosa succede).",

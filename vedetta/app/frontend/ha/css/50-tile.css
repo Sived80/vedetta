@@ -105,6 +105,9 @@
   .tile:has(.tile-wake:not([hidden])) .tile-body { padding-right: 68px; }
   .tile-name { font-size: 14px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tile-ip { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  /* The MAC under the address (switch in the menu): a line of its own in the same box, cut like the address on a narrow card. */
+  .tile-mac { display: block; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.01em; }
+  .tile-mac[hidden] { display: none; }
   .tile-state { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tile.online .tile-state { color: var(--success-text-color); }
   .tile-sub { font-size: 12px; line-height: 16px; color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

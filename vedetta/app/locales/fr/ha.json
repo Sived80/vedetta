@@ -269,6 +269,8 @@
   "js.ha.menu.speed_hint": "Un appareil est marqué hors ligne après environ {t}.",
   "js.ha.menu.phone_hold": "Téléphones en veille",
   "js.ha.menu.phone_hold_hint": "Restent en ligne tant que le routeur dans Home Assistant les voit à la maison",
+  "js.ha.menu.tile_mac": "MAC sur les cartes",
+  "js.ha.menu.tile_mac_hint": "Affiche l'adresse MAC de chaque appareil sous son adresse",
   "js.ha.log.flap": "a changé d'état {n} fois · maintenant {state}",
   "js.ha.menu.flows": "Méthodes de recherche",
   "js.ha.menu.update_tip": "Mise à jour disponible : Vedetta {latest}. Ouvre la page Mises à jour de Home Assistant (elle explique d'abord ce qui se passe).",

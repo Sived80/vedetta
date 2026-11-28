@@ -305,7 +305,7 @@ The functions that were restructured have a reference test that was generated fr
 | `storage/newdevices.py` | New devices on the network: compares the MACs seen via ARP (and DHCP) with the already known ones, stored in the known_macs table of the SQLite history. |
 | `storage/overlap.py` | Time overlap of presence sessions, to tell a MAC lent to several cards (shared) from one phone that moved to a new address (not shared). |
 | `storage/passive_store.py` | The devices that Home Assistant sees and Vedetta does not scan ("passive" devices): the switch of the function, the last reading and the devices the user adopted. |
-| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3); "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4); "ha_help_hidden" = Docker: the person ticked «Do not show again» in the window that explains how to connect Home Assistant (1.1). |
+| `storage/settings.py` | User settings (config/settings.json): "alerts" = show the alerts (new open port, new device...); "poll_interval" = seconds between one check and the next (fixed values); "phone_hold_ha" = a silent phone that a router tracker of Home Assistant says is at home stays online (ha/tracker_hold.py, 1.0.3); "group_order" = the order of the groups on the page, the same on every device ([] = the default order, device_groups.TYPE_ORDER; 1.0.4); "ha_help_hidden" = Docker: the person ticked «Do not show again» in the window that explains how to connect Home Assistant (1.1); "tile_mac" = every card shows the MAC of its device under the address (the switch in the menu, off by default; 1.1.1). |
 | `storage/starhint.py` | The one-time invitation to star the project on GitHub (config/star_hint.json). |
 | `storage/userlang.py` | The language each Home Assistant user chose in the menu (config/user_lang.json). |
 
@@ -325,8 +325,8 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/about.js` | 37 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/alerts.js` | 232 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/app.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/core-menu.js` | 344 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/core-ui.js` | 201 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/core-menu.js` | 360 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/core-ui.js` | 202 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/core.js` | 280 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/debug.js` | 50 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/deep.js` | 164 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -344,7 +344,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/ignored.js` | 348 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/inventory.js` | 60 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/learning.js` | 30 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/live.js` | 274 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/live.js` | 280 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/log.js` | 167 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-attrs.js` | 233 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/more-edit.js` | 369 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -360,7 +360,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `js/new-devices.js` | 400 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/night.js` | 45 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/pause-place.js` | 15 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `js/tile.js` | 345 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `js/tile.js` | 349 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `js/update.js` | 44 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/10-base.css` | 175 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/11-components.css` | 187 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
@@ -370,7 +370,7 @@ The files of `js/` are ES modules: the page loads `js/app.js` and the browser fo
 | `css/30-deep.css` | 52 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/40-network.css` | 539 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/42-health.css` | 103 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
-| `css/50-tile.css` | 230 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
+| `css/50-tile.css` | 233 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/60-new-devices.css` | 86 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/61-night.css` | 14 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |
 | `css/62-ha-networks.css` | 43 | SPDX-License-Identifier: GPL-3.0-only — additional terms in NOTICE |

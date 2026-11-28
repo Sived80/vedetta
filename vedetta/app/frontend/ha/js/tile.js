@@ -36,12 +36,12 @@ function createTile(d, index) {
     '<span class="brand-big" aria-hidden="true" hidden><i></i></span>' +
     '<span class="tile-icon"><span class="ic"></span><span class="ring"></span><span class="tile-flag" hidden>' + icon("flag") + "</span>" + '<span class="tile-watch" role="img" hidden>' + icon("bell-ring") + "</span>" + '<span class="tile-ha" role="img" hidden>' + icon("home-assistant") + "</span>" +
     '<span class="tile-mark tr" role="img" hidden></span><span class="tile-mark br" role="img" hidden></span></span>' +
-    '<span class="tile-body"><span class="tile-name"></span><span class="tile-ip"></span><span class="tile-state"></span><span class="tile-sub"><span class="tile-sub-txt"></span><span class="tile-batt" role="img" style="display:inline-flex;vertical-align:-2px;margin-left:.35em;opacity:.65"></span></span></span>' +
+    '<span class="tile-body"><span class="tile-name"></span><span class="tile-ip"><span class="tile-ip-txt"></span><span class="tile-mac" hidden></span></span><span class="tile-state"></span><span class="tile-sub"><span class="tile-sub-txt"></span><span class="tile-batt" role="img" style="display:inline-flex;vertical-align:-2px;margin-left:.35em;opacity:.65"></span></span></span>' +
     '<button type="button" class="icon-btn small tile-open touch rp" title="' + esc(t("js.ha.act.open")) + '" aria-label="' + esc(t("js.ha.act.open")) + '">' + icon("open-in-new") + "</button>" +
     '<button type="button" class="icon-btn small tile-wake touch rp" hidden>' + icon("power") + "</button>" +
     '<span class="hbar" role="img"></span>';
   el._r = {
-    big: el.querySelector(".brand-big"), box: el.querySelector(".tile-icon"), ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
+    big: el.querySelector(".brand-big"), box: el.querySelector(".tile-icon"), ic: el.querySelector(".ic"), name: el.querySelector(".tile-name"), ip: el.querySelector(".tile-ip-txt"), mac: el.querySelector(".tile-mac"), subRow: el.querySelector(".tile-sub"), state: el.querySelector(".tile-state"),
     sub: el.querySelector(".tile-sub-txt"), batt: el.querySelector(".tile-batt"), flag: el.querySelector(".tile-flag"), watch: el.querySelector(".tile-watch"), ha: el.querySelector(".tile-ha"), markTR: el.querySelector(".tile-mark.tr"), markBR: el.querySelector(".tile-mark.br"), wake: el.querySelector(".tile-wake"), open: el.querySelector(".tile-open"), hbar: el.querySelector(".hbar")
   };
   el._r.wake.title = t("js.ha.act.wake");
@@ -119,6 +119,10 @@ export function updateTile(id) {
   const chip = [roleText(d.ip), viaText(d.ip, true), chipText(d)].filter(Boolean).join(" \u00b7 ");
   // Order: name, IP (in full), status and latency, other information (role, brand/chip, battery).
   if (r.ip.textContent !== d.ip) r.ip.textContent = d.ip;
+  // The MAC under the address, only when the switch in the menu is on and the device has one (in the same box: the list view shows it too).
+  const mac = S.tileMac && d.mac ? d.mac : "";
+  if (r.mac.textContent !== mac) r.mac.textContent = mac;
+  r.mac.hidden = !mac;
   if (r.sub.textContent !== chip) r.sub.textContent = chip;
   // Battery: discreet icon only if the device is certainly battery-powered.
   const bt = DEBUG && d.battery === "yes" ? batteryTitle(d) : "";

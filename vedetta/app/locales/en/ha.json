@@ -269,6 +269,8 @@
   "js.ha.menu.speed_hint": "A device is marked offline after about {t}.",
   "js.ha.menu.phone_hold": "Sleeping phones",
   "js.ha.menu.phone_hold_hint": "Kept online while the router in Home Assistant sees them at home",
+  "js.ha.menu.tile_mac": "MAC on the cards",
+  "js.ha.menu.tile_mac_hint": "Shows each device's MAC under its address",
   "js.ha.log.flap": "changed state {n} times · now {state}",
   "js.ha.menu.flows": "Search methods",
   "js.ha.menu.update_tip": "Update available: Vedetta {latest}. Opens the Updates page of Home Assistant (it first explains what happens).",

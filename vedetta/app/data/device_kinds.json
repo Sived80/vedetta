@@ -653,12 +653,32 @@
    "icon": "printer-3d",
    "words": [
     "3d printer",
-    "stampante 3d"
+    "3dprinter",
+    "stampante 3d",
+    "3d-drucker",
+    "3d drucker",
+    "imprimante 3d",
+    "3d tiskarna",
+    "octoprint",
+    "moonraker",
+    "mainsail",
+    "fluiddpi"
    ],
-   "tokens": [],
+   "tokens": [
+    "octopi",
+    "klipper",
+    "fluidd",
+    "reprap"
+   ],
    "w": 4,
-   "mdns": [],
-   "upnp": []
+   "mdns": [
+    "_octoprint._tcp",
+    "_moonraker._tcp"
+   ],
+   "upnp": [
+    "3dprinter",
+    "Moonraker"
+   ]
   },
   {
    "id": "scanner",

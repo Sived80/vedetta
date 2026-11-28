@@ -121,6 +121,14 @@
    "group": "printer",
    "kind": "printer"
   },
+  "octoprint": {
+   "group": "printer",
+   "kind": "printer3d"
+  },
+  "moonraker": {
+   "group": "printer",
+   "kind": "printer3d"
+  },
   "proxmoxve": {
    "group": "server",
    "kind": "server"

@@ -221,6 +221,32 @@
           "re": "synology|diskstation"
         }
       ]
+    },
+    {
+      "id": "printer-host-web",
+      "group": "printer",
+      "kind": "printer3d",
+      "weight": 10,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "title",
+          "re": "^\\s*(octoprint|mainsail|fluidd)\\b"
+        }
+      ]
+    },
+    {
+      "id": "printer-api-port",
+      "group": "printer",
+      "kind": "printer3d",
+      "weight": 4,
+      "fixture": "simulated",
+      "all": [
+        {
+          "field": "ports",
+          "has": 7125
+        }
+      ]
     }
   ]
 }
